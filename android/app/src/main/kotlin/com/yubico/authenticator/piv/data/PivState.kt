@@ -66,7 +66,5 @@ data class PivState(
         metadata
     )
 
-    override fun toJson(): String {
-        return jsonSerializer.encodeToString(this)
-    }
+    override fun toJson(): String = jsonSerializer.encodeToString(this)
 }

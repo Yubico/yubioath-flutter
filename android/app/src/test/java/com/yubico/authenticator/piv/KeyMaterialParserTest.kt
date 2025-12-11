@@ -21,6 +21,9 @@ import com.yubico.authenticator.piv.TestData.ECCP384
 import com.yubico.authenticator.piv.TestData.ED25519
 import com.yubico.authenticator.piv.TestData.RSA2048
 import com.yubico.authenticator.piv.TestData.X25519
+import java.security.Security
+import java.security.interfaces.RSAPrivateKey
+import java.security.interfaces.XECPrivateKey
 import org.bouncycastle.jcajce.interfaces.EdDSAPrivateKey
 import org.bouncycastle.jce.interfaces.ECPrivateKey
 import org.bouncycastle.jce.provider.BouncyCastleProvider
@@ -29,9 +32,6 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito
-import java.security.Security
-import java.security.interfaces.RSAPrivateKey
-import java.security.interfaces.XECPrivateKey
 
 class KeyMaterialParserTest {
 

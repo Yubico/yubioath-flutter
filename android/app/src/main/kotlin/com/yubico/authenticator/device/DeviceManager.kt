@@ -27,9 +27,9 @@ import com.yubico.authenticator.yubikit.Workarounds
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.YubiKeyDevice
 import com.yubico.yubikit.core.smartcard.scp.ScpKeyParams
-import org.slf4j.LoggerFactory
 import java.io.IOException
 import java.util.concurrent.atomic.AtomicReference
+import org.slf4j.LoggerFactory
 
 interface DeviceListener {
     // a USB device is connected
@@ -137,9 +137,7 @@ class DeviceManager(
         appViewModel.setDeviceInfo(this.deviceInfo)
     }
 
-    fun isUsbKeyConnected(): Boolean {
-        return appViewModel.connectedYubiKey.value != null
-    }
+    fun isUsbKeyConnected(): Boolean = appViewModel.connectedYubiKey.value != null
 
     suspend fun <T> withKey(onUsb: suspend (UsbYubiKeyDevice) -> T) =
         appViewModel.connectedYubiKey.value?.let {

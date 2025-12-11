@@ -55,11 +55,11 @@ import com.yubico.yubikit.fido.ctap.PinUvAuthProtocolV1
 import com.yubico.yubikit.fido.ctap.PinUvAuthProtocolV2
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
-import org.json.JSONObject
-import org.slf4j.LoggerFactory
 import java.io.IOException
 import java.util.Arrays
 import java.util.concurrent.atomic.AtomicBoolean
+import org.json.JSONObject
+import org.slf4j.LoggerFactory
 
 typealias FidoAction = (Result<YubiKitFidoSession, Exception>) -> Unit
 
@@ -102,7 +102,8 @@ class FidoManager(
 
     private var pinRetries: Int? = null
 
-    private val persistentPinUvAuthTokenStore = PersistentPinUvAuthTokenStore(lifecycleOwner as Context)
+    private val persistentPinUvAuthTokenStore =
+        PersistentPinUvAuthTokenStore(lifecycleOwner as Context)
     private var persistentPinUvAuthToken: ByteArray? = null
     private var identifier: ByteArray? = null
 
@@ -138,7 +139,7 @@ class FidoManager(
 
                 "setPin" -> setPin(
                     (args["pin"] as String?)?.toCharArray(),
-                    (args["newPin"] as String).toCharArray(),
+                    (args["newPin"] as String).toCharArray()
                 )
 
                 "deleteCredential" -> deleteCredential(
@@ -156,7 +157,7 @@ class FidoManager(
                 )
 
                 "registerFingerprint" -> registerFingerprint(
-                    args["name"] as String?,
+                    args["name"] as String?
                 )
 
                 "cancelRegisterFingerprint" -> cancelRegisterFingerprint()
@@ -198,9 +199,7 @@ class FidoManager(
         }
     }
 
-    override fun hasPending(): Boolean {
-        return connectionHelper.hasPending()
-    }
+    override fun hasPending(): Boolean = connectionHelper.hasPending()
 
     override fun dispose() {
         super.dispose()
@@ -225,7 +224,6 @@ class FidoManager(
                 deviceManager.setDeviceInfo(runCatching { getDeviceInfo(device) }.getOrNull())
             }
         } catch (e: Exception) {
-
             logger.error("Cancelling pending action. Cause: ", e)
             connectionHelper.cancelPending()
 
@@ -272,10 +270,12 @@ class FidoManager(
             identifier = null
         }
 
+        val clientPin =
+            ClientPin(fidoSession, getPreferredPinUvAuthProtocol(fidoSession.cachedInfo))
 
-        val clientPin = ClientPin(fidoSession, getPreferredPinUvAuthProtocol(fidoSession.cachedInfo))
-
-        if (device is NfcYubiKeyDevice && (sameDevice || resetHelper.inProgress) && connectionHelper.hasPending()) {
+        if (device is NfcYubiKeyDevice && (sameDevice || resetHelper.inProgress) &&
+            connectionHelper.hasPending()
+        ) {
             requestHandled = connectionHelper.invokePending(fidoSession)
         }
 
@@ -287,12 +287,15 @@ class FidoManager(
                 infoData.getIdentifier(ppuat)
             }
 
-        val pinUvAuthToken = if (pinStore.hasPin())
+        val pinUvAuthToken = if (pinStore.hasPin()) {
             clientPin.getPinToken(
                 pinStore.getPin(),
                 getPinPermissionsCM(fidoSession) or getPinPermissionsBE(fidoSession),
                 null
-            ) else null
+            )
+        } else {
+            null
+        }
 
         val token = pinUvAuthToken ?: persistentPinUvAuthToken
 
@@ -324,22 +327,25 @@ class FidoManager(
         return requestHandled
     }
 
-    private fun getPinPermissionsCM(fidoSession: YubiKitFidoSession): Int {
-        return if (CredentialManagement.isSupported(fidoSession.cachedInfo))
-            ClientPin.PIN_PERMISSION_CM else 0
-    }
+    private fun getPinPermissionsCM(fidoSession: YubiKitFidoSession): Int =
+        if (CredentialManagement.isSupported(fidoSession.cachedInfo)) {
+            ClientPin.PIN_PERMISSION_CM
+        } else {
+            0
+        }
 
-    private fun getPinPermissionsBE(fidoSession: YubiKitFidoSession): Int {
-        return if (BioEnrollment.isSupported(fidoSession.cachedInfo))
-            ClientPin.PIN_PERMISSION_BE else 0
-    }
+    private fun getPinPermissionsBE(fidoSession: YubiKitFidoSession): Int =
+        if (BioEnrollment.isSupported(fidoSession.cachedInfo)) {
+            ClientPin.PIN_PERMISSION_BE
+        } else {
+            0
+        }
 
     private fun unlockSession(
         fidoSession: YubiKitFidoSession,
         clientPin: ClientPin,
         pin: CharArray
     ): String {
-
         if (CredentialManagement.isReadonlySupported(fidoSession.cachedInfo)) {
             persistentPinUvAuthToken =
                 clientPin.getPinToken(pin, ClientPin.PIN_PERMISSION_PCMR, null)
@@ -393,56 +399,56 @@ class FidoManager(
         return JSONObject(mapOf("success" to true)).toString()
     }
 
-
     private fun catchPinErrors(
         fidoSession: YubiKitFidoSession,
         clientPin: ClientPin,
         block: () -> String
-    ): String =
-        try {
-            block()
-        } catch (ctapException: CtapException) {
-            if (ctapException.ctapError == CtapException.ERR_PIN_INVALID ||
-                ctapException.ctapError == CtapException.ERR_PIN_BLOCKED ||
-                ctapException.ctapError == CtapException.ERR_PIN_AUTH_BLOCKED ||
-                ctapException.ctapError == CtapException.ERR_PIN_POLICY_VIOLATION
-            ) {
-                pinStore.setPin(null)
-                fidoViewModel.updateCredentials(null)
-                fidoViewModel.updateFingerprints(emptyList())
+    ): String = try {
+        block()
+    } catch (ctapException: CtapException) {
+        if (ctapException.ctapError == CtapException.ERR_PIN_INVALID ||
+            ctapException.ctapError == CtapException.ERR_PIN_BLOCKED ||
+            ctapException.ctapError == CtapException.ERR_PIN_AUTH_BLOCKED ||
+            ctapException.ctapError == CtapException.ERR_PIN_POLICY_VIOLATION
+        ) {
+            pinStore.setPin(null)
+            fidoViewModel.updateCredentials(null)
+            fidoViewModel.updateFingerprints(emptyList())
 
-                identifier?.let {
-                    persistentPinUvAuthTokenStore.removeToken(it)
-                    identifier = null
-                    persistentPinUvAuthToken = null
-                }
-
-                pinRetries = if (fidoSession.cachedInfo.options["clientPin"] == true)
-                    // pinRetries exists only if the authenticator has a PIN set
-                    clientPin.pinRetries.count
-                else
-                    null
-
-                if (ctapException.ctapError == CtapException.ERR_PIN_POLICY_VIOLATION) {
-                    JSONObject(
-                        mapOf(
-                            "success" to false,
-                            "pinViolation" to true
-                        )
-                    ).toString()
-                } else {
-                    JSONObject(
-                        mapOf(
-                            "success" to false,
-                            "pinRetries" to pinRetries,
-                            "authBlocked" to (ctapException.ctapError == CtapException.ERR_PIN_AUTH_BLOCKED),
-                        )
-                    ).toString()
-                }
-            } else {
-                throw ctapException
+            identifier?.let {
+                persistentPinUvAuthTokenStore.removeToken(it)
+                identifier = null
+                persistentPinUvAuthToken = null
             }
+
+            pinRetries = if (fidoSession.cachedInfo.options["clientPin"] == true) {
+                // pinRetries exists only if the authenticator has a PIN set
+                clientPin.pinRetries.count
+            } else {
+                null
+            }
+
+            if (ctapException.ctapError == CtapException.ERR_PIN_POLICY_VIOLATION) {
+                JSONObject(
+                    mapOf(
+                        "success" to false,
+                        "pinViolation" to true
+                    )
+                ).toString()
+            } else {
+                JSONObject(
+                    mapOf(
+                        "success" to false,
+                        "pinRetries" to pinRetries,
+                        "authBlocked" to
+                            (ctapException.ctapError == CtapException.ERR_PIN_AUTH_BLOCKED)
+                    )
+                ).toString()
+            }
+        } else {
+            throw ctapException
         }
+    }
 
     private suspend fun unlock(pin: CharArray): String =
         connectionHelper.useSession { fidoSession ->
@@ -515,7 +521,7 @@ class FidoManager(
                     (credentialData.user["id"] as ByteArray).asString(),
                     credentialData.user["name"] as String,
                     publicKeyCredentialDescriptor = credentialData.credentialId,
-                    displayName = credentialData.user["displayName"] as String?,
+                    displayName = credentialData.user["displayName"] as String?
                 )
             }
         }.reduceOrNull { credentials, credentialList ->
@@ -543,7 +549,7 @@ class FidoManager(
                 fidoViewModel.removeCredential(rpId, credentialId)
                 return@useSession JSONObject(
                     mapOf(
-                        "success" to true,
+                        "success" to true
                     )
                 ).toString()
             }
@@ -551,7 +557,7 @@ class FidoManager(
             // could not find the credential to delete
             JSONObject(
                 mapOf(
-                    "success" to false,
+                    "success" to false
                 )
             ).toString()
         }
@@ -568,7 +574,6 @@ class FidoManager(
         return enrollments.map { enrollment ->
             FidoFingerprint(enrollment.key.toHexString(), enrollment.value)
         }
-
     }
 
     private suspend fun deleteFingerprint(templateId: String): String =
@@ -584,13 +589,12 @@ class FidoManager(
                     null
                 )
 
-
             val bioEnrollment = FingerprintBioEnrollment(fidoSession, clientPin.pinUvAuth, token)
             bioEnrollment.removeEnrollment(templateId.hexToByteArray())
             fidoViewModel.removeFingerprint(templateId)
             return@useSession JSONObject(
                 mapOf(
-                    "success" to true,
+                    "success" to true
                 )
             ).toString()
         }
@@ -613,7 +617,7 @@ class FidoManager(
             fidoViewModel.renameFingerprint(templateId, name)
             return@useSession JSONObject(
                 mapOf(
-                    "success" to true,
+                    "success" to true
                 )
             ).toString()
         }
@@ -712,7 +716,9 @@ class FidoManager(
                         ClientPin.PIN_PERMISSION_ACFG,
                         null
                     )
-                } else null
+                } else {
+                    null
+                }
 
                 val config = Config(fidoSession, uvAuthProtocol, token)
                 config.enableEnterpriseAttestation()
@@ -726,14 +732,14 @@ class FidoManager(
                 )
                 return@useSession JSONObject(
                     mapOf(
-                        "success" to true,
+                        "success" to true
                     )
                 ).toString()
             } catch (e: Exception) {
                 logger.error("Failed to enable enterprise attestation. ", e)
                 return@useSession JSONObject(
                     mapOf(
-                        "success" to false,
+                        "success" to false
                     )
                 ).toString()
             }
@@ -753,7 +759,7 @@ class FidoManager(
                 logger.error("Failed to enable enterprise attestation. ", e)
                 return@useSession JSONObject(
                     mapOf(
-                        "success" to false,
+                        "success" to false
                     )
                 ).toString()
             }

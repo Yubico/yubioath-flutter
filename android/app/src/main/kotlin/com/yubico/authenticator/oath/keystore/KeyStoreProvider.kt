@@ -32,12 +32,11 @@ class KeyStoreProvider : KeyProvider {
 
     override fun hasKey(deviceId: String): Boolean = keystore.containsAlias(getAlias(deviceId))
 
-    override fun getKey(deviceId: String): AccessKey? =
-        if (hasKey(deviceId)) {
-            KeyStoreStoredSigner(deviceId)
-        } else {
-            null
-        }
+    override fun getKey(deviceId: String): AccessKey? = if (hasKey(deviceId)) {
+        KeyStoreStoredSigner(deviceId)
+    } else {
+        null
+    }
 
     override fun putKey(deviceId: String, secret: ByteArray) {
         keystore.setEntry(
@@ -49,13 +48,11 @@ class KeyStoreProvider : KeyProvider {
         )
     }
 
-
     override fun removeKey(deviceId: String) {
         keystore.deleteEntry(getAlias(deviceId))
     }
 
-    private inner class KeyStoreStoredSigner(val deviceId: String) :
-        AccessKey {
+    private inner class KeyStoreStoredSigner(val deviceId: String) : AccessKey {
         val mac: Mac = Mac.getInstance(KeyProperties.KEY_ALGORITHM_HMAC_SHA1).apply {
             init(keystore.getKey(getAlias(deviceId), null))
         }

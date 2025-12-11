@@ -43,16 +43,14 @@ object CapabilitiesSerializer : KSerializer<Capabilities> {
         )
     }
 
-    override fun deserialize(decoder: Decoder): Capabilities {
-        return try {
-            val map = decoder.decodeSerializableValue(serializer)
-            Capabilities(
-                usb = map.getOrElse(TAG_USB) { null },
-                nfc = map.getOrElse(TAG_NFC) { null }
-            )
-        } catch (e: Exception) {
-            Capabilities()
-        }
+    override fun deserialize(decoder: Decoder): Capabilities = try {
+        val map = decoder.decodeSerializableValue(serializer)
+        Capabilities(
+            usb = map.getOrElse(TAG_USB) { null },
+            nfc = map.getOrElse(TAG_NFC) { null }
+        )
+    } catch (e: Exception) {
+        Capabilities()
     }
 
     private const val TAG_USB = "usb"

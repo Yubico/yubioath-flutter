@@ -60,16 +60,15 @@ class CompatUtil(private val sdkVersion: Int) {
          * @return unwrapped value or result of [block]
          */
         @Suppress("UNCHECKED_CAST")
-        fun otherwise(block: () -> T): T =
-            if (hasValue) {
-                if (value == null) {
-                    null as T
-                } else {
-                    value!!
-                }
+        fun otherwise(block: () -> T): T = if (hasValue) {
+            if (value == null) {
+                null as T
             } else {
-                block()
+                value!!
             }
+        } else {
+            block()
+        }
 
         /**
          * @return unwrapped value or [value]

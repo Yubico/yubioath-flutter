@@ -33,18 +33,18 @@ enum class NfcState(val value: Int) {
         var waitForNfcKeyRemoval: Boolean
             get() {
                 val value = _waitForNfcKeyRemoval
-                _waitForNfcKeyRemoval = false  // Reset after read
+                _waitForNfcKeyRemoval = false // Reset after read
                 return value
             }
             set(value) {
                 _waitForNfcKeyRemoval = value
             }
 
-        fun getSuccessState(): NfcState =
-            if (waitForNfcKeyRemoval)
-                WAIT_FOR_REMOVAL
-            else
-                SUCCESS
+        fun getSuccessState(): NfcState = if (waitForNfcKeyRemoval) {
+            WAIT_FOR_REMOVAL
+        } else {
+            SUCCESS
+        }
 
         fun getFailureState(): NfcState = FAILURE.also { waitForNfcKeyRemoval = false }
     }

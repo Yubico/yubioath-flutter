@@ -34,7 +34,7 @@ data class Options(
     val credentialMgmtPreview: Boolean,
     val bioEnroll: Boolean?,
     val alwaysUv: Boolean,
-    val ep: Boolean?,
+    val ep: Boolean?
 ) {
     constructor(infoData: InfoData) : this(
         infoData.getOptionsBoolean("clientPin") == true,
@@ -42,7 +42,7 @@ data class Options(
         infoData.getOptionsBoolean("credentialMgmtPreview") == true,
         infoData.getOptionsBoolean("bioEnroll"),
         infoData.getOptionsBoolean("alwaysUv") == true,
-        infoData.getOptionsBoolean("ep"),
+        infoData.getOptionsBoolean("ep")
     )
 
     fun sameDevice(other: Options): Boolean {
@@ -59,9 +59,7 @@ data class Options(
     }
 
     companion object {
-        private fun InfoData.getOptionsBoolean(
-            key: String
-        ): Boolean? = options[key] as? Boolean?
+        private fun InfoData.getOptionsBoolean(key: String): Boolean? = options[key] as? Boolean?
     }
 }
 
@@ -122,7 +120,6 @@ data class SessionInfo(
         result = 31 * result + (remainingDiscoverableCredentials ?: 0)
         return result
     }
-
 }
 
 @Serializable
@@ -140,10 +137,11 @@ data class Session(
         unlockedRead: Boolean,
         pinRetries: Int?
     ) : this(
-        SessionInfo(infoData), unlocked, unlockedRead, pinRetries
+        SessionInfo(infoData),
+        unlocked,
+        unlockedRead,
+        pinRetries
     )
 
-    override fun toJson(): String {
-        return jsonSerializer.encodeToString(this)
-    }
+    override fun toJson(): String = jsonSerializer.encodeToString(this)
 }

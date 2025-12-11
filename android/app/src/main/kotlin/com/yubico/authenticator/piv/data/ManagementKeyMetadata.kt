@@ -21,7 +21,6 @@ import kotlinx.serialization.Serializable
 
 typealias YubiKitManagementKeyMetadata = com.yubico.yubikit.piv.ManagementKeyMetadata
 
-
 @Serializable
 data class ManagementKeyMetadata(
     @SerialName("key_type")

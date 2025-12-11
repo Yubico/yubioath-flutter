@@ -19,13 +19,9 @@ package com.yubico.authenticator.device
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class VersionQualifier(
-    val version: Version,
-    val type: UByte,
-    val iteration: UInt
-) {
+data class VersionQualifier(val version: Version, val type: UByte, val iteration: UInt) {
     constructor() : this(
-        Version(0,0,0),
+        Version(0, 0, 0),
         2u,
         0u
     )

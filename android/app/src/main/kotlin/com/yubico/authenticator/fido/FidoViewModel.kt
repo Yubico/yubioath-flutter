@@ -28,7 +28,8 @@ class FidoViewModel : ViewModel() {
     private val _sessionState = MutableLiveData<ViewModelData>()
     val sessionState: LiveData<ViewModelData> = _sessionState
 
-    fun currentSession() : Session? = (_sessionState.value as? ViewModelData.Value<*>)?.data as? Session?
+    fun currentSession(): Session? =
+        (_sessionState.value as? ViewModelData.Value<*>)?.data as? Session?
 
     fun setSessionState(sessionState: Session) {
         _sessionState.postValue(ViewModelData.Value(sessionState))
@@ -46,9 +47,11 @@ class FidoViewModel : ViewModel() {
     }
 
     fun removeCredential(rpId: String, credentialId: String) {
-        _credentials.postValue(_credentials.value?.filter {
-            it.credentialId != credentialId || it.rpId != rpId
-        })
+        _credentials.postValue(
+            _credentials.value?.filter {
+                it.credentialId != credentialId || it.rpId != rpId
+            }
+        )
     }
 
     private val _resetState = MutableLiveData(FidoResetState.Remove.value)
@@ -70,17 +73,23 @@ class FidoViewModel : ViewModel() {
     }
 
     fun removeFingerprint(templateId: String) {
-        _fingerprints.postValue(_fingerprints.value?.filter {
-            it.templateId != templateId
-        })
+        _fingerprints.postValue(
+            _fingerprints.value?.filter {
+                it.templateId != templateId
+            }
+        )
     }
 
     fun renameFingerprint(templateId: String, name: String) {
-        _fingerprints.postValue(_fingerprints.value?.map {
-            if (it.templateId == templateId) {
-                FidoFingerprint(templateId, name)
-            } else it
-        })
+        _fingerprints.postValue(
+            _fingerprints.value?.map {
+                if (it.templateId == templateId) {
+                    FidoFingerprint(templateId, name)
+                } else {
+                    it
+                }
+            }
+        )
     }
 
     private val _registerFingerprint = MutableLiveData<FidoRegisterFpEvent>()

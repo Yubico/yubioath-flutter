@@ -22,11 +22,11 @@ import com.yubico.yubikit.core.smartcard.ApduException
 import com.yubico.yubikit.core.smartcard.SW
 import com.yubico.yubikit.piv.ManagementKeyType
 import com.yubico.yubikit.piv.ObjectId
-import org.slf4j.LoggerFactory
 import java.security.SecureRandom
 import java.security.spec.KeySpec
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
+import org.slf4j.LoggerFactory
 
 object PivmanUtils {
     private val logger = LoggerFactory.getLogger(PivmanUtils::class.java)
@@ -96,7 +96,7 @@ object PivmanUtils {
         newKey: ByteArray,
         algorithm: ManagementKeyType,
         touch: Boolean = false,
-        storeOnDevice: Boolean = false,
+        storeOnDevice: Boolean = false
     ) {
         val pivman = getPivmanData(piv)
         val pivmanOldBytes = pivman.getBytes()

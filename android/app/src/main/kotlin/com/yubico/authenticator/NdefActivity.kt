@@ -26,9 +26,9 @@ import android.os.Bundle
 import android.widget.Toast
 import com.yubico.authenticator.ndef.KeyboardLayout
 import com.yubico.yubikit.core.util.NdefUtils
-import org.slf4j.LoggerFactory
 import java.nio.charset.StandardCharsets
 import java.util.Locale
+import org.slf4j.LoggerFactory
 
 typealias ResourceId = Int
 
@@ -66,10 +66,10 @@ class NdefActivity : Activity() {
                             when (otpSlotContent.type) {
                                 OtpType.Otp -> R.string.p_ndef_set_otp
                                 OtpType.Password -> R.string.p_ndef_set_password
-                            }, Toast.LENGTH_SHORT
+                            },
+                            Toast.LENGTH_SHORT
                         )
                     }
-
                 } catch (illegalArgumentException: IllegalArgumentException) {
                     logger.error(
                         illegalArgumentException.message ?: "Failure when handling YubiKey OTP",
@@ -97,9 +97,11 @@ class NdefActivity : Activity() {
     }
 
     private fun showToast(value: ResourceId, length: Int) = resources.configuration.apply {
-        setLocale(getLocale(appPreferences.appLocale).also {
-            logger.debug("Using locale '{}' for native toasts", it)
-        })
+        setLocale(
+            getLocale(appPreferences.appLocale).also {
+                logger.debug("Using locale '{}' for native toasts", it)
+            }
+        )
         Toast.makeText(createConfigurationContext(this), value, length).show()
     }
 
@@ -123,7 +125,8 @@ class NdefActivity : Activity() {
     }
 
     enum class OtpType {
-        Otp, Password
+        Otp,
+        Password
     }
 
     data class OtpSlotValue(val type: OtpType, val content: String)

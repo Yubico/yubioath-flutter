@@ -25,14 +25,10 @@ import kotlin.coroutines.suspendCoroutine
 
 typealias Action = (Result<YubiKeyDevice, Exception>) -> Unit
 
-class ManagementConnectionHelper(
-    private val deviceManager: DeviceManager
-) {
+class ManagementConnectionHelper(private val deviceManager: DeviceManager) {
     private var pendingAction: Action? = null
 
-    fun hasPending(): Boolean {
-        return pendingAction != null
-    }
+    fun hasPending(): Boolean = pendingAction != null
 
     fun invokePending(device: YubiKeyDevice) {
         pendingAction?.let {
@@ -48,32 +44,31 @@ class ManagementConnectionHelper(
         }
     }
 
-    suspend fun <T> useDevice(block: (YubiKeyDevice) -> T): T =
-        deviceManager.withKey(
-            onUsb = { useUsbDevice(it, block) },
-            onNfc = { useNfcDevice(block) },
-            onCancelled = {
-                pendingAction?.let {
-                    pendingAction = null
-                    it.invoke(Result.failure(CancellationException()))
-                }
+    suspend fun <T> useDevice(block: (YubiKeyDevice) -> T): T = deviceManager.withKey(
+        onUsb = { useUsbDevice(it, block) },
+        onNfc = { useNfcDevice(block) },
+        onCancelled = {
+            pendingAction?.let {
+                pendingAction = null
+                it.invoke(Result.failure(CancellationException()))
             }
-        )
+        }
+    )
 
     private suspend fun <T> useUsbDevice(
         device: UsbYubiKeyDevice,
         block: suspend (YubiKeyDevice) -> T
     ): T = block(device)
 
-    private suspend fun <T> useNfcDevice(
-        block: (YubiKeyDevice) -> T
-    ): Result<T, Throwable> {
+    private suspend fun <T> useNfcDevice(block: (YubiKeyDevice) -> T): Result<T, Throwable> {
         try {
             val result = suspendCoroutine<T> { outer ->
                 pendingAction = {
-                    outer.resumeWith(runCatching {
-                        block.invoke(it.value)
-                    })
+                    outer.resumeWith(
+                        runCatching {
+                            block.invoke(it.value)
+                        }
+                    )
                 }
             }
             return Result.success(result!!)

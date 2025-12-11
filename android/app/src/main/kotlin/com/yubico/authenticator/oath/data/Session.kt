@@ -19,7 +19,6 @@ package com.yubico.authenticator.oath.data
 import com.yubico.authenticator.JsonSerializable
 import com.yubico.authenticator.device.Version
 import com.yubico.authenticator.jsonSerializer
-
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
@@ -43,20 +42,18 @@ data class Session(
     @Suppress("unused")
     val keystoreState: String = "unknown"
 
-    constructor(oathSession: YubiKitOathSession, isRemembered: Boolean)
-            : this(
-        oathSession.deviceId,
-        Version(
-            oathSession.version.major,
-            oathSession.version.minor,
-            oathSession.version.micro
-        ),
-        oathSession.isAccessKeySet,
-        isRemembered,
-        oathSession.isLocked
-    )
+    constructor(oathSession: YubiKitOathSession, isRemembered: Boolean) :
+        this(
+            oathSession.deviceId,
+            Version(
+                oathSession.version.major,
+                oathSession.version.minor,
+                oathSession.version.micro
+            ),
+            oathSession.isAccessKeySet,
+            isRemembered,
+            oathSession.isLocked
+        )
 
-    override fun toJson(): String {
-        return jsonSerializer.encodeToString(this)
-    }
+    override fun toJson(): String = jsonSerializer.encodeToString(this)
 }

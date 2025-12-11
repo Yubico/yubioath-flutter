@@ -4,6 +4,7 @@ plugins {
     id 'kotlinx-serialization'
     id 'dev.flutter.flutter-gradle-plugin'
     id 'com.google.android.gms.oss-licenses-plugin'
+    id 'com.diffplug.spotless'
 }
 
 def localProperties = new Properties()
@@ -25,6 +26,8 @@ if (flutterVersionName == null) {
 }
 
 android {
+
+    ndkVersion = "28.2.13676358"
 
     namespace 'com.yubico.authenticator'
 
@@ -91,6 +94,20 @@ apply from: "collect_licenses.gradle"
 
 flutter {
     source '../..'
+}
+
+spotless {
+    kotlin {
+        target("**/*.kt")
+        targetExclude("**/generated/*.kt")
+        targetExclude("src/**/ndef/**KeyboardLayout.kt")
+        ktlint().editorConfigOverride([ktlint_code_style: "android_studio"])
+    }
+
+    kotlinGradle {
+        target("*.gradle.kts")
+        ktlint()
+    }
 }
 
 dependencies {
