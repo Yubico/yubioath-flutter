@@ -72,13 +72,18 @@ const String _logFile = 'log-file';
 const String _hidden = 'hidden';
 const String _shown = 'shown';
 
+extension RectLogging on Rect {
+  String get pretty =>
+      'Rect(left: $left, top: $top, width: $width, height: $height)';
+}
+
 void _saveWindowBounds(WindowManagerHelper helper) async {
   final bounds = await helper.getBounds();
   await helper.sharedPreferences.setDouble(_keyWidth, bounds.width);
   await helper.sharedPreferences.setDouble(_keyHeight, bounds.height);
   await helper.sharedPreferences.setDouble(_keyLeft, bounds.left);
   await helper.sharedPreferences.setDouble(_keyTop, bounds.top);
-  _log.debug('Saving window bounds: $bounds');
+  _log.debug('Saving window bounds: ${bounds.pretty}');
 }
 
 class _ScreenRetrieverListener extends ScreenListener {
@@ -164,7 +169,7 @@ Future<Widget> initialize(List<String> argv) async {
     prefs.getDouble(_keyHeight) ?? WindowDefaults.bounds.height,
   );
 
-  _log.debug('Using saved window bounds (or defaults): $bounds');
+  _log.debug('Using saved window bounds (or defaults): ${bounds.pretty}');
 
   final windowReady = windowManager
       .waitUntilReadyToShow(
