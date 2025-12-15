@@ -147,7 +147,7 @@ class MoreItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final data = ref.watch(currentDeviceDataProvider).valueOrNull;
+    final data = ref.watch(currentDeviceDataProvider).value;
     return MenuAnchor(
       menuChildren: sections
           .map(
@@ -394,7 +394,7 @@ class NavigationContent extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final supportedSections = ref.watch(supportedSectionsProvider);
-    final data = ref.watch(currentDeviceDataProvider).valueOrNull;
+    final data = ref.watch(currentDeviceDataProvider).value;
 
     final availableSections = data != null
         ? supportedSections

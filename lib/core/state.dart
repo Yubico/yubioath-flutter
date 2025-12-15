@@ -18,6 +18,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../app/models.dart';
@@ -42,10 +43,7 @@ final prefProvider = Provider<SharedPreferences>((ref) {
   throw UnimplementedError();
 });
 
-abstract class ApplicationStateNotifier<T>
-    extends AutoDisposeFamilyAsyncNotifier<T, DevicePath> {
-  ApplicationStateNotifier() : super();
-
+abstract class ApplicationStateNotifier<T> extends AsyncNotifier<T> {
   @protected
   Future<void> updateState(Future<T> Function() guarded) async {
     state = await AsyncValue.guard(guarded);

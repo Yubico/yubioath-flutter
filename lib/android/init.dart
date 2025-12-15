@@ -63,21 +63,22 @@ Future<Widget> initialize({Level? level}) async {
     overrides: [
       prefProvider.overrideWithValue(await SharedPreferences.getInstance()),
       localeStatusProvider.overrideWithValue(await loadLocaleStatus()),
-      logLevelProvider.overrideWith((ref) => AndroidLogger()),
+      logLevelProvider.overrideWith(() => AndroidLogger()),
       attachedDevicesProvider.overrideWith(
         () => AndroidAttachedDevicesNotifier(),
       ),
       currentDeviceDataProvider.overrideWith(
         (ref) => ref.watch(androidDeviceDataProvider),
       ),
-      oathStateProvider.overrideWithProvider(androidOathStateProvider.call),
-      credentialListProvider.overrideWithProvider(
-        androidCredentialListProvider.call,
+      oathStateProvider.overrideWith(AndroidOathStateNotifier.new),
+      credentialListProvider.overrideWith(
+        (ref, devicePath) =>
+            AndroidCredentialListNotifier(ref.watch(withContextProvider), ref),
       ),
       currentSectionProvider.overrideWith(
         (ref) => androidCurrentSectionNotifier(ref),
       ),
-      managementStateProvider.overrideWithProvider(androidManagementState.call),
+      managementStateProvider.overrideWith(AndroidManagementStateNotifier.new),
       currentDeviceProvider.overrideWith(() => AndroidCurrentDeviceNotifier()),
       qrScannerProvider.overrideWith(
         androidQrScannerProvider(await getHasCamera()),
@@ -114,13 +115,13 @@ Future<Widget> initialize({Level? level}) async {
       defaultColorProvider.overrideWithValue(await getPrimaryColor()),
 
       // PIV
-      pivStateProvider.overrideWithProvider(androidPivState.call),
-      pivSlotsProvider.overrideWithProvider(androidPivSlots.call),
+      pivStateProvider.overrideWith(AndroidPivStateNotifier.new),
+      pivSlotsProvider.overrideWith(AndroidPivSlotsNotifier.new),
 
       // FIDO
-      fidoStateProvider.overrideWithProvider(androidFidoStateProvider.call),
-      fingerprintProvider.overrideWithProvider(androidFingerprintProvider.call),
-      credentialProvider.overrideWithProvider(androidCredentialProvider.call),
+      fidoStateProvider.overrideWith(AndroidFidoStateNotifier.new),
+      fingerprintProvider.overrideWith(AndroidFidoFingerprintsNotifier.new),
+      credentialProvider.overrideWith(AndroidFidoCredentialsNotifier.new),
     ],
     child: DismissKeyboard(
       child: YubicoAuthenticatorApp(

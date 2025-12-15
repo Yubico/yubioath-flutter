@@ -21,6 +21,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
@@ -40,7 +41,7 @@ final rpcProvider = FutureProvider<RpcSession>((ref) {
 });
 
 final rpcStateProvider = StateNotifierProvider<_RpcStateNotifier, RpcState>(
-  (ref) => _RpcStateNotifier(ref.watch(rpcProvider).valueOrNull),
+  (ref) => _RpcStateNotifier(ref.watch(rpcProvider).value),
 );
 
 class _RpcStateNotifier extends StateNotifier<RpcState> {

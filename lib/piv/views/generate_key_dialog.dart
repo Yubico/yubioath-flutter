@@ -92,7 +92,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
     final colorScheme = theme.colorScheme;
 
     final isFips =
-        ref.watch(currentDeviceDataProvider).valueOrNull?.info.isFips ?? false;
+        ref.watch(currentDeviceDataProvider).value?.info.isFips ?? false;
 
     final canSave =
         !_generating &&

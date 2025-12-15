@@ -58,13 +58,15 @@ extension LoggerExt on Logger {
       log(Levels.TRAFFIC, message, error, stackTrace);
 }
 
-final logLevelProvider = StateNotifierProvider<LogLevelNotifier, Level>(
-  (ref) => LogLevelNotifier(),
+final logLevelProvider = NotifierProvider<LogLevelNotifier, Level>(
+  LogLevelNotifier.new,
 );
 
-class LogLevelNotifier extends StateNotifier<Level> {
+class LogLevelNotifier extends Notifier<Level> {
   final List<String> _buffer = [];
-  LogLevelNotifier() : super(Logger.root.level) {
+
+  @override
+  Level build() {
     Logger.root.onRecord.listen((record) {
       _buffer.add(
         '${record.time.logFormat} [${record.loggerName}] ${record.level}: ${record.message}',
@@ -76,6 +78,8 @@ class LogLevelNotifier extends StateNotifier<Level> {
         _buffer.removeAt(0);
       }
     });
+
+    return Logger.root.level;
   }
 
   void setLogLevel(Level level) {

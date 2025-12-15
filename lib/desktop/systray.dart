@@ -39,7 +39,7 @@ final _log = Logger('systray');
 
 final _favoriteAccounts =
     Provider.autoDispose<(DevicePath?, List<OathCredential>)>((ref) {
-      final deviceData = ref.watch(currentDeviceDataProvider).valueOrNull;
+      final deviceData = ref.watch(currentDeviceDataProvider).value;
       if (deviceData != null) {
         final credentials = ref.watch(
           credentialListProvider(deviceData.node.path),

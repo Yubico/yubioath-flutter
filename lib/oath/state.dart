@@ -19,6 +19,7 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../app/models.dart';
@@ -101,10 +102,13 @@ class OathLayoutNotifier extends StateNotifier<OathLayout> {
 
 final oathStateProvider = AsyncNotifierProvider.autoDispose
     .family<OathStateNotifier, OathState, DevicePath>(
-      () => throw UnimplementedError(),
+      throw UnimplementedError(),
     );
 
 abstract class OathStateNotifier extends ApplicationStateNotifier<OathState> {
+  OathStateNotifier(this.devicePath);
+  final DevicePath devicePath;
+
   Future<void> reset();
 
   /// Unlocks the session and returns a record of `success`, `remembered`.

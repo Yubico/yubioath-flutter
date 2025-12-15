@@ -187,7 +187,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
     final showDefaultPukUsed =
         widget.target != ManageTarget.pin && _defaultPukUsed;
 
-    final deviceData = ref.read(currentDeviceDataProvider).valueOrNull;
+    final deviceData = ref.read(currentDeviceDataProvider).value;
     final hasPinComplexity = deviceData?.info.pinComplexity ?? false;
     final isBio = [
       FormFactor.usbABio,

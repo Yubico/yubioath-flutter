@@ -95,7 +95,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
     final newPinEnabled = !_isBlocked && currentPinLenOk;
     final confirmPinEnabled = !_isBlocked && currentPinLenOk && newPinLenOk;
 
-    final deviceData = ref.read(currentDeviceDataProvider).valueOrNull;
+    final deviceData = ref.read(currentDeviceDataProvider).value;
 
     final hasPinComplexity = deviceData?.info.pinComplexity ?? false;
     final pinRetries = ref.watch(

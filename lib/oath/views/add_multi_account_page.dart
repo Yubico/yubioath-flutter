@@ -146,7 +146,7 @@ class _OathAddMultiAccountPageState
                               onPressed: () async {
                                 final node = ref
                                     .read(currentDeviceDataProvider)
-                                    .valueOrNull
+                                    .value
                                     ?.node;
                                 final withContext = ref.read(
                                   withContextProvider,

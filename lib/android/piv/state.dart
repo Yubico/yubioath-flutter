@@ -36,16 +36,17 @@ final _log = Logger('android.piv.state');
 
 final androidPivState = AsyncNotifierProvider.autoDispose
     .family<PivStateNotifier, PivState, DevicePath>(
-      _AndroidPivStateNotifier.new,
+      AndroidPivStateNotifier.new,
     );
 
-class _AndroidPivStateNotifier extends PivStateNotifier {
+class AndroidPivStateNotifier extends PivStateNotifier {
+  AndroidPivStateNotifier(super.devicePath);
   final _events = const EventChannel('android.piv.state');
   late StreamSubscription _sub;
-  late _PivMethodChannelNotifier piv = ref.watch(_pivMethodsProvider.notifier);
+  late PivMethodChannelNotifier piv = ref.watch(_pivMethodsProvider.notifier);
 
   @override
-  FutureOr<PivState> build(DevicePath devicePath) async {
+  FutureOr<PivState> build() async {
     _sub = _events.receiveBroadcastStream().listen(
       (event) {
         final json = jsonDecode(event);
@@ -80,7 +81,7 @@ class _AndroidPivStateNotifier extends PivStateNotifier {
     );
 
     if (result['status']) {
-      final oldState = state.valueOrNull;
+      final oldState = state.value;
       if (oldState != null) {
         state = AsyncData(oldState.copyWith(authenticated: true));
       }
@@ -198,16 +199,17 @@ final _shownSlots = SlotId.values.map((slot) => slot.id).toList();
 
 final androidPivSlots = AsyncNotifierProvider.autoDispose
     .family<PivSlotsNotifier, List<PivSlot>, DevicePath>(
-      _AndroidPivSlotsNotifier.new,
+      AndroidPivSlotsNotifier.new,
     );
 
-class _AndroidPivSlotsNotifier extends PivSlotsNotifier {
+class AndroidPivSlotsNotifier extends PivSlotsNotifier {
+  AndroidPivSlotsNotifier(super.devicePath);
   final _events = const EventChannel('android.piv.slots');
   late StreamSubscription _sub;
-  late _PivMethodChannelNotifier piv = ref.watch(_pivMethodsProvider.notifier);
+  late PivMethodChannelNotifier piv = ref.watch(_pivMethodsProvider.notifier);
 
   @override
-  FutureOr<List<PivSlot>> build(DevicePath devicePath) async {
+  FutureOr<List<PivSlot>> build() async {
     _sub = _events.receiveBroadcastStream().listen(
       (event) {
         final json = jsonDecode(event);
@@ -410,11 +412,11 @@ class _AndroidPivSlotsNotifier extends PivSlotsNotifier {
   }
 }
 
-final _pivMethodsProvider = NotifierProvider<_PivMethodChannelNotifier, void>(
-  () => _PivMethodChannelNotifier(),
+final _pivMethodsProvider = NotifierProvider<PivMethodChannelNotifier, void>(
+  () => PivMethodChannelNotifier(),
 );
 
-class _PivMethodChannelNotifier extends MethodChannelNotifier {
-  _PivMethodChannelNotifier()
+class PivMethodChannelNotifier extends MethodChannelNotifier {
+  PivMethodChannelNotifier()
     : super(const MethodChannel('android.piv.methods'));
 }

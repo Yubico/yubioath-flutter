@@ -19,6 +19,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:logging/logging.dart';
 
 import '../../app/logging.dart';
@@ -97,12 +98,14 @@ final _sessionProvider = Provider.autoDispose
 
 final desktopFidoState = AsyncNotifierProvider.autoDispose
     .family<FidoStateNotifier, FidoState, DevicePath>(
-      _DesktopFidoStateNotifier.new,
+      DesktopFidoStateNotifier.new,
     );
 
-class _DesktopFidoStateNotifier extends FidoStateNotifier {
+class DesktopFidoStateNotifier extends FidoStateNotifier {
   late RpcNodeSession _session;
   late StateController<String?> _pinController;
+
+  DesktopFidoStateNotifier(super.devicePath);
 
   FutureOr<FidoState> _build(DevicePath devicePath) async {
     var result = await _session.command('get');
@@ -121,7 +124,7 @@ class _DesktopFidoStateNotifier extends FidoStateNotifier {
   }
 
   @override
-  FutureOr<FidoState> build(DevicePath devicePath) async {
+  FutureOr<FidoState> build() async {
     _session = ref.watch(_sessionProvider(devicePath));
     if (Platform.isWindows) {
       // Make sure to rebuild if isAdmin changes
@@ -132,7 +135,7 @@ class _DesktopFidoStateNotifier extends FidoStateNotifier {
       if (prev?.active == false && next.active) {
         // Refresh state on active
         final newState = await _build(devicePath);
-        if (state.valueOrNull != newState) {
+        if (state.value != newState) {
           state = AsyncValue.data(newState);
         }
       }
@@ -248,14 +251,16 @@ class _DesktopFidoStateNotifier extends FidoStateNotifier {
 
 final desktopFingerprintProvider = AsyncNotifierProvider.autoDispose
     .family<FidoFingerprintsNotifier, List<Fingerprint>, DevicePath>(
-      _DesktopFidoFingerprintsNotifier.new,
+      DesktopFidoFingerprintsNotifier.new,
     );
 
-class _DesktopFidoFingerprintsNotifier extends FidoFingerprintsNotifier {
+class DesktopFidoFingerprintsNotifier extends FidoFingerprintsNotifier {
   late RpcNodeSession _session;
 
+  DesktopFidoFingerprintsNotifier(super.devicePath);
+
   @override
-  FutureOr<List<Fingerprint>> build(DevicePath devicePath) async {
+  FutureOr<List<Fingerprint>> build() async {
     _session = ref.watch(_sessionProvider(devicePath));
     ref.watch(fidoStateProvider(devicePath));
 
@@ -264,7 +269,7 @@ class _DesktopFidoFingerprintsNotifier extends FidoFingerprintsNotifier {
       if (prev?.active == false && next.active) {
         // Refresh state on active
         final newState = await _build(devicePath);
-        if (state.valueOrNull != newState) {
+        if (state.value != newState) {
           state = AsyncValue.data(newState);
         }
       }
@@ -347,14 +352,16 @@ class _DesktopFidoFingerprintsNotifier extends FidoFingerprintsNotifier {
 
 final desktopCredentialProvider = AsyncNotifierProvider.autoDispose
     .family<FidoCredentialsNotifier, List<FidoCredential>, DevicePath>(
-      _DesktopFidoCredentialsNotifier.new,
+      DesktopFidoCredentialsNotifier.new,
     );
 
-class _DesktopFidoCredentialsNotifier extends FidoCredentialsNotifier {
+class DesktopFidoCredentialsNotifier extends FidoCredentialsNotifier {
   late RpcNodeSession _session;
 
+  DesktopFidoCredentialsNotifier(super.devicePath);
+
   @override
-  FutureOr<List<FidoCredential>> build(DevicePath devicePath) async {
+  FutureOr<List<FidoCredential>> build() async {
     _session = ref.watch(_sessionProvider(devicePath));
     ref.watch(fidoStateProvider(devicePath));
 
@@ -363,7 +370,7 @@ class _DesktopFidoCredentialsNotifier extends FidoCredentialsNotifier {
       if (prev?.active == false && next.active) {
         // Refresh state on active
         final newState = await _build(devicePath);
-        if (state.valueOrNull != newState) {
+        if (state.value != newState) {
           state = AsyncValue.data(newState);
         }
       }

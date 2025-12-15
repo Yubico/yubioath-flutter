@@ -38,15 +38,17 @@ final _sessionProvider = Provider.autoDispose
 
 final desktopOtpState = AsyncNotifierProvider.autoDispose
     .family<OtpStateNotifier, OtpState, DevicePath>(
-      _DesktopOtpStateNotifier.new,
+      DesktopOtpStateNotifier.new,
     );
 
-class _DesktopOtpStateNotifier extends OtpStateNotifier {
+class DesktopOtpStateNotifier extends OtpStateNotifier {
   late RpcNodeSession _session;
   List<String> _subpath = [];
 
+  DesktopOtpStateNotifier(super.devicePath);
+
   @override
-  FutureOr<OtpState> build(DevicePath devicePath) async {
+  FutureOr<OtpState> build() async {
     _session = ref.watch(_sessionProvider(devicePath));
     _session.setErrorHandler('state-reset', (_) async {
       ref.invalidate(_sessionProvider(devicePath));

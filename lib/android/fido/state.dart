@@ -20,6 +20,7 @@ import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:logging/logging.dart';
 
 import '../../app/logging.dart';
@@ -37,17 +38,21 @@ import '../overlay/nfc/method_channel_notifier.dart';
 final _log = Logger('android.fido.state');
 
 final androidFidoStateProvider = AsyncNotifierProvider.autoDispose
-    .family<FidoStateNotifier, FidoState, DevicePath>(_FidoStateNotifier.new);
+    .family<FidoStateNotifier, FidoState, DevicePath>(
+      AndroidFidoStateNotifier.new,
+    );
 
-class _FidoStateNotifier extends FidoStateNotifier {
+class AndroidFidoStateNotifier extends FidoStateNotifier {
+  AndroidFidoStateNotifier(super.devicePath);
+
   final _events = const EventChannel('android.fido.sessionState');
   late StreamSubscription _sub;
-  late final _FidoMethodChannelNotifier fido = ref.read(
+  late final FidoMethodChannelNotifier fido = ref.read(
     _fidoMethodsProvider.notifier,
   );
 
   @override
-  FutureOr<FidoState> build(DevicePath devicePath) async {
+  FutureOr<FidoState> build() async {
     _sub = _events.receiveBroadcastStream().listen(
       (event) {
         final json = jsonDecode(event);
@@ -207,18 +212,19 @@ class _FidoStateNotifier extends FidoStateNotifier {
 
 final androidFingerprintProvider = AsyncNotifierProvider.autoDispose
     .family<FidoFingerprintsNotifier, List<Fingerprint>, DevicePath>(
-      _FidoFingerprintsNotifier.new,
+      AndroidFidoFingerprintsNotifier.new,
     );
 
-class _FidoFingerprintsNotifier extends FidoFingerprintsNotifier {
+class AndroidFidoFingerprintsNotifier extends FidoFingerprintsNotifier {
+  AndroidFidoFingerprintsNotifier(super.devicePath);
   final _events = const EventChannel('android.fido.fingerprints');
   late StreamSubscription _sub;
-  late final _FidoMethodChannelNotifier fido = ref.read(
+  late final FidoMethodChannelNotifier fido = ref.read(
     _fidoMethodsProvider.notifier,
   );
 
   @override
-  FutureOr<List<Fingerprint>> build(DevicePath devicePath) async {
+  FutureOr<List<Fingerprint>> build() async {
     _sub = _events.receiveBroadcastStream().listen(
       (event) {
         final json = jsonDecode(event);
@@ -375,18 +381,19 @@ class _FidoFingerprintsNotifier extends FidoFingerprintsNotifier {
 
 final androidCredentialProvider = AsyncNotifierProvider.autoDispose
     .family<FidoCredentialsNotifier, List<FidoCredential>, DevicePath>(
-      _FidoCredentialsNotifier.new,
+      AndroidFidoCredentialsNotifier.new,
     );
 
-class _FidoCredentialsNotifier extends FidoCredentialsNotifier {
+class AndroidFidoCredentialsNotifier extends FidoCredentialsNotifier {
+  AndroidFidoCredentialsNotifier(super.devicePath);
   final _events = const EventChannel('android.fido.credentials');
   late StreamSubscription _sub;
-  late final _FidoMethodChannelNotifier fido = ref.read(
+  late final FidoMethodChannelNotifier fido = ref.read(
     _fidoMethodsProvider.notifier,
   );
 
   @override
-  FutureOr<List<FidoCredential>> build(DevicePath devicePath) async {
+  FutureOr<List<FidoCredential>> build() async {
     _sub = _events.receiveBroadcastStream().listen(
       (event) {
         final json = jsonDecode(event);
@@ -425,11 +432,11 @@ class _FidoCredentialsNotifier extends FidoCredentialsNotifier {
   }
 }
 
-final _fidoMethodsProvider = NotifierProvider<_FidoMethodChannelNotifier, void>(
-  () => _FidoMethodChannelNotifier(),
+final _fidoMethodsProvider = NotifierProvider<FidoMethodChannelNotifier, void>(
+  () => FidoMethodChannelNotifier(),
 );
 
-class _FidoMethodChannelNotifier extends MethodChannelNotifier {
-  _FidoMethodChannelNotifier()
+class FidoMethodChannelNotifier extends MethodChannelNotifier {
+  FidoMethodChannelNotifier()
     : super(const MethodChannel('android.fido.methods'));
 }

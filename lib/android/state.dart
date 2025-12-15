@@ -17,6 +17,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../app/models.dart';
@@ -72,7 +73,7 @@ final androidClipboardProvider = Provider<AppClipboard>(
 );
 
 class _AndroidClipboard extends AppClipboard {
-  final Ref<AppClipboard> _ref;
+  final Ref _ref;
 
   const _AndroidClipboard(this._ref);
 

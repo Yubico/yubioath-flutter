@@ -187,7 +187,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
     final hasActions = hasFeature(features.actions);
     final searchText = searchController.text;
     final deviceInfo = ref.watch(
-      currentDeviceDataProvider.select((s) => s.valueOrNull?.info),
+      currentDeviceDataProvider.select((s) => s.value?.info),
     );
     Future<void> onFileDropped(File file) async {
       final qrScanner = ref.read(qrScannerProvider);
