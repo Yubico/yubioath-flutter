@@ -12,7 +12,7 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
       with:
         sparse-checkout: .github/workflows/env
 
@@ -30,10 +30,10 @@ jobs:
         apt-get install -qq git
         git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
 
     - name: Install uv
-      uses: astral-sh/setup-uv@v6
+      uses: astral-sh/setup-uv@v7
       with:
         enable-cache: true
 
@@ -48,7 +48,7 @@ jobs:
 
     - name: Cache helper
       id: cache-helper
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: |
           build/linux/helper
@@ -111,7 +111,7 @@ jobs:
         tar -czf deploy/${BASENAME}.tar.gz -C build "${BASENAME}"
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: yubioath-desktop-linux
         path: deploy
