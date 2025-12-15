@@ -223,31 +223,31 @@ Future<Widget> initialize(List<String> argv) async {
         (ref) => desktopCurrentSectionNotifier(ref),
       ),
       // OATH
-      oathStateProvider.overrideWithProvider(desktopOathState.call),
-      credentialListProvider.overrideWithProvider(
-        desktopOathCredentialListProvider.call,
+      oathStateProvider.overrideWith2(DesktopOathStateNotifier.new),
+      credentialListProvider.overrideWith(
+        buildDesktopOathCredentialListProvider,
       ),
       qrScannerProvider.overrideWith(
         (ref) => ref.watch(desktopQrScannerProvider),
       ),
       // Management
-      managementStateProvider.overrideWithProvider(desktopManagementState.call),
+      managementStateProvider.overrideWith2(DesktopManagementStateNotifier.new),
       // FIDO
-      fidoStateProvider.overrideWithProvider(desktopFidoState.call),
-      fingerprintProvider.overrideWithProvider(desktopFingerprintProvider.call),
-      credentialProvider.overrideWithProvider(desktopCredentialProvider.call),
+      fidoStateProvider.overrideWith2(DesktopFidoStateNotifier.new),
+      fingerprintProvider.overrideWith2(DesktopFidoFingerprintsNotifier.new),
+      credentialProvider.overrideWith2(DesktopFidoCredentialsNotifier.new),
       // PIV
-      pivStateProvider.overrideWithProvider(desktopPivState.call),
-      pivSlotsProvider.overrideWithProvider(desktopPivSlots.call),
+      pivStateProvider.overrideWith2(DesktopPivStateNotifier.new),
+      pivSlotsProvider.overrideWith2(DesktopPivSlotsNotifier.new),
       // OTP
-      otpStateProvider.overrideWithProvider(desktopOtpState.call),
+      otpStateProvider.overrideWith2(DesktopOtpStateNotifier.new),
     ],
     child: YubicoAuthenticatorApp(
       page: Consumer(
         builder: ((context, ref, child) {
           // keep RPC log level in sync with app
           ref.listen<Level>(logLevelProvider, (_, level) {
-            ref.read(rpcProvider).valueOrNull?.setLogLevel(level);
+            ref.read(rpcProvider).value?.setLogLevel(level);
           });
 
           // Load feature flags, if they exist

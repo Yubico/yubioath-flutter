@@ -19,8 +19,8 @@ import 'dart:io';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -889,7 +889,7 @@ class CapabilityBadge extends ConsumerWidget {
     final (fipsCapable, fipsApproved) =
         ref
             .watch(currentDeviceDataProvider)
-            .valueOrNull
+            .value
             ?.info
             .getFipsStatus(capability) ??
         (false, false);

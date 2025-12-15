@@ -101,7 +101,7 @@ class _ConfigureYubiOtpDialogState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
 
-    final info = ref.watch(currentDeviceDataProvider).valueOrNull?.info;
+    final info = ref.watch(currentDeviceDataProvider).value?.info;
 
     final secret = _secretController.text;
     final secretLengthValid = secret.length == secretLength;

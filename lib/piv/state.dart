@@ -21,11 +21,12 @@ import '../core/state.dart';
 import 'models.dart';
 
 final pivStateProvider = AsyncNotifierProvider.autoDispose
-    .family<PivStateNotifier, PivState, DevicePath>(
-      () => throw UnimplementedError(),
-    );
+    .family<PivStateNotifier, PivState, DevicePath>(throw UnimplementedError());
 
 abstract class PivStateNotifier extends ApplicationStateNotifier<PivState> {
+  PivStateNotifier(this.devicePath);
+  final DevicePath devicePath;
+
   Future<void> reset();
 
   Future<bool> authenticate(String managementKey);
@@ -43,11 +44,13 @@ abstract class PivStateNotifier extends ApplicationStateNotifier<PivState> {
 
 final pivSlotsProvider = AsyncNotifierProvider.autoDispose
     .family<PivSlotsNotifier, List<PivSlot>, DevicePath>(
-      () => throw UnimplementedError(),
+      throw UnimplementedError(),
     );
 
-abstract class PivSlotsNotifier
-    extends AutoDisposeFamilyAsyncNotifier<List<PivSlot>, DevicePath> {
+abstract class PivSlotsNotifier extends AsyncNotifier<List<PivSlot>> {
+  PivSlotsNotifier(this.devicePath);
+  final DevicePath devicePath;
+
   Future<PivExamineResult> examine(
     SlotId slot,
     String data, {
