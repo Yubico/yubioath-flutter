@@ -22,7 +22,6 @@ import 'package:args/args.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:local_notifier/local_notifier.dart';
 import 'package:logging/logging.dart';
@@ -63,10 +62,6 @@ import 'window_manager_helper/window_manager_helper.dart';
 
 final _log = Logger('desktop.init');
 
-const String _keyLeft = 'DESKTOP_WINDOW_LEFT';
-const String _keyTop = 'DESKTOP_WINDOW_TOP';
-const String _keyWidth = 'DESKTOP_WINDOW_WIDTH';
-const String _keyHeight = 'DESKTOP_WINDOW_HEIGHT';
 const String _logLevel = 'log-level';
 const String _logFile = 'log-file';
 const String _hidden = 'hidden';
@@ -77,13 +72,17 @@ extension RectLogging on Rect {
       'Rect(left: $left, top: $top, width: $width, height: $height)';
 }
 
-void _saveWindowBounds(WindowManagerHelper helper) async {
-  final bounds = await helper.getBounds();
-  await helper.sharedPreferences.setDouble(_keyWidth, bounds.width);
-  await helper.sharedPreferences.setDouble(_keyHeight, bounds.height);
-  await helper.sharedPreferences.setDouble(_keyLeft, bounds.left);
-  await helper.sharedPreferences.setDouble(_keyTop, bounds.top);
-  _log.debug('Saving window bounds: ${bounds.pretty}');
+Timer? _saveWindowManagerPropertiesTimer;
+
+void _queueSaveWindowManagerProperties(
+  WindowManagerHelper helper, {
+  Duration delay = const Duration(milliseconds: 200),
+}) {
+  _saveWindowManagerPropertiesTimer?.cancel();
+  _saveWindowManagerPropertiesTimer = Timer(
+    delay,
+    () async => await helper.saveWindowManagerProperties(),
+  );
 }
 
 class _ScreenRetrieverListener extends ScreenListener {
@@ -94,7 +93,7 @@ class _ScreenRetrieverListener extends ScreenListener {
   @override
   void onScreenEvent(String eventName) async {
     _log.debug('Screen event: $eventName');
-    _saveWindowBounds(_helper);
+    _queueSaveWindowManagerProperties(_helper);
   }
 }
 
@@ -106,13 +105,13 @@ class _WindowEventListener extends WindowListener {
   @override
   void onWindowResize() async {
     _log.debug('Window event: onWindowResize');
-    _saveWindowBounds(_helper);
+    _queueSaveWindowManagerProperties(_helper);
   }
 
   @override
   void onWindowMoved() async {
     _log.debug('Window event: onWindowMoved');
-    _saveWindowBounds(_helper);
+    _queueSaveWindowManagerProperties(_helper);
   }
 
   @override
@@ -162,21 +161,12 @@ Future<Widget> initialize(List<String> argv) async {
 
   _log.info('Window hidden on startup: $isHidden');
 
-  final bounds = Rect.fromLTWH(
-    prefs.getDouble(_keyLeft) ?? WindowDefaults.bounds.left,
-    prefs.getDouble(_keyTop) ?? WindowDefaults.bounds.top,
-    prefs.getDouble(_keyWidth) ?? WindowDefaults.bounds.width,
-    prefs.getDouble(_keyHeight) ?? WindowDefaults.bounds.height,
-  );
-
-  _log.debug('Using saved window bounds (or defaults): ${bounds.pretty}');
-
   final windowReady = windowManager
       .waitUntilReadyToShow(
         const WindowOptions(minimumSize: WindowDefaults.minSize),
       )
       .then((_) async {
-        await windowManagerHelper.setBounds(bounds);
+        await windowManagerHelper.restoreWindowManagerProperties();
 
         if (isHidden) {
           await windowManager.setSkipTaskbar(true);
@@ -351,9 +341,17 @@ void _initLogging(ArgResults args) {
         (level) => level.name == levelName.toUpperCase(),
       );
       Logger.root.level = level;
-      _log.info('Log level initialized from command line argument');
+      _log.info(
+        'Log level ${level.name} initialized from command line argument',
+      );
     } catch (error) {
       _log.error('Failed to set log level', error);
+    }
+  }
+
+  if (path != null) {
+    if (file != null) {
+      _log.info('Logging to ${file.absolute}');
     }
   }
 

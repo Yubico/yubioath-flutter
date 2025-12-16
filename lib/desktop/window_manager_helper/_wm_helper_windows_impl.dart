@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Yubico.
+ * Copyright (C) 2023-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,6 +55,45 @@ class WindowManagerHelperWindows {
         displayRect.contains(rect.topCenter.translate(0.0, 48.0));
   }
 
+  static Future<void> saveWindowManagerProperties(
+    SharedPreferences prefs,
+  ) async {
+    final primaryDisplay = await screenRetriever.getPrimaryDisplay();
+    final primaryScaleFactor = primaryDisplay.scaleFactor?.toDouble() ?? 1.0;
+    await prefs.setDouble(_keyPrimaryScaleFactor, primaryScaleFactor);
+    final allDisplaysValue = await _getAllDisplays();
+    await prefs.setString(_keyAllDisplaysValue, allDisplaysValue);
+  }
+
+  static Future<void> restoreWindowManagerProperties(
+    SharedPreferences prefs,
+    Rect bounds,
+  ) async {
+    await windowManager.setMinimumSize(WindowDefaults.minSize);
+
+    final primaryDisplay = await screenRetriever.getPrimaryDisplay();
+    final primaryScaleFactor = primaryDisplay.scaleFactor?.toDouble() ?? 1.0;
+    final savedScaleFactor = prefs.getDouble(_keyPrimaryScaleFactor);
+    final hasSavedScaleFactor = savedScaleFactor != null;
+
+    var height = hasSavedScaleFactor
+        ? bounds.height / savedScaleFactor * primaryScaleFactor
+        : bounds.height;
+    var width = hasSavedScaleFactor
+        ? bounds.width / savedScaleFactor * primaryScaleFactor
+        : bounds.width;
+
+    final savedBounds = Rect.fromLTWH(bounds.left, bounds.top, width, height);
+
+    final configChanged = await _displayConfigurationChanged(prefs);
+    final windowRect =
+        !configChanged || _displayContainsBounds(primaryDisplay, savedBounds)
+        ? savedBounds
+        : WindowDefaults.bounds;
+
+    await windowManager.setBounds(windowRect);
+  }
+
   static Future<void> setBounds(SharedPreferences prefs, Rect bounds) async {
     await windowManager.setMinimumSize(WindowDefaults.minSize);
 
@@ -81,7 +120,7 @@ class WindowManagerHelperWindows {
     await windowManager.setBounds(windowRect);
   }
 
-  static Future<Rect> getBounds(SharedPreferences prefs) async {
+  static Future<Rect> getBounds() async {
     final primaryDisplay = await screenRetriever.getPrimaryDisplay();
     final primaryScaleFactor = primaryDisplay.scaleFactor?.toDouble() ?? 1.0;
     final windowPixelRatio =
@@ -95,12 +134,6 @@ class WindowManagerHelperWindows {
       rect.width,
       rect.height,
     );
-
-    await prefs.setDouble(_keyPrimaryScaleFactor, primaryScaleFactor);
-
-    final allDisplaysValue = await _getAllDisplays();
-    await prefs.setString(_keyAllDisplaysValue, allDisplaysValue);
-
     return windowRect;
   }
 }
