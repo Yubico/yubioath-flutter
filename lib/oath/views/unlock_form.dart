@@ -93,7 +93,7 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
         Padding(
           padding: const EdgeInsets.only(left: 18.0, right: 18),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             children: [
               Text(l10n.l_enter_oath_pw),
               Padding(
@@ -144,17 +144,17 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
               Padding(
                 padding: const EdgeInsets.only(left: 40),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment: .stretch,
                   children: [
                     Wrap(
-                      alignment: WrapAlignment.spaceBetween,
-                      crossAxisAlignment: WrapCrossAlignment.center,
+                      alignment: .spaceBetween,
+                      crossAxisAlignment: .center,
                       spacing: 4.0,
                       runSpacing: 8.0,
                       children: [
                         keystoreFailed
                             ? Wrap(
-                                crossAxisAlignment: WrapCrossAlignment.center,
+                                crossAxisAlignment: .center,
                                 spacing: 4.0,
                                 runSpacing: 8.0,
                                 children: [

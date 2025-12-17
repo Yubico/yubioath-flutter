@@ -84,7 +84,7 @@ class DeleteSlotDialog extends ConsumerWidget {
         l10n.p_warning_delete_slot_configuration(otpSlot.slot.numberId),
         style: Theme.of(
           context,
-        ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+        ).textTheme.bodyMedium?.copyWith(fontWeight: .w700),
       ),
     );
   }

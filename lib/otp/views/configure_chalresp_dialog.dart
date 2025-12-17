@@ -148,7 +148,7 @@ class _ConfigureChalrespDialogState
       builder: (context, _) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children:
               [
                     AppTextField(
@@ -193,7 +193,7 @@ class _ConfigureChalrespDialogState
                           tooltip: l10n.s_generate_random,
                         ),
                       ),
-                      textInputAction: TextInputAction.next,
+                      textInputAction: .next,
                       onChanged: (value) {
                         setState(() {
                           _validateSecret = false;
@@ -208,7 +208,7 @@ class _ConfigureChalrespDialogState
                       },
                     ).init(),
                     Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: .start,
                       children: [
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4.0),

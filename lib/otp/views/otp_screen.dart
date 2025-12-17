@@ -105,7 +105,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                   capabilities: const [Capability.otp],
                   detailViewBuilder: selected != null
                       ? (context) => Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          crossAxisAlignment: .stretch,
                           children: [
                             ListTitle(l10n.s_details),
                             Padding(
@@ -127,7 +127,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                                           context,
                                         ).textTheme.headlineSmall,
                                         softWrap: true,
-                                        textAlign: TextAlign.center,
+                                        textAlign: .center,
                                       ),
                                       const SizedBox(height: 8),
                                       const Icon(

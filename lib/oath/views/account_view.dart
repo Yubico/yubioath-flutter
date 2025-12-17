@@ -89,7 +89,7 @@ class _AccountViewState extends ConsumerState<AccountView> {
       backgroundColor: _iconColor(400),
       child: Text(
         (credential.issuer ?? credential.name).characters.first.toUpperCase(),
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
+        style: const TextStyle(fontSize: 16, fontWeight: .w300),
       ),
     );
 
@@ -153,7 +153,7 @@ class _AccountViewState extends ConsumerState<AccountView> {
                 title: Column(
                   children: [
                     Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: .start,
                       children: [
                         AccountIcon(
                           issuer: credential.issuer,
@@ -162,7 +162,7 @@ class _AccountViewState extends ConsumerState<AccountView> {
                         const SizedBox(width: 12),
                         Flexible(
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment: .start,
                             children: [
                               Text(
                                 helper.title,
@@ -172,7 +172,7 @@ class _AccountViewState extends ConsumerState<AccountView> {
                                         context,
                                       ).colorScheme.onSurface,
                                     ),
-                                overflow: TextOverflow.fade,
+                                overflow: .fade,
                                 maxLines: 1,
                                 softWrap: false,
                               ),
@@ -185,7 +185,7 @@ class _AccountViewState extends ConsumerState<AccountView> {
                                           context,
                                         ).colorScheme.onSurfaceVariant,
                                       ),
-                                  overflow: TextOverflow.fade,
+                                  overflow: .fade,
                                   maxLines: 1,
                                   softWrap: false,
                                 ),
@@ -199,7 +199,7 @@ class _AccountViewState extends ConsumerState<AccountView> {
                       skipTraversal: true,
                       descendantsAreTraversable: false,
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                        mainAxisAlignment: .end,
                         children: [
                           helper.code != null
                               ? FilledButton.tonalIcon(

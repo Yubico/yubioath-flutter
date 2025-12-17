@@ -148,7 +148,7 @@ class _AppPageState extends ConsumerState<AppPage> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      behavior: HitTestBehavior.deferToChild,
+      behavior: .deferToChild,
       onTap: () {
         // If tap is not absorbed downstream, treat it as dead space
         // and invoke escape intent
@@ -181,16 +181,14 @@ class _AppPageState extends ConsumerState<AppPage> {
   }
 
   Widget _buildLogo(BuildContext context) {
-    final color = Theme.of(context).brightness == Brightness.dark
-        ? 'white'
-        : 'green';
+    final color = Theme.of(context).brightness == .dark ? 'white' : 'green';
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 18.0),
       child: Image.asset(
         'assets/graphics/yubico-$color.png',
         alignment: Alignment.centerLeft,
         height: 28,
-        filterQuality: FilterQuality.medium,
+        filterQuality: .medium,
       ),
     );
   }
@@ -207,7 +205,7 @@ class _AppPageState extends ConsumerState<AppPage> {
             ),
             Expanded(
               child: Material(
-                type: MaterialType.transparency,
+                type: .transparency,
                 child: NavigationContent(
                   key: _navExpandedKey,
                   extended: true,
@@ -298,7 +296,7 @@ class _AppPageState extends ConsumerState<AppPage> {
         );
 
         return Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: .spaceBetween,
           children: [
             Flexible(
               child: Text(
@@ -313,7 +311,7 @@ class _AppPageState extends ConsumerState<AppPage> {
                           context,
                         ).colorScheme.primary.withValues(alpha: 0.9),
                 ),
-                overflow: TextOverflow.ellipsis,
+                overflow: .ellipsis,
               ),
             ),
             if (widget.capabilities != null && widget.alternativeTitle == null)
@@ -338,7 +336,7 @@ class _AppPageState extends ConsumerState<AppPage> {
       ), // Same style as title
       maxLines: 1,
       textScaler: MediaQuery.textScalerOf(context),
-      textDirection: TextDirection.ltr,
+      textDirection: .ltr,
     )..layout()).size;
     return size.height;
   }
@@ -403,10 +401,8 @@ class _AppPageState extends ConsumerState<AppPage> {
         ) ??
         [];
     final content = Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: widget.centered
-          ? CrossAxisAlignment.center
-          : CrossAxisAlignment.start,
+      mainAxisSize: .min,
+      crossAxisAlignment: widget.centered ? .center : .start,
       children: [
         widget.builder(context, expanded && showExpandedSideMenuBar),
         if (actions.isNotEmpty)
@@ -656,7 +652,7 @@ class _AppPageState extends ConsumerState<AppPage> {
         child: FocusTraversalGroup(
           policy: OrderedTraversalPolicy(),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: .stretch,
             children: [
               if (hasRail && (!fullyExpanded || !showExpandedNavigationBar))
                 FocusTraversalOrder(
@@ -683,7 +679,7 @@ class _AppPageState extends ConsumerState<AppPage> {
                       controller: _navController,
                       targetKey: _navExpandedKey,
                       child: Material(
-                        type: MaterialType.transparency,
+                        type: .transparency,
                         child: NavigationContent(
                           key: _navExpandedKey,
                           shouldPop: false,
@@ -785,7 +781,7 @@ class _AppPageState extends ConsumerState<AppPage> {
             centerTitle: true,
             leading: hasRail
                 ? Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisAlignment: .spaceAround,
                     children: [
                       Expanded(
                         child: Padding(

@@ -135,11 +135,11 @@ class LogWarningOverlay extends StatelessWidget {
                 child: IgnorePointer(
                   child: Text(
                     'WARNING: $message!',
-                    textDirection: TextDirection.ltr,
-                    textAlign: TextAlign.center,
+                    textDirection: .ltr,
+                    textAlign: .center,
                     style: const TextStyle(
                       color: Colors.red,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: .bold,
                       height: 1.5,
                       fontSize: 16,
                     ),

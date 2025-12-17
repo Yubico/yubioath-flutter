@@ -72,7 +72,7 @@ class SlotDialog extends ConsumerWidget {
                         otpSlot.slot.getDisplayName(l10n),
                         style: textTheme.headlineSmall,
                         softWrap: true,
-                        textAlign: TextAlign.center,
+                        textAlign: .center,
                       ),
                       const SizedBox(height: 8),
                       Icon(

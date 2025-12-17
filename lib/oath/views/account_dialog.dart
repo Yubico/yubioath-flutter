@@ -127,8 +127,8 @@ class AccountDialog extends ConsumerWidget {
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisSize: .min,
+                            crossAxisAlignment: .center,
                             children: [
                               IconTheme(
                                 data: IconTheme.of(context).copyWith(size: 24),

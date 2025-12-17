@@ -28,7 +28,7 @@ class TooltipIfTruncated extends StatelessWidget {
     required this.style,
     this.tooltip,
     this.maxLines = 1,
-    this.overflow = TextOverflow.fade,
+    this.overflow = .fade,
   });
 
   @override
@@ -37,7 +37,7 @@ class TooltipIfTruncated extends StatelessWidget {
       builder: (context, constraints) {
         final textWidget = Text(
           text,
-          textAlign: TextAlign.left,
+          textAlign: .left,
           overflow: overflow,
           maxLines: maxLines,
           softWrap: maxLines != 1,
@@ -45,7 +45,7 @@ class TooltipIfTruncated extends StatelessWidget {
         );
         final TextPainter textPainter = TextPainter(
           text: TextSpan(text: text, style: style),
-          textDirection: TextDirection.ltr,
+          textDirection: .ltr,
           maxLines: maxLines,
         )..layout(minWidth: 0, maxWidth: constraints.maxWidth);
         return textPainter.didExceedMaxLines

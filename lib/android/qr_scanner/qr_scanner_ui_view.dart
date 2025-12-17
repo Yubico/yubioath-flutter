@@ -39,13 +39,13 @@ class QRScannerUI extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
 
     return Stack(
-      fit: StackFit.expand,
+      fit: .expand,
       children: [
         SafeArea(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: .center,
+            crossAxisAlignment: .stretch,
+            mainAxisSize: .max,
             children: [
               Expanded(
                 child: Padding(
@@ -69,7 +69,7 @@ class QRScannerUI extends StatelessWidget {
                       ? l10n.l_point_camera_scan
                       : l10n.l_invalid_qr,
                   style: const TextStyle(color: Colors.white),
-                  textAlign: TextAlign.center,
+                  textAlign: .center,
                 ),
               ),
               const SizedBox(height: 16),
@@ -77,7 +77,7 @@ class QRScannerUI extends StatelessWidget {
                 children: [
                   SmallWhiteText(l10n.q_no_qr),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: .center,
                     children: [
                       OutlinedButton(
                         onPressed: () {

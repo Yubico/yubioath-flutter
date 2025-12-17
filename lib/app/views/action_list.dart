@@ -78,7 +78,7 @@ class ActionListItem extends StatelessWidget {
                   fontSize: theme.textTheme.bodyMedium!.fontSize,
                 ),
                 maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+                overflow: .ellipsis,
               )
             : null,
         leading: Opacity(

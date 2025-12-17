@@ -46,7 +46,7 @@ class _OverwriteConfirmDialog extends StatelessWidget {
         l10n.p_overwrite_slot_desc(otpSlot.slot.getDisplayName(l10n)),
         style: Theme.of(
           context,
-        ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+        ).textTheme.bodyMedium?.copyWith(fontWeight: .w700),
       ),
     );
   }

@@ -105,7 +105,7 @@ void Function() showToast(
 }) {
   final theme = Theme.of(context);
   final colorScheme = theme.colorScheme;
-  final bool isThemeDark = theme.brightness == Brightness.dark;
+  final bool isThemeDark = theme.brightness == .dark;
   final Color backgroundColor = isThemeDark
       ? colorScheme.onSurface
       : Color.alphaBlend(
@@ -114,7 +114,7 @@ void Function() showToast(
         );
 
   final textStyle = ThemeData(
-    brightness: isThemeDark ? Brightness.light : Brightness.dark,
+    brightness: isThemeDark ? .light : .dark,
   ).textTheme.titleMedium;
 
   OverlayEntry? entry;
@@ -154,11 +154,7 @@ void Function() showToast(
     Overlay.of(context).insert(entry!);
   });
 
-  SemanticsService.sendAnnouncement(
-    View.of(context),
-    message,
-    TextDirection.ltr,
-  );
+  SemanticsService.sendAnnouncement(View.of(context), message, .ltr);
 
   return close;
 }

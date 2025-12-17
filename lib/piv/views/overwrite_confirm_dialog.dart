@@ -47,13 +47,13 @@ class _OverwriteConfirmDialog extends StatelessWidget {
         ),
       ],
       content: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           Text(
             l10n.p_overwrite_slot_desc(slot.getDisplayName(l10n)),
             style: Theme.of(
               context,
-            ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+            ).textTheme.bodyMedium?.copyWith(fontWeight: .w600),
           ),
           const SizedBox(height: 12),
           if (certificate) Text(l10n.l_bullet(l10n.l_overwrite_cert)),

@@ -83,8 +83,8 @@ class _UserInteractionDialogState extends State<_UserInteractionDialog> {
       content: SizedBox(
         width: 100,
         child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: .min,
+          mainAxisAlignment: .center,
           children: [
             if (icon != null)
               Padding(
@@ -97,11 +97,11 @@ class _UserInteractionDialogState extends State<_UserInteractionDialog> {
             Text(
               widget.controller.title,
               style: theme.textTheme.titleLarge,
-              textAlign: TextAlign.center,
+              textAlign: .center,
             ),
             Text(
               widget.controller.description,
-              textAlign: TextAlign.center,
+              textAlign: .center,
               style: theme.textTheme.bodyMedium!.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
@@ -166,11 +166,7 @@ UserInteractionController _dialogUserInteraction(
   void Function()? onCancel,
 }) {
   String a11yLabel = '$title $description';
-  SemanticsService.sendAnnouncement(
-    View.of(context),
-    a11yLabel,
-    TextDirection.ltr,
-  );
+  SemanticsService.sendAnnouncement(View.of(context), a11yLabel, .ltr);
   var completed = false;
   var wasPopped = false;
   final controller = _UserInteractionController(

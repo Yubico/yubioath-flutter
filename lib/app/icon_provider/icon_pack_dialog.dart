@@ -74,7 +74,7 @@ class IconPackDialog extends ConsumerWidget {
         builder: (context, fullScreen) => Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             children:
                 [
                       Text(
@@ -154,12 +154,12 @@ class _IconPackDescription extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     return Row(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: .max,
+      mainAxisAlignment: .spaceBetween,
+      crossAxisAlignment: .center,
       children: [
         Flexible(
-          fit: FlexFit.loose,
+          fit: .loose,
           child: RichText(
             textScaler: MediaQuery.textScalerOf(context),
             text: TextSpan(

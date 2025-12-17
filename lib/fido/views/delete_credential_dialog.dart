@@ -64,11 +64,11 @@ class _DeleteCredentialDialogState
           : Icon(Symbols.delete),
       title: Text(l10n.q_delete_passkey),
       content: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           Text(
             l10n.p_warning_delete_passkey,
-            style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+            style: textTheme.bodyMedium?.copyWith(fontWeight: .w700),
           ),
           const SizedBox(height: 8.0),
           Text(l10n.p_warning_delete_passkey_desc),

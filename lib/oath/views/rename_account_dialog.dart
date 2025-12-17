@@ -196,7 +196,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
       builder: (context, _) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children:
               [
                     Text(l10n.p_rename_will_change_account_displayed),
@@ -217,7 +217,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
                             : l10n.l_invalid_character_issuer,
                         icon: const Icon(Symbols.business),
                       ),
-                      textInputAction: TextInputAction.next,
+                      textInputAction: .next,
                       focusNode: _issuerFocus,
                       autofocus: true,
                       onChanged: (value) {
@@ -242,7 +242,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
                             : null,
                         icon: const Icon(Symbols.people_alt),
                       ),
-                      textInputAction: TextInputAction.done,
+                      textInputAction: .done,
                       focusNode: _nameFocus,
                       onChanged: (value) {
                         setState(() {});
