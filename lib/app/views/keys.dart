@@ -20,6 +20,7 @@ import '../../android/models.dart';
 
 // global keys
 final scaffoldGlobalKey = GlobalKey<ScaffoldState>();
+final layoutGlobalKey = GlobalKey();
 final headerSliverGlobalKey = GlobalKey();
 // This is global so we can access it from the global Ctrl+F shortcut.
 final searchField = GlobalKey();

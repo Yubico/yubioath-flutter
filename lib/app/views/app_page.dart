@@ -155,6 +155,7 @@ class _AppPageState extends ConsumerState<AppPage> {
         Actions.invoke(context, EscapeIntent());
       },
       child: LayoutBuilder(
+        key: layoutGlobalKey,
         builder: (context, constraints) {
           final width = constraints.maxWidth;
           if (width < 400 ||
