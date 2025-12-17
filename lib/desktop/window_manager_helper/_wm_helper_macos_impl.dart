@@ -156,10 +156,7 @@ class WindowManagerHelperMacOs {
             windowOffset.dx - d.visiblePosition!.dx,
             windowOffset.dy - d.visiblePosition!.dy,
           );
-          return (
-            displayName: d.name ?? 'Unknown name',
-            localOffset: localOffset,
-          );
+          return (displayName: d.name!, localOffset: localOffset);
         }
       }
     }

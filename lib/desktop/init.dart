@@ -67,11 +67,6 @@ const String _logFile = 'log-file';
 const String _hidden = 'hidden';
 const String _shown = 'shown';
 
-extension RectLogging on Rect {
-  String get pretty =>
-      'Rect(left: $left, top: $top, width: $width, height: $height)';
-}
-
 Timer? _saveWindowManagerPropertiesTimer;
 
 void _queueSaveWindowManagerProperties(
@@ -349,10 +344,8 @@ void _initLogging(ArgResults args) {
     }
   }
 
-  if (path != null) {
-    if (file != null) {
-      _log.info('Logging to ${file.absolute}');
-    }
+  if (file != null) {
+    _log.info('Logging to ${file.absolute}');
   }
 
   _log.info('Logging initialized, outputting to stderr');
