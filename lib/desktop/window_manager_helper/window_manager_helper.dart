@@ -50,10 +50,7 @@ class WindowManagerHelper {
   /// Persist the current window state to preferences
   Future<void> saveWindowManagerProperties() async {
     final bounds = _clampBounds(await getBounds());
-    await sharedPreferences.setDouble(_keyWidth, bounds.width);
-    await sharedPreferences.setDouble(_keyHeight, bounds.height);
-    await sharedPreferences.setDouble(_keyLeft, bounds.left);
-    await sharedPreferences.setDouble(_keyTop, bounds.top);
+    await writeBounds(bounds);
 
     if (Platform.isMacOS) {
       await WindowManagerHelperMacOs.saveWindowManagerProperties(
@@ -65,19 +62,25 @@ class WindowManagerHelper {
       );
     }
 
-    _log.debug('Window manager properties saved: ${bounds.pretty}');
+    _log.debug('Window manager properties saved.');
   }
 
   /// Load and apply the saved window state from preferences
   Future<void> restoreWindowManagerProperties() async {
-    final bounds = _clampBounds(
-      Rect.fromLTWH(
-        sharedPreferences.getDouble(_keyLeft) ?? WindowDefaults.bounds.left,
-        sharedPreferences.getDouble(_keyTop) ?? WindowDefaults.bounds.top,
-        sharedPreferences.getDouble(_keyWidth) ?? WindowDefaults.bounds.width,
-        sharedPreferences.getDouble(_keyHeight) ?? WindowDefaults.bounds.height,
-      ),
+    final savedBounds = Rect.fromLTWH(
+      sharedPreferences.getDouble(_keyLeft) ?? WindowDefaults.bounds.left,
+      sharedPreferences.getDouble(_keyTop) ?? WindowDefaults.bounds.top,
+      sharedPreferences.getDouble(_keyWidth) ?? WindowDefaults.bounds.width,
+      sharedPreferences.getDouble(_keyHeight) ?? WindowDefaults.bounds.height,
     );
+    final bounds = _clampBounds(savedBounds);
+
+    if (bounds != savedBounds) {
+      _log.warning(
+        'Preference value for window bounds was invalid, overwriting with fixed value',
+      );
+      await writeBounds(bounds);
+    }
 
     _log.debug('Using saved window bounds (or defaults): ${bounds.pretty}');
 
@@ -119,6 +122,17 @@ class WindowManagerHelper {
       await WindowManagerHelperWindows.setBounds(sharedPreferences, rect);
     } else {
       await windowManager.setSize(rect.size);
+    }
+  }
+
+  Future<void> writeBounds(Rect bounds) async {
+    if (await sharedPreferences.setDouble(_keyWidth, bounds.width) &&
+        await sharedPreferences.setDouble(_keyHeight, bounds.height) &&
+        await sharedPreferences.setDouble(_keyLeft, bounds.left) &&
+        await sharedPreferences.setDouble(_keyTop, bounds.top) != true) {
+      _log.warning('Failed to write bounds');
+    } else {
+      _log.debug('Wrote window bounds: ${bounds.pretty}');
     }
   }
 
