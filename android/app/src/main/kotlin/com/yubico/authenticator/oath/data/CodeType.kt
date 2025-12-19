@@ -24,20 +24,18 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
-
 @Serializable(with = OathTypeSerializer::class)
 enum class CodeType(val value: Byte) {
     TOTP(0x20),
-    HOTP(0x10);
+    HOTP(0x10)
 }
 
 object OathTypeSerializer : KSerializer<CodeType> {
-    override fun deserialize(decoder: Decoder): CodeType =
-        when (decoder.decodeByte()) {
-            CodeType.HOTP.value -> CodeType.HOTP
-            CodeType.TOTP.value -> CodeType.TOTP
-            else -> throw IllegalArgumentException()
-        }
+    override fun deserialize(decoder: Decoder): CodeType = when (decoder.decodeByte()) {
+        CodeType.HOTP.value -> CodeType.HOTP
+        CodeType.TOTP.value -> CodeType.TOTP
+        else -> throw IllegalArgumentException()
+    }
 
     override val descriptor: SerialDescriptor =
         PrimitiveSerialDescriptor("OathType", PrimitiveKind.BYTE)
@@ -45,5 +43,4 @@ object OathTypeSerializer : KSerializer<CodeType> {
     override fun serialize(encoder: Encoder, value: CodeType) {
         encoder.encodeByte(value = value.value)
     }
-
 }

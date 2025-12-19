@@ -19,7 +19,6 @@ package com.yubico.authenticator
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
-
 import org.slf4j.LoggerFactory
 
 class AppPreferences(context: Context) {

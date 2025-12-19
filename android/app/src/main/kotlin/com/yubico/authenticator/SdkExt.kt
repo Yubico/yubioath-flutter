@@ -25,7 +25,8 @@ inline fun <reified T : Parcelable> Intent.parcelableExtra(name: String): T? =
     compatUtil.from(Build.VERSION_CODES.TIRAMISU) {
         CompatHelper.getParcelableExtraT(this, name, T::class.java)
     }.otherwise(
-        @Suppress("deprecation") getParcelableExtra(name) as? T
+        @Suppress("deprecation")
+        getParcelableExtra(name) as? T
     )
 
 inline fun <reified T : Parcelable> Intent.parcelableArrayExtra(name: String): Array<out T>? =

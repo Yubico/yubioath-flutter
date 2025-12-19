@@ -22,7 +22,9 @@ import com.yubico.authenticator.device.Version
 import com.yubico.yubikit.android.transport.nfc.NfcYubiKeyDevice
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.UsbPid
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertThrows
 import org.junit.Test
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
@@ -61,7 +63,6 @@ class SkyHelperTest {
 
     @Test
     fun `handles NEO_FIDO versions`() {
-
         val skyHelper = SkyHelper(CompatUtil(23))
 
         val ykDevice = getUsbYubiKeyDeviceMock().also {
@@ -98,7 +99,6 @@ class SkyHelperTest {
 
     @Test
     fun `handles SKY_FIDO versions`() {
-
         val skyHelper = SkyHelper(CompatUtil(23))
 
         val ykDevice = getUsbYubiKeyDeviceMock().also {
@@ -130,12 +130,10 @@ class SkyHelperTest {
         skyHelper.getDeviceInfo(ykDevice).also {
             assertEquals(VERSION_0, it.version)
         }
-
     }
 
     @Test
     fun `handles YK4_FIDO versions`() {
-
         val skyHelper = SkyHelper(CompatUtil(23))
 
         val ykDevice = getUsbYubiKeyDeviceMock().also {
@@ -158,9 +156,9 @@ class SkyHelperTest {
             assertEquals(VERSION_0, it.version)
         }
     }
+
     @Test
     fun `returns VERSION_0 for older APIs`() {
-
         // below API 23, there is no UsbDevice.version
         // therefore we expect deviceInfo to have VERSION_0
         // for every FIDO key
@@ -193,6 +191,7 @@ class SkyHelperTest {
             assertEquals(VERSION_0, it.version)
         }
     }
+
     @Test
     fun `returns VERSION_0 for invalid input`() {
         val skyHelper = SkyHelper(CompatUtil(33))
@@ -230,7 +229,6 @@ class SkyHelperTest {
         skyHelper.getDeviceInfo(ykDevice).also {
             assertEquals(VERSION_0, it.version)
         }
-
     }
 
     @Test
@@ -257,5 +255,4 @@ class SkyHelperTest {
 
         private val VERSION_0 = Version(0, 0, 0)
     }
-
 }

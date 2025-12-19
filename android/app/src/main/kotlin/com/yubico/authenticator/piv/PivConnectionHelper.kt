@@ -27,18 +27,16 @@ import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.smartcard.SmartCardConnection
 import com.yubico.yubikit.core.util.Result
 import com.yubico.yubikit.support.DeviceUtil
-import org.slf4j.LoggerFactory
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.coroutines.suspendCoroutine
+import org.slf4j.LoggerFactory
 
 typealias YubiKitPivSession = com.yubico.yubikit.piv.PivSession
 
 class PivConnectionHelper(private val deviceManager: DeviceManager) {
     private var pendingAction: PivAction? = null
 
-    fun hasPending(): Boolean {
-        return pendingAction != null
-    }
+    fun hasPending(): Boolean = pendingAction != null
 
     fun invokePending(piv: SmartCardConnection): Boolean {
         var requestHandled = true
@@ -58,7 +56,7 @@ class PivConnectionHelper(private val deviceManager: DeviceManager) {
         }
     }
 
-    suspend fun <T: Any> useSmartCardConnection(
+    suspend fun <T : Any> useSmartCardConnection(
         onComplete: ((SmartCardConnection) -> Unit)? = null,
         waitForNfcKeyRemoval: Boolean = false,
         updateDeviceInfo: Boolean = false,
@@ -76,7 +74,7 @@ class PivConnectionHelper(private val deviceManager: DeviceManager) {
         )
     }
 
-    suspend fun <T: Any> useSmartCardConnectionUsb(
+    suspend fun <T : Any> useSmartCardConnectionUsb(
         device: UsbYubiKeyDevice,
         onComplete: ((SmartCardConnection) -> Unit)? = null,
         updateDeviceInfo: Boolean,
@@ -87,30 +85,33 @@ class PivConnectionHelper(private val deviceManager: DeviceManager) {
             if (updateDeviceInfo) {
                 val pid = device.pid
                 runCatching {
-                    deviceManager.setDeviceInfo(runCatching {
-                        val deviceInfo = DeviceUtil.readInfo(connection, pid)
-                        val name = DeviceUtil.getName(deviceInfo, pid.type)
-                        Info(name, false, pid.value, deviceInfo)
-                    }.getOrNull())
-
+                    deviceManager.setDeviceInfo(
+                        runCatching {
+                            val deviceInfo = DeviceUtil.readInfo(connection, pid)
+                            val name = DeviceUtil.getName(deviceInfo, pid.type)
+                            Info(name, false, pid.value, deviceInfo)
+                        }.getOrNull()
+                    )
                 }
             }
         }
     }
 
-    suspend fun <T: Any> useSmartCardConnectionNfc(
+    suspend fun <T : Any> useSmartCardConnectionNfc(
         onComplete: ((SmartCardConnection) -> Unit)? = null,
         block: (SmartCardConnection) -> T
     ): Result<T, Throwable> {
         try {
             val result = suspendCoroutine { outer ->
                 pendingAction = {
-                    outer.resumeWith(runCatching {
-                        val connection = it.value
-                        block.invoke(connection).also {
-                            onComplete?.invoke(connection)
+                    outer.resumeWith(
+                        runCatching {
+                            val connection = it.value
+                            block.invoke(connection).also {
+                                onComplete?.invoke(connection)
+                            }
                         }
-                    })
+                    )
                 }
             }
             return Result.success(result)

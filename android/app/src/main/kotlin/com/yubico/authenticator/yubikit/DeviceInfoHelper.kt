@@ -113,9 +113,11 @@ class DeviceInfoHelper {
         }
 
         private fun isNfcRestricted(connection: SmartCardConnection): Boolean =
-            restrictedNfcBytes.contentEquals(readNdef(connection).also {
-                logger.debug("ndef: {}", it)
-            })
+            restrictedNfcBytes.contentEquals(
+                readNdef(connection).also {
+                    logger.debug("ndef: {}", it)
+                }
+            )
 
         private fun readNdef(connection: SmartCardConnection): ByteArray? = try {
             with(SmartCardProtocol(connection)) {
@@ -128,6 +130,4 @@ class DeviceInfoHelper {
             null
         }
     }
-
 }
-

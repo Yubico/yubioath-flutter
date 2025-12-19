@@ -109,5 +109,4 @@ class ActivityUtil(private val activity: Activity) {
         const val NDEF_ACTIVITY_ALIAS = "AliasNdefActivity"
         const val MAIN_ACTIVITY_ALIAS = "AliasMainActivity"
     }
-
 }

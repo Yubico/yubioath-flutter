@@ -35,8 +35,7 @@ fun Date.isoFormat(): String = if (Build.VERSION.SDK_INT >= 26) {
     sdf.format(this)
 }
 
-fun X509Certificate.fingerprint(): String =
-    MessageDigest
-        .getInstance("SHA-256")
-        .digest(encoded)
-        .toHexString()
+fun X509Certificate.fingerprint(): String = MessageDigest
+    .getInstance("SHA-256")
+    .digest(encoded)
+    .toHexString()

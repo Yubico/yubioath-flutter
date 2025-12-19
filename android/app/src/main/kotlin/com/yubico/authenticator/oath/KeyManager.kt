@@ -26,12 +26,10 @@ class KeyManager(private val permStore: KeyProvider, private val memStore: KeyPr
      */
     fun isRemembered(deviceId: String) = permStore.hasKey(deviceId)
 
-    fun getKey(deviceId: String): AccessKey? {
-        return if (permStore.hasKey(deviceId)) {
-            permStore.getKey(deviceId)
-        } else {
-            memStore.getKey(deviceId)
-        }
+    fun getKey(deviceId: String): AccessKey? = if (permStore.hasKey(deviceId)) {
+        permStore.getKey(deviceId)
+    } else {
+        memStore.getKey(deviceId)
     }
 
     fun addKey(deviceId: String, secret: ByteArray, remember: Boolean) {

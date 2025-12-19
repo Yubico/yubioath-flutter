@@ -45,7 +45,6 @@ enum class OperationContext(val value: Int) {
         fun getByValue(value: Int) = entries.firstOrNull { it.value == value } ?: Default
 
         fun Info.getSupportedContexts(): List<OperationContext> {
-
             val capabilitiesToContext = mapOf(
                 Capability.OATH to Oath,
                 Capability.PIV to Piv,
@@ -74,10 +73,7 @@ enum class OperationContext(val value: Int) {
     }
 }
 
-data class AppContext(
-    val appContext: OperationContext,
-    val notify: Boolean = false
-)
+data class AppContext(val appContext: OperationContext, val notify: Boolean = false)
 
 class MainViewModel(application: Application) : ViewModel() {
 
@@ -117,4 +113,3 @@ class MainViewModelFactory(private val application: Application) : ViewModelProv
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
-

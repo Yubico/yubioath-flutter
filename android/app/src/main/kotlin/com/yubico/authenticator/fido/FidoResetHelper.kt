@@ -18,16 +18,22 @@ package com.yubico.authenticator.fido
 
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import com.yubico.authenticator.NfcOverlayManager
 import com.yubico.authenticator.MainActivity
 import com.yubico.authenticator.MainViewModel
 import com.yubico.authenticator.NULL
+import com.yubico.authenticator.NfcOverlayManager
 import com.yubico.authenticator.device.DeviceManager
 import com.yubico.authenticator.fido.data.Session
 import com.yubico.authenticator.fido.data.YubiKitFidoSession
 import com.yubico.authenticator.yubikit.NfcState
 import com.yubico.yubikit.core.application.CommandState
 import com.yubico.yubikit.core.fido.CtapException
+import java.io.IOException
+import java.util.concurrent.Executors
+import kotlin.coroutines.cancellation.CancellationException
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -37,12 +43,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import org.slf4j.LoggerFactory
-import java.io.IOException
-import java.util.concurrent.Executors
-import kotlin.coroutines.cancellation.CancellationException
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
 
 enum class FidoResetState(val value: String) {
     Remove("remove"),
@@ -59,14 +59,11 @@ data class FidoRegisterFpCaptureEvent(private val remaining: Int) : FidoRegister
 @Serializable
 data class FidoRegisterFpCaptureErrorEvent(val code: Int) : FidoRegisterFpEvent("capture-error")
 
+fun createCaptureEvent(remaining: Int): FidoRegisterFpCaptureEvent =
+    FidoRegisterFpCaptureEvent(remaining)
 
-fun createCaptureEvent(remaining: Int): FidoRegisterFpCaptureEvent {
-    return FidoRegisterFpCaptureEvent(remaining)
-}
-
-fun createCaptureErrorEvent(code: Int) : FidoRegisterFpCaptureErrorEvent {
-    return FidoRegisterFpCaptureErrorEvent(code)
-}
+fun createCaptureErrorEvent(code: Int): FidoRegisterFpCaptureErrorEvent =
+    FidoRegisterFpCaptureErrorEvent(code)
 
 class FidoResetHelper(
     private val lifecycleOwner: LifecycleOwner,
@@ -168,9 +165,11 @@ class FidoResetHelper(
         coroutineScope.launch(Dispatchers.Main) {
             fidoViewModel.updateResetState(FidoResetState.Touch)
             logger.debug("Waiting for touch")
-            deviceManager.withKey {
-                usbYubiKeyDevice ->
-                connectionHelper.useSessionUsb(usbYubiKeyDevice, updateDeviceInfo = true) { fidoSession ->
+            deviceManager.withKey { usbYubiKeyDevice ->
+                connectionHelper.useSessionUsb(
+                    usbYubiKeyDevice,
+                    updateDeviceInfo = true
+                ) { fidoSession ->
                     resetCommandState = CommandState()
                     try {
                         if (cancelReset) {

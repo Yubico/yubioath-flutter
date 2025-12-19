@@ -59,9 +59,6 @@ import com.yubico.yubikit.piv.Slot
 import com.yubico.yubikit.piv.TouchPolicy
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
-import org.bouncycastle.asn1.x500.X500Name
-import org.json.JSONObject
-import org.slf4j.LoggerFactory
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 import java.security.SecureRandom
@@ -71,13 +68,16 @@ import java.util.Arrays
 import java.util.Locale
 import java.util.TimeZone
 import java.util.concurrent.atomic.AtomicBoolean
+import org.bouncycastle.asn1.x500.X500Name
+import org.json.JSONObject
+import org.slf4j.LoggerFactory
 
 typealias PivAction = (Result<SmartCardConnection, Exception>) -> Unit
 
 class PivManager(
     messenger: BinaryMessenger,
     deviceManager: DeviceManager,
-    private val pivViewModel: PivViewModel,
+    private val pivViewModel: PivViewModel
 ) : AppContextManager(deviceManager) {
 
     private val managementKeyStorage: MutableMap<String, ByteArray> = mutableMapOf()
@@ -110,12 +110,12 @@ class PivManager(
 
                 "changePin" -> changePin(
                     (args["pin"] as String).toCharArray(),
-                    (args["newPin"] as String).toCharArray(),
+                    (args["newPin"] as String).toCharArray()
                 )
 
                 "changePuk" -> changePuk(
                     (args["puk"] as String).toCharArray(),
-                    (args["newPuk"] as String).toCharArray(),
+                    (args["newPuk"] as String).toCharArray()
                 )
 
                 "setManagementKey" -> setManagementKey(
@@ -126,30 +126,30 @@ class PivManager(
 
                 "unblockPin" -> unblockPin(
                     (args["puk"] as String).toCharArray(),
-                    (args["newPin"] as String).toCharArray(),
+                    (args["newPin"] as String).toCharArray()
                 )
 
                 "delete" -> delete(
                     Slot.fromStringAlias(args["slot"] as String),
                     (args["deleteCert"] as Boolean),
-                    (args["deleteKey"] as Boolean),
+                    (args["deleteKey"] as Boolean)
                 )
 
                 "moveKey" -> moveKey(
                     Slot.fromStringAlias(args["slot"] as String),
                     Slot.fromStringAlias(args["destination"] as String),
                     (args["overwriteKey"] as Boolean),
-                    (args["includeCertificate"] as Boolean),
+                    (args["includeCertificate"] as Boolean)
                 )
 
                 "examineFile" -> examineFile(
                     (args["slot"] as String),
                     (args["data"] as String),
-                    (args["password"] as String?),
+                    (args["password"] as String?)
                 )
 
                 "validateRfc4514" -> validateRfc4514(
-                    (args["data"] as String),
+                    (args["data"] as String)
                 )
 
                 "generate" -> generate(
@@ -172,7 +172,7 @@ class PivManager(
                 )
 
                 "getSlot" -> getSlot(
-                    Slot.fromStringAlias(args["slot"] as String),
+                    Slot.fromStringAlias(args["slot"] as String)
                 )
 
                 else -> throw NotImplementedError()
@@ -214,9 +214,7 @@ class PivManager(
         }
     }
 
-    override fun hasPending(): Boolean {
-        return connectionHelper.hasPending()
-    }
+    override fun hasPending(): Boolean = connectionHelper.hasPending()
 
     override fun dispose() {
         super.dispose()
@@ -235,7 +233,6 @@ class PivManager(
                 deviceManager.setDeviceInfo(runCatching { getDeviceInfo(device) }.getOrNull())
             }
         } catch (e: Exception) {
-
             logger.error("Cancelling pending action. Cause: ", e)
             connectionHelper.cancelPending()
 
@@ -271,7 +268,6 @@ class PivManager(
         val sameDevice = previousSerial.value == currentSerial
 
         if (!sameDevice || !connectionHelper.hasPending()) {
-
             connectionHelper.cancelPending()
 
             val (state, slots) = try {
@@ -356,16 +352,14 @@ class PivManager(
             if (e is ApduException && e.sw == SW.FILE_NOT_FOUND) null else throw e
         }
 
-
-    private suspend fun reset(): String =
-        connectionHelper.useSmartCardConnection(
-            onComplete = ::updatePivState,
-            updateDeviceInfo = true
-        ) {
-            val piv = getPivSession(it)
-            piv.reset()
-            ""
-        }
+    private suspend fun reset(): String = connectionHelper.useSmartCardConnection(
+        onComplete = ::updatePivState,
+        updateDeviceInfo = true
+    ) {
+        val piv = getPivSession(it)
+        piv.reset()
+        ""
+    }
 
     companion object {
         val defaultPin = "123456".toCharArray()
@@ -374,59 +368,57 @@ class PivManager(
         val updateDeviceInfo = AtomicBoolean(false)
     }
 
-    private fun doAuthenticate(piv: PivSession, serial: String) =
-        try {
-            var authenticated = false
+    private fun doAuthenticate(piv: PivSession, serial: String) = try {
+        var authenticated = false
 
-            val hasProtectedKey = pivmanData?.hasProtectedKey ?: false
+        val hasProtectedKey = pivmanData?.hasProtectedKey ?: false
 
-            if (hasProtectedKey) {
-                // cannot use key from managementKeyStorage
-                // has to use PIN to get the key from the session
+        if (hasProtectedKey) {
+            // cannot use key from managementKeyStorage
+            // has to use PIN to get the key from the session
 
-                val pin = pinStorage[serial] ?: defaultPin
-                piv.verifyPin(pin)
+            val pin = pinStorage[serial] ?: defaultPin
+            piv.verifyPin(pin)
 
-                val key = if (pivmanData?.hasDerivedKey ?: false) {
-                    PivmanUtils.deriveManagementKey(pin, pivmanData?.salt!!)
-                } else if (pivmanData?.hasStoredKey ?: false) {
-                    val pivmanProtectedData = PivmanUtils.getPivmanProtectedData(piv)
-                    pivmanProtectedData.key
-                } else {
-                    null
-                }
-
-                key?.let { key ->
-                    try {
-                        piv.authenticate(key)
-                        authenticated = true
-                    } catch (e: Exception) {
-                        if (e is ApduException && e.sw == SW.SECURITY_CONDITION_NOT_SATISFIED) {
-                            // pass
-                        } else {
-                            throw e
-                        }
-                    }
-                    piv.verifyPin(pin)
-                }
+            val key = if (pivmanData?.hasDerivedKey ?: false) {
+                PivmanUtils.deriveManagementKey(pin, pivmanData?.salt!!)
+            } else if (pivmanData?.hasStoredKey ?: false) {
+                val pivmanProtectedData = PivmanUtils.getPivmanProtectedData(piv)
+                pivmanProtectedData.key
             } else {
-                // the key is not protected
-                authenticateKeyBySerial(piv, serial)
+                null
             }
-            authenticated
-        } catch (e: Exception) {
-            pinStorage.remove(serial)
-            throw e
-        }
 
-    private fun authenticateKeyBySerial(piv: PivSession, serial: String) =
-        try {
-            val managementKey = managementKeyStorage[serial] ?: defaultManagementKey
-            piv.authenticate(managementKey)
-        } catch (e: Exception) {
-            managementKeyStorage.remove(serial)
-            throw e
+            key?.let { key ->
+                try {
+                    piv.authenticate(key)
+                    authenticated = true
+                } catch (e: Exception) {
+                    if (e is ApduException && e.sw == SW.SECURITY_CONDITION_NOT_SATISFIED) {
+                        // pass
+                    } else {
+                        throw e
+                    }
+                }
+                piv.verifyPin(pin)
+            }
+        } else {
+            // the key is not protected
+            authenticateKeyBySerial(piv, serial)
         }
+        authenticated
+    } catch (e: Exception) {
+        pinStorage.remove(serial)
+        throw e
+    }
+
+    private fun authenticateKeyBySerial(piv: PivSession, serial: String) = try {
+        val managementKey = managementKeyStorage[serial] ?: defaultManagementKey
+        piv.authenticate(managementKey)
+    } catch (e: Exception) {
+        managementKeyStorage.remove(serial)
+        throw e
+    }
 
     private suspend fun authenticate(managementKey: ByteArray): String =
         connectionHelper.useSmartCardConnection(
@@ -444,56 +436,53 @@ class PivManager(
             }
         }
 
-    private fun doVerifyPin(piv: PivSession, serial: String): String =
-        try {
-            var authenticated = false
-            pinStorage[serial]?.let { pin ->
-                piv.verifyPin(pin)
+    private fun doVerifyPin(piv: PivSession, serial: String): String = try {
+        var authenticated = false
+        pinStorage[serial]?.let { pin ->
+            piv.verifyPin(pin)
 
-                val key = if (pivmanData?.hasDerivedKey ?: false) {
-                    PivmanUtils.deriveManagementKey(pin, pivmanData?.salt!!)
-                } else if (pivmanData?.hasStoredKey ?: false) {
-                    val pivmanProtectedData = PivmanUtils.getPivmanProtectedData(piv)
-                    pivmanProtectedData.key
-                } else {
-                    null
-                }
+            val key = if (pivmanData?.hasDerivedKey ?: false) {
+                PivmanUtils.deriveManagementKey(pin, pivmanData?.salt!!)
+            } else if (pivmanData?.hasStoredKey ?: false) {
+                val pivmanProtectedData = PivmanUtils.getPivmanProtectedData(piv)
+                pivmanProtectedData.key
+            } else {
+                null
+            }
 
-
-                key?.let { key ->
-                    try {
-                        piv.authenticate(key)
-                        authenticated = true
-                    } catch (e: Exception) {
-                        if (e is ApduException && e.sw == SW.SECURITY_CONDITION_NOT_SATISFIED) {
-                            // pass
-                        } else {
-                            throw e
-                        }
+            key?.let { key ->
+                try {
+                    piv.authenticate(key)
+                    authenticated = true
+                } catch (e: Exception) {
+                    if (e is ApduException && e.sw == SW.SECURITY_CONDITION_NOT_SATISFIED) {
+                        // pass
+                    } else {
+                        throw e
                     }
-                    piv.verifyPin(pin)
                 }
+                piv.verifyPin(pin)
             }
-            JSONObject(mapOf("status" to true, "authenticated" to authenticated)).toString()
-        } catch (e: Exception) {
-            pinStorage.remove(serial)
-            throw e
         }
+        JSONObject(mapOf("status" to true, "authenticated" to authenticated)).toString()
+    } catch (e: Exception) {
+        pinStorage.remove(serial)
+        throw e
+    }
 
-    private suspend fun verifyPin(pin: CharArray): String =
-        connectionHelper.useSmartCardConnection(
-            onComplete = ::updatePivState,
-            waitForNfcKeyRemoval = true
-        ) {
-            try {
-                val piv = getPivSession(it)
-                val serial = pivViewModel.currentSerial()
-                pinStorage[serial] = pin.clone()
-                handlePinPukErrors { doVerifyPin(piv, serial) }
-            } finally {
-                Arrays.fill(pin, 0.toChar())
-            }
+    private suspend fun verifyPin(pin: CharArray): String = connectionHelper.useSmartCardConnection(
+        onComplete = ::updatePivState,
+        waitForNfcKeyRemoval = true
+    ) {
+        try {
+            val piv = getPivSession(it)
+            val serial = pivViewModel.currentSerial()
+            pinStorage[serial] = pin.clone()
+            handlePinPukErrors { doVerifyPin(piv, serial) }
+        } finally {
+            Arrays.fill(pin, 0.toChar())
         }
+    }
 
     private suspend fun changePin(pin: CharArray, newPin: CharArray): String =
         connectionHelper.useSmartCardConnection(
@@ -527,23 +516,22 @@ class PivManager(
         managementKey: ByteArray,
         keyType: ManagementKeyType,
         storeKey: Boolean
-    ): String =
-        connectionHelper.useSmartCardConnection(
-            onComplete = ::updatePivState,
-            updateDeviceInfo = true
-        ) {
-            val piv = getPivSession(it)
-            doVerifyPin(piv, pivViewModel.currentSerial())
-            doAuthenticate(piv, pivViewModel.currentSerial())
-            PivmanUtils.pivmanSetMgmKey(
-                piv,
-                newKey = managementKey,
-                algorithm = keyType,
-                touch = false,
-                storeOnDevice = storeKey
-            )
-            ""
-        }
+    ): String = connectionHelper.useSmartCardConnection(
+        onComplete = ::updatePivState,
+        updateDeviceInfo = true
+    ) {
+        val piv = getPivSession(it)
+        doVerifyPin(piv, pivViewModel.currentSerial())
+        doAuthenticate(piv, pivViewModel.currentSerial())
+        PivmanUtils.pivmanSetMgmKey(
+            piv,
+            newKey = managementKey,
+            algorithm = keyType,
+            touch = false,
+            storeOnDevice = storeKey
+        )
+        ""
+    }
 
     private suspend fun unblockPin(puk: CharArray, newPin: CharArray): String =
         connectionHelper.useSmartCardConnection(::updatePivState) {
@@ -584,7 +572,9 @@ class PivManager(
         val supportsMetadata = piv.supports(FEATURE_METADATA)
         val metadata = if (supportsMetadata) {
             runPivOperation { piv.getSlotMetadata(slot) }
-        } else null
+        } else {
+            null
+        }
         val certificate = runPivOperation { piv.getCertificate(slot) }
 
         return PivSlot(
@@ -624,35 +614,36 @@ class PivManager(
         dst: Slot,
         overwriteKey: Boolean,
         includeCertificate: Boolean
-    ): String =
-        connectionHelper.useSmartCardConnection({ connection ->
-            val piv = getPivSession(connection)
-            pivViewModel.updateSlot(getSlot(src, piv))
-            pivViewModel.updateSlot(getSlot(dst, piv))
-        }) { connection ->
-            val piv = getPivSession(connection)
-            val serial = pivViewModel.currentSerial()
+    ): String = connectionHelper.useSmartCardConnection({ connection ->
+        val piv = getPivSession(connection)
+        pivViewModel.updateSlot(getSlot(src, piv))
+        pivViewModel.updateSlot(getSlot(dst, piv))
+    }) { connection ->
+        val piv = getPivSession(connection)
+        val serial = pivViewModel.currentSerial()
 
-            doVerifyPin(piv, serial)
-            doAuthenticate(piv, serial)
+        doVerifyPin(piv, serial)
+        doAuthenticate(piv, serial)
 
-            val sourceObject = if (includeCertificate) {
-                piv.getObject(src.objectId)
-            } else null
-
-            if (overwriteKey) {
-                piv.deleteKey(dst)
-            }
-
-            piv.moveKey(src, dst)
-
-            sourceObject?.let {
-                piv.putObject(dst.objectId, it)
-                piv.deleteCertificate(src)
-                piv.putObject(ObjectId.CHUID, generateChuid())
-            }
-            ""
+        val sourceObject = if (includeCertificate) {
+            piv.getObject(src.objectId)
+        } else {
+            null
         }
+
+        if (overwriteKey) {
+            piv.deleteKey(dst)
+        }
+
+        piv.moveKey(src, dst)
+
+        sourceObject?.let {
+            piv.putObject(dst.objectId, it)
+            piv.deleteCertificate(src)
+            piv.putObject(ObjectId.CHUID, generateChuid())
+        }
+        ""
+    }
 
     private fun generateChuid(): ByteArray {
         // Non-Federal Issuer FASC-N
@@ -676,29 +667,27 @@ class PivManager(
         )
     }
 
-    private fun chooseCertificate(certificates: List<X509Certificate>?): X509Certificate? {
-        return certificates?.let {
+    private fun chooseCertificate(certificates: List<X509Certificate>?): X509Certificate? =
+        certificates?.let {
             when {
                 it.size > 1 -> getLeafCertificates(it).firstOrNull()
                 else -> it.firstOrNull()
             }
         }
-    }
 
-    private fun getCertificateInfo(certificate: X509Certificate?) =
-        certificate?.let {
-            JSONObject(
-                mapOf(
-                    "key_type" to (KeyType.fromKey(certificate.publicKey).value.toInt() and 0xff),
-                    "subject" to certificate.subjectDN.name,
-                    "issuer" to certificate.issuerDN.name,
-                    "serial" to certificate.serialNumber.toString(),
-                    "not_valid_before" to certificate.notBefore.isoFormat(),
-                    "not_valid_after" to certificate.notAfter.isoFormat(),
-                    "fingerprint" to certificate.fingerprint(),
-                )
+    private fun getCertificateInfo(certificate: X509Certificate?) = certificate?.let {
+        JSONObject(
+            mapOf(
+                "key_type" to (KeyType.fromKey(certificate.publicKey).value.toInt() and 0xff),
+                "subject" to certificate.subjectDN.name,
+                "issuer" to certificate.issuerDN.name,
+                "serial" to certificate.serialNumber.toString(),
+                "not_valid_before" to certificate.notBefore.isoFormat(),
+                "not_valid_after" to certificate.notAfter.isoFormat(),
+                "fingerprint" to certificate.fingerprint()
             )
-        }
+        )
+    }
 
     private fun publicKeyMatch(certificate: X509Certificate?, metadata: SlotMetadata?): Boolean? {
         if (certificate == null || metadata == null) {
@@ -711,11 +700,7 @@ class PivManager(
         return slotPublicKey?.encoded.contentEquals(certPublicKey.encoded)
     }
 
-    private fun examineFile(
-        slot: String,
-        data: String,
-        password: String?
-    ): String = try {
+    private fun examineFile(slot: String, data: String, password: String?): String = try {
         val (certificates, privateKey) = parseFile(data, password)
         val certificate = chooseCertificate(certificates)
 
@@ -743,9 +728,7 @@ class PivManager(
 
     private fun getX500Name(data: String) = X500Name(data)
 
-    private fun validateRfc4514(
-        data: String
-    ): String = try {
+    private fun validateRfc4514(data: String): String = try {
         getX500Name(data)
         JSONObject(mapOf("status" to true)).toString()
     } catch (_: IllegalArgumentException) {
@@ -761,85 +744,81 @@ class PivManager(
         generateType: String,
         validFrom: String?,
         validTo: String?
-    ): String =
-        connectionHelper.useSmartCardConnection({ connection ->
-            val piv = getPivSession(connection)
-            pivViewModel.updateSlot(getSlot(slot, piv))
-        }, true) {
-            try {
-                val piv = getPivSession(it)
+    ): String = connectionHelper.useSmartCardConnection({ connection ->
+        val piv = getPivSession(connection)
+        pivViewModel.updateSlot(getSlot(slot, piv))
+    }, true) {
+        try {
+            val piv = getPivSession(it)
 
-                // Bug in yubikit-android KeyType.fromValue
-                val keyTypeValue =
-                    KeyType.entries.first { entry -> entry.value.toUByte().toInt() == keyType }
+            // Bug in yubikit-android KeyType.fromValue
+            val keyTypeValue =
+                KeyType.entries.first { entry -> entry.value.toUByte().toInt() == keyType }
 
-                val serial = pivViewModel.currentSerial()
-                doAuthenticate(piv, serial)
+            val serial = pivViewModel.currentSerial()
+            doAuthenticate(piv, serial)
 
-                val keyValues = piv.generateKeyValues(
-                    slot,
-                    keyTypeValue,
-                    pinPolicy,
-                    touchPolicy
-                )
+            val keyValues = piv.generateKeyValues(
+                slot,
+                keyTypeValue,
+                pinPolicy,
+                touchPolicy
+            )
 
-                if (pinPolicy != PinPolicy.NEVER) {
-                    doVerifyPin(piv, serial)
-                }
-
-                val publicKey = keyValues.toPublicKey()
-                val publicKeyPem = publicKey.toPem()
-
-                val result = when (generateType) {
-                    "publicKey" -> publicKeyPem
-                    "csr" -> {
-                        if (subject == null) {
-                            throw IllegalArgumentException("Subject missing for csr")
-                        }
-                        generateCsr(piv, slot, publicKey, subject).toPem()
-                    }
-
-                    "certificate" -> {
-                        if (subject == null) {
-                            throw IllegalArgumentException("Subject missing for csr")
-                        }
-
-                        val format = SimpleDateFormat("yyyy-MM-dd", Locale.US)
-                        format.timeZone = TimeZone.getTimeZone("UTC")
-                        val validFromDate = format.parse(validFrom!!)!!
-                        val validToDate = format.parse(validTo!!)!!
-                        val cert = generateSelfSignedCertificate(
-                            piv,
-                            slot,
-                            publicKey,
-                            subject,
-                            validFromDate,
-                            validToDate
-                        )
-                        val result = cert.toPem()
-                        piv.putCertificate(slot, cert)
-                        piv.putObject(ObjectId.CHUID, generateChuid())
-                        result
-                    }
-
-                    else -> throw IllegalArgumentException("Invalid generate type: $generateType")
-                }
-
-                JSONObject(
-                    mapOf(
-                        "public_key" to publicKeyPem,
-                        "result" to result
-                    )
-                ).toString()
-            } catch (e: Exception) {
-                throw e
+            if (pinPolicy != PinPolicy.NEVER) {
+                doVerifyPin(piv, serial)
             }
-        }
 
-    private fun parseFile(
-        data: String,
-        password: String?
-    ): KeyMaterial = try {
+            val publicKey = keyValues.toPublicKey()
+            val publicKeyPem = publicKey.toPem()
+
+            val result = when (generateType) {
+                "publicKey" -> publicKeyPem
+                "csr" -> {
+                    if (subject == null) {
+                        throw IllegalArgumentException("Subject missing for csr")
+                    }
+                    generateCsr(piv, slot, publicKey, subject).toPem()
+                }
+
+                "certificate" -> {
+                    if (subject == null) {
+                        throw IllegalArgumentException("Subject missing for csr")
+                    }
+
+                    val format = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+                    format.timeZone = TimeZone.getTimeZone("UTC")
+                    val validFromDate = format.parse(validFrom!!)!!
+                    val validToDate = format.parse(validTo!!)!!
+                    val cert = generateSelfSignedCertificate(
+                        piv,
+                        slot,
+                        publicKey,
+                        subject,
+                        validFromDate,
+                        validToDate
+                    )
+                    val result = cert.toPem()
+                    piv.putCertificate(slot, cert)
+                    piv.putObject(ObjectId.CHUID, generateChuid())
+                    result
+                }
+
+                else -> throw IllegalArgumentException("Invalid generate type: $generateType")
+            }
+
+            JSONObject(
+                mapOf(
+                    "public_key" to publicKeyPem,
+                    "result" to result
+                )
+            ).toString()
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
+    private fun parseFile(data: String, password: String?): KeyMaterial = try {
         parse(data.hexToByteArray(), password?.toCharArray())
     } catch (e: Exception) {
         when (e) {
@@ -858,78 +837,77 @@ class PivManager(
         password: String?,
         pinPolicy: PinPolicy,
         touchPolicy: TouchPolicy
-    ): String =
-        connectionHelper.useSmartCardConnection({  connection ->
-            val piv = getPivSession(connection)
-            pivViewModel.updateSlot(getSlot(slot, piv))
-        }) {
-            try {
-                val piv = getPivSession(it)
-                val serial = pivViewModel.currentSerial()
+    ): String = connectionHelper.useSmartCardConnection({ connection ->
+        val piv = getPivSession(connection)
+        pivViewModel.updateSlot(getSlot(slot, piv))
+    }) {
+        try {
+            val piv = getPivSession(it)
+            val serial = pivViewModel.currentSerial()
 
-                doVerifyPin(piv, serial)
-                doAuthenticate(piv, serial)
+            doVerifyPin(piv, serial)
+            doAuthenticate(piv, serial)
 
-                val (certificates, privateKey) = parseFile(data, password)
-                if (privateKey == null && certificates.isEmpty()) {
-                    throw IllegalArgumentException("Failed to parse")
-                }
+            val (certificates, privateKey) = parseFile(data, password)
+            if (privateKey == null && certificates.isEmpty()) {
+                throw IllegalArgumentException("Failed to parse")
+            }
 
-                var metadata: SlotMetadata? = null
-                privateKey?.let {
-                    piv.putKey(
-                        slot,
-                        PrivateKeyValues.fromPrivateKey(privateKey),
-                        pinPolicy,
-                        touchPolicy
-                    )
+            var metadata: SlotMetadata? = null
+            privateKey?.let {
+                piv.putKey(
+                    slot,
+                    PrivateKeyValues.fromPrivateKey(privateKey),
+                    pinPolicy,
+                    touchPolicy
+                )
 
-                    metadata = try {
-                        SlotMetadata(piv.getSlotMetadata(slot))
-                    } catch (e: Exception) {
-                        when (e) {
-                            is ApduException, is BadResponseException, is UnsupportedOperationException -> null
-                            else -> throw e
-                        }
+                metadata = try {
+                    SlotMetadata(piv.getSlotMetadata(slot))
+                } catch (e: Exception) {
+                    when (e) {
+                        is ApduException,
+                        is BadResponseException,
+                        is UnsupportedOperationException -> null
+                        else -> throw e
                     }
                 }
-
-                val certificate = chooseCertificate(certificates)
-                certificate?.let {
-                    piv.putCertificate(slot, certificate)
-                    piv.putObject(ObjectId.CHUID, generateChuid())
-                }
-                pivViewModel.updateSlot(slot.stringAlias, metadata, certificate)
-
-                JSONObject(
-                    mapOf(
-                        "metadata" to metadata?.let { slotMetadata ->
-                            JSONObject(
-                                mapOf(
-                                    "key_type" to slotMetadata.keyType.toInt(),
-                                    "pin_policy" to slotMetadata.pinPolicy,
-                                    "touch_policy" to slotMetadata.touchPolicy,
-                                    "generated" to slotMetadata.generated,
-                                    "public_key" to slotMetadata.publicKey?.toPublicKey()?.toPem()
-                                )
-                            )
-                        },
-                        "public_key" to privateKey?.let {
-                            metadata?.publicKey?.toPublicKey()?.toPem()
-                        },
-                        "certificate" to
-                                certificate?.encoded?.toHexString()
-                    )
-                ).toString()
-            } catch (e: Exception) {
-                logger.error("Caught ", e)
-                throw e
             }
-        }
 
-    private suspend fun getSlot(
-        slot: Slot
-    ): String =
+            val certificate = chooseCertificate(certificates)
+            certificate?.let {
+                piv.putCertificate(slot, certificate)
+                piv.putObject(ObjectId.CHUID, generateChuid())
+            }
+            pivViewModel.updateSlot(slot.stringAlias, metadata, certificate)
+
+            JSONObject(
+                mapOf(
+                    "metadata" to metadata?.let { slotMetadata ->
+                        JSONObject(
+                            mapOf(
+                                "key_type" to slotMetadata.keyType.toInt(),
+                                "pin_policy" to slotMetadata.pinPolicy,
+                                "touch_policy" to slotMetadata.touchPolicy,
+                                "generated" to slotMetadata.generated,
+                                "public_key" to slotMetadata.publicKey?.toPublicKey()?.toPem()
+                            )
+                        )
+                    },
+                    "public_key" to privateKey?.let {
+                        metadata?.publicKey?.toPublicKey()?.toPem()
+                    },
+                    "certificate" to
+                        certificate?.encoded?.toHexString()
+                )
+            ).toString()
+        } catch (e: Exception) {
+            logger.error("Caught ", e)
+            throw e
+        }
+    }
+
+    private suspend fun getSlot(slot: Slot): String =
         connectionHelper.useSmartCardConnection(waitForNfcKeyRemoval = true) { piv ->
             JSONObject(
                 mapOf(
@@ -946,7 +924,7 @@ class PivManager(
                             )
                         )
                     },
-                    "certificate" to pivViewModel.getCertificate(slot.stringAlias)?.toPem(),
+                    "certificate" to pivViewModel.getCertificate(slot.stringAlias)?.toPem()
                 )
             ).toString()
         }
@@ -967,14 +945,12 @@ class PivManager(
      * Executes a PIV operation and returns null if it fails with a known,
      * recoverable exception. Other exceptions are re-thrown.
      */
-    private fun <T> runPivOperation(operation: () -> T): T? {
-        return try {
-            operation()
-        } catch (e: Exception) {
-            when (e) {
-                is ApduException, is BadResponseException -> null
-                else -> throw e
-            }
+    private fun <T> runPivOperation(operation: () -> T): T? = try {
+        operation()
+    } catch (e: Exception) {
+        when (e) {
+            is ApduException, is BadResponseException -> null
+            else -> throw e
         }
     }
 }

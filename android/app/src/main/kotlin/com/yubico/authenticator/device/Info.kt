@@ -18,15 +18,14 @@ package com.yubico.authenticator.device
 
 import com.yubico.yubikit.core.Transport
 import com.yubico.yubikit.management.DeviceInfo
+import kotlin.UInt
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlin.UInt
 
-private fun DeviceInfo.capabilitiesFor(transport: Transport): Int? =
-    when {
-        hasTransport(transport) -> getSupportedCapabilities(transport)
-        else -> null
-    }
+private fun DeviceInfo.capabilitiesFor(transport: Transport): Int? = when {
+    hasTransport(transport) -> getSupportedCapabilities(transport)
+    else -> null
+}
 
 @Serializable
 data class Info(
@@ -61,7 +60,7 @@ data class Info(
     @SerialName("reset_blocked")
     val resetBlocked: Int,
     @SerialName("version_qualifier")
-    val versionQualifier: VersionQualifier,
+    val versionQualifier: VersionQualifier
 ) {
     constructor(name: String, isNfc: Boolean, usbPid: Int?, deviceInfo: DeviceInfo) : this(
         config = Config(deviceInfo.config),
@@ -81,7 +80,7 @@ data class Info(
         pinComplexity = deviceInfo.pinComplexity,
         supportedCapabilities = Capabilities(
             nfc = deviceInfo.capabilitiesFor(Transport.NFC),
-            usb = deviceInfo.capabilitiesFor(Transport.USB),
+            usb = deviceInfo.capabilitiesFor(Transport.USB)
         ),
         fipsCapable = deviceInfo.fipsCapable,
         fipsApproved = deviceInfo.fipsApproved,

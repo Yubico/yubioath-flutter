@@ -39,13 +39,9 @@ class HomeContextManager(deviceManager: DeviceManager) : AppContextManager(devic
         super.deactivate()
     }
 
-    override suspend fun processYubiKey(device: YubiKeyDevice): Boolean {
-        return true
-    }
+    override suspend fun processYubiKey(device: YubiKeyDevice): Boolean = true
 
-    override fun hasPending(): Boolean {
-        return false
-    }
+    override fun hasPending(): Boolean = false
 
     companion object {
         private val logger = LoggerFactory.getLogger(HomeContextManager::class.java)

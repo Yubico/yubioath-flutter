@@ -38,7 +38,6 @@ class SkyHelper(private val compatUtil: CompatUtil) {
 
         private val USB_VERSION_STRING_PATTERN: Pattern =
             Pattern.compile("\\b(\\d{1,3})\\.(\\d)(\\d+)\\b")
-
     }
 
     /**
@@ -91,7 +90,6 @@ class SkyHelper(private val compatUtil: CompatUtil) {
             VERSION_0
         )
 
-
     @TargetApi(Build.VERSION_CODES.M)
     private fun getVersionFromUsbDescriptorM(device: UsbYubiKeyDevice): Version {
         val version = device.usbDevice.version
@@ -124,15 +122,10 @@ class SkyHelper(private val compatUtil: CompatUtil) {
     /** Check if this version is at least v1 and less than v2
      * @return true if this is in range [v1,v2)
      */
-    private fun Version.inRange(v1: Version, v2: Version): Boolean {
-        return this >= v1 && this < v2
-    }
+    private fun Version.inRange(v1: Version, v2: Version): Boolean = this >= v1 && this < v2
 
     /** Check if this version is at least v
      * @return true if this >= v
      */
-    private fun Version.isAtLeast(v: Version): Boolean {
-        return this >= v
-    }
-
+    private fun Version.isAtLeast(v: Version): Boolean = this >= v
 }

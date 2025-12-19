@@ -78,17 +78,17 @@ import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import org.bouncycastle.jce.provider.BouncyCastleProvider
-import org.json.JSONObject
-import org.slf4j.LoggerFactory
 import java.io.Closeable
 import java.io.IOException
 import java.security.NoSuchAlgorithmException
 import java.security.Security
 import java.util.concurrent.Executors
 import javax.crypto.Mac
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.bouncycastle.jce.provider.BouncyCastleProvider
+import org.json.JSONObject
+import org.slf4j.LoggerFactory
 
 class MainActivity : FlutterFragmentActivity() {
     private val viewModel: MainViewModel by viewModels {
@@ -149,7 +149,9 @@ class MainActivity : FlutterFragmentActivity() {
 
         val nfcManager = if (NfcAdapter.getDefaultAdapter(this) != null) {
             NfcYubiKeyManager(this, NfcStateDispatcher(nfcStateListener))
-        } else null
+        } else {
+            null
+        }
 
         yubikit = YubiKitManager(UsbYubiKeyManager(this), nfcManager)
     }
@@ -159,22 +161,21 @@ class MainActivity : FlutterFragmentActivity() {
         setIntent(intent)
     }
 
-    private fun startNfcDiscovery() =
-        try {
-            logger.debug("Starting nfc discovery")
-            yubikit.startNfcDiscovery(
-                nfcConfiguration.disableNfcDiscoverySound(appPreferences.silenceNfcSounds),
-                this
-            ) { nfcYubiKeyDevice ->
-                if (!deviceManager.isUsbKeyConnected()) {
-                    launchProcessYubiKey(nfcYubiKeyDevice)
-                }
+    private fun startNfcDiscovery() = try {
+        logger.debug("Starting nfc discovery")
+        yubikit.startNfcDiscovery(
+            nfcConfiguration.disableNfcDiscoverySound(appPreferences.silenceNfcSounds),
+            this
+        ) { nfcYubiKeyDevice ->
+            if (!deviceManager.isUsbKeyConnected()) {
+                launchProcessYubiKey(nfcYubiKeyDevice)
             }
-
-            hasNfc = true
-        } catch (_: NfcNotAvailable) {
-            hasNfc = false
         }
+
+        hasNfc = true
+    } catch (_: NfcNotAvailable) {
+        hasNfc = false
+    }
 
     private fun stopNfcDiscovery() {
         if (hasNfc) {
@@ -223,7 +224,6 @@ class MainActivity : FlutterFragmentActivity() {
     }
 
     override fun onPause() {
-
         contextManager?.onPause()
 
         appPreferences.unregisterListener(sharedPreferencesListener)
@@ -257,8 +257,10 @@ class MainActivity : FlutterFragmentActivity() {
             // Handle opening through otpauth:// link
             val intentData = intent.data
             if (intentData != null &&
-                (intentData.scheme == "otpauth" ||
-                        intentData.scheme == "otpauth-migration")
+                (
+                    intentData.scheme == "otpauth" ||
+                        intentData.scheme == "otpauth-migration"
+                    )
             ) {
                 intent.data = null
                 appLinkMethodChannel.handleUri(intentData)
@@ -465,7 +467,6 @@ class MainActivity : FlutterFragmentActivity() {
                 appMethodChannel.nfcStateChanged(NfcState.getFailureState())
             }
         }
-
     }
 
     private fun launchProcessYubiKey(device: YubiKeyDevice) {
@@ -516,7 +517,9 @@ class MainActivity : FlutterFragmentActivity() {
 
         viewModel.appContext.observe(this) {
             switchContextManager(it.appContext)
-            if (it.appContext != OperationContext.Home && it.appContext != OperationContext.Settings) {
+            if (it.appContext != OperationContext.Home &&
+                it.appContext != OperationContext.Settings
+            ) {
                 logger.debug("A YubiKey is connected, using it with the context {}", it.appContext)
                 viewModel.connectedYubiKey.value?.let(::launchProcessYubiKey)
             }
@@ -546,7 +549,7 @@ class MainActivity : FlutterFragmentActivity() {
         val pivContextManager = PivManager(
             messenger,
             deviceManager,
-            pivViewModel,
+            pivViewModel
         )
         val managementContextManager = ManagementManager(messenger, deviceManager)
 
@@ -562,7 +565,7 @@ class MainActivity : FlutterFragmentActivity() {
             OperationContext.HsmAuth to homeContextManager,
             OperationContext.OpenPgp to homeContextManager,
             OperationContext.YubiOtp to homeContextManager,
-            OperationContext.Settings to homeContextManager,
+            OperationContext.Settings to homeContextManager
         )
 
         contextManager = contextManagers[appPreferences.appContext]
@@ -593,10 +596,14 @@ class MainActivity : FlutterFragmentActivity() {
                     val keyRef = scp.keyInformation.keys.firstOrNull { it.kid == ScpKid.SCP11b }
                     keyRef?.let {
                         val certs = scp.getCertificateBundle(it)
-                        if (certs.isNotEmpty()) Scp11KeyParams(
-                            keyRef,
-                            certs[certs.size - 1].publicKey
-                        ) else null
+                        if (certs.isNotEmpty()) {
+                            Scp11KeyParams(
+                                keyRef,
+                                certs[certs.size - 1].publicKey
+                            )
+                        } else {
+                            null
+                        }
                     }?.also {
                         logger.debug("Found SCP11b key: {}", keyRef)
                     }
@@ -607,9 +614,9 @@ class MainActivity : FlutterFragmentActivity() {
                 // th clear device info
                 throw IOException("Failure getting SCP keys")
             }
-        } else
+        } else {
             null
-
+        }
 
     override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {
         nfcStateListener.appMethodChannel = null
@@ -668,10 +675,11 @@ class MainActivity : FlutterFragmentActivity() {
                 val state = it.getIntExtra("android.nfc.extra.ADAPTER_STATE", 0)
                 logger.debug("NfcAdapter state changed to {}", state)
                 if (state == STATE_ON || state == STATE_TURNING_OFF) {
-                    (context as? MainActivity)?.appMethodChannel?.nfcAdapterStateChanged(state == STATE_ON)
+                    (context as? MainActivity)?.appMethodChannel?.nfcAdapterStateChanged(
+                        state == STATE_ON
+                    )
                 }
             }
-
         }
     }
 
@@ -684,7 +692,7 @@ class MainActivity : FlutterFragmentActivity() {
                 when (methodCall.method) {
                     "allowScreenshots" -> result.success(
                         allowScreenshots(
-                            methodCall.arguments as Boolean,
+                            methodCall.arguments as Boolean
                         )
                     )
 
@@ -722,7 +730,8 @@ class MainActivity : FlutterFragmentActivity() {
                         result.success(
                             cameraService.cameraIdList.any {
                                 cameraService.getCameraCharacteristics(it)
-                                    .get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_BACK
+                                    .get(CameraCharacteristics.LENS_FACING) ==
+                                    CameraCharacteristics.LENS_FACING_BACK
                             }
                         )
                     }
@@ -797,14 +806,15 @@ class MainActivity : FlutterFragmentActivity() {
 
             val typedArray = dynamicColorContext.obtainStyledAttributes(
                 intArrayOf(
-                    android.R.attr.colorPrimary,
+                    android.R.attr.colorPrimary
                 )
             )
             try {
-                return if (typedArray.hasValue(0))
+                return if (typedArray.hasValue(0)) {
                     typedArray.getColor(0, 0)
-                else
+                } else {
                     null
+                }
             } finally {
                 typedArray.recycle()
             }

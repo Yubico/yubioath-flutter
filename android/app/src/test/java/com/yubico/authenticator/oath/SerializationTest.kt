@@ -127,7 +127,8 @@ class SerializationTest {
     @Test
     fun `credentials json type`() {
         val l = listOf(
-            CredentialWithCode(totp(), code()), CredentialWithCode(hotp(), code()),
+            CredentialWithCode(totp(), code()),
+            CredentialWithCode(hotp(), code())
         )
 
         val jsonElement = jsonSerializer.encodeToJsonElement(l)
@@ -141,10 +142,10 @@ class SerializationTest {
         assertEquals(0, jsonElement1.size)
 
         val l2 = listOf(
-            CredentialWithCode(totp(), code()), CredentialWithCode(hotp(), code()),
+            CredentialWithCode(totp(), code()),
+            CredentialWithCode(hotp(), code())
         )
         val jsonElement2 = jsonSerializer.encodeToJsonElement(l2) as JsonArray
         assertEquals(2, jsonElement2.size)
     }
-
 }

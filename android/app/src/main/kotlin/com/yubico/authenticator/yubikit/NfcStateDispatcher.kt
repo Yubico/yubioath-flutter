@@ -18,11 +18,9 @@ package com.yubico.authenticator.yubikit
 
 import android.app.Activity
 import android.nfc.NfcAdapter
-
 import com.yubico.yubikit.android.transport.nfc.NfcConfiguration
 import com.yubico.yubikit.android.transport.nfc.NfcDispatcher
 import com.yubico.yubikit.android.transport.nfc.NfcReaderDispatcher
-
 import org.slf4j.LoggerFactory
 
 interface NfcStateListener {

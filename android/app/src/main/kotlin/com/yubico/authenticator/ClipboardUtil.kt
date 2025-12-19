@@ -23,7 +23,6 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.os.Build
 import android.os.PersistableBundle
-
 import org.slf4j.LoggerFactory
 
 object ClipboardUtil {
@@ -42,7 +41,7 @@ object ClipboardUtil {
 
             clipboardManager.setPrimaryClip(clipData)
         } catch (e: Exception) {
-            logger.error( "Failed to set string to clipboard", e)
+            logger.error("Failed to set string to clipboard", e)
             throw UnsupportedOperationException()
         }
     }
