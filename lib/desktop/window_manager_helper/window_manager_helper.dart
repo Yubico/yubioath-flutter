@@ -49,7 +49,7 @@ class WindowManagerHelper {
 
   /// Persist the current window state to preferences
   Future<void> saveWindowManagerProperties() async {
-    final bounds = _clampBounds(await getBounds());
+    final bounds = _clampSize(await getBounds());
     await writeBounds(bounds);
 
     if (Platform.isMacOS) {
@@ -73,7 +73,7 @@ class WindowManagerHelper {
       sharedPreferences.getDouble(_keyWidth) ?? WindowDefaults.bounds.width,
       sharedPreferences.getDouble(_keyHeight) ?? WindowDefaults.bounds.height,
     );
-    final bounds = _clampBounds(savedBounds);
+    final bounds = _clampSize(savedBounds);
 
     if (bounds != savedBounds) {
       _log.warning(
@@ -137,21 +137,15 @@ class WindowManagerHelper {
   }
 
   /// Restrict the values
-  static Rect _clampBounds(Rect rect) {
-    double minWidth = WindowDefaults.minSize.width;
-    double minHeight = WindowDefaults.minSize.height;
+  static Rect _clampSize(Rect rect) {
     const double maxWidth = 4096;
     const double maxHeight = 4096;
-    const double minLeft = 0;
-    const double minTop = 0;
-    const double maxLeft = 4096;
-    const double maxTop = 4096;
 
-    final width = rect.width.clamp(minWidth, maxWidth);
-    final height = rect.height.clamp(minHeight, maxHeight);
-    final left = rect.left.clamp(minLeft, maxLeft);
-    final top = rect.top.clamp(minTop, maxTop);
+    final width = rect.width.clamp(WindowDefaults.minSize.width, maxWidth);
+    final height = rect.height.clamp(WindowDefaults.minSize.height, maxHeight);
+    final clamped = Rect.fromLTWH(rect.left, rect.top, width, height);
+    _log.debug('Clamped ${rect.pretty} to ${clamped.pretty}');
 
-    return Rect.fromLTWH(left, top, width, height);
+    return clamped;
   }
 }
