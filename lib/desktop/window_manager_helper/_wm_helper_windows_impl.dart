@@ -17,18 +17,31 @@
 import 'dart:convert';
 import 'dart:ui';
 
+import 'package:logging/logging.dart';
 import 'package:screen_retriever/screen_retriever.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
 
+import '../../app/logging.dart';
 import 'defaults.dart';
+import 'window_manager_helper.dart';
+
+final _log = Logger('wm_helper_windows');
 
 class WindowManagerHelperWindows {
   static const _keyPrimaryScaleFactor = 'DESKTOP_PRIMARY_SCALE_FACTOR';
   static const _keyAllDisplaysValue = 'DESKTOP_SCREEN_SETUP';
 
+  static String _displayInfo(Display d) =>
+      '[id=${d.id},name=${d.name},'
+      'size=${d.size},visiblePosition=${d.visiblePosition},'
+      'visibleSize=${d.visibleSize},scaleFactor=${d.scaleFactor}';
+
   static Future<String> _getAllDisplays() async {
     final allDisplays = await screenRetriever.getAllDisplays();
+    for (var d in allDisplays) {
+      _log.debug('Display found: ${_displayInfo(d)}');
+    }
     return base64Encode(utf8.encode(jsonEncode(allDisplays)));
   }
 
@@ -37,7 +50,9 @@ class WindowManagerHelperWindows {
   ) async {
     final allDisplays =
         sharedPreferences.get(_keyAllDisplaysValue) as String? ?? '';
-    return await _getAllDisplays() != allDisplays;
+    var displayConfigurationChanged = await _getAllDisplays() != allDisplays;
+    _log.debug('Display configuration changed: $displayConfigurationChanged');
+    return displayConfigurationChanged;
   }
 
   static bool _displayContainsBounds(Display d, Rect rect) {
@@ -48,11 +63,18 @@ class WindowManagerHelperWindows {
       d.visibleSize?.height ?? 0.0,
     );
 
+    _log.debug('Checking displayContainsBounds');
+    _log.debug('Display:         ${_displayInfo(d)}');
+    _log.debug('Bounds:          ${rect.pretty}');
+
     // validate top bounds of the rectangle
     // the translations limit amount of minimum vertical and horizontal distance
     // which needs to be present to allow mouse interaction
-    return displayRect.contains(rect.topLeft.translate(48.0, 48.0)) ||
+    var containsBounds =
+        displayRect.contains(rect.topLeft.translate(48.0, 48.0)) ||
         displayRect.contains(rect.topCenter.translate(0.0, 48.0));
+    _log.debug('Contains bounds: $containsBounds');
+    return containsBounds;
   }
 
   static Future<void> saveWindowManagerProperties(
