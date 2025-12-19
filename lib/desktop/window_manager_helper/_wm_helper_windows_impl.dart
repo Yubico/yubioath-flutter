@@ -34,8 +34,10 @@ class WindowManagerHelperWindows {
 
   static String _displayInfo(Display d) =>
       '[id=${d.id},name=${d.name},'
-      'size=${d.size},visiblePosition=${d.visiblePosition},'
-      'visibleSize=${d.visibleSize},scaleFactor=${d.scaleFactor}';
+      'size=[${d.size.width}, ${d.size.height}],'
+      'visiblePosition=[${d.visiblePosition?.dx},${d.visiblePosition?.dy}],'
+      'visibleSize=[${d.visibleSize?.width}, ${d.visibleSize?.height}],'
+      'scaleFactor=${d.scaleFactor}';
 
   static Future<String> _getAllDisplays() async {
     final allDisplays = await screenRetriever.getAllDisplays();
@@ -109,7 +111,7 @@ class WindowManagerHelperWindows {
 
     final configChanged = await _displayConfigurationChanged(prefs);
     final windowRect =
-        !configChanged || _displayContainsBounds(primaryDisplay, savedBounds)
+        !configChanged && _displayContainsBounds(primaryDisplay, savedBounds)
         ? savedBounds
         : WindowDefaults.bounds;
 
@@ -135,7 +137,7 @@ class WindowManagerHelperWindows {
 
     final configChanged = await _displayConfigurationChanged(prefs);
     final windowRect =
-        !configChanged || _displayContainsBounds(primaryDisplay, savedBounds)
+        !configChanged && _displayContainsBounds(primaryDisplay, savedBounds)
         ? savedBounds
         : WindowDefaults.bounds;
 
