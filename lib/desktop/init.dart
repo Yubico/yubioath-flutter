@@ -69,13 +69,12 @@ const String _shown = 'shown';
 
 Timer? _saveWindowManagerPropertiesTimer;
 
-void _queueSaveWindowManagerProperties(
-  WindowManagerHelper helper, {
-  Duration delay = const Duration(milliseconds: 200),
-}) {
+void _queueSaveWindowManagerProperties(WindowManagerHelper helper) {
   _saveWindowManagerPropertiesTimer?.cancel();
   _saveWindowManagerPropertiesTimer = Timer(
-    delay,
+    const Duration(
+      milliseconds: 500, // lower values result in invalid display properties
+    ),
     () async => await helper.saveWindowManagerProperties(),
   );
 }

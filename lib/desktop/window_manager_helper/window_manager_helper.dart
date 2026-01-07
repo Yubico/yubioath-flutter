@@ -138,11 +138,16 @@ class WindowManagerHelper {
 
   /// Restrict the values
   static Rect _clampSize(Rect rect) {
-    const double maxWidth = 4096;
-    const double maxHeight = 4096;
-
-    final width = rect.width.clamp(WindowDefaults.minSize.width, maxWidth);
-    final height = rect.height.clamp(WindowDefaults.minSize.height, maxHeight);
+    final width = rect.width < WindowDefaults.minWidth
+        ? WindowDefaults.minWidth
+        : rect.width > WindowDefaults.maxWidth
+        ? WindowDefaults.defaultWidth
+        : rect.width;
+    final height = rect.height < WindowDefaults.minHeight
+        ? WindowDefaults.minHeight
+        : rect.height > WindowDefaults.maxHeight
+        ? WindowDefaults.defaultHeight
+        : rect.height;
     final clamped = Rect.fromLTWH(rect.left, rect.top, width, height);
     _log.debug('Clamped ${rect.pretty} to ${clamped.pretty}');
 
