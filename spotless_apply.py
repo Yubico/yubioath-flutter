@@ -18,11 +18,21 @@ import os
 import subprocess
 import sys
 
+"""
+This script reformats kotlin sources.
+"""
+
 
 def main():
     android_dir = os.path.join(os.path.dirname(__file__), "android")
     os.chdir(android_dir)
     gradlew = "./gradlew" if sys.platform != "win32" else "gradlew.bat"
+    result = subprocess.run(
+        [gradlew, "tasks"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+    )
+    if result.returncode != 0:
+        print("spotless check ignored: gradlew tasks failed (missing Android dev env?)")
+        sys.exit(0)
     result = subprocess.run([gradlew, "spotlessApply"], check=True)
     sys.exit(result.returncode)
 
