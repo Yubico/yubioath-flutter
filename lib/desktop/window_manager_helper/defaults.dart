@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Yubico.
+ * Copyright (C) 2023-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,10 @@ import 'dart:ui';
 class WindowDefaults {
   static const minWidth = 300.0;
   static const minHeight = 300.0;
+  static const maxWidth = 4096.0;
+  static const maxHeight = 4096.0;
+  static const defaultWidth = 1100.0;
+  static const defaultHeight = 700.0;
   static const minSize = Size(minWidth, minHeight);
-  static const bounds = Rect.fromLTWH(10.0, 10.0, 1100.0, 700.0);
+  static const bounds = Rect.fromLTWH(10.0, 10.0, defaultWidth, defaultHeight);
 }
