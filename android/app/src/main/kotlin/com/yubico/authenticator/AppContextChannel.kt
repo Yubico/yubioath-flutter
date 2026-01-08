@@ -18,9 +18,7 @@ package com.yubico.authenticator
 
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
-
 import kotlinx.coroutines.CoroutineScope
-
 import org.slf4j.LoggerFactory
 
 class AppContextChannel(

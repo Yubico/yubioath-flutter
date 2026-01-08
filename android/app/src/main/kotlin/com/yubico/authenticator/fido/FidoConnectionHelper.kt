@@ -23,16 +23,14 @@ import com.yubico.authenticator.yubikit.withConnection
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.fido.FidoConnection
 import com.yubico.yubikit.core.util.Result
-import org.slf4j.LoggerFactory
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.coroutines.suspendCoroutine
+import org.slf4j.LoggerFactory
 
 class FidoConnectionHelper(private val deviceManager: DeviceManager) {
     private var pendingAction: FidoAction? = null
 
-    fun hasPending() : Boolean {
-        return pendingAction != null
-    }
+    fun hasPending(): Boolean = pendingAction != null
 
     fun invokePending(fidoSession: YubiKitFidoSession): Boolean {
         var requestHandled = true
@@ -52,7 +50,7 @@ class FidoConnectionHelper(private val deviceManager: DeviceManager) {
         }
     }
 
-    suspend fun <T: Any> useSession(
+    suspend fun <T : Any> useSession(
         updateDeviceInfo: Boolean = false,
         block: (YubiKitFidoSession) -> T
     ): T {
@@ -67,7 +65,7 @@ class FidoConnectionHelper(private val deviceManager: DeviceManager) {
         )
     }
 
-    suspend fun <T: Any> useSessionUsb(
+    suspend fun <T : Any> useSessionUsb(
         device: UsbYubiKeyDevice,
         updateDeviceInfo: Boolean = false,
         block: (YubiKitFidoSession) -> T
@@ -79,15 +77,15 @@ class FidoConnectionHelper(private val deviceManager: DeviceManager) {
         }
     }
 
-    suspend fun <T : Any> useSessionNfc(
-        block: (YubiKitFidoSession) -> T
-    ): Result<T, Throwable> {
+    suspend fun <T : Any> useSessionNfc(block: (YubiKitFidoSession) -> T): Result<T, Throwable> {
         try {
             val result = suspendCoroutine { outer ->
                 pendingAction = {
-                    outer.resumeWith(runCatching {
-                        block.invoke(it.value)
-                    })
+                    outer.resumeWith(
+                        runCatching {
+                            block.invoke(it.value)
+                        }
+                    )
                 }
             }
             return Result.success(result)

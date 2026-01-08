@@ -51,37 +51,27 @@ object OathTestHelper {
         type: CodeType,
         touchRequired: Boolean = false,
         period: Int = 30
-    ) =
-        Credential(
-            deviceId = deviceId,
-            id = """otpauth://${type.name}/${name}?secret=aabbaabbaabbaabb&issuer=${issuer}""",
-            codeType = type,
-            period = period,
-            issuer = issuer,
-            accountName = name,
-            touchRequired = touchRequired
-        )
+    ) = Credential(
+        deviceId = deviceId,
+        id = """otpauth://${type.name}/$name?secret=aabbaabbaabbaabb&issuer=$issuer""",
+        codeType = type,
+        period = period,
+        issuer = issuer,
+        accountName = name,
+        touchRequired = touchRequired
+    )
+
     // create a Code with default or custom parameters
-    fun code(
-        value: String = "111111",
-        from: Long = 1000,
-        to: Long = 2000
-    ) = Code(value, from, to)
+    fun code(value: String = "111111", from: Long = 1000, to: Long = 2000) = Code(value, from, to)
 
     fun emptyCredentials() = emptyMap<Credential, Code>()
 
     private var nameCounter = 0
-    private fun nextName(): String {
-        return "name${nameCounter++}"
-    }
+    private fun nextName(): String = "name${nameCounter++}"
 
     private var issuerCounter = 0
-    private fun nextIssuer(): String {
-        return "issuer${issuerCounter++}"
-    }
+    private fun nextIssuer(): String = "issuer${issuerCounter++}"
 
     private var deviceCounter = 0
-    private fun nextDevice(): String {
-        return "deviceId${deviceCounter++}"
-    }
+    private fun nextDevice(): String = "deviceId${deviceCounter++}"
 }

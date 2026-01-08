@@ -44,9 +44,7 @@ class BufferAppender : UnsynchronizedAppenderBase<ILoggingEvent>() {
         this.encoder = encoder
     }
 
-    fun getLogBuffer(): ArrayList<String> {
-        return buffer
-    }
+    fun getLogBuffer(): ArrayList<String> = buffer
 
     companion object {
         private const val MAX_BUFFER_SIZE = 1000

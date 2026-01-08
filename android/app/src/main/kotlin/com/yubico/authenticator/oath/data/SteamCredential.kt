@@ -33,7 +33,7 @@ fun YubiKitCredential.isSteamCredential(): Boolean =
  */
 fun YubiKitOathSession.calculateSteamCode(
     credential: YubiKitCredential,
-    timestamp: Long,
+    timestamp: Long
 ): YubiKitCode {
     val timeSlotMs = 30_000
     require(credential.isSteamCredential()) {
@@ -54,11 +54,11 @@ private fun ByteArray.formatAsSteam(): String {
     val charTableLen = steamCharTable.length
     val offset = (this[this.size - 1] and 0x0f).toInt()
     var number = ByteBuffer.wrap(this, offset, 4).int and 0x7fffffff
-    return String(CharArray(5) {
-        steamCharTable[number % charTableLen].also { number /= charTableLen }
-    })
+    return String(
+        CharArray(5) {
+            steamCharTable[number % charTableLen].also { number /= charTableLen }
+        }
+    )
 }
 
 private fun Long.toByteArray() = ByteBuffer.allocate(8).putLong(this).array()
-
-

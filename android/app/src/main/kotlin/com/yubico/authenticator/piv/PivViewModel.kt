@@ -76,32 +76,38 @@ class PivViewModel : ViewModel() {
         _slots.postValue(slots)
     }
 
-    fun getMetadata(slotAlias: String): SlotMetadata? =
-        _slots.value?.first { slot ->
-            slot.slotId == Slot.fromStringAlias(slotAlias).value
-        }?.metadata
+    fun getMetadata(slotAlias: String): SlotMetadata? = _slots.value?.first { slot ->
+        slot.slotId == Slot.fromStringAlias(slotAlias).value
+    }?.metadata
 
-    fun getCertificate(slotAlias: String): X509Certificate? =
-        _slots.value?.first { slot ->
-            slot.slotId == Slot.fromStringAlias(slotAlias).value
-        }?.certificate
+    fun getCertificate(slotAlias: String): X509Certificate? = _slots.value?.first { slot ->
+        slot.slotId == Slot.fromStringAlias(slotAlias).value
+    }?.certificate
 
     fun updateSlot(slotAlias: String, metadata: SlotMetadata?, certificate: X509Certificate?) {
         val slotId = Slot.fromStringAlias(slotAlias).value
-        _slots.postValue(_slots.value?.map { slot ->
-            if (slot.slotId == slotId) slot.copy(metadata = metadata, certificate = certificate)
-            else slot
-        })
+        _slots.postValue(
+            _slots.value?.map { slot ->
+                if (slot.slotId == slotId) {
+                    slot.copy(metadata = metadata, certificate = certificate)
+                } else {
+                    slot
+                }
+            }
+        )
     }
 
     fun updateSlot(pivSlot: PivSlot) {
-        _slots.postValue(_slots.value?.map { slot ->
-            if (slot.slotId == pivSlot.slotId) pivSlot
-            else slot
-        })
+        _slots.postValue(
+            _slots.value?.map { slot ->
+                if (slot.slotId == pivSlot.slotId) {
+                    pivSlot
+                } else {
+                    slot
+                }
+            }
+        )
     }
 
-    fun currentSerial(): String {
-        return currentSerial.value?.toString() ?: "NO DEVICE"
-    }
+    fun currentSerial(): String = currentSerial.value?.toString() ?: "NO DEVICE"
 }

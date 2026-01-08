@@ -43,10 +43,13 @@ object Log {
             return
         }
 
-        val logMessage = (if (error == null)
-            "$message [$loggerName]"
-        else
-            "$message [$loggerName] (err: $error)")
+        val logMessage = (
+            if (error == null) {
+                "$message [$loggerName]"
+            } else {
+                "$message [$loggerName] (err: $error)"
+            }
+            )
 
         when (level) {
             LogLevel.TRAFFIC -> logger.trace(logMessage)

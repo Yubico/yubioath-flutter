@@ -154,6 +154,5 @@ class InfoTest {
         )
         info = Info(name = "TestD", isNfc = false, usbPid = null, deviceInfo = deviceInfo)
         assertEquals(VersionQualifier.Type.FINAL.ordinal.toUByte(), info.versionQualifier.type)
-
     }
 }

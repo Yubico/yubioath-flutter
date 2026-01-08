@@ -19,13 +19,9 @@ package com.yubico.authenticator.fido
 class FidoPinStore {
     private var pin: CharArray? = null
 
-    fun hasPin(): Boolean {
-        return pin != null
-    }
+    fun hasPin(): Boolean = pin != null
 
-    fun getPin(): CharArray {
-        return pin!!
-    }
+    fun getPin(): CharArray = pin!!
 
     fun setPin(newPin: CharArray?) {
         pin?.fill(0.toChar())
