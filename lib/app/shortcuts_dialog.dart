@@ -57,11 +57,11 @@ class ShortcutsDialog extends StatelessWidget {
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 16.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             spacing: 8.0,
             children: [
               Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   Text(
                     l10n.s_global_shortcuts,
@@ -75,7 +75,7 @@ class ShortcutsDialog extends StatelessWidget {
               ),
               const SizedBox(height: 8.0),
               Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   Text(
                     l10n.s_application_shortcuts,
@@ -104,13 +104,13 @@ class _IntentItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: .spaceBetween,
       spacing: 4.0,
       children: [
         Flexible(
           child: Text(
             intent.getDescription(l10n),
-            overflow: TextOverflow.fade,
+            overflow: .fade,
             maxLines: 1,
             softWrap: false,
           ),

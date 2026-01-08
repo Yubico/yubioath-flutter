@@ -135,7 +135,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
       builder: (context, _) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children:
               [
                     if (widget.state.hasKey) ...[
@@ -170,7 +170,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                                 : l10n.s_hide_password,
                           ),
                         ),
-                        textInputAction: TextInputAction.next,
+                        textInputAction: .next,
                         onChanged: (value) {
                           setState(() {
                             _currentIsWrong = false;
@@ -299,7 +299,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                         ),
                         enabled: newPasswordEnabled,
                       ),
-                      textInputAction: TextInputAction.next,
+                      textInputAction: .next,
                       onChanged: (value) {
                         setState(() {
                           _newPassword = value;
@@ -349,7 +349,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                         helperText:
                             '', // Prevents resizing when errorText shown
                       ),
-                      textInputAction: TextInputAction.done,
+                      textInputAction: .done,
                       onChanged: (value) {
                         setState(() {
                           _confirmPassword = value;

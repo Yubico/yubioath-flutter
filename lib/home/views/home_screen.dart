@@ -76,12 +76,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             children: [
               _DeviceContent(widget.deviceData, keyCustomization),
               const SizedBox(height: 16.0),
               Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   Wrap(
                     spacing: 4,
@@ -120,7 +120,7 @@ class _FipsLegend extends StatelessWidget {
             text: TextSpan(
               children: [
                 const WidgetSpan(
-                  alignment: PlaceholderAlignment.middle,
+                  alignment: .middle,
                   child: Padding(
                     padding: EdgeInsets.only(right: 4),
                     child: Icon(Symbols.shield, size: 12, fill: 0.0),
@@ -137,7 +137,7 @@ class _FipsLegend extends StatelessWidget {
             text: TextSpan(
               children: [
                 const WidgetSpan(
-                  alignment: PlaceholderAlignment.middle,
+                  alignment: .middle,
                   child: Padding(
                     padding: EdgeInsets.only(right: 4),
                     child: Icon(Symbols.shield, size: 12, fill: 1.0),
@@ -177,7 +177,7 @@ class _DeviceContent extends ConsumerWidget {
     final customColor = initialCustomization?.color;
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         Row(
           children: [
@@ -190,7 +190,7 @@ class _DeviceContent extends ConsumerWidget {
             if (serial != null) ...[
               const SizedBox(width: 8),
               Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   IconButton(
                     icon: const Icon(Symbols.edit),
@@ -327,7 +327,7 @@ class _DeviceContent extends ConsumerWidget {
               text: TextSpan(
                 children: [
                   WidgetSpan(
-                    alignment: PlaceholderAlignment.middle,
+                    alignment: .middle,
                     child: Padding(
                       padding: const EdgeInsets.only(right: 4),
                       child: Icon(

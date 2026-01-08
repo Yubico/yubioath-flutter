@@ -240,7 +240,7 @@ class _ConfigureYubiOtpDialogState
       builder: (context, _) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children:
               [
                     AppTextField(
@@ -282,7 +282,7 @@ class _ConfigureYubiOtpDialogState
                               : null,
                         ),
                       ),
-                      textInputAction: TextInputAction.next,
+                      textInputAction: .next,
                       onChanged: (value) {
                         setState(() {
                           _validatePublicIdFormat = false;
@@ -333,7 +333,7 @@ class _ConfigureYubiOtpDialogState
                           },
                         ),
                       ),
-                      textInputAction: TextInputAction.next,
+                      textInputAction: .next,
                       onChanged: (value) {
                         setState(() {
                           _validatePrivateIdFormat = false;
@@ -383,7 +383,7 @@ class _ConfigureYubiOtpDialogState
                           },
                         ),
                       ),
-                      textInputAction: TextInputAction.next,
+                      textInputAction: .next,
                       onChanged: (value) {
                         setState(() {
                           _validateSecretFormat = false;
@@ -398,7 +398,7 @@ class _ConfigureYubiOtpDialogState
                       },
                     ).init(),
                     Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: .start,
                       children: [
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -412,7 +412,7 @@ class _ConfigureYubiOtpDialogState
                         const SizedBox(width: 16.0),
                         Flexible(
                           child: Wrap(
-                            crossAxisAlignment: WrapCrossAlignment.start,
+                            crossAxisAlignment: .start,
                             spacing: 4.0,
                             runSpacing: 8.0,
                             children: [
@@ -452,7 +452,7 @@ class _ConfigureYubiOtpDialogState
                                       fileName != null
                                           ? '${l10n.s_export} $fileName'
                                           : _action.getDisplayName(l10n),
-                                      overflow: TextOverflow.ellipsis,
+                                      overflow: .ellipsis,
                                     ),
                                   );
                                 },

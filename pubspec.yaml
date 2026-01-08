@@ -21,7 +21,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 7.3.2-dev.0+70303
 
 environment:
-  sdk: ^3.8.0
+  sdk: ^3.10.0
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -42,10 +42,10 @@ dependencies:
   # cupertino_icons: ^1.0.2
 
   args: ^2.7.0
-  async: ^2.12.0
+  async: ^2.13.0
   logging: ^1.3.0
   collection: ^1.19.1
-  shared_preferences: ^2.5.3
+  shared_preferences: ^2.5.4
   flutter_riverpod: ^2.6.1
   json_annotation: ^4.9.0
   freezed_annotation: ^3.1.0
@@ -57,21 +57,21 @@ dependencies:
   qrscanner_zxing:
     path: android/flutter_plugins/qrscanner_zxing
   screen_retriever: ^0.2.0
-  desktop_drop: ^0.6.0
-  url_launcher: ^6.3.1
+  desktop_drop: ^0.7.0
+  url_launcher: ^6.3.2
   path_provider: ^2.1.5
   vector_graphics: ^1.1.19
-  vector_graphics_compiler: ^1.1.17
+  vector_graphics_compiler: ^1.1.19
   path: ^1.9.1
-  file_picker: ^10.3.1
+  file_picker: ^10.3.7
   archive: ^4.0.7
-  crypto: ^3.0.2
-  tray_manager: ^0.5.0
-  local_notifier: ^0.1.5
-  io: ^1.0.4
-  base32: ^2.1.3
-  convert: ^3.1.1
-  material_symbols_icons: ^4.2873.0
+  crypto: ^3.0.7
+  tray_manager: ^0.5.2
+  local_notifier: ^0.1.6
+  io: ^1.0.5
+  base32: ^2.2.0
+  convert: ^3.1.2
+  material_symbols_icons: ^4.2892.0
 
 dev_dependencies:
   integration_test:
@@ -86,17 +86,17 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
 
-  build_runner: ^2.7.0
-  freezed: ^3.2.0
-  json_serializable: ^6.9.5
+  build_runner: ^2.10.4
+  freezed: ^3.2.3
+  json_serializable: ^6.11.2
   analyzer:
   analyzer_plugin:
   custom_lint_builder:
   custom_lint:
   lint:
     path: lint
-  patrol_finders: ^2.9.0
-  meta: ^1.16.0
+  patrol_finders: ^3.0.0
+  meta: ^1.17.0
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

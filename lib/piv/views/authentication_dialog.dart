@@ -125,7 +125,7 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
       builder: (context, _) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children:
               [
                     Text(l10n.p_unlock_piv_management_desc),
@@ -174,7 +174,7 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
                                 },
                               ),
                       ),
-                      textInputAction: TextInputAction.next,
+                      textInputAction: .next,
                       onChanged: (value) {
                         setState(() {
                           _keyIsWrong = false;

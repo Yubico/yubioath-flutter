@@ -174,7 +174,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
       builder: (context, fullScreen) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children:
               [
                     Text(
@@ -197,7 +197,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                             : null,
                         icon: Icon(Symbols.subject),
                       ),
-                      textInputAction: TextInputAction.next,
+                      textInputAction: .next,
                       enabled:
                           !_generating &&
                           _generateType != GenerateType.publicKey,
@@ -209,7 +209,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                       },
                     ).init(),
                     Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: .start,
                       children: [
                         Icon(
                           Symbols.download,
@@ -234,7 +234,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                               }
                             },
                             child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                              crossAxisAlignment: .start,
                               children: [
                                 const SizedBox(height: 2.0),
                                 Text(
@@ -261,7 +261,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                       ],
                     ),
                     Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: .start,
                       children: [
                         Padding(
                           padding: isAndroid
@@ -275,7 +275,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                         const SizedBox(width: 16.0),
                         Flexible(
                           child: Wrap(
-                            crossAxisAlignment: WrapCrossAlignment.start,
+                            crossAxisAlignment: .start,
                             spacing: 4.0,
                             runSpacing: 0.0,
                             children: [
@@ -347,9 +347,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                                     children: [
                                       TextSpan(
                                         text: l10n.s_algorithm,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w700,
-                                        ),
+                                        style: TextStyle(fontWeight: .w700),
                                       ),
                                       TextSpan(text: '\n'),
                                       TextSpan(
@@ -361,9 +359,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                                       TextSpan(text: '\n' * 2),
                                       TextSpan(
                                         text: l10n.s_expiration_date,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w700,
-                                        ),
+                                        style: TextStyle(fontWeight: .w700),
                                       ),
                                       TextSpan(text: '\n'),
                                       TextSpan(
@@ -376,9 +372,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                                         TextSpan(text: '\n' * 2),
                                         TextSpan(
                                           text: l10n.s_pin_policy,
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w700,
-                                          ),
+                                          style: TextStyle(fontWeight: .w700),
                                         ),
                                         TextSpan(text: '\n'),
                                         TextSpan(
@@ -418,8 +412,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                                     text: TextSpan(
                                       children: [
                                         WidgetSpan(
-                                          alignment:
-                                              PlaceholderAlignment.middle,
+                                          alignment: .middle,
                                           child: Padding(
                                             padding: const EdgeInsets.fromLTRB(
                                               0,
@@ -437,9 +430,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                                         ),
                                         TextSpan(
                                           style: theme.textTheme.bodySmall
-                                              ?.copyWith(
-                                                fontWeight: FontWeight.bold,
-                                              ),
+                                              ?.copyWith(fontWeight: .bold),
                                           text: l10n.p_warning_usb_preferred,
                                         ),
                                       ],

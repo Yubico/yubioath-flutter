@@ -122,7 +122,7 @@ class _PinDialogState extends ConsumerState<PinDialog> {
       builder: (context, _) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children:
               [
                     Text(l10n.p_pin_required_desc),
@@ -165,7 +165,7 @@ class _PinDialogState extends ConsumerState<PinDialog> {
                               : l10n.s_hide_pin,
                         ),
                       ),
-                      textInputAction: TextInputAction.next,
+                      textInputAction: .next,
                       onChanged: (value) {
                         setState(() {
                           _pinIsWrong = false;

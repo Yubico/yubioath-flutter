@@ -149,7 +149,7 @@ class _AppListItemState<T> extends ConsumerState<AppListItem> {
                                 alignment: Alignment.centerLeft,
                                 child: Text(
                                   widget.title,
-                                  overflow: TextOverflow.fade,
+                                  overflow: .fade,
                                   maxLines: 1,
                                   softWrap: false,
                                 ),
@@ -157,14 +157,14 @@ class _AppListItemState<T> extends ConsumerState<AppListItem> {
                             )
                           : Text(
                               widget.title,
-                              overflow: TextOverflow.fade,
+                              overflow: .fade,
                               maxLines: 1,
                               softWrap: false,
                             ),
                       subtitle: subtitle != null
                           ? Text(
                               subtitle,
-                              overflow: TextOverflow.fade,
+                              overflow: .fade,
                               maxLines: 1,
                               softWrap: false,
                             )

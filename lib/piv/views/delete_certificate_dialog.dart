@@ -112,7 +112,7 @@ class _DeleteCertificateDialogState
         ),
       ],
       content: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           if (_deleteCertificate || _deleteKey) ...[
             Text(
@@ -123,7 +123,7 @@ class _DeleteCertificateDialogState
                   : l10n.p_warning_delete_key,
               style: Theme.of(
                 context,
-              ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+              ).textTheme.bodyMedium?.copyWith(fontWeight: .w700),
             ),
             const SizedBox(height: 8.0),
             Text(

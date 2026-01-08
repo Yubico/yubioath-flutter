@@ -172,7 +172,7 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
       builder: (context, _) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children:
               [
                     AppTextField(
@@ -213,7 +213,7 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
                           },
                         ),
                       ),
-                      textInputAction: TextInputAction.next,
+                      textInputAction: .next,
                       onChanged: (value) {
                         setState(() {
                           _validatePassword = false;
@@ -228,7 +228,7 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
                       },
                     ).init(),
                     Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: .start,
                       children: [
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -242,7 +242,7 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
                         const SizedBox(width: 16.0),
                         Flexible(
                           child: Wrap(
-                            crossAxisAlignment: WrapCrossAlignment.start,
+                            crossAxisAlignment: .start,
                             spacing: 4.0,
                             runSpacing: 8.0,
                             children: [

@@ -146,7 +146,7 @@ class DeviceManager(
             onUsb(it)
         }
 
-    suspend fun <T> withKey(
+    suspend fun <T: Any> withKey(
         onUsb: suspend (UsbYubiKeyDevice) -> T,
         onNfc: suspend () -> com.yubico.yubikit.core.util.Result<T, Throwable>,
         onCancelled: () -> Unit
@@ -170,7 +170,7 @@ class DeviceManager(
             appMethodChannel.nfcStateChanged(NfcState.USB_ACTIVITY_FAILURE)
         })
 
-    private suspend fun <T> onNfc(
+    private suspend fun <T: Any> onNfc(
         onNfc: suspend () -> com.yubico.yubikit.core.util.Result<T, Throwable>,
         onCancelled: () -> Unit
     ): T {

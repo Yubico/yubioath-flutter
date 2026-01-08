@@ -79,15 +79,13 @@ class MessagePage extends StatelessWidget {
       child: SizedBox(
         width: 350,
         child: Column(
-          crossAxisAlignment: centered
-              ? CrossAxisAlignment.center
-              : CrossAxisAlignment.start,
+          crossAxisAlignment: centered ? .center : .start,
           children: [
             if (graphic != null) ...[graphic!, const SizedBox(height: 16.0)],
             if (header != null)
               Text(
                 header!,
-                textAlign: centered ? TextAlign.center : TextAlign.left,
+                textAlign: centered ? .center : .left,
                 style: Theme.of(context).textTheme.titleLarge,
               ),
             if (message != null) ...[
@@ -96,7 +94,7 @@ class MessagePage extends StatelessWidget {
                 constraints: const BoxConstraints(maxWidth: 350),
                 child: Text(
                   message!,
-                  textAlign: centered ? TextAlign.center : TextAlign.left,
+                  textAlign: centered ? .center : .left,
                   style: Theme.of(context).textTheme.titleSmall?.apply(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),

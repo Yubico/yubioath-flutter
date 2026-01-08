@@ -145,7 +145,7 @@ class _FidoPinConfirmationDialog
       builder: (context, fullScreen) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children:
               [
                     Text(l10n.p_fido2_pin_required),
