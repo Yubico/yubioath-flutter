@@ -45,6 +45,7 @@ jobs:
           pre-commit run flutter-l10n-gen --all-files
           pre-commit run dart-format --all-files
           pre-commit run flutter-analyze --all-files
+          pre-commit run spotless-apply --all-files
           flutter test
         working-directory: ./app
 
