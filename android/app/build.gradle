@@ -84,7 +84,7 @@ android {
         exclude 'META-INF/versions/9/OSGI-INF/bcpkix.provider.bc.Licenses'
     }
 
-    ndkVersion = "28.2.13676358"
+    ndkVersion = flutter.ndkVersion
 }
 
 apply from: "signing.gradle"
