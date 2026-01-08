@@ -469,9 +469,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                             borderRadius: BorderRadius.circular(48),
                             borderSide: BorderSide(
                               width: 0,
-                              style: searchFocus.hasFocus
-                                  ? BorderStyle.solid
-                                  : BorderStyle.none,
+                              style: searchFocus.hasFocus ? .solid : .none,
                             ),
                           ),
                           contentPadding: const EdgeInsets.all(16),
@@ -563,8 +561,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                                       ...FlexLayout.values.map(
                                         (e) => PopupMenuItem(
                                           child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
+                                            mainAxisAlignment: .center,
                                             children: [
                                               Tooltip(
                                                 message: e.getDisplayName(l10n),
@@ -602,7 +599,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                           _scrollSearchField();
                           setState(() {});
                         },
-                        textInputAction: TextInputAction.next,
+                        textInputAction: .next,
                         onSubmitted: (value) {
                           Focus.of(
                             context,
@@ -618,7 +615,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
         ),
         detailViewBuilder: credential != null
             ? (context) => Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+                crossAxisAlignment: .stretch,
                 children: [
                   ListTitle(l10n.s_details),
                   Padding(
@@ -685,7 +682,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                     top: 8.0,
                   ),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: .start,
                     children: [
                       if (filteredCredentials.isEmpty)
                         Center(child: Text(l10n.s_no_passkeys)),

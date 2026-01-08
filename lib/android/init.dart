@@ -179,7 +179,7 @@ class DismissKeyboard extends StatelessWidget {
 
 void _initSystemUi() async {
   await SystemChrome.setEnabledSystemUIMode(
-    SystemUiMode.edgeToEdge,
+    .edgeToEdge,
     overlays: SystemUiOverlay.values,
   );
 }

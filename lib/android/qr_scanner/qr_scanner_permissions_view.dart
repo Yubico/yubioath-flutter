@@ -41,20 +41,20 @@ class QRScannerPermissionsUI extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32.0),
         child: Column(
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisSize: .max,
+          crossAxisAlignment: .stretch,
+          mainAxisAlignment: .spaceEvenly,
           children: [
             Text(
               l10n.p_need_camera_permission,
               style: const TextStyle(color: Colors.white),
-              textAlign: TextAlign.center,
+              textAlign: .center,
             ),
             Column(
               children: [
                 Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisSize: .min,
+                  mainAxisAlignment: .spaceEvenly,
                   children: [
                     Column(
                       children: [
@@ -74,8 +74,8 @@ class QRScannerPermissionsUI extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisSize: .min,
+                  mainAxisAlignment: .spaceEvenly,
                   children: [
                     Column(
                       children: [SmallWhiteText(l10n.q_have_account_info)],
@@ -83,8 +83,8 @@ class QRScannerPermissionsUI extends StatelessWidget {
                   ],
                 ),
                 Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisSize: .min,
+                  mainAxisAlignment: .spaceEvenly,
                   children: [
                     OutlinedButton(
                       onPressed: () {

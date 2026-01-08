@@ -66,7 +66,7 @@ class _FileDropTargetState extends State<FileDropTarget> {
       },
       enable: !isAndroid,
       child: Stack(
-        fit: StackFit.expand,
+        fit: .expand,
         children: [
           widget.child,
           if (_hovering)

@@ -52,7 +52,7 @@ class FidoConnectionHelper(private val deviceManager: DeviceManager) {
         }
     }
 
-    suspend fun <T> useSession(
+    suspend fun <T: Any> useSession(
         updateDeviceInfo: Boolean = false,
         block: (YubiKitFidoSession) -> T
     ): T {
@@ -67,7 +67,7 @@ class FidoConnectionHelper(private val deviceManager: DeviceManager) {
         )
     }
 
-    suspend fun <T> useSessionUsb(
+    suspend fun <T: Any> useSessionUsb(
         device: UsbYubiKeyDevice,
         updateDeviceInfo: Boolean = false,
         block: (YubiKitFidoSession) -> T
@@ -79,7 +79,7 @@ class FidoConnectionHelper(private val deviceManager: DeviceManager) {
         }
     }
 
-    suspend fun <T> useSessionNfc(
+    suspend fun <T : Any> useSessionNfc(
         block: (YubiKitFidoSession) -> T
     ): Result<T, Throwable> {
         try {
@@ -90,7 +90,7 @@ class FidoConnectionHelper(private val deviceManager: DeviceManager) {
                     })
                 }
             }
-            return Result.success(result!!)
+            return Result.success(result)
         } catch (cancelled: CancellationException) {
             return Result.failure(cancelled)
         } catch (error: Throwable) {

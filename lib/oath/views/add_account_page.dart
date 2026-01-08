@@ -444,14 +444,14 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
             : Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 18.0),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  crossAxisAlignment: .center,
                   children:
                       [
                             if (widget.credentialData == null && !isAndroid)
                               Column(
                                 children: [
                                   Wrap(
-                                    alignment: WrapAlignment.center,
+                                    alignment: .center,
                                     spacing: 4.0,
                                     runSpacing: 4.0,
                                     children: [
@@ -530,7 +530,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                                               TextSpan(
                                                 text: l10n.s_scanning,
                                                 style: TextStyle(
-                                                  fontWeight: FontWeight.w700,
+                                                  fontWeight: .w700,
                                                 ),
                                               ),
                                               TextSpan(text: '\n'),
@@ -545,7 +545,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                                               TextSpan(
                                                 text: l10n.s_drag_and_drop,
                                                 style: TextStyle(
-                                                  fontWeight: FontWeight.w700,
+                                                  fontWeight: .w700,
                                                 ),
                                               ),
                                               TextSpan(text: '\n'),
@@ -560,7 +560,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                                               TextSpan(
                                                 text: l10n.s_manually,
                                                 style: TextStyle(
-                                                  fontWeight: FontWeight.w700,
+                                                  fontWeight: .w700,
                                                 ),
                                               ),
                                               TextSpan(text: '\n'),
@@ -583,7 +583,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                                     ),
                                     child: Text(
                                       l10n.p_add_account_desc,
-                                      textAlign: TextAlign.center,
+                                      textAlign: .center,
                                     ),
                                   ),
                                 ],
@@ -610,7 +610,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                                     : l10n.l_invalid_character_issuer,
                                 icon: const Icon(Symbols.business),
                               ),
-                              textInputAction: TextInputAction.next,
+                              textInputAction: .next,
                               focusNode: _issuerFocus,
                               onChanged: (value) {
                                 setState(() {
@@ -640,7 +640,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                                     : l10n.l_name_already_exists,
                                 icon: const Icon(Symbols.person),
                               ),
-                              textInputAction: TextInputAction.next,
+                              textInputAction: .next,
                               focusNode: _accountFocus,
                               onChanged: (value) {
                                 setState(() {
@@ -685,7 +685,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                                 ),
                               ),
                               readOnly: _dataLoaded,
-                              textInputAction: TextInputAction.done,
+                              textInputAction: .done,
                               focusNode: _secretFocus,
                               onChanged: (value) {
                                 setState(() {
@@ -698,7 +698,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                             ).init(),
                             const SizedBox(height: 8),
                             Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                              crossAxisAlignment: .start,
                               children: [
                                 Padding(
                                   padding: const EdgeInsets.symmetric(
@@ -712,8 +712,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                                 const SizedBox(width: 16.0),
                                 Flexible(
                                   child: Wrap(
-                                    crossAxisAlignment:
-                                        WrapCrossAlignment.start,
+                                    crossAxisAlignment: .start,
                                     spacing: 4.0,
                                     runSpacing: 8.0,
                                     children: [

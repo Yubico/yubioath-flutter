@@ -87,7 +87,7 @@ class _ModeForm extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         ListTile(
           leading: const Icon(Symbols.usb),
@@ -135,7 +135,7 @@ class _CapabilitiesForm extends StatelessWidget {
     final nfcCapabilities = supported[Transport.nfc] ?? 0;
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         if (usbCapabilities != 0) ...[
           ListTile(
@@ -215,7 +215,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
   Widget _buildLockCodeForm(BuildContext context, bool canSave) {
     final l10n = AppLocalizations.of(context);
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children:
           [
                 Text(l10n.p_lock_code_required_desc),
@@ -247,7 +247,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
                           : l10n.s_hide_lock_code,
                     ),
                   ),
-                  textInputAction: TextInputAction.next,
+                  textInputAction: .next,
                   onChanged: (value) {
                     setState(() {
                       _lockCodeIsWrong = false;
@@ -414,9 +414,9 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
           ),
           error: (error, _) => Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [Text(error.toString(), textAlign: TextAlign.center)],
+              mainAxisAlignment: .center,
+              crossAxisAlignment: .center,
+              children: [Text(error.toString(), textAlign: .center)],
             ),
           ),
           data: (info) {
@@ -457,7 +457,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
                   !_lockCodeIsWrong;
             }
             return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: .start,
               children: [
                 Padding(
                   padding: const EdgeInsets.symmetric(

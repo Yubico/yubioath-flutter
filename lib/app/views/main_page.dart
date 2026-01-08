@@ -95,7 +95,7 @@ class MainPage extends ConsumerWidget {
     final deviceNode = ref.watch(currentDeviceProvider);
     final noKeyImage = Image.asset(
       'assets/graphics/no-key.png',
-      filterQuality: FilterQuality.medium,
+      filterQuality: .medium,
       scale: 2,
       color: Theme.of(context).colorScheme.primary,
     );

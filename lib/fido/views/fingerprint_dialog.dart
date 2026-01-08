@@ -100,7 +100,7 @@ class FingerprintDialog extends ConsumerWidget {
                         fingerprint.label,
                         style: Theme.of(context).textTheme.headlineSmall,
                         softWrap: true,
-                        textAlign: TextAlign.center,
+                        textAlign: .center,
                       ),
                       const SizedBox(height: 16),
                       Icon(

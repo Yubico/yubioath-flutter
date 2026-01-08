@@ -8,7 +8,7 @@ jobs:
     runs-on: macos-latest
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
 
     - name: Read variables from repo
       run: |
@@ -32,13 +32,13 @@ jobs:
         podfile-path: macos/Podfile.lock
 
     - name: Install uv
-      uses: astral-sh/setup-uv@v6
+      uses: astral-sh/setup-uv@v7
       with:
         enable-cache: true
 
     - name: Cache helper
       id: cache-helper
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: |
           build/macos/helper
@@ -102,7 +102,7 @@ jobs:
         mv macos/release-macos.sh deploy
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: yubioath-desktop-macos
         path: deploy

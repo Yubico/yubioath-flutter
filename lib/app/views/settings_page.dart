@@ -387,7 +387,7 @@ class _IconsViewState extends ConsumerState<_IconsView> {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         ActionListSection(
           l10n.s_actions,
@@ -508,7 +508,7 @@ class _LanguageView extends ConsumerWidget {
     int proofread = localeStatus.proofread;
 
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: .spaceBetween,
       children: [
         Text(locale.getNativeDisplayName()),
         if (translated != 100 || proofread != 100) ...[
@@ -523,12 +523,12 @@ class _LanguageView extends ConsumerWidget {
             infoText: Text.rich(
               WidgetSpan(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: .start,
                   children: [
                     Text(
                       l10n.l_incomplete_translation,
                       style: theme.textTheme.labelMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
+                        fontWeight: .w600,
                       ),
                     ),
                     const SizedBox(height: 8.0),
@@ -779,7 +779,7 @@ class _LogsViewState extends ConsumerState<_LogsView> {
 
     final allowScreenshots = ref.watch(androidAllowScreenshotsProvider);
     final content = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         logLevelRadioGroup,
         ActionListSection(
@@ -1137,10 +1137,8 @@ class _NfcAndUsbView extends ConsumerWidget {
       return ResponsiveDialog(
         title: Text(l10n.s_nfc_and_usb_options),
         dialogMaxWidth: 400,
-        builder: (context, fullScreen) => Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [content],
-        ),
+        builder: (context, fullScreen) =>
+            Column(crossAxisAlignment: .start, children: [content]),
       );
     } else {
       return content;
@@ -1189,7 +1187,7 @@ class _ConfirmResetDialog extends StatelessWidget {
         l10n.p_reset_settings_confirmation_desc,
         style: Theme.of(
           context,
-        ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+        ).textTheme.bodyMedium?.copyWith(fontWeight: .w700),
       ),
     );
   }
@@ -1314,7 +1312,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10.0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   _LanguageItem(selected: _selected, expanded: expanded),
                   if (isAndroid)
@@ -1323,7 +1321,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     _ToggleReadersItem(selected: _selected, expanded: expanded),
                   const SizedBox(height: 16.0),
                   Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: .start,
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(left: 8.0),
@@ -1341,7 +1339,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   ),
                   const SizedBox(height: 16.0),
                   Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: .start,
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(left: 8.0),

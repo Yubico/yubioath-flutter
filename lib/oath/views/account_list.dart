@@ -70,7 +70,7 @@ class AccountList extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.only(top: 8.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           if (pinnedCreds.isNotEmpty) ...[
             Padding(

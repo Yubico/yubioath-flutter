@@ -40,7 +40,6 @@ import com.yubico.yubikit.core.YubiKeyDevice
 import com.yubico.yubikit.core.application.CommandState
 import com.yubico.yubikit.core.fido.CtapException
 import com.yubico.yubikit.core.fido.FidoConnection
-import com.yubico.yubikit.core.internal.Logger
 import com.yubico.yubikit.core.smartcard.SmartCardConnection
 import com.yubico.yubikit.core.util.Result
 import com.yubico.yubikit.fido.ctap.BioEnrollment
@@ -686,7 +685,7 @@ class FidoManager(
 
             if (!name.isNullOrBlank()) {
                 bioEnrollment.setName(templateId, name)
-                Logger.debug(logger, "Set name to {}", name)
+                logger.debug("Set name to {}", name)
             }
 
             val templateIdHexString = templateId.toHexString()

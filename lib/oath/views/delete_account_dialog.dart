@@ -60,13 +60,13 @@ class DeleteAccountDialog extends ConsumerWidget {
         ),
       ],
       content: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           Text(
             l10n.p_warning_delete_account,
             style: Theme.of(
               context,
-            ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+            ).textTheme.bodyMedium?.copyWith(fontWeight: .w700),
           ),
           const SizedBox(height: 8.0),
           Text(l10n.p_warning_disable_credential),

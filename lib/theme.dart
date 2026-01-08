@@ -20,9 +20,9 @@ const defaultPrimaryColor = Colors.lightGreen;
 
 class AppTheme {
   static ThemeData getLightTheme(Color primaryColor) =>
-      _themeData(Brightness.light, primaryColor);
+      _themeData(.light, primaryColor);
   static ThemeData getDarkTheme(Color primaryColor) =>
-      _themeData(Brightness.dark, primaryColor);
+      _themeData(.dark, primaryColor);
 
   static ProgressIndicatorThemeData _progressIndicatorThemeData() =>
       // ignore: deprecated_member_use
@@ -31,12 +31,12 @@ class AppTheme {
   static ColorScheme _colorScheme(Brightness brightness, Color primaryColor) {
     const darkSurface = Color(0xff1e1e1e);
     return switch (brightness) {
-      Brightness.dark => ColorScheme.fromSeed(
+      .dark => ColorScheme.fromSeed(
         seedColor: primaryColor,
         brightness: brightness,
         surface: darkSurface,
       ),
-      Brightness.light => ColorScheme.fromSeed(
+      .light => ColorScheme.fromSeed(
         seedColor: primaryColor,
         brightness: brightness,
       ),

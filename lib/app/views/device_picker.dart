@@ -292,16 +292,8 @@ class _DeviceRowState extends ConsumerState<DeviceRow> {
                           : 0.0,
                     )
                   : null,
-              title: Text(
-                widget.title,
-                overflow: TextOverflow.fade,
-                softWrap: false,
-              ),
-              subtitle: Text(
-                widget.subtitle,
-                overflow: TextOverflow.fade,
-                softWrap: false,
-              ),
+              title: Text(widget.title, overflow: .fade, softWrap: false),
+              subtitle: Text(widget.subtitle, overflow: .fade, softWrap: false),
               dense: true,
               onTap: widget.onTap,
             ),

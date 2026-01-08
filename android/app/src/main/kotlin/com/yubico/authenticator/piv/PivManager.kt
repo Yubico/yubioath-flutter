@@ -303,7 +303,8 @@ class PivManager(
         pivmanData = PivmanUtils.getPivmanData(piv)
 
         val supportsBio = try {
-            piv.bioMetadata != null
+            piv.bioMetadata
+            true
         } catch (e: Exception) {
             when (e) {
                 is IOException, is ApduException, is UnsupportedOperationException -> false

@@ -68,7 +68,7 @@ class QRScannerOverlay extends StatelessWidget {
     }
 
     return Stack(
-      fit: StackFit.expand,
+      fit: .expand,
       children: [
         /// clip scanner area "hole" into a darkened background
         ClipPath(
@@ -78,9 +78,9 @@ class QRScannerOverlay extends StatelessWidget {
             child: ColoredBox(
               color: Colors.black,
               child: Column(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: .max,
+                mainAxisAlignment: .center,
+                crossAxisAlignment: .stretch,
                 children: [Spacer()],
               ),
             ),
@@ -110,7 +110,7 @@ class _OverlayPainter extends CustomPainter {
         : Colors.green.shade400;
     Paint paint = Paint()
       ..color = color
-      ..style = PaintingStyle.stroke
+      ..style = .stroke
       ..strokeWidth = 3.0;
 
     final RRect overlayRRect = _rectProvider(size);
@@ -124,8 +124,8 @@ class _OverlayPainter extends CustomPainter {
           ? overlayRRect.width - 5.0
           : 150.0;
       TextPainter iconPainter = TextPainter(
-        textDirection: TextDirection.rtl,
-        textAlign: TextAlign.center,
+        textDirection: .rtl,
+        textAlign: .center,
       );
       iconPainter.text = TextSpan(
         text: String.fromCharCode(icon.codePoint),
@@ -161,7 +161,7 @@ class _OverlayClipper extends CustomClipper<Path> {
     return Path()
       ..addRect(Rect.fromLTWH(0, 0, size.width, size.height))
       ..addRRect(_rectProvider(size))
-      ..fillType = PathFillType.evenOdd;
+      ..fillType = .evenOdd;
   }
 
   @override

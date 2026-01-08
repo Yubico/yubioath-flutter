@@ -43,7 +43,7 @@ class MessagePageNotInitialized extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final noKeyImage = Image.asset(
       'assets/graphics/no-key.png',
-      filterQuality: FilterQuality.medium,
+      filterQuality: .medium,
       scale: 2,
       color: Theme.of(context).colorScheme.primary,
     );

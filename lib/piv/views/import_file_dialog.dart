@@ -159,7 +159,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
           builder: (context, _) => Padding(
             padding: const EdgeInsets.symmetric(horizontal: 18.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: .start,
               children:
                   [
                         Text(l10n.p_password_protected_file),
@@ -194,7 +194,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
                                   : l10n.s_hide_password,
                             ),
                           ),
-                          textInputAction: TextInputAction.next,
+                          textInputAction: .next,
                           onChanged: (value) {
                             setState(() {
                               _passwordIsWrong = false;
@@ -306,7 +306,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
             builder: (context, _) => Padding(
               padding: const EdgeInsets.symmetric(horizontal: 18.0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children:
                     [
                           Text(
@@ -336,7 +336,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
                               ],
                             ),
                             Row(
-                              mainAxisSize: MainAxisSize.min,
+                              mainAxisSize: .min,
                               children: [
                                 Text(l10n.s_algorithm),
                                 const SizedBox(width: 8),
@@ -367,7 +367,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
                                   l10n.s_certificate,
                                   style: textTheme.bodyLarge,
                                   softWrap: true,
-                                  textAlign: TextAlign.center,
+                                  textAlign: .center,
                                 ),
                               ],
                             ),

@@ -88,8 +88,8 @@ class AppInputDecoration extends InputDecoration {
                 ),
               );
           return Wrap(
-            crossAxisAlignment: WrapCrossAlignment.center,
-            runAlignment: WrapAlignment.center,
+            crossAxisAlignment: .center,
+            runAlignment: .center,
             children: [
               for (Widget icon in icons)
                 ConstrainedBox(constraints: constraints, child: icon),
