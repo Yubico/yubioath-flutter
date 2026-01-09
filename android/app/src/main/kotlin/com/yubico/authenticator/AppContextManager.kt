@@ -19,18 +19,16 @@ package com.yubico.authenticator
 import com.yubico.authenticator.device.DeviceListener
 import com.yubico.authenticator.device.DeviceManager
 import com.yubico.yubikit.core.YubiKeyDevice
+import java.util.concurrent.Executors
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.cancel
-import java.util.concurrent.Executors
 
 /**
  * Provides behavior to run when a YubiKey is inserted/tapped for a specific view of the app.
  */
-abstract class AppContextManager(
-    protected val deviceManager: DeviceManager
-) : DeviceListener {
+abstract class AppContextManager(protected val deviceManager: DeviceManager) : DeviceListener {
 
     private val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
     protected val coroutineScope = CoroutineScope(SupervisorJob() + dispatcher)
@@ -55,7 +53,7 @@ abstract class AppContextManager(
 
     open fun onError(e: Exception) {}
 
-    abstract fun hasPending() : Boolean
+    abstract fun hasPending(): Boolean
 }
 
 class FunctionalityMissingException : Exception()

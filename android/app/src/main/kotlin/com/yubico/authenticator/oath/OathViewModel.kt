@@ -25,12 +25,13 @@ import com.yubico.authenticator.oath.data.Credential
 import com.yubico.authenticator.oath.data.CredentialWithCode
 import com.yubico.authenticator.oath.data.Session
 
-class OathViewModel: ViewModel() {
+class OathViewModel : ViewModel() {
 
     private val _sessionState = MutableLiveData<ViewModelData>()
     val sessionState: LiveData<ViewModelData> = _sessionState
 
-    fun currentSession() : Session? = (_sessionState.value as? ViewModelData.Value<*>)?.data as? Session?
+    fun currentSession(): Session? =
+        (_sessionState.value as? ViewModelData.Value<*>)?.data as? Session?
 
     // Sets session and credentials after performing OATH reset
     // Note: we cannot use [setSessionState] because resetting OATH changes deviceId
@@ -42,7 +43,7 @@ class OathViewModel: ViewModel() {
     fun setSessionState(sessionState: Session) {
         val oldDeviceId = currentSession()?.deviceId
         _sessionState.postValue(ViewModelData.Value(sessionState))
-        if(oldDeviceId != sessionState.deviceId) {
+        if (oldDeviceId != sessionState.deviceId) {
             _credentials.postValue(null)
         }
     }
@@ -76,16 +77,15 @@ class OathViewModel: ViewModel() {
         }
     }
 
-    fun renameCredential(
-        oldCredential: Credential,
-        newCredential: Credential
-    ) {
+    fun renameCredential(oldCredential: Credential, newCredential: Credential) {
         val existing = _credentials.value!!
         val entry = existing.find { it.credential == oldCredential }!!
         require(entry.credential.deviceId == newCredential.deviceId) {
             "Cannot rename credential for different deviceId"
         }
-        _credentials.postValue(existing.minus(entry).plus(CredentialWithCode(newCredential, entry.code)))
+        _credentials.postValue(
+            existing.minus(entry).plus(CredentialWithCode(newCredential, entry.code))
+        )
     }
 
     fun removeCredential(credential: Credential) {

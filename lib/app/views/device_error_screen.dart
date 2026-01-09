@@ -53,7 +53,7 @@ class DeviceErrorScreen extends ConsumerWidget {
       centered: true,
       graphic: Image.asset(
         'assets/product-images/generic.png',
-        filterQuality: FilterQuality.medium,
+        filterQuality: .medium,
         scale: 3,
         color: Theme.of(context).colorScheme.error,
       ),
@@ -101,7 +101,7 @@ class DeviceErrorScreen extends ConsumerWidget {
           centered: true,
           graphic: Image.asset(
             'assets/graphics/no-key.png',
-            filterQuality: FilterQuality.medium,
+            filterQuality: .medium,
             scale: 2,
             color: Theme.of(context).colorScheme.primary,
           ),

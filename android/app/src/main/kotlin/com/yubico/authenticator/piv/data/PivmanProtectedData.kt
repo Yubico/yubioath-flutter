@@ -36,8 +36,12 @@ class PivmanProtectedData(rawData: ByteArray = Tlv(TLV_TAG_PIVMAN_PROTECTED_DATA
         if (key != null) {
             data += Tlv(TLV_TAG_KEY, key).bytes
         }
-        return if (data.isNotEmpty()) Tlv(TLV_TAG_PIVMAN_PROTECTED_DATA, data).bytes else ByteArray(
-            0
-        )
+        return if (data.isNotEmpty()) {
+            Tlv(TLV_TAG_PIVMAN_PROTECTED_DATA, data).bytes
+        } else {
+            ByteArray(
+                0
+            )
+        }
     }
 }

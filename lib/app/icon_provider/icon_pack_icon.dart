@@ -67,7 +67,7 @@ class IconPackIcon extends ConsumerWidget {
     return VectorGraphic(
       width: _width,
       height: _height,
-      fit: BoxFit.fill,
+      fit: .fill,
       loader: IconFileLoader(ref, file),
       placeholderBuilder: (BuildContext _) {
         return SizedBox(
@@ -95,8 +95,8 @@ class IconPackIcon extends ConsumerWidget {
       clipper: _AccountIconClipper(_width, _height),
       child: Image.file(
         file,
-        filterQuality: FilterQuality.medium,
-        fit: BoxFit.cover,
+        filterQuality: .medium,
+        fit: .cover,
         alignment: Alignment.center,
         width: _width,
         height: _height,

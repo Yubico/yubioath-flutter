@@ -91,7 +91,7 @@ class SlotDialog extends ConsumerWidget {
                           pivSlot.getDisplayName(l10n),
                           style: textTheme.headlineSmall,
                           softWrap: true,
-                          textAlign: TextAlign.center,
+                          textAlign: .center,
                         ),
                       ),
                       const SizedBox(height: 16.0),
@@ -109,7 +109,7 @@ class SlotDialog extends ConsumerWidget {
                               if (slotData.publicKeyMatch == false) ...[
                                 const SizedBox(height: 16.0),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisAlignment: .center,
                                   children: [
                                     Icon(
                                       Symbols.info,
@@ -138,7 +138,7 @@ class SlotDialog extends ConsumerWidget {
                               Text(
                                 l10n.l_no_certificate,
                                 softWrap: true,
-                                textAlign: TextAlign.center,
+                                textAlign: .center,
                                 style: subtitleStyle,
                               ),
                             ],

@@ -146,7 +146,7 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
       builder: (context, _) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children:
               [
                     AppTextField(
@@ -187,7 +187,7 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
                               : l10n.s_hide_secret_key,
                         ),
                       ),
-                      textInputAction: TextInputAction.next,
+                      textInputAction: .next,
                       onChanged: (value) {
                         setState(() {
                           _validateSecret = false;
@@ -202,7 +202,7 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
                       },
                     ).init(),
                     Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: .start,
                       children: [
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -216,7 +216,7 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
                         const SizedBox(width: 16.0),
                         Flexible(
                           child: Wrap(
-                            crossAxisAlignment: WrapCrossAlignment.start,
+                            crossAxisAlignment: .start,
                             spacing: 4.0,
                             runSpacing: 8.0,
                             children: [

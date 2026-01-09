@@ -52,16 +52,20 @@ class CapabilitiesTest {
         assertFalse(serialize(Capabilities(usb = 0)).containsKey(TAG_NFC))
         assertTrue(serialize(Capabilities(nfc = 0)).containsKey(TAG_NFC))
         assertFalse(serialize(Capabilities(nfc = 0)).containsKey(TAG_USB))
-        assertTrue(with(serialize(Capabilities(0, 0))) {
-            containsKey(TAG_NFC) and containsKey(TAG_USB)
-        })
+        assertTrue(
+            with(serialize(Capabilities(0, 0))) {
+                containsKey(TAG_NFC) and containsKey(TAG_USB)
+            }
+        )
 
         // test that values are correct in serialized json
         assertTrue(serialize(Capabilities(usb = 100)).getValue(TAG_USB) == JsonPrimitive(100))
         assertTrue(serialize(Capabilities(nfc = 101)).getValue(TAG_NFC) == JsonPrimitive(101))
-        assertTrue(with(serialize(Capabilities(nfc = 303, usb = 202))) {
-            getValue(TAG_NFC) == JsonPrimitive(303) && getValue(TAG_USB) == JsonPrimitive(202)
-        })
+        assertTrue(
+            with(serialize(Capabilities(nfc = 303, usb = 202))) {
+                getValue(TAG_NFC) == JsonPrimitive(303) && getValue(TAG_USB) == JsonPrimitive(202)
+            }
+        )
     }
 
     @Test
@@ -71,7 +75,12 @@ class CapabilitiesTest {
         assertTrue(with(deserialize("""{"usb": "x"}""")) { (usb == null) and (nfc == null) })
         assertTrue(with(deserialize("""{"usb": 10}""")) { (usb == 10) and (nfc == null) })
         assertTrue(with(deserialize("""{"nfc": 20}""")) { (usb == null) and (nfc == 20) })
-        assertTrue(with(deserialize("""{"nfc": 20, "usb": "a" }""")) { (usb == null) and (nfc == null) })
+        assertTrue(
+            with(deserialize("""{"nfc": 20, "usb": "a" }""")) {
+                (usb == null) and
+                    (nfc == null)
+            }
+        )
         assertTrue(with(deserialize("""{"nfc": 25, "usb": 30 }""")) { (usb == 30) and (nfc == 25) })
         assertTrue(with(deserialize("""{"nfc": 0, "usb": 0 }""")) { (usb == 0) and (nfc == 0) })
     }

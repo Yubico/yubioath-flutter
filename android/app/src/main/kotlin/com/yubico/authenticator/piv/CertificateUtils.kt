@@ -20,8 +20,24 @@ import com.yubico.yubikit.piv.KeyType
 import com.yubico.yubikit.piv.PivSession
 import com.yubico.yubikit.piv.Slot
 import com.yubico.yubikit.piv.jca.PivProvider
+import java.io.ByteArrayOutputStream
+import java.math.BigInteger
+import java.security.GeneralSecurityException
+import java.security.KeyFactory
+import java.security.KeyStore
+import java.security.PrivateKey
+import java.security.PublicKey
+import java.security.SecureRandom
+import java.security.Signature
+import java.security.cert.X509Certificate
+import java.security.interfaces.ECPublicKey
+import java.security.interfaces.RSAPublicKey
+import java.security.spec.X509EncodedKeySpec
+import java.util.Date
+import javax.security.auth.x500.X500Principal
 import org.bouncycastle.asn1.ASN1ObjectIdentifier
 import org.bouncycastle.asn1.edec.EdECObjectIdentifiers
+import org.bouncycastle.asn1.x509.AlgorithmIdentifier
 import org.bouncycastle.cert.X509CertificateHolder
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder
@@ -30,61 +46,68 @@ import org.bouncycastle.operator.DefaultSignatureAlgorithmIdentifierFinder
 import org.bouncycastle.operator.OperatorCreationException
 import org.bouncycastle.pkcs.PKCS10CertificationRequest
 import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequestBuilder
-import java.io.ByteArrayOutputStream
-import java.math.BigInteger
-import java.security.GeneralSecurityException
-import java.security.KeyFactory
-import java.security.PublicKey
-import java.security.interfaces.ECPublicKey
-import java.security.interfaces.RSAPublicKey
-import java.security.spec.X509EncodedKeySpec
-import java.util.Date
-import javax.security.auth.x500.X500Principal
-import java.security.cert.X509Certificate
-import org.bouncycastle.asn1.x509.AlgorithmIdentifier
-import java.security.KeyStore
-import java.security.PrivateKey
-import java.security.SecureRandom
-import java.security.Signature
 
 /**
  * Hash algorithms supported for RSA/ECDSA. Ignored for Ed25519.
  */
 enum class HashAlgorithm {
-    SHA256, SHA384, SHA512
+    SHA256,
+    SHA384,
+    SHA512
 }
 
 /**
  * Abstracts the key algorithm class (RSA, EC, Ed25519).
  */
 enum class KeyAlgorithm {
-    RSA, EC, ED25519;
+    RSA,
+    EC,
+    ED25519;
 
     companion object {
-        fun fromPublicKey(publicKey: PublicKey): KeyAlgorithm = when (publicKey.algorithm.uppercase()) {
-            "RSA" -> RSA
-            "EC" -> EC
-            // Android/JCA may report Ed25519 as "Ed25519" or "EdDSA"
-            "ED25519", "EDDSA" -> ED25519
-            // X25519 ("XDH", "X25519") is key agreement only and cannot sign
-            "X25519", "XDH" -> throw UnsupportedOperationException("X25519/XDH cannot be used for signing (CSR/cert).")
-            else -> {
-                // Try to detect by encoded OID if the algorithm string is unexpected.
-                val alg = tryDetectFromEncoded(publicKey)
-                alg ?: throw UnsupportedOperationException("Unsupported public key algorithm: ${publicKey.algorithm}")
+        fun fromPublicKey(publicKey: PublicKey): KeyAlgorithm =
+            when (publicKey.algorithm.uppercase()) {
+                "RSA" -> RSA
+                "EC" -> EC
+                // Android/JCA may report Ed25519 as "Ed25519" or "EdDSA"
+                "ED25519", "EDDSA" -> ED25519
+                // X25519 ("XDH", "X25519") is key agreement only and cannot sign
+                "X25519", "XDH" -> throw UnsupportedOperationException(
+                    "X25519/XDH cannot be used for signing (CSR/cert)."
+                )
+                else -> {
+                    // Try to detect by encoded OID if the algorithm string is unexpected.
+                    val alg = tryDetectFromEncoded(publicKey)
+                    alg
+                        ?: throw UnsupportedOperationException(
+                            "Unsupported public key algorithm: ${publicKey.algorithm}"
+                        )
+                }
             }
-        }
 
         private fun tryDetectFromEncoded(publicKey: PublicKey): KeyAlgorithm? = try {
             val spec = X509EncodedKeySpec(publicKey.encoded)
-            val kfRSA = try { KeyFactory.getInstance("RSA") } catch (_: Exception) { null }
-            val kfEC = try { KeyFactory.getInstance("EC") } catch (_: Exception) { null }
+            val kfRSA = try {
+                KeyFactory.getInstance("RSA")
+            } catch (_: Exception) {
+                null
+            }
+            val kfEC = try {
+                KeyFactory.getInstance("EC")
+            } catch (_: Exception) {
+                null
+            }
             when {
-                kfRSA != null && runCatching { kfRSA.generatePublic(spec) as RSAPublicKey }.isSuccess -> RSA
-                kfEC != null && runCatching { kfEC.generatePublic(spec) as ECPublicKey }.isSuccess -> EC
+                kfRSA != null &&
+                    runCatching { kfRSA.generatePublic(spec) as RSAPublicKey }.isSuccess -> RSA
+                kfEC != null && runCatching {
+                    kfEC.generatePublic(spec) as ECPublicKey
+                }.isSuccess -> EC
                 else -> null
             }
-        } catch (_: Exception) { null }
+        } catch (_: Exception) {
+            null
+        }
     }
 }
 
@@ -92,21 +115,23 @@ enum class KeyAlgorithm {
  * Signature algorithm abstraction; holds the JCA name and (optionally) a fixed AlgorithmIdentifier OID.
  */
 sealed class SignatureAlgorithm(val jcaName: String, val fixedAlgId: ASN1ObjectIdentifier? = null) {
-    class Rsa(val hash: HashAlgorithm) : SignatureAlgorithm(
-        when (hash) {
-            HashAlgorithm.SHA256 -> "SHA256withRSA"
-            HashAlgorithm.SHA384 -> "SHA384withRSA"
-            HashAlgorithm.SHA512 -> "SHA512withRSA"
-        }
-    )
+    class Rsa(val hash: HashAlgorithm) :
+        SignatureAlgorithm(
+            when (hash) {
+                HashAlgorithm.SHA256 -> "SHA256withRSA"
+                HashAlgorithm.SHA384 -> "SHA384withRSA"
+                HashAlgorithm.SHA512 -> "SHA512withRSA"
+            }
+        )
 
-    class EcDsa(val hash: HashAlgorithm) : SignatureAlgorithm(
-        when (hash) {
-            HashAlgorithm.SHA256 -> "SHA256withECDSA"
-            HashAlgorithm.SHA384 -> "SHA384withECDSA"
-            HashAlgorithm.SHA512 -> "SHA512withECDSA"
-        }
-    )
+    class EcDsa(val hash: HashAlgorithm) :
+        SignatureAlgorithm(
+            when (hash) {
+                HashAlgorithm.SHA256 -> "SHA256withECDSA"
+                HashAlgorithm.SHA384 -> "SHA384withECDSA"
+                HashAlgorithm.SHA512 -> "SHA512withECDSA"
+            }
+        )
 
     object Ed25519 : SignatureAlgorithm("Ed25519", EdECObjectIdentifiers.id_Ed25519)
 }
@@ -117,13 +142,12 @@ sealed class SignatureAlgorithm(val jcaName: String, val fixedAlgId: ASN1ObjectI
  * - EC  -> SHAxxxwithECDSA
  * - Ed25519 -> Ed25519 (hash ignored)
  */
-fun resolveSignatureAlgorithm(publicKey: PublicKey, hash: HashAlgorithm): SignatureAlgorithm {
-    return when (KeyAlgorithm.fromPublicKey(publicKey)) {
+fun resolveSignatureAlgorithm(publicKey: PublicKey, hash: HashAlgorithm): SignatureAlgorithm =
+    when (KeyAlgorithm.fromPublicKey(publicKey)) {
         KeyAlgorithm.RSA -> SignatureAlgorithm.Rsa(hash)
         KeyAlgorithm.EC -> SignatureAlgorithm.EcDsa(hash)
         KeyAlgorithm.ED25519 -> SignatureAlgorithm.Ed25519
     }
-}
 
 class PivContentSigner(
     private val session: PivSession,
@@ -190,7 +214,6 @@ fun generateCsr(
     val builder = JcaPKCS10CertificationRequestBuilder(subject, publicKey)
     return signCsrBuilder(session, slot, publicKey, builder, hashAlgorithm)
 }
-
 
 @Throws(GeneralSecurityException::class)
 fun generateSelfSignedCertificate(

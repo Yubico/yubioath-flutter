@@ -23,7 +23,9 @@ import com.yubico.authenticator.oath.data.calculateSteamCode
 import com.yubico.authenticator.oath.data.isSteamCredential
 import org.junit.Assert
 import org.junit.Test
-import org.mockito.Mockito.*
+import org.mockito.ArgumentMatchers.isA
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.`when`
 
 class SteamCredentialTest {
 
@@ -69,7 +71,6 @@ class SteamCredentialTest {
 
     @Test
     fun `calculate Steam code`() {
-
         val c = steamCredential()
 
         Assert.assertEquals(
@@ -95,15 +96,14 @@ class SteamCredentialTest {
     }
 
     // OathSession always calculating specific response
-    private fun sessionWith(response: String) =
-        mock(YubiKitOathSession::class.java).also {
-            `when`(
-                it.calculateResponse(
-                    isA(ByteArray::class.java),
-                    isA(ByteArray::class.java)
-                )
-            ).thenReturn(response.hexToByteArray())
-        }
+    private fun sessionWith(response: String) = mock(YubiKitOathSession::class.java).also {
+        `when`(
+            it.calculateResponse(
+                isA(ByteArray::class.java),
+                isA(ByteArray::class.java)
+            )
+        ).thenReturn(response.hexToByteArray())
+    }
 
     // valid Steam Credential mock
     private fun steamCredential() = mock(YubiKitCredential::class.java).also {

@@ -30,7 +30,7 @@ class ErrorPage extends StatelessWidget {
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: .center,
           children: [
             Text(error, style: Theme.of(context).textTheme.headlineMedium),
           ],

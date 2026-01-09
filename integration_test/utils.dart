@@ -42,6 +42,7 @@ enum WindowSize {
   wide(Size(1024, 840));
 
   final Size size;
+
   const WindowSize(this.size);
 
   static WindowSize get standard => windowSizeName.isNotEmpty
@@ -57,6 +58,7 @@ class TestParameters {
 }
 
 Widget? _app;
+
 Future<Widget> getApp() async {
   if (_app == null) {
     isRunningTest = true; // Enable test mode
@@ -89,7 +91,7 @@ void testApp(
   }
   if (isDesktop) {
     patrolWidgetTest(name, (widgetTester) async {
-      final window = WindowManagerHelper.withPreferences(
+      final windowManagerHelper = WindowManagerHelper.withPreferences(
         await SharedPreferences.getInstance(),
       );
       await widgetTester.pumpWidget(await getApp());
@@ -97,9 +99,9 @@ void testApp(
       // Set window size
       final size = params.windowSize.size;
       final rect = Rect.fromLTWH(10, 10, size.width, size.height);
-      if (await window.getBounds() != rect) {
+      if (await windowManagerHelper.getBounds() != rect) {
         await Future.delayed(const Duration(milliseconds: 200));
-        await window.setBounds(rect);
+        await windowManagerHelper.setBounds(rect);
       }
 
       await widgetTester.pumpAndSettle();
@@ -209,6 +211,7 @@ extension DeviceInfoUtils on DeviceInfo {
 
 extension PatrolFinderUtils on PatrolFinder {
   T widget<T extends Widget>() => tester.tester.widget<T>(this);
+
   T element<T extends Element>() => tester.tester.element<T>(this);
 }
 

@@ -40,19 +40,19 @@ class InfoTable extends ConsumerWidget {
     final withContext = ref.watch(withContextProvider);
 
     return Row(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: .min,
+      crossAxisAlignment: .start,
       children: [
         Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
+          crossAxisAlignment: .end,
           children: values.keys
-              .map((title) => Text(title, textAlign: TextAlign.right))
+              .map((title) => Text(title, textAlign: .right))
               .toList(),
         ),
         const SizedBox(width: 8),
         Flexible(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             children: values.entries.map((e) {
               final title = e.key;
               final (value, key) = e.value;

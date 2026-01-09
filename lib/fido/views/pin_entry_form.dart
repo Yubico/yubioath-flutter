@@ -123,7 +123,7 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
     return Padding(
       padding: const EdgeInsets.only(left: 18.0, right: 18, top: 8),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           if (authBlocked || _retries == 0) ...[
             MaterialBanner(
@@ -212,7 +212,7 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
                   )
                 : null,
             title: noFingerprints
-                ? Text(l10n.l_no_fps_added, overflow: TextOverflow.fade)
+                ? Text(l10n.l_no_fps_added, overflow: .fade)
                 : null,
             dense: true,
             contentPadding: const EdgeInsets.symmetric(horizontal: 0),

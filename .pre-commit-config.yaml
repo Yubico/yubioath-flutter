@@ -32,6 +32,12 @@ repos:
       language: script
       entry: update_android_strings.py
       require_serial: true
+    - id: spotless-apply
+      name: spotless-apply
+      files: \.kt$
+      language: script
+      entry: spotless_apply.py
+      require_serial: true
 
 # Python
 - repo: local

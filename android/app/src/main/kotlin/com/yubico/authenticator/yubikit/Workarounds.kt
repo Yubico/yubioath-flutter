@@ -39,9 +39,9 @@ import com.yubico.yubikit.management.DeviceInfo
 import com.yubico.yubikit.management.FormFactor
 import com.yubico.yubikit.management.ManagementSession
 import com.yubico.yubikit.support.DeviceUtil
+import java.nio.ByteBuffer
 import kotlinx.coroutines.delay
 import org.slf4j.LoggerFactory
-import java.nio.ByteBuffer
 
 object Workarounds {
     private val logger = LoggerFactory.getLogger("Workarounds")
@@ -56,7 +56,7 @@ object Workarounds {
         device: YubiKeyDevice,
         enterReclaimCallback: (() -> Unit)? = null,
         leaveReclaimCallback: (() -> Unit)? = null,
-        failureCallback: (() -> Unit)? = null,
+        failureCallback: (() -> Unit)? = null
     ) = when {
         device !is UsbYubiKeyDevice -> true
 
@@ -106,4 +106,3 @@ object Workarounds {
             }
         }
 }
-

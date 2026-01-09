@@ -315,7 +315,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
         capabilities: capabilities,
         detailViewBuilder: fingerprint != null
             ? (context) => Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+                crossAxisAlignment: .stretch,
                 children: [
                   ListTitle(l10n.s_details),
                   Padding(
@@ -335,7 +335,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                               fingerprint.label,
                               style: Theme.of(context).textTheme.headlineSmall,
                               softWrap: true,
-                              textAlign: TextAlign.center,
+                              textAlign: .center,
                             ),
                             const SizedBox(height: 16),
                             const Icon(Symbols.fingerprint, size: 72),
@@ -388,7 +388,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10.0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: fingerprints
                     .map(
                       (fp) => _FingerprintListItem(

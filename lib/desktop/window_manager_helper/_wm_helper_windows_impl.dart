@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Yubico.
+ * Copyright (C) 2023-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,30 +17,58 @@
 import 'dart:convert';
 import 'dart:ui';
 
+import 'package:logging/logging.dart';
 import 'package:screen_retriever/screen_retriever.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
 
+import '../../app/logging.dart';
 import 'defaults.dart';
+import 'window_manager_helper.dart';
+
+final _log = Logger('wm_helper_windows');
 
 class WindowManagerHelperWindows {
   static const _keyPrimaryScaleFactor = 'DESKTOP_PRIMARY_SCALE_FACTOR';
   static const _keyAllDisplaysValue = 'DESKTOP_SCREEN_SETUP';
 
-  static Future<String> _getAllDisplays() async {
-    final allDisplays = await screenRetriever.getAllDisplays();
-    return base64Encode(utf8.encode(jsonEncode(allDisplays)));
+  static String _displayInfo(Display d) =>
+      '[id=${d.id},name=${d.name},'
+      'size=[${d.size.width}, ${d.size.height}],'
+      'visiblePosition=[${d.visiblePosition?.dx},${d.visiblePosition?.dy}],'
+      'visibleSize=[${d.visibleSize?.width}, ${d.visibleSize?.height}],'
+      'scaleFactor=${d.scaleFactor}';
+
+  static String _encodeDisplayList(List<Display> displays) {
+    for (var d in displays) {
+      _log.debug('Display found: ${_displayInfo(d)}');
+    }
+    return base64Encode(utf8.encode(jsonEncode(displays)));
   }
 
   static Future<bool> _displayConfigurationChanged(
     SharedPreferences sharedPreferences,
+    List<Display> displays,
   ) async {
-    final allDisplays =
+    final persistedDisplayList =
         sharedPreferences.get(_keyAllDisplaysValue) as String? ?? '';
-    return await _getAllDisplays() != allDisplays;
+    final encodedDisplayList = _encodeDisplayList(displays);
+    var changed = encodedDisplayList != persistedDisplayList;
+    _log.debug('Display configuration changed: $changed');
+    if (changed) {
+      _log.debug('Prefs value  : $persistedDisplayList');
+      _log.debug('Current value: $encodedDisplayList');
+    }
+    return changed;
   }
 
-  static bool _displayContainsBounds(Display d, Rect rect) {
+  /// Returns true if the rect coordinates are present in any of the displays.
+  static bool _isRectOnAnyDisplay(List<Display> allDisplays, Rect rect) =>
+      allDisplays.any((d) => _isRectOnDisplay(d, rect));
+
+  /// Returns true if the rect coordinates are present in the display.
+  /// Validates the top left and adjusted top center points for mouse interaction.
+  static bool _isRectOnDisplay(Display d, Rect rect) {
     final displayRect = Rect.fromLTWH(
       d.visiblePosition?.dx ?? 0.0,
       d.visiblePosition?.dy ?? 0.0,
@@ -48,59 +76,83 @@ class WindowManagerHelperWindows {
       d.visibleSize?.height ?? 0.0,
     );
 
-    // validate top bounds of the rectangle
-    // the translations limit amount of minimum vertical and horizontal distance
-    // which needs to be present to allow mouse interaction
-    return displayRect.contains(rect.topLeft.translate(48.0, 48.0)) ||
+    bool isWithinBounds =
+        displayRect.contains(rect.topLeft.translate(48.0, 48.0)) ||
         displayRect.contains(rect.topCenter.translate(0.0, 48.0));
+
+    _log.debug('Display        : ${_displayInfo(d)}');
+    _log.debug('Rect           : ${rect.pretty}');
+    _log.debug('Rect on display: $isWithinBounds');
+    return isWithinBounds;
+  }
+
+  static Future<void> saveWindowManagerProperties(
+    SharedPreferences prefs,
+  ) async {
+    final primaryDisplay = await screenRetriever.getPrimaryDisplay();
+    final allDisplays = await screenRetriever.getAllDisplays();
+    final primaryScaleFactor = primaryDisplay.scaleFactor?.toDouble() ?? 1.0;
+    await prefs.setDouble(_keyPrimaryScaleFactor, primaryScaleFactor);
+    final allDisplaysValue = _encodeDisplayList(allDisplays);
+    await prefs.setString(_keyAllDisplaysValue, allDisplaysValue);
+  }
+
+  static Future<void> restoreWindowManagerProperties(
+    SharedPreferences prefs,
+    Rect bounds,
+  ) async {
+    await setBounds(prefs, bounds);
   }
 
   static Future<void> setBounds(SharedPreferences prefs, Rect bounds) async {
     await windowManager.setMinimumSize(WindowDefaults.minSize);
 
-    final primaryDisplay = await screenRetriever.getPrimaryDisplay();
-    final primaryScaleFactor = primaryDisplay.scaleFactor?.toDouble() ?? 1.0;
     final savedScaleFactor = prefs.getDouble(_keyPrimaryScaleFactor);
     final hasSavedScaleFactor = savedScaleFactor != null;
-
-    var height = hasSavedScaleFactor
-        ? bounds.height / savedScaleFactor * primaryScaleFactor
-        : bounds.height;
-    var width = hasSavedScaleFactor
-        ? bounds.width / savedScaleFactor * primaryScaleFactor
-        : bounds.width;
-
-    final savedBounds = Rect.fromLTWH(bounds.left, bounds.top, width, height);
-
-    final configChanged = await _displayConfigurationChanged(prefs);
-    final windowRect =
-        !configChanged || _displayContainsBounds(primaryDisplay, savedBounds)
-        ? savedBounds
-        : WindowDefaults.bounds;
-
-    await windowManager.setBounds(windowRect);
-  }
-
-  static Future<Rect> getBounds(SharedPreferences prefs) async {
-    final primaryDisplay = await screenRetriever.getPrimaryDisplay();
-    final primaryScaleFactor = primaryDisplay.scaleFactor?.toDouble() ?? 1.0;
     final windowPixelRatio =
         PlatformDispatcher.instance.views.first.devicePixelRatio;
 
-    final rect = await windowManager.getBounds();
+    var height = hasSavedScaleFactor
+        ? bounds.height / savedScaleFactor * windowPixelRatio
+        : bounds.height;
+    var width = hasSavedScaleFactor
+        ? bounds.width / savedScaleFactor * windowPixelRatio
+        : bounds.width;
 
+    final savedBounds = Rect.fromLTWH(bounds.left, bounds.top, width, height);
+    final allDisplays = await screenRetriever.getAllDisplays();
+    final configChanged = await _displayConfigurationChanged(
+      prefs,
+      allDisplays,
+    );
+    final windowRect =
+        (!configChanged && _isRectOnAnyDisplay(allDisplays, savedBounds))
+        ? savedBounds
+        : Rect.fromLTWH(
+            WindowDefaults.bounds.left,
+            WindowDefaults.bounds.top,
+            width,
+            height,
+          );
+
+    _log.debug('setBounds: ${windowRect.pretty}');
+    await windowManager.setBounds(windowRect);
+  }
+
+  static Future<Rect> getBounds() async {
+    final primaryDisplay = await screenRetriever.getPrimaryDisplay();
+    final primaryScaleFactor = primaryDisplay.scaleFactor?.toDouble() ?? 1.0;
+    final pixelRatio = PlatformDispatcher.instance.views.first.devicePixelRatio;
+
+    final rect = await windowManager.getBounds();
     final windowRect = Rect.fromLTWH(
-      rect.left / primaryScaleFactor * windowPixelRatio,
-      rect.top / primaryScaleFactor * windowPixelRatio,
+      rect.left / primaryScaleFactor * pixelRatio,
+      rect.top / primaryScaleFactor * pixelRatio,
       rect.width,
       rect.height,
     );
 
-    await prefs.setDouble(_keyPrimaryScaleFactor, primaryScaleFactor);
-
-    final allDisplaysValue = await _getAllDisplays();
-    await prefs.setString(_keyAllDisplaysValue, allDisplaysValue);
-
+    _log.debug('getBounds: ${windowRect.pretty}');
     return windowRect;
   }
 }

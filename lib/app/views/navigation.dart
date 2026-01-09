@@ -216,7 +216,7 @@ class NavigationContent extends ConsumerWidget {
     return AnimatedSize(
       duration: Duration(milliseconds: 150),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: .spaceBetween,
         children: [
           // Normal YubiKey Applications
           Column(
@@ -310,7 +310,7 @@ class NavigationContent extends ConsumerWidget {
         children: [
           Material(
             elevation: 2.0,
-            type: MaterialType.transparency,
+            type: .transparency,
             child: Column(
               children: [
                 AnimatedSize(
@@ -360,7 +360,7 @@ class NavigationContent extends ConsumerWidget {
                 // Material is needed to ensure navigation items are scrolled
                 // under the device picker
                 final content = Material(
-                  type: MaterialType.transparency,
+                  type: .transparency,
                   elevation: 1.0,
                   child: _buildAppListContent(
                     context,
