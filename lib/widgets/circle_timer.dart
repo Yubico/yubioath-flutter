@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,73 +15,31 @@
  */
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../core/state.dart';
+import '../oath/state.dart';
 import 'progress_circle.dart';
 
-class CircleTimer extends StatefulWidget {
+class CircleTimer extends ConsumerWidget {
   final int validFromMs;
   final int validToMs;
+
   const CircleTimer(this.validFromMs, this.validToMs, {super.key});
 
   @override
-  State<StatefulWidget> createState() => _CircleTimerState();
-}
-
-class _CircleTimerState extends State<CircleTimer>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _animator;
-  late Tween<double> _tween;
-  late Animation<double> _progress;
-
-  void _animate() {
-    var period = widget.validToMs - widget.validFromMs;
-    var now = DateTime.now().millisecondsSinceEpoch;
-    _tween.begin = 1.0 - (now - widget.validFromMs) / period;
-    var timeLeft = widget.validToMs - now;
-    if (timeLeft > 0) {
-      _animator.duration = Duration(milliseconds: timeLeft.toInt());
-    } else {
-      _animator.duration = Duration.zero;
-    }
-    // Don't animate when running tests as this prevents the test from finishing
-    if (!isRunningTest) {
-      _animator.forward();
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    _animator = AnimationController(vsync: this);
-    _tween = Tween(end: 0);
-    _progress = _tween.animate(_animator)
-      ..addListener(() {
-        setState(() {});
-      });
-
-    _animate();
-  }
-
-  @override
-  void didUpdateWidget(CircleTimer oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    _animator.reset();
-    _animate();
-  }
-
-  @override
-  void dispose() {
-    _animator.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ProgressCircle(
-      IconTheme.of(context).color ?? Colors.grey.shade600,
-      _progress.value,
+  Widget build(BuildContext context, WidgetRef ref) {
+    final timer = ref.watch(oathTimerNotifierProvider);
+    return ValueListenableBuilder<DateTime>(
+      valueListenable: timer,
+      builder: (context, now, child) {
+        final period = validToMs - validFromMs;
+        final elapsed = now.millisecondsSinceEpoch - validFromMs;
+        final progress = 1.0 - (elapsed / period).clamp(0.0, 1.0);
+        return ProgressCircle(
+          IconTheme.of(context).color ?? Colors.grey.shade600,
+          progress,
+        );
+      },
     );
   }
 }
