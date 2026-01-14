@@ -135,6 +135,9 @@ class DesktopPivStateNotifier extends PivStateNotifier {
   @override
   Future<void> reset() async {
     await _session.command('reset');
+
+    if (!ref.mounted) return;
+
     ref.read(_managementKeyProvider(_devicePath).notifier).state = null;
     ref.invalidate(_sessionProvider(_session.devicePath));
   }
