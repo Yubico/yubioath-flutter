@@ -18,6 +18,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
+
 import 'package:logging/logging.dart';
 
 import '../app/logging.dart';
@@ -38,7 +40,7 @@ final _log = Logger('desktop.devices');
 
 final _usbDevicesProvider =
     StateNotifierProvider<UsbDeviceNotifier, List<UsbYubiKeyNode>>((ref) {
-      final notifier = UsbDeviceNotifier(ref.watch(rpcProvider).valueOrNull);
+      final notifier = UsbDeviceNotifier(ref.watch(rpcProvider).value);
       ref.listen<WindowState>(windowStateProvider, (_, windowState) {
         notifier._notifyWindowState(windowState);
       }, fireImmediately: true);
@@ -152,7 +154,7 @@ class UsbDeviceNotifier extends StateNotifier<List<UsbYubiKeyNode>> {
 
 final _nfcDevicesProvider =
     StateNotifierProvider<NfcDeviceNotifier, List<NfcReaderNode>>((ref) {
-      final notifier = NfcDeviceNotifier(ref.watch(rpcProvider).valueOrNull);
+      final notifier = NfcDeviceNotifier(ref.watch(rpcProvider).value);
       ref.listen<WindowState>(windowStateProvider, (_, windowState) {
         notifier._notifyWindowState(windowState);
       }, fireImmediately: true);
@@ -237,7 +239,7 @@ final _desktopDeviceDataProvider =
       ref,
     ) {
       final notifier = CurrentDeviceDataNotifier(
-        ref.watch(rpcProvider).valueOrNull,
+        ref.watch(rpcProvider).value,
         ref.watch(currentDeviceProvider),
       );
       ref.listen<WindowState>(windowStateProvider, (_, windowState) {
@@ -317,7 +319,7 @@ class CurrentDeviceDataNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
         result['data']['name'],
         DeviceInfo.fromJson(result['data']['info']),
       );
-      if (state.valueOrNull != newState) {
+      if (state.value != newState) {
         _log.info('Configuration change in current USB device');
         state = AsyncValue.data(newState);
       }
@@ -331,7 +333,7 @@ class CurrentDeviceDataNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
       var result = await _rpc?.command('get', node.path.segments);
       if (mounted && result != null) {
         if (result['data']['present']) {
-          final oldState = state.valueOrNull;
+          final oldState = state.value;
           final newState = YubiKeyData(
             node,
             result['data']['name'],

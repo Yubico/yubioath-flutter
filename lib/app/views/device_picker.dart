@@ -440,7 +440,7 @@ DeviceRow _buildCurrentDeviceRow(
 
   final keyCustomization = ref.watch(
     keyCustomizationManagerProvider,
-  )[data.valueOrNull?.info.serial];
+  )[data.value?.info.serial];
   String displayName = keyCustomization?.name ?? title;
   Color? displayColor = keyCustomization?.color;
 

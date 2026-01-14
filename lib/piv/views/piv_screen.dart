@@ -65,7 +65,7 @@ class _PivScreenState extends ConsumerState<PivScreen> {
     final (fipsCapable, fipsApproved) =
         ref
             .watch(currentDeviceDataProvider)
-            .valueOrNull
+            .value
             ?.info
             .getFipsStatus(Capability.piv) ??
         (false, false);

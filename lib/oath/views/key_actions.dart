@@ -50,7 +50,7 @@ Widget oathBuildActions(
   final (fipsCapable, fipsApproved) =
       ref
           .watch(currentDeviceDataProvider)
-          .valueOrNull
+          .value
           ?.info
           .getFipsStatus(Capability.oath) ??
       (false, false);

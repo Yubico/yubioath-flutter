@@ -21,6 +21,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -183,7 +184,7 @@ final defaultColorProvider = Provider<Color>((ref) => defaultPrimaryColor);
 final primaryColorProvider = Provider<Color>((ref) {
   const prefLastUsedColor = 'LAST_USED_COLOR';
   final prefs = ref.watch(prefProvider);
-  final data = ref.watch(currentDeviceDataProvider).valueOrNull;
+  final data = ref.watch(currentDeviceDataProvider).value;
   final defaultColor = ref.watch(defaultColorProvider);
   if (data != null) {
     final serial = data.info.serial;

@@ -15,6 +15,7 @@
  */
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 
 import '../app/models.dart';
 import '../core/state.dart';
@@ -41,10 +42,13 @@ final passkeysLayoutProvider =
 
 final fidoStateProvider = AsyncNotifierProvider.autoDispose
     .family<FidoStateNotifier, FidoState, DevicePath>(
-      () => throw UnimplementedError(),
+      (_) => throw UnimplementedError(),
     );
 
 abstract class FidoStateNotifier extends ApplicationStateNotifier<FidoState> {
+  FidoStateNotifier(this.devicePath);
+  final DevicePath devicePath;
+
   Stream<InteractionEvent> reset();
   Future<PinResult> setPin(String newPin, {String? oldPin});
   Future<PinResult> unlock(String pin);
@@ -53,11 +57,13 @@ abstract class FidoStateNotifier extends ApplicationStateNotifier<FidoState> {
 
 final fingerprintProvider = AsyncNotifierProvider.autoDispose
     .family<FidoFingerprintsNotifier, List<Fingerprint>, DevicePath>(
-      () => throw UnimplementedError(),
+      (_) => throw UnimplementedError(),
     );
 
 abstract class FidoFingerprintsNotifier
-    extends AutoDisposeFamilyAsyncNotifier<List<Fingerprint>, DevicePath> {
+    extends AsyncNotifier<List<Fingerprint>> {
+  FidoFingerprintsNotifier(this.devicePath);
+  final DevicePath devicePath;
   Stream<FingerprintEvent> registerFingerprint({String? name});
   Future<Fingerprint> renameFingerprint(Fingerprint fingerprint, String name);
   Future<void> deleteFingerprint(Fingerprint fingerprint);
@@ -65,11 +71,13 @@ abstract class FidoFingerprintsNotifier
 
 final credentialProvider = AsyncNotifierProvider.autoDispose
     .family<FidoCredentialsNotifier, List<FidoCredential>, DevicePath>(
-      () => throw UnimplementedError(),
+      (_) => throw UnimplementedError(),
     );
 
 abstract class FidoCredentialsNotifier
-    extends AutoDisposeFamilyAsyncNotifier<List<FidoCredential>, DevicePath> {
+    extends AsyncNotifier<List<FidoCredential>> {
+  FidoCredentialsNotifier(this.devicePath);
+  final DevicePath devicePath;
   Future<void> deleteCredential(FidoCredential credential);
 }
 

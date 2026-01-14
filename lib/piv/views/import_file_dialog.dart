@@ -227,8 +227,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
       ):
         {
           final isFips =
-              ref.watch(currentDeviceDataProvider).valueOrNull?.info.isFips ??
-              false;
+              ref.watch(currentDeviceDataProvider).value?.info.isFips ?? false;
           final unsupportedKey =
               keyType != null &&
               !getSupportedKeyTypes(
