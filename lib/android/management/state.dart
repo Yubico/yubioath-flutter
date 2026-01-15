@@ -19,39 +19,35 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../management/models.dart';
 import '../../management/state.dart';
 import '../overlay/nfc/method_channel_notifier.dart';
 
 final _managementMethodsProvider =
-    NotifierProvider<_ManagementMethodChannelNotifier, void>(
-      () => _ManagementMethodChannelNotifier(),
+    NotifierProvider<ManagementMethodChannelNotifier, void>(
+      () => ManagementMethodChannelNotifier(),
     );
 
-class _ManagementMethodChannelNotifier extends MethodChannelNotifier {
-  _ManagementMethodChannelNotifier()
+class ManagementMethodChannelNotifier extends MethodChannelNotifier {
+  ManagementMethodChannelNotifier()
     : super(const MethodChannel('android.management.methods'));
 }
 
-final androidManagementState = AsyncNotifierProvider.autoDispose
-    .family<ManagementStateNotifier, DeviceInfo, DevicePath>(
-      _AndroidManagementStateNotifier.new,
-    );
-
-class _AndroidManagementStateNotifier extends ManagementStateNotifier {
-  late final _ManagementMethodChannelNotifier management = ref.read(
+class AndroidManagementStateNotifier extends ManagementStateNotifier {
+  late final ManagementMethodChannelNotifier management = ref.read(
     _managementMethodsProvider.notifier,
   );
 
+  AndroidManagementStateNotifier(super.devicePath);
+
   @override
-  FutureOr<DeviceInfo> build(DevicePath devicePath) {
+  FutureOr<DeviceInfo> build() {
     // Make sure to rebuild if currentDevice changes (as on reboot)
     ref.watch(currentDeviceProvider);
 
     final deviceInfo = ref.watch(
-      currentDeviceDataProvider.select((s) => s.valueOrNull?.info),
+      currentDeviceDataProvider.select((s) => s.value?.info),
     );
 
     if (deviceInfo != null) {

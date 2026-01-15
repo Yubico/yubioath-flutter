@@ -20,6 +20,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
+
 import 'package:logging/logging.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -65,17 +67,14 @@ final _sessionProvider = Provider.autoDispose.family<RpcNodeSession, DevicePath>
   ]);
 });
 
-final desktopPivState = AsyncNotifierProvider.autoDispose
-    .family<PivStateNotifier, PivState, DevicePath>(
-      _DesktopPivStateNotifier.new,
-    );
-
-class _DesktopPivStateNotifier extends PivStateNotifier {
+class DesktopPivStateNotifier extends PivStateNotifier {
   late RpcNodeSession _session;
   late DevicePath _devicePath;
 
+  DesktopPivStateNotifier(super.devicePath);
+
   @override
-  FutureOr<PivState> build(DevicePath devicePath) async {
+  FutureOr<PivState> build() async {
     _session = ref.watch(_sessionProvider(devicePath));
     _session
       ..setErrorHandler('state-reset', (_) async {
@@ -83,9 +82,9 @@ class _DesktopPivStateNotifier extends PivStateNotifier {
       })
       ..setErrorHandler('auth-required', (e) async {
         try {
-          if (state.valueOrNull?.protectedKey == true) {
+          if (state.value?.protectedKey == true) {
             final String? pin;
-            if (state.valueOrNull?.metadata?.pinMetadata.defaultValue == true) {
+            if (state.value?.metadata?.pinMetadata.defaultValue == true) {
               pin = defaultPin;
             } else {
               pin = ref.read(_pinProvider(devicePath));
@@ -99,11 +98,7 @@ class _DesktopPivStateNotifier extends PivStateNotifier {
             }
           } else {
             final String? mgmtKey;
-            if (state
-                    .valueOrNull
-                    ?.metadata
-                    ?.managementKeyMetadata
-                    .defaultValue ==
+            if (state.value?.metadata?.managementKeyMetadata.defaultValue ==
                 true) {
               mgmtKey = defaultManagementKey;
             } else {
@@ -140,6 +135,9 @@ class _DesktopPivStateNotifier extends PivStateNotifier {
   @override
   Future<void> reset() async {
     await _session.command('reset');
+
+    if (!ref.mounted) return;
+
     ref.read(_managementKeyProvider(_devicePath).notifier).state = null;
     ref.invalidate(_sessionProvider(_session.devicePath));
   }
@@ -174,7 +172,7 @@ class _DesktopPivStateNotifier extends PivStateNotifier {
       if (result['status']) {
         ref.read(_managementKeyProvider(_devicePath).notifier).state =
             managementKey;
-        final oldState = state.valueOrNull;
+        final oldState = state.value;
         if (oldState != null) {
           state = AsyncData(oldState.copyWith(authenticated: true));
         }
@@ -189,7 +187,7 @@ class _DesktopPivStateNotifier extends PivStateNotifier {
 
   @override
   Future<PinVerificationStatus> verifyPin(String pin) async {
-    final pivState = state.valueOrNull;
+    final pivState = state.value;
 
     final signaler = Signaler();
     UserInteractionController? controller;
@@ -331,16 +329,13 @@ class _DesktopPivStateNotifier extends PivStateNotifier {
 
 final _shownSlots = SlotId.values.map((slot) => slot.id).toList();
 
-final desktopPivSlots = AsyncNotifierProvider.autoDispose
-    .family<PivSlotsNotifier, List<PivSlot>, DevicePath>(
-      _DesktopPivSlotsNotifier.new,
-    );
-
-class _DesktopPivSlotsNotifier extends PivSlotsNotifier {
+class DesktopPivSlotsNotifier extends PivSlotsNotifier {
   late RpcNodeSession _session;
 
+  DesktopPivSlotsNotifier(super.devicePath);
+
   @override
-  FutureOr<List<PivSlot>> build(DevicePath devicePath) async {
+  FutureOr<List<PivSlot>> build() async {
     _session = ref.watch(_sessionProvider(devicePath));
 
     final result = await _session.command('get', target: ['slots']);

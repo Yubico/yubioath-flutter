@@ -203,7 +203,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
     final (fipsCapable, fipsApproved) =
         ref
             .watch(currentDeviceDataProvider)
-            .valueOrNull
+            .value
             ?.info
             .getFipsStatus(Capability.piv) ??
         (false, false);

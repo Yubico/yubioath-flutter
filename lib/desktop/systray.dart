@@ -32,14 +32,13 @@ import '../generated/l10n/app_localizations.dart';
 import '../oath/models.dart';
 import '../oath/state.dart';
 import '../oath/views/utils.dart';
-import 'oath/state.dart';
 import 'state.dart';
 
 final _log = Logger('systray');
 
 final _favoriteAccounts =
     Provider.autoDispose<(DevicePath?, List<OathCredential>)>((ref) {
-      final deviceData = ref.watch(currentDeviceDataProvider).valueOrNull;
+      final deviceData = ref.watch(currentDeviceDataProvider).value;
       if (deviceData != null) {
         final credentials = ref.watch(
           credentialListProvider(deviceData.node.path),
@@ -86,7 +85,7 @@ Future<OathCode?> _calculateCode(
 ) async {
   try {
     return await (ref.read(
-      desktopOathCredentialListProvider(devicePath).notifier,
+      credentialListProvider(devicePath).notifier,
     )).calculate(credential, headless: true);
   } on CancellationException catch (_) {
     return null;

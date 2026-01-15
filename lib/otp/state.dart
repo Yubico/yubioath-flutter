@@ -17,6 +17,7 @@
 import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 
 import '../app/models.dart';
 import '../core/state.dart';
@@ -37,10 +38,12 @@ class YubiOtpOutputNotifier extends StateNotifier<File?> {
 
 final otpStateProvider = AsyncNotifierProvider.autoDispose
     .family<OtpStateNotifier, OtpState, DevicePath>(
-      () => throw UnimplementedError(),
+      (_) => throw UnimplementedError(),
     );
 
 abstract class OtpStateNotifier extends ApplicationStateNotifier<OtpState> {
+  OtpStateNotifier(this.devicePath);
+  final DevicePath devicePath;
   Future<String> generateStaticPassword(int length, String layout);
   Future<String> modhexEncodeSerial(int serial);
   Future<Map<String, List<String>>> getKeyboardLayouts();

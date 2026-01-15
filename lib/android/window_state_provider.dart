@@ -16,6 +16,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:logging/logging.dart';
 
 import '../app/logging.dart';
@@ -36,7 +37,7 @@ final androidWindowStateProvider = Provider<WindowState>(
 
 class _WindowStateNotifier extends StateNotifier<WindowState>
     with WidgetsBindingObserver {
-  final Ref<WindowState> _ref;
+  final Ref _ref;
   _WindowStateNotifier(this._ref)
     : super(WindowState(focused: true, visible: true, active: true)) {
     _init();

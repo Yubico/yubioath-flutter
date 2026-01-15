@@ -25,7 +25,6 @@ import 'package:logging/logging.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/logging.dart';
-import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../app/views/user_interaction.dart';
 import '../../core/models.dart';
@@ -42,20 +41,17 @@ import '../overlay/nfc/nfc_overlay.dart';
 
 final _log = Logger('android.oath.state');
 
-final androidOathStateProvider = AsyncNotifierProvider.autoDispose
-    .family<OathStateNotifier, OathState, DevicePath>(
-      _AndroidOathStateNotifier.new,
-    );
-
-class _AndroidOathStateNotifier extends OathStateNotifier {
+class AndroidOathStateNotifier extends OathStateNotifier {
   final _events = const EventChannel('android.oath.sessionState');
   late StreamSubscription _sub;
-  late _OathMethodChannelNotifier oath = ref.watch(
+  late OathMethodChannelNotifier oath = ref.watch(
     _oathMethodsProvider.notifier,
   );
 
+  AndroidOathStateNotifier(super.devicePath);
+
   @override
-  FutureOr<OathState> build(DevicePath arg) {
+  FutureOr<OathState> build() {
     _sub = _events.receiveBroadcastStream().listen(
       (event) {
         final json = jsonDecode(event);
@@ -245,28 +241,16 @@ final addCredentialsToAnyProvider = Provider(
   },
 );
 
-final androidCredentialListProvider = StateNotifierProvider.autoDispose
-    .family<OathCredentialListNotifier, List<OathPair>?, DevicePath>((
-      ref,
-      devicePath,
-    ) {
-      var notifier = _AndroidCredentialListNotifier(
-        ref.watch(withContextProvider),
-        ref,
-      );
-      return notifier;
-    });
-
-class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
+class AndroidCredentialListNotifier extends OathCredentialListNotifier {
   final _events = const EventChannel('android.oath.credentials');
   final WithContext _withContext;
   final Ref _ref;
   late StreamSubscription _sub;
-  late _OathMethodChannelNotifier oath = _ref.read(
+  late OathMethodChannelNotifier oath = _ref.read(
     _oathMethodsProvider.notifier,
   );
 
-  _AndroidCredentialListNotifier(this._withContext, this._ref) : super() {
+  AndroidCredentialListNotifier(this._withContext, this._ref) : super() {
     _sub = _events.receiveBroadcastStream().listen((event) {
       final json = jsonDecode(event);
       List<OathPair>? newState = json != null
@@ -283,7 +267,11 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
   }
 
   @override
-  Future<OathCode> calculate(OathCredential credential) async {
+  Future<OathCode> calculate(
+    OathCredential credential, {
+    bool headless = true,
+    bool update = true,
+  }) async {
     // Prompt for touch if needed
     UserInteractionController? controller;
     Timer? touchTimer;
@@ -381,11 +369,11 @@ class _AndroidCredentialListNotifier extends OathCredentialListNotifier {
   }
 }
 
-final _oathMethodsProvider = NotifierProvider<_OathMethodChannelNotifier, void>(
-  () => _OathMethodChannelNotifier(),
+final _oathMethodsProvider = NotifierProvider<OathMethodChannelNotifier, void>(
+  () => OathMethodChannelNotifier(),
 );
 
-class _OathMethodChannelNotifier extends MethodChannelNotifier {
-  _OathMethodChannelNotifier()
+class OathMethodChannelNotifier extends MethodChannelNotifier {
+  OathMethodChannelNotifier()
     : super(const MethodChannel('android.oath.methods'));
 }

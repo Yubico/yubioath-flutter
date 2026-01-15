@@ -18,9 +18,9 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../app/models.dart';
 import '../widgets/flex_box.dart';
 
 bool isRunningTest = bool.fromEnvironment('FLUTTER_TEST');
@@ -42,8 +42,7 @@ final prefProvider = Provider<SharedPreferences>((ref) {
   throw UnimplementedError();
 });
 
-abstract class ApplicationStateNotifier<T>
-    extends AutoDisposeFamilyAsyncNotifier<T, DevicePath> {
+abstract class ApplicationStateNotifier<T> extends AsyncNotifier<T> {
   ApplicationStateNotifier() : super();
 
   @protected
