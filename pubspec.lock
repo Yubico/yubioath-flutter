@@ -363,12 +363,11 @@ packages:
   flutter_riverpod:
     dependency: "direct main"
     description:
-      path: "packages/flutter_riverpod"
-      ref: master
-      resolved-ref: "7cb9e476ff11518a9fc1d01d453d691c3f6837f9"
-      url: "https://github.com/rrousselGit/riverpod.git"
-    source: git
-    version: "3.1.0"
+      name: flutter_riverpod
+      sha256: a3cd0547353c1990bf5ad64f73143e5ce7a780409639559ad83a743ff3b945e4
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.2.0"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -772,14 +771,13 @@ packages:
     source: path
     version: "1.0.0"
   riverpod:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
-      path: "packages/riverpod"
-      ref: master
-      resolved-ref: "7cb9e476ff11518a9fc1d01d453d691c3f6837f9"
-      url: "https://github.com/rrousselGit/riverpod.git"
-    source: git
-    version: "3.1.0"
+      name: riverpod
+      sha256: "9026676260f31bb5279cc5e59ca292145d8bab4aabede9aa2555c2a626ec66f1"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.2.0"
   rxdart:
     dependency: transitive
     description:
