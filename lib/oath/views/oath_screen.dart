@@ -187,7 +187,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
     final hasActions = hasFeature(features.actions);
     final searchText = searchController.text;
     final deviceInfo = ref.watch(
-      currentDeviceDataProvider.select((s) => s.valueOrNull?.info),
+      currentDeviceDataProvider.select((s) => s.value?.info),
     );
     Future<void> onFileDropped(File file) async {
       final qrScanner = ref.read(qrScannerProvider);
@@ -377,7 +377,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                 final helper = AccountHelper(context, ref, _selected!);
                 final subtitle = helper.subtitle;
                 return Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment: .stretch,
                   children: [
                     ListTitle(l10n.s_details),
                     Padding(
@@ -393,8 +393,8 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                           child: Column(
                             children: [
                               Row(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisSize: .min,
+                                crossAxisAlignment: .center,
                                 children: [
                                   IconTheme(
                                     data: IconTheme.of(
@@ -513,9 +513,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                             borderRadius: BorderRadius.circular(48),
                             borderSide: BorderSide(
                               width: 0,
-                              style: searchFocus.hasFocus
-                                  ? BorderStyle.solid
-                                  : BorderStyle.none,
+                              style: searchFocus.hasFocus ? .solid : .none,
                             ),
                           ),
                           contentPadding: const EdgeInsets.all(16),
@@ -605,8 +603,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                                       ...availableLayouts.map(
                                         (e) => PopupMenuItem(
                                           child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
+                                            mainAxisAlignment: .center,
                                             children: [
                                               Tooltip(
                                                 message: e.getDisplayName(l10n),
@@ -644,7 +641,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                           _scrollSearchField();
                           setState(() {});
                         },
-                        textInputAction: TextInputAction.next,
+                        textInputAction: .next,
                         onSubmitted: (value) {
                           Focus.of(
                             context,

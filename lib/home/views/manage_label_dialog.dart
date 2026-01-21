@@ -72,7 +72,7 @@ class _ManageLabelDialogState extends ConsumerState<ManageLabelDialog> {
       builder: (context, _) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children:
               [
                     Text(
@@ -90,7 +90,7 @@ class _ManageLabelDialogState extends ConsumerState<ManageLabelDialog> {
                         helperText: '',
                         icon: const Icon(Symbols.key),
                       ),
-                      textInputAction: TextInputAction.done,
+                      textInputAction: .done,
                       onChanged: (value) {
                         setState(() {});
                       },

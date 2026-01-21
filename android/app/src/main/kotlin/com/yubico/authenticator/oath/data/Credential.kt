@@ -53,10 +53,9 @@ data class Credential(
         data = credential
     )
 
-    override fun equals(other: Any?): Boolean =
-        (other is Credential) &&
-                id == other.id &&
-                deviceId == other.deviceId
+    override fun equals(other: Any?): Boolean = (other is Credential) &&
+        id == other.id &&
+        deviceId == other.deviceId
 
     override fun hashCode(): Int {
         var result = deviceId.hashCode()
@@ -66,7 +65,4 @@ data class Credential(
 }
 
 @Serializable
-data class CredentialWithCode(
-    val credential: Credential,
-    val code: Code?
-)
+data class CredentialWithCode(val credential: Credential, val code: Code?)

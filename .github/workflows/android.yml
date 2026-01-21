@@ -13,7 +13,7 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           path: 'app'
 
@@ -45,6 +45,7 @@ jobs:
           pre-commit run flutter-l10n-gen --all-files
           pre-commit run dart-format --all-files
           pre-commit run flutter-analyze --all-files
+          pre-commit run spotless-apply --all-files
           flutter test
         working-directory: ./app
 
@@ -69,7 +70,7 @@ jobs:
         run: android/scripts/collect-artifacts.sh ${GITHUB_REF}
         working-directory: ./app
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: yubico-authenticator-android
           path: app/artifacts/*

@@ -101,8 +101,8 @@ class _OathAddMultiAccountPageState
         ),
       ],
       builder: (context, _) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: .start,
+        mainAxisSize: .min,
         children:
             [
                   Padding(
@@ -112,9 +112,9 @@ class _OathAddMultiAccountPageState
                   ...widget.credentialsFromUri!.map((cred) {
                     final (checked, touch, unique) = _credStates[cred]!;
                     return CheckboxListTile(
-                      controlAffinity: ListTileControlAffinity.leading,
+                      controlAffinity: .leading,
                       secondary: Row(
-                        mainAxisSize: MainAxisSize.min,
+                        mainAxisSize: .min,
                         children: [
                           if (isTouchSupported())
                             Semantics(
@@ -146,7 +146,7 @@ class _OathAddMultiAccountPageState
                               onPressed: () async {
                                 final node = ref
                                     .read(currentDeviceDataProvider)
-                                    .valueOrNull
+                                    .value
                                     ?.node;
                                 final withContext = ref.read(
                                   withContextProvider,
@@ -198,7 +198,7 @@ class _OathAddMultiAccountPageState
                       ),
                       title: Text(
                         cred.issuer ?? cred.name,
-                        overflow: TextOverflow.fade,
+                        overflow: .fade,
                         maxLines: 1,
                         softWrap: false,
                       ),
@@ -206,12 +206,12 @@ class _OathAddMultiAccountPageState
                       enabled: unique,
                       subtitle: cred.issuer != null || !unique
                           ? Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              crossAxisAlignment: .stretch,
                               children: [
                                 if (cred.issuer != null)
                                   Text(
                                     cred.name,
-                                    overflow: TextOverflow.fade,
+                                    overflow: .fade,
                                     maxLines: 1,
                                     softWrap: false,
                                   ),

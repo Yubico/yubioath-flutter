@@ -24,8 +24,10 @@ suspend inline fun <reified C : YubiKeyConnection, T> YubiKeyDevice.withConnecti
     crossinline block: (C) -> T
 ): T = suspendCoroutine { continuation ->
     requestConnection(C::class.java) {
-        continuation.resumeWith(runCatching {
-            block(it.value)
-        })
+        continuation.resumeWith(
+            runCatching {
+                block(it.value)
+            }
+        )
     }
 }

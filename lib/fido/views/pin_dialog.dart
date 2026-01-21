@@ -95,7 +95,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
     final newPinEnabled = !_isBlocked && currentPinLenOk;
     final confirmPinEnabled = !_isBlocked && currentPinLenOk && newPinLenOk;
 
-    final deviceData = ref.read(currentDeviceDataProvider).valueOrNull;
+    final deviceData = ref.read(currentDeviceDataProvider).value;
 
     final hasPinComplexity = deviceData?.info.pinComplexity ?? false;
     final pinRetries = ref.watch(
@@ -126,7 +126,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
       builder: (context, _) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children:
               [
                     if (hasPin) ...[
@@ -169,7 +169,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                                 : l10n.s_hide_pin,
                           ),
                         ),
-                        textInputAction: TextInputAction.next,
+                        textInputAction: .next,
                         onChanged: (value) {
                           setState(() {
                             _currentIsWrong = false;
@@ -235,7 +235,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                           ),
                         ),
                       ),
-                      textInputAction: TextInputAction.next,
+                      textInputAction: .next,
                       onChanged: (value) {
                         setState(() {
                           _newIsWrong = false;
@@ -293,7 +293,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                         helperText:
                             '', // Prevents resizing when errorText shown
                       ),
-                      textInputAction: TextInputAction.done,
+                      textInputAction: .done,
                       onChanged: (value) {
                         setState(() {});
                       },

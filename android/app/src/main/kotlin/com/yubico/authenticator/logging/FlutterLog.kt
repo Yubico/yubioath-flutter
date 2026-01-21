@@ -73,7 +73,7 @@ class FlutterLog(messenger: BinaryMessenger) {
         Log.LogLevel.entries.firstOrNull { it.name == argValue?.uppercase() }
 
     private fun loggerError(message: String) {
-        log(Log.LogLevel.ERROR,"FlutterLog", message, null)
+        log(Log.LogLevel.ERROR, "FlutterLog", message, null)
     }
 
     private fun log(level: Log.LogLevel, loggerName: String, message: String, error: String?) {

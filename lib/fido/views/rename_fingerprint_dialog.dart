@@ -99,7 +99,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
       builder: (context, _) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children:
               [
                     AppTextField(

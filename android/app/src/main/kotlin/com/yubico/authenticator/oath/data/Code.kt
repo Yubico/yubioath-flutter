@@ -31,13 +31,12 @@ data class Code(
 ) {
 
     companion object {
-        fun from(code: YubiKitCode?): Code? =
-            code?.let {
-                Code(
-                    it.value,
-                    it.validFrom / 1000,
-                    it.validUntil / 1000
-                )
-            }
+        fun from(code: YubiKitCode?): Code? = code?.let {
+            Code(
+                it.value,
+                it.validFrom / 1000,
+                it.validUntil / 1000
+            )
+        }
     }
 }

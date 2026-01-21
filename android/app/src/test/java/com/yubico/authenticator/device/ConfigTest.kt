@@ -29,54 +29,58 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.mockito.Mockito
 
-
 class ConfigTest {
 
     private fun serialize(c: Config) = jsonSerializer.encodeToJsonElement(c) as JsonObject
     private fun deserialize(s: String) =
         jsonSerializer.decodeFromJsonElement<Config>(Json.parseToJsonElement(s))
 
-
     @Test
     fun serialization() {
-        assertTrue(with(serialize(Config(null, null, null, Capabilities(usb = 123)))) {
-            val capabilities = getValue("enabled_capabilities")
-            (keys.size == 4) and
+        assertTrue(
+            with(serialize(Config(null, null, null, Capabilities(usb = 123)))) {
+                val capabilities = getValue("enabled_capabilities")
+                (keys.size == 4) and
                     (getValue("device_flags") == JsonNull) and
                     (getValue("challenge_response_timeout") == JsonNull) and
                     (getValue("auto_eject_timeout") == JsonNull) and
                     (capabilities.jsonObject.getValue("usb") == JsonPrimitive(123)) and
                     !capabilities.jsonObject.containsKey("nfc")
-        })
+            }
+        )
 
-        assertTrue(with(serialize(Config(null, null, null, Capabilities(nfc = 789)))) {
-            val capabilities = getValue("enabled_capabilities")
-            (keys.size == 4) and
+        assertTrue(
+            with(serialize(Config(null, null, null, Capabilities(nfc = 789)))) {
+                val capabilities = getValue("enabled_capabilities")
+                (keys.size == 4) and
                     (getValue("device_flags") == JsonNull) and
                     (getValue("challenge_response_timeout") == JsonNull) and
                     (getValue("auto_eject_timeout") == JsonNull) and
                     !capabilities.jsonObject.containsKey("usb") and
                     (capabilities.jsonObject.getValue("nfc") == JsonPrimitive(789))
-        })
+            }
+        )
 
-        assertTrue(with(
-            serialize(
-                Config(
-                    deviceFlags = 1,
-                    challengeResponseTimeout = 255U,
-                    autoEjectTimeout = 20U,
-                    enabledCapabilities = Capabilities(usb = 123, nfc = 456)
+        assertTrue(
+            with(
+                serialize(
+                    Config(
+                        deviceFlags = 1,
+                        challengeResponseTimeout = 255U,
+                        autoEjectTimeout = 20U,
+                        enabledCapabilities = Capabilities(usb = 123, nfc = 456)
+                    )
                 )
-            )
-        ) {
-            val capabilities = getValue("enabled_capabilities")
-            (keys.size == 4) and
+            ) {
+                val capabilities = getValue("enabled_capabilities")
+                (keys.size == 4) and
                     (getValue("device_flags") == JsonPrimitive(1)) and
                     (getValue("challenge_response_timeout") == JsonPrimitive(255)) and
                     (getValue("auto_eject_timeout") == JsonPrimitive(20)) and
                     (capabilities.jsonObject.getValue("usb") == JsonPrimitive(123)) and
                     (capabilities.jsonObject.getValue("nfc") == JsonPrimitive(456))
-        })
+            }
+        )
     }
 
     @Test
@@ -88,8 +92,9 @@ class ConfigTest {
               "challenge_response_timeout": null,
               "auto_eject_timeout": null,
               "enabled_capabilities": { "usb": 123, "nfc": null } }
-            """.trimIndent()
-            ), Config(null, null, null, Capabilities(usb = 123))
+                """.trimIndent()
+            ),
+            Config(null, null, null, Capabilities(usb = 123))
         )
 
         assertEquals(
@@ -99,8 +104,9 @@ class ConfigTest {
               "challenge_response_timeout": null,
               "auto_eject_timeout": null,
               "enabled_capabilities": { "nfc": null, "usb": 123 } }
-            """.trimIndent()
-            ), Config(null, null, null, Capabilities(usb = 123))
+                """.trimIndent()
+            ),
+            Config(null, null, null, Capabilities(usb = 123))
         )
 
         assertEquals(
@@ -110,11 +116,10 @@ class ConfigTest {
               "challenge_response_timeout": 123, 
               "auto_eject_timeout": 987, 
               "enabled_capabilities": { "usb": 202, "nfc": 303 } }
-            """.trimIndent()
+                """.trimIndent()
             ),
             Config(123, 123U, 987U, Capabilities(202, 303))
         )
-
     }
 
     private fun assertEqualAsInts(expected: Number?, actual: UByte?) =

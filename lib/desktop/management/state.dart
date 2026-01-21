@@ -36,18 +36,13 @@ final _sessionProvider = Provider.autoDispose
           RpcNodeSession(ref.watch(rpcProvider).requireValue, devicePath, []),
     );
 
-final desktopManagementState = AsyncNotifierProvider.autoDispose
-    .family<ManagementStateNotifier, DeviceInfo, DevicePath>(
-      _DesktopManagementStateNotifier.new,
-    );
-
-class _DesktopManagementStateNotifier extends ManagementStateNotifier {
+class DesktopManagementStateNotifier extends ManagementStateNotifier {
   late RpcNodeSession _session;
   List<String> _subpath = [];
-  _DesktopManagementStateNotifier() : super();
+  DesktopManagementStateNotifier(super.devicePath);
 
   @override
-  FutureOr<DeviceInfo> build(DevicePath devicePath) async {
+  FutureOr<DeviceInfo> build() async {
     // Make sure to rebuild if currentDevice changes (as on reboot)
     ref.watch(currentDeviceProvider);
 

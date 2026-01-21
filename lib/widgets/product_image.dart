@@ -67,7 +67,7 @@ class ProductImage extends StatelessWidget {
     if (image == null) {
       return Image.asset(
         'assets/product-images/generic.png',
-        filterQuality: FilterQuality.medium,
+        filterQuality: .medium,
         color: IconTheme.of(context).color,
       );
     }
@@ -75,7 +75,7 @@ class ProductImage extends StatelessWidget {
     return Image.asset(
       'assets/product-images/$image.png',
       // Medium provides the best results when scaling down
-      filterQuality: FilterQuality.medium,
+      filterQuality: .medium,
     );
   }
 }

@@ -16,10 +16,10 @@
 
 package com.yubico.authenticator.piv.data
 
+import java.security.cert.X509Certificate
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
-import java.security.cert.X509Certificate
 
 @Serializable
 data class PivSlot(

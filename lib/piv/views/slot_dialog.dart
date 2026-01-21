@@ -37,7 +37,7 @@ class SlotDialog extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // TODO: Solve this in a cleaner way
-    var keyData = ref.watch(currentDeviceDataProvider).valueOrNull;
+    var keyData = ref.watch(currentDeviceDataProvider).value;
     if (keyData == null) {
       // The rest of this method assumes there is a device, and will throw an exception if not.
       // This will never be shown, as the dialog will be immediately closed
@@ -56,7 +56,7 @@ class SlotDialog extends ConsumerWidget {
       Capability.piv,
     );
 
-    final pivState = ref.watch(pivStateProvider(devicePath)).valueOrNull;
+    final pivState = ref.watch(pivStateProvider(devicePath)).value;
     final slotData = ref.watch(
       pivSlotsProvider(devicePath).select(
         (value) => value.whenOrNull(
@@ -91,7 +91,7 @@ class SlotDialog extends ConsumerWidget {
                           pivSlot.getDisplayName(l10n),
                           style: textTheme.headlineSmall,
                           softWrap: true,
-                          textAlign: TextAlign.center,
+                          textAlign: .center,
                         ),
                       ),
                       const SizedBox(height: 16.0),
@@ -109,7 +109,7 @@ class SlotDialog extends ConsumerWidget {
                               if (slotData.publicKeyMatch == false) ...[
                                 const SizedBox(height: 16.0),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisAlignment: .center,
                                   children: [
                                     Icon(
                                       Symbols.info,
@@ -138,7 +138,7 @@ class SlotDialog extends ConsumerWidget {
                               Text(
                                 l10n.l_no_certificate,
                                 softWrap: true,
-                                textAlign: TextAlign.center,
+                                textAlign: .center,
                                 style: subtitleStyle,
                               ),
                             ],

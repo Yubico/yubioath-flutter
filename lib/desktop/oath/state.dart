@@ -21,6 +21,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
+
 import 'package:logging/logging.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -43,8 +45,8 @@ final _sessionProvider = Provider.autoDispose
       ref.watch(
         currentDeviceDataProvider.select(
           (value) =>
-              (value.valueOrNull?.info.config.enabledCapabilities[value
-                      .valueOrNull
+              (value.value?.info.config.enabledCapabilities[value
+                      .value
                       ?.node
                       .transport] ??
                   0) &
@@ -75,16 +77,13 @@ class _LockKeyNotifier extends StateNotifier<String?> {
   }
 }
 
-final desktopOathState = AsyncNotifierProvider.autoDispose
-    .family<OathStateNotifier, OathState, DevicePath>(
-      _DesktopOathStateNotifier.new,
-    );
-
-class _DesktopOathStateNotifier extends OathStateNotifier {
+class DesktopOathStateNotifier extends OathStateNotifier {
   late RpcNodeSession _session;
 
+  DesktopOathStateNotifier(super.devicePath);
+
   @override
-  FutureOr<OathState> build(DevicePath devicePath) async {
+  FutureOr<OathState> build() async {
     _session = ref.watch(_sessionProvider(devicePath));
     _session
       ..setErrorHandler('state-reset', (_) async {
@@ -213,29 +212,28 @@ class _DesktopOathStateNotifier extends OathStateNotifier {
   }
 }
 
-final desktopOathCredentialListProvider = StateNotifierProvider.autoDispose
-    .family<DesktopCredentialListNotifier, List<OathPair>?, DevicePath>((
-      ref,
-      devicePath,
-    ) {
-      var notifier = DesktopCredentialListNotifier(
-        ref.watch(withContextProvider),
-        ref.watch(_sessionProvider(devicePath)),
-        ref.watch(
-          oathStateProvider(
-            devicePath,
-          ).select((r) => r.whenOrNull(data: (state) => state.locked) ?? true),
-        ),
-      );
-      ref.listen<WindowState>(windowStateProvider, (_, windowState) {
-        notifier._rescheduleTimer(windowState.active);
-      }, fireImmediately: true);
-      ref.listen(currentSectionProvider, (_, section) {
-        notifier._rescheduleTimer(section == Section.accounts);
-      });
+DesktopCredentialListNotifier buildDesktopOathCredentialListProvider(
+  Ref ref,
+  DevicePath devicePath,
+) {
+  var notifier = DesktopCredentialListNotifier(
+    ref.watch(withContextProvider),
+    ref.watch(_sessionProvider(devicePath)),
+    ref.watch(
+      oathStateProvider(
+        devicePath,
+      ).select((r) => r.whenOrNull(data: (state) => state.locked) ?? true),
+    ),
+  );
+  ref.listen<WindowState>(windowStateProvider, (_, windowState) {
+    notifier._rescheduleTimer(windowState.active);
+  }, fireImmediately: true);
+  ref.listen(currentSectionProvider, (_, section) {
+    notifier._rescheduleTimer(section == Section.accounts);
+  });
 
-      return notifier;
-    });
+  return notifier;
+}
 
 extension on OathCredential {
   bool get isSteam => issuer == 'Steam' && oathType == OathType.totp;

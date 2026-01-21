@@ -22,7 +22,6 @@ import 'package:args/args.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:local_notifier/local_notifier.dart';
 import 'package:logging/logging.dart';
@@ -63,22 +62,21 @@ import 'window_manager_helper/window_manager_helper.dart';
 
 final _log = Logger('desktop.init');
 
-const String _keyLeft = 'DESKTOP_WINDOW_LEFT';
-const String _keyTop = 'DESKTOP_WINDOW_TOP';
-const String _keyWidth = 'DESKTOP_WINDOW_WIDTH';
-const String _keyHeight = 'DESKTOP_WINDOW_HEIGHT';
 const String _logLevel = 'log-level';
 const String _logFile = 'log-file';
 const String _hidden = 'hidden';
 const String _shown = 'shown';
 
-void _saveWindowBounds(WindowManagerHelper helper) async {
-  final bounds = await helper.getBounds();
-  await helper.sharedPreferences.setDouble(_keyWidth, bounds.width);
-  await helper.sharedPreferences.setDouble(_keyHeight, bounds.height);
-  await helper.sharedPreferences.setDouble(_keyLeft, bounds.left);
-  await helper.sharedPreferences.setDouble(_keyTop, bounds.top);
-  _log.debug('Saving window bounds: $bounds');
+Timer? _saveWindowManagerPropertiesTimer;
+
+void _queueSaveWindowManagerProperties(WindowManagerHelper helper) {
+  _saveWindowManagerPropertiesTimer?.cancel();
+  _saveWindowManagerPropertiesTimer = Timer(
+    const Duration(
+      milliseconds: 500, // lower values result in invalid display properties
+    ),
+    () async => await helper.saveWindowManagerProperties(),
+  );
 }
 
 class _ScreenRetrieverListener extends ScreenListener {
@@ -89,7 +87,7 @@ class _ScreenRetrieverListener extends ScreenListener {
   @override
   void onScreenEvent(String eventName) async {
     _log.debug('Screen event: $eventName');
-    _saveWindowBounds(_helper);
+    _queueSaveWindowManagerProperties(_helper);
   }
 }
 
@@ -101,13 +99,13 @@ class _WindowEventListener extends WindowListener {
   @override
   void onWindowResize() async {
     _log.debug('Window event: onWindowResize');
-    _saveWindowBounds(_helper);
+    _queueSaveWindowManagerProperties(_helper);
   }
 
   @override
   void onWindowMoved() async {
     _log.debug('Window event: onWindowMoved');
-    _saveWindowBounds(_helper);
+    _queueSaveWindowManagerProperties(_helper);
   }
 
   @override
@@ -157,21 +155,12 @@ Future<Widget> initialize(List<String> argv) async {
 
   _log.info('Window hidden on startup: $isHidden');
 
-  final bounds = Rect.fromLTWH(
-    prefs.getDouble(_keyLeft) ?? WindowDefaults.bounds.left,
-    prefs.getDouble(_keyTop) ?? WindowDefaults.bounds.top,
-    prefs.getDouble(_keyWidth) ?? WindowDefaults.bounds.width,
-    prefs.getDouble(_keyHeight) ?? WindowDefaults.bounds.height,
-  );
-
-  _log.debug('Using saved window bounds (or defaults): $bounds');
-
   final windowReady = windowManager
       .waitUntilReadyToShow(
         const WindowOptions(minimumSize: WindowDefaults.minSize),
       )
       .then((_) async {
-        await windowManagerHelper.setBounds(bounds);
+        await windowManagerHelper.restoreWindowManagerProperties();
 
         if (isHidden) {
           await windowManager.setSkipTaskbar(true);
@@ -234,31 +223,32 @@ Future<Widget> initialize(List<String> argv) async {
         (ref) => desktopCurrentSectionNotifier(ref),
       ),
       // OATH
-      oathStateProvider.overrideWithProvider(desktopOathState.call),
-      credentialListProvider.overrideWithProvider(
-        desktopOathCredentialListProvider.call,
+      oathStateProvider.overrideWith2(DesktopOathStateNotifier.new),
+      credentialListProvider.overrideWith(
+        (ref, devicePath) =>
+            buildDesktopOathCredentialListProvider(ref, devicePath),
       ),
       qrScannerProvider.overrideWith(
         (ref) => ref.watch(desktopQrScannerProvider),
       ),
       // Management
-      managementStateProvider.overrideWithProvider(desktopManagementState.call),
+      managementStateProvider.overrideWith2(DesktopManagementStateNotifier.new),
       // FIDO
-      fidoStateProvider.overrideWithProvider(desktopFidoState.call),
-      fingerprintProvider.overrideWithProvider(desktopFingerprintProvider.call),
-      credentialProvider.overrideWithProvider(desktopCredentialProvider.call),
+      fidoStateProvider.overrideWith2(DesktopFidoStateNotifier.new),
+      fingerprintProvider.overrideWith2(DesktopFidoFingerprintsNotifier.new),
+      credentialProvider.overrideWith2(DesktopFidoCredentialsNotifier.new),
       // PIV
-      pivStateProvider.overrideWithProvider(desktopPivState.call),
-      pivSlotsProvider.overrideWithProvider(desktopPivSlots.call),
+      pivStateProvider.overrideWith2(DesktopPivStateNotifier.new),
+      pivSlotsProvider.overrideWith2(DesktopPivSlotsNotifier.new),
       // OTP
-      otpStateProvider.overrideWithProvider(desktopOtpState.call),
+      otpStateProvider.overrideWith2(DesktopOtpStateNotifier.new),
     ],
     child: YubicoAuthenticatorApp(
       page: Consumer(
         builder: ((context, ref, child) {
           // keep RPC log level in sync with app
           ref.listen<Level>(logLevelProvider, (_, level) {
-            ref.read(rpcProvider).valueOrNull?.setLogLevel(level);
+            ref.read(rpcProvider).value?.setLogLevel(level);
           });
 
           // Load feature flags, if they exist
@@ -346,10 +336,16 @@ void _initLogging(ArgResults args) {
         (level) => level.name == levelName.toUpperCase(),
       );
       Logger.root.level = level;
-      _log.info('Log level initialized from command line argument');
+      _log.info(
+        'Log level ${level.name} initialized from command line argument',
+      );
     } catch (error) {
       _log.error('Failed to set log level', error);
     }
+  }
+
+  if (file != null) {
+    _log.info('Logging to ${file.absolute}');
   }
 
   _log.info('Logging initialized, outputting to stderr');

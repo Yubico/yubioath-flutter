@@ -74,7 +74,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
     bool reverse = true,
   }) {
     final theme = Theme.of(context);
-    final darkMode = theme.brightness == Brightness.dark;
+    final darkMode = theme.brightness == .dark;
     final beginColor = darkMode ? Colors.white : Colors.black;
     final endColor = success
         ? theme.colorScheme.primary
@@ -220,7 +220,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
       builder: (context, _) => Padding(
         padding: const EdgeInsets.only(top: 38, bottom: 4, right: 18, left: 18),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: .center,
           children:
               [
                     Column(
@@ -229,10 +229,10 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
                             _getMessage(),
-                            textAlign: TextAlign.center,
+                            textAlign: .center,
                             style: const TextStyle(
                               fontSize: 16,
-                              fontWeight: FontWeight.normal,
+                              fontWeight: .normal,
                             ),
                           ),
                         ),
@@ -263,7 +263,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
                             l10n.l_name_fingerprint,
                             style: const TextStyle(
                               fontSize: 16,
-                              fontWeight: FontWeight.normal,
+                              fontWeight: .normal,
                             ),
                           ),
                           const SizedBox(height: 16),

@@ -38,11 +38,11 @@ class NfcContentWidget extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: Column(
         children: [
-          Text(title, textAlign: TextAlign.center, style: textTheme.titleLarge),
+          Text(title, textAlign: .center, style: textTheme.titleLarge),
           const SizedBox(height: 8),
           Text(
             subtitle,
-            textAlign: TextAlign.center,
+            textAlign: .center,
             style: textTheme.titleMedium!.copyWith(
               color: colorScheme.onSurfaceVariant,
             ),

@@ -19,7 +19,7 @@ class FileDropOverlay extends StatelessWidget {
         borderRadius: const BorderRadius.all(Radius.circular(20.0)),
       ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: .center,
         children: [
           graphic ??
               Icon(
@@ -31,7 +31,7 @@ class FileDropOverlay extends StatelessWidget {
             const SizedBox(height: 16.0),
             Text(
               title!,
-              textAlign: TextAlign.center,
+              textAlign: .center,
               style: Theme.of(context).textTheme.titleLarge,
             ),
           ],
@@ -39,7 +39,7 @@ class FileDropOverlay extends StatelessWidget {
             const SizedBox(height: 12.0),
             Text(
               subtitle!,
-              textAlign: TextAlign.center,
+              textAlign: .center,
               style: Theme.of(context).textTheme.titleSmall,
             ),
           ],

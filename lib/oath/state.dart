@@ -19,6 +19,7 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../app/models.dart';
@@ -101,10 +102,12 @@ class OathLayoutNotifier extends StateNotifier<OathLayout> {
 
 final oathStateProvider = AsyncNotifierProvider.autoDispose
     .family<OathStateNotifier, OathState, DevicePath>(
-      () => throw UnimplementedError(),
+      (_) => throw UnimplementedError(),
     );
 
 abstract class OathStateNotifier extends ApplicationStateNotifier<OathState> {
+  OathStateNotifier(this.devicePath);
+  final DevicePath devicePath;
   Future<void> reset();
 
   /// Unlocks the session and returns a record of `success`, `remembered`.
@@ -138,7 +141,11 @@ abstract class OathCredentialListNotifier
         : null;
   }
 
-  Future<OathCode> calculate(OathCredential credential);
+  Future<OathCode> calculate(
+    OathCredential credential, {
+    bool update = true,
+    bool headless = false,
+  });
   Future<OathCredential> addAccount(Uri otpauth, {bool requireTouch = false});
   Future<OathCredential> renameAccount(
     OathCredential credential,

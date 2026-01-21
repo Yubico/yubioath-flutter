@@ -19,8 +19,6 @@ package com.yubico.authenticator.fido
 import android.content.Context
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.io.File
 import java.security.KeyStore
 import javax.crypto.Cipher
@@ -29,6 +27,8 @@ import javax.crypto.CipherOutputStream
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 class PersistentPinUvAuthTokenStore(private val context: Context) {
 
@@ -58,14 +58,13 @@ class PersistentPinUvAuthTokenStore(private val context: Context) {
     }
 
     // Get a token by identifier
-    fun findToken(computeIdentifier: (ByteArray) -> ByteArray?): ByteArray? {
-        return loadTokens(context).entries
+    fun findToken(computeIdentifier: (ByteArray) -> ByteArray?): ByteArray? =
+        loadTokens(context).entries
             .firstNotNullOfOrNull { (identHex, ppuatHex) ->
                 val ppuatBytes = ppuatHex.hexToByteArray()
                 val computedIdent = computeIdentifier(ppuatBytes)?.toHexString()
                 if (identHex == computedIdent) ppuatBytes else null
             }
-    }
 
     private fun getSecretKey(): SecretKey? {
         val keyStore = KeyStore.getInstance(ANDROID_KEY_STORE).apply { load(null) }
@@ -105,7 +104,9 @@ class PersistentPinUvAuthTokenStore(private val context: Context) {
             fos.write(iv)
             CipherOutputStream(fos, cipher).use { cos ->
                 val data =
-                    tokens.entries.joinToString(ENTRY_SEPARATOR) { "${it.key}$PAIR_SEPARATOR${it.value}" }
+                    tokens.entries.joinToString(ENTRY_SEPARATOR) {
+                        "${it.key}$PAIR_SEPARATOR${it.value}"
+                    }
                 cos.write(data.toByteArray())
             }
         }

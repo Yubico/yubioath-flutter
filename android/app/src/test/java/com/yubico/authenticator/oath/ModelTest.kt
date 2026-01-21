@@ -26,9 +26,13 @@ import com.yubico.authenticator.oath.OathTestHelper.totp
 import com.yubico.authenticator.oath.data.Code
 import com.yubico.authenticator.oath.data.CodeType
 import com.yubico.authenticator.oath.data.Session
-import org.junit.Assert.*
+import junit.framework.Assert.assertEquals
+import junit.framework.Assert.assertNotNull
+import junit.framework.Assert.assertNull
+import junit.framework.Assert.assertTrue
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertThrows
 import org.junit.Rule
-
 import org.junit.Test
 
 class ModelTest {
@@ -94,7 +98,6 @@ class ModelTest {
 
     @Test
     fun `preserves credentials on update`() {
-
         val d1 = "device1"
 
         val cred1 = totp(d1, name = "cred1")
@@ -177,7 +180,6 @@ class ModelTest {
         val foundHotp2 = viewModel.credentials.value?.find { it.credential == hotp2 }
         assertTrue(foundHotp2 != null)
         assertEquals("4444", foundHotp2?.code?.value)
-
     }
 
     @Test
@@ -224,7 +226,12 @@ class ModelTest {
         viewModel.updateCredentials(mapOf(totp to newCode))
 
         assertEquals(1, viewModel.credentials.value?.size)
-        assertEquals("00000", viewModel.credentials.value?.find { it.credential == totp }?.code?.value)
+        assertEquals(
+            "00000",
+            viewModel.credentials.value?.find {
+                it.credential == totp
+            }?.code?.value
+        )
     }
 
     @Test
@@ -325,10 +332,11 @@ class ModelTest {
             viewModel.renameCredential(toRename, renamedForD2)
         }
 
-
         // rename success
         viewModel.renameCredential(toRename, renamedForD1)
-        val renamed = viewModel.credentials.value?.find { it.credential == renamedForD1 }?.credential
+        val renamed = viewModel.credentials.value?.find {
+            it.credential == renamedForD1
+        }?.credential
         assertNotNull(renamed)
 
         // the name and issuer are correct
@@ -353,7 +361,9 @@ class ModelTest {
 
         val nonNullIssuer = totp(d, name = "newName", issuer = "valueHere")
         viewModel.renameCredential(nullIssuer, nonNullIssuer)
-        val renamed2 = viewModel.credentials.value?.find { it.credential == nonNullIssuer }?.credential
+        val renamed2 = viewModel.credentials.value?.find {
+            it.credential == nonNullIssuer
+        }?.credential
 
         assertNotNull(renamed2!!.issuer)
     }

@@ -100,7 +100,7 @@ class _ChoiceFilterChipState<T> extends State<ChoiceFilterChip<T>> {
       avatar: widget.avatar,
       labelPadding: const EdgeInsets.only(left: 4),
       label: Row(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: .min,
         children: [
           (widget.labelBuilder ?? widget.itemBuilder).call(widget.value),
           Padding(

@@ -17,9 +17,9 @@
 package com.yubico.authenticator.piv.data
 
 import com.yubico.yubikit.piv.KeyType
+import java.security.cert.X509Certificate
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import java.security.cert.X509Certificate
 
 @Serializable
 data class CertInfo(
@@ -32,7 +32,7 @@ data class CertInfo(
     val notValidBefore: String,
     @SerialName("not_valid_after")
     val notValidAfter: String,
-    val fingerprint: String,
+    val fingerprint: String
 ) {
     constructor(certificate: X509Certificate) : this(
         KeyType.fromKey(certificate.publicKey).value.toUByte(),

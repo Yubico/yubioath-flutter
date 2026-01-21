@@ -17,21 +17,6 @@
 package com.yubico.authenticator.piv
 
 import android.util.Base64
-import org.bouncycastle.asn1.ASN1Primitive
-import org.bouncycastle.asn1.pkcs.PrivateKeyInfo
-import org.bouncycastle.asn1.sec.ECPrivateKey
-import org.bouncycastle.cert.X509CertificateHolder
-import org.bouncycastle.jce.ECNamedCurveTable
-import org.bouncycastle.jce.spec.ECPrivateKeySpec
-import org.bouncycastle.openssl.PEMEncryptedKeyPair
-import org.bouncycastle.openssl.PEMKeyPair
-import org.bouncycastle.openssl.PEMParser
-import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter
-import org.bouncycastle.openssl.jcajce.JcaPEMWriter
-import org.bouncycastle.openssl.jcajce.JceOpenSSLPKCS8DecryptorProviderBuilder
-import org.bouncycastle.openssl.jcajce.JcePEMDecryptorProviderBuilder
-import org.bouncycastle.pkcs.PKCS10CertificationRequest
-import org.bouncycastle.pkcs.PKCS8EncryptedPrivateKeyInfo
 import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.io.StringReader
@@ -49,6 +34,21 @@ import javax.crypto.EncryptedPrivateKeyInfo
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
 import javax.security.auth.x500.X500Principal
+import org.bouncycastle.asn1.ASN1Primitive
+import org.bouncycastle.asn1.pkcs.PrivateKeyInfo
+import org.bouncycastle.asn1.sec.ECPrivateKey
+import org.bouncycastle.cert.X509CertificateHolder
+import org.bouncycastle.jce.ECNamedCurveTable
+import org.bouncycastle.jce.spec.ECPrivateKeySpec
+import org.bouncycastle.openssl.PEMEncryptedKeyPair
+import org.bouncycastle.openssl.PEMKeyPair
+import org.bouncycastle.openssl.PEMParser
+import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter
+import org.bouncycastle.openssl.jcajce.JcaPEMWriter
+import org.bouncycastle.openssl.jcajce.JceOpenSSLPKCS8DecryptorProviderBuilder
+import org.bouncycastle.openssl.jcajce.JcePEMDecryptorProviderBuilder
+import org.bouncycastle.pkcs.PKCS10CertificationRequest
+import org.bouncycastle.pkcs.PKCS8EncryptedPrivateKeyInfo
 
 typealias KeyMaterial = Pair<List<X509Certificate>, PrivateKey?>
 
@@ -135,7 +135,9 @@ object KeyMaterialParser {
                     info.decryptKeyPair(decryptor).privateKeyInfo
                 } else if (info is PEMKeyPair) {
                     info.privateKeyInfo
-                } else info as? PrivateKeyInfo ?: continue
+                } else {
+                    info as? PrivateKeyInfo ?: continue
+                }
                 return JcaPEMKeyConverter().getPrivateKey(objectInfo)
             } while (info != null)
         } catch (_: ClassCastException) {
@@ -159,7 +161,7 @@ object KeyMaterialParser {
         } catch (e: Exception) {
             when (e) {
                 is UnrecoverableKeyException, is NullPointerException, is IOException
-                    -> throw InvalidPasswordException(e)
+                -> throw InvalidPasswordException(e)
             }
         }
 
@@ -179,15 +181,14 @@ object KeyMaterialParser {
         throw InvalidDerFormat()
     }
 
-    private fun parseDerCert(der: ByteArray): List<X509Certificate>? =
-        try {
-            listOf(
-                CertificateFactory.getInstance("X.509")
-                    .generateCertificate(ByteArrayInputStream(der)) as X509Certificate
-            )
-        } catch (_: Exception) {
-            null // not a cert
-        }
+    private fun parseDerCert(der: ByteArray): List<X509Certificate>? = try {
+        listOf(
+            CertificateFactory.getInstance("X.509")
+                .generateCertificate(ByteArrayInputStream(der)) as X509Certificate
+        )
+    } catch (_: Exception) {
+        null // not a cert
+    }
 
     private fun parsePrivateKey(bytes: ByteArray, password: CharArray? = null): PrivateKey? {
         val keySpec = if (password != null) {
@@ -220,7 +221,6 @@ object KeyMaterialParser {
             val privateKeySpec = ECPrivateKeySpec(d, ecSpec)
             val kf = KeyFactory.getInstance("EC", "BC")
             return kf.generatePrivate(privateKeySpec)
-
         } catch (_: Exception) {
             // was not SEC1
         }
@@ -228,10 +228,7 @@ object KeyMaterialParser {
         return null
     }
 
-    private fun parsePkcs12(
-        bytes: ByteArray,
-        password: CharArray?
-    ): KeyMaterial {
+    private fun parsePkcs12(bytes: ByteArray, password: CharArray?): KeyMaterial {
         val keyStore = KeyStore.getInstance("PKCS12")
         keyStore.load(ByteArrayInputStream(bytes), password)
         val certs = mutableListOf<X509Certificate>()
@@ -247,7 +244,9 @@ object KeyMaterialParser {
         val chosenAlias = keyStore.aliases().toList().firstOrNull()
         val key = if (chosenAlias != null) {
             keyStore.getKey(chosenAlias, password) as? PrivateKey
-        } else null
+        } else {
+            null
+        }
 
         return KeyMaterial(certs, key)
     }

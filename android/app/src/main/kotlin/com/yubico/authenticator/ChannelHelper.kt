@@ -22,18 +22,18 @@ import androidx.lifecycle.Observer
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
+import java.io.Closeable
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
-import java.io.Closeable
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
 
 interface JsonSerializable {
-    fun toJson() : String
+    fun toJson(): String
 }
 
 sealed interface ViewModelData {
@@ -45,7 +45,11 @@ sealed interface ViewModelData {
 /**
  * Observes a LiveData value, sending each change to Flutter via an EventChannel.
  */
-inline fun <reified T> LiveData<T>.streamTo(lifecycleOwner: LifecycleOwner, messenger: BinaryMessenger, channelName: String): Closeable {
+inline fun <reified T> LiveData<T>.streamTo(
+    lifecycleOwner: LifecycleOwner,
+    messenger: BinaryMessenger,
+    channelName: String
+): Closeable {
     val channel = EventChannel(messenger, channelName)
     var sink: EventChannel.EventSink? = null
 
@@ -75,7 +79,11 @@ inline fun <reified T> LiveData<T>.streamTo(lifecycleOwner: LifecycleOwner, mess
  * Observes a ViewModelData LiveData value, sending each change to Flutter via an EventChannel.
  */
 @JvmName("streamViewModelData")
-inline fun <reified T : ViewModelData> LiveData<T>.streamTo(lifecycleOwner: LifecycleOwner, messenger: BinaryMessenger, channelName: String): Closeable {
+inline fun <reified T : ViewModelData> LiveData<T>.streamTo(
+    lifecycleOwner: LifecycleOwner,
+    messenger: BinaryMessenger,
+    channelName: String
+): Closeable {
     val channel = EventChannel(messenger, channelName)
     var sink: EventChannel.EventSink? = null
 
@@ -134,9 +142,10 @@ fun MethodChannel.setHandler(scope: CoroutineScope, handler: MethodHandler) {
                 result.error(
                     error.javaClass.simpleName,
                     error.toString(),
-                    "Cause: " + error.cause + ", Stacktrace: " + android.util.Log.getStackTraceString(
-                        error
-                    )
+                    "Cause: " + error.cause + ", Stacktrace: " +
+                        android.util.Log.getStackTraceString(
+                            error
+                        )
                 )
             }
         }
@@ -146,28 +155,28 @@ fun MethodChannel.setHandler(scope: CoroutineScope, handler: MethodHandler) {
 /**
  * Coroutine-based method invocation to call a Flutter method and get a result.
  */
-suspend fun MethodChannel.invoke(method: String, args: Any?): Any? =
-    withContext(Dispatchers.Main) {
-        suspendCoroutine { continuation ->
-            invokeMethod(
-                method,
-                args,
-                object : MethodChannel.Result {
-                    override fun success(result: Any?) {
-                        continuation.resume(result)
-                    }
+suspend fun MethodChannel.invoke(method: String, args: Any?): Any? = withContext(Dispatchers.Main) {
+    suspendCoroutine { continuation ->
+        invokeMethod(
+            method,
+            args,
+            object : MethodChannel.Result {
+                override fun success(result: Any?) {
+                    continuation.resume(result)
+                }
 
-                    override fun error(
-                        errorCode: String,
-                        errorMessage: String?,
-                        errorDetails: Any?
-                    ) {
-                        continuation.resumeWithException(Exception("$errorCode: $errorMessage - $errorDetails"))
-                    }
+                override fun error(errorCode: String, errorMessage: String?, errorDetails: Any?) {
+                    continuation.resumeWithException(
+                        Exception("$errorCode: $errorMessage - $errorDetails")
+                    )
+                }
 
-                    override fun notImplemented() {
-                        continuation.resumeWithException(NotImplementedError("Method not implemented: $method"))
-                    }
-                })
-        }
+                override fun notImplemented() {
+                    continuation.resumeWithException(
+                        NotImplementedError("Method not implemented: $method")
+                    )
+                }
+            }
+        )
     }
+}

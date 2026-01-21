@@ -17,14 +17,10 @@
 package com.yubico.authenticator.oath
 
 import android.net.Uri
-
 import androidx.annotation.UiThread
-
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
-
 import org.json.JSONObject
-
 import org.slf4j.LoggerFactory
 
 class AppLinkMethodChannel(messenger: BinaryMessenger) {

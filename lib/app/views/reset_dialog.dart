@@ -407,7 +407,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
       builder: (context, _) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children:
               [
                     if (!_globalReset)
@@ -473,9 +473,9 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                               ? l10n.p_warning_global_reset
                               : l10n.p_factory_reset_an_app,
                       },
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium?.copyWith(fontWeight: .w700),
                     ),
                     if (needsElevation) ...[
                       Text(l10n.p_elevated_permissions_required),

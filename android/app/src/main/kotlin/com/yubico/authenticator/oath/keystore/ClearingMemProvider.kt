@@ -30,7 +30,6 @@ class ClearingMemProvider : KeyProvider {
     override fun hasKey(deviceId: String): Boolean = current?.first == deviceId
 
     override fun getKey(deviceId: String): AccessKey? {
-
         clearAllTask?.cancel()
         clearAllTask = Timer("clear-memory-keys", false)
             .schedule(5 * 60_000) {
@@ -47,7 +46,8 @@ class ClearingMemProvider : KeyProvider {
     }
 
     override fun putKey(deviceId: String, secret: ByteArray) {
-        current = Pair(deviceId,
+        current = Pair(
+            deviceId,
             Mac.getInstance(KeyProperties.KEY_ALGORITHM_HMAC_SHA1)
                 .apply {
                     init(SecretKeySpec(secret, algorithm))

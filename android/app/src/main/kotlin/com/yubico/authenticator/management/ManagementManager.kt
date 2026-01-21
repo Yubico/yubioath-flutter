@@ -58,14 +58,14 @@ class ManagementManager(messenger: BinaryMessenger, deviceManager: DeviceManager
                 "setMode" -> setMode(
                     args["interfaces"] as Int,
                     args["challengeResponseTimeout"] as Int,
-                    args["autoEjectTimeout"] as Int?,
+                    args["autoEjectTimeout"] as Int?
                 )
 
                 "configure" -> configure(
                     args["config"] as HashMap<String, *>,
                     args["currentLockCode"] as String?,
                     args["newLockCode"] as String?,
-                    args["reboot"] as Boolean,
+                    args["reboot"] as Boolean
                 )
 
                 else -> throw NotImplementedError()
@@ -140,14 +140,13 @@ class ManagementManager(messenger: BinaryMessenger, deviceManager: DeviceManager
         }
     }
 
-    private suspend fun deviceReset(): String =
-        connectionHelper.useDevice { yubikey ->
-            withManagementSession(yubikey) {
-                it.deviceReset()
-            }
-            deviceManager.setDeviceInfo(runCatching { getDeviceInfo(yubikey) }.getOrNull())
-            NULL
+    private suspend fun deviceReset(): String = connectionHelper.useDevice { yubikey ->
+        withManagementSession(yubikey) {
+            it.deviceReset()
         }
+        deviceManager.setDeviceInfo(runCatching { getDeviceInfo(yubikey) }.getOrNull())
+        NULL
+    }
 
     override suspend fun processYubiKey(device: YubiKeyDevice): Boolean {
         if (!hasPending()) {
@@ -182,7 +181,9 @@ class ManagementManager(messenger: BinaryMessenger, deviceManager: DeviceManager
         device.openConnection(OtpConnection::class.java).use {
             block(ManagementSession(it))
         }
-    } else throw IllegalArgumentException("Device does not support any connection type")
+    } else {
+        throw IllegalArgumentException("Device does not support any connection type")
+    }
 
     override fun hasPending(): Boolean = connectionHelper.hasPending()
 
@@ -217,7 +218,6 @@ class ManagementManager(messenger: BinaryMessenger, deviceManager: DeviceManager
                             builder.enabledCapabilities(Transport.NFC, capabilities)
                         }
                     }
-
                 }
             }
             return builder.build()

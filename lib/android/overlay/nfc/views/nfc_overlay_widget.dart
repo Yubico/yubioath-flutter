@@ -50,12 +50,12 @@ class NfcOverlayWidget extends ConsumerWidget {
       nfcOverlayWidgetProperties.select((s) => s.hasCloseButton),
     );
     return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisAlignment: .start,
+      mainAxisSize: .min,
+      crossAxisAlignment: .stretch,
       children: [
         Stack(
-          fit: StackFit.passthrough,
+          fit: .passthrough,
           children: [
             if (showCloseButton)
               Positioned(

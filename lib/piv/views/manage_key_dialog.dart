@@ -203,7 +203,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
     final (fipsCapable, fipsApproved) =
         ref
             .watch(currentDeviceDataProvider)
-            .valueOrNull
+            .value
             ?.info
             .getFipsStatus(Capability.piv) ??
         (false, false);
@@ -227,7 +227,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
       builder: (_, fullScreen) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children:
               [
                     if (_usesStoredKey)
@@ -273,7 +273,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                                 : l10n.s_hide_pin,
                           ),
                         ),
-                        textInputAction: TextInputAction.next,
+                        textInputAction: .next,
                         onChanged: (value) {
                           setState(() {
                             _currentIsWrong = false;
@@ -335,7 +335,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                                   },
                                 ),
                         ),
-                        textInputAction: TextInputAction.next,
+                        textInputAction: .next,
                         onChanged: (value) {
                           setState(() {
                             _currentIsWrong = false;
@@ -388,7 +388,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                               : null,
                         ),
                       ),
-                      textInputAction: TextInputAction.next,
+                      textInputAction: .next,
                       onChanged: (_) {
                         setState(() {
                           // Update length
@@ -403,7 +403,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                       },
                     ).init(),
                     Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: .start,
                       children: [
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -415,7 +415,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                         const SizedBox(width: 16.0),
                         Flexible(
                           child: Wrap(
-                            crossAxisAlignment: WrapCrossAlignment.start,
+                            crossAxisAlignment: .start,
                             spacing: 4.0,
                             runSpacing: 8.0,
                             children: [
@@ -453,9 +453,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                                     children: [
                                       TextSpan(
                                         text: l10n.s_management_key_algorithm,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w700,
-                                        ),
+                                        style: TextStyle(fontWeight: .w700),
                                       ),
                                       TextSpan(text: '\n'),
                                       TextSpan(
@@ -468,9 +466,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                                       TextSpan(text: '\n' * 2),
                                       TextSpan(
                                         text: l10n.s_protect_key,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w700,
-                                        ),
+                                        style: TextStyle(fontWeight: .w700),
                                       ),
                                       TextSpan(text: '\n'),
                                       TextSpan(

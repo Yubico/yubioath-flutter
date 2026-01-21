@@ -187,7 +187,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
     final showDefaultPukUsed =
         widget.target != ManageTarget.pin && _defaultPukUsed;
 
-    final deviceData = ref.read(currentDeviceDataProvider).valueOrNull;
+    final deviceData = ref.read(currentDeviceDataProvider).value;
     final hasPinComplexity = deviceData?.info.pinComplexity ?? false;
     final isBio = [
       FormFactor.usbABio,
@@ -217,7 +217,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
       builder: (context, _) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children:
               [
                     AppTextField(
@@ -277,7 +277,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                                     : l10n.s_hide_puk),
                         ),
                       ),
-                      textInputAction: TextInputAction.next,
+                      textInputAction: .next,
                       onChanged: (value) {
                         setState(() {
                           _currentIsWrong = false;
@@ -349,7 +349,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                             currentPinLen >= currentMinPinLen ||
                             (isFipsCapable && showDefaultPinUsed),
                       ),
-                      textInputAction: TextInputAction.next,
+                      textInputAction: .next,
                       onChanged: (value) {
                         setState(() {
                           _newIsWrong = false;
@@ -408,7 +408,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                         helperText:
                             '', // Prevents resizing when errorText shown
                       ),
-                      textInputAction: TextInputAction.done,
+                      textInputAction: .done,
                       onChanged: (value) {
                         setState(() {
                           _confirmPin = value;

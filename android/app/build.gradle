@@ -4,6 +4,7 @@ plugins {
     id 'kotlinx-serialization'
     id 'dev.flutter.flutter-gradle-plugin'
     id 'com.google.android.gms.oss-licenses-plugin'
+    id 'com.diffplug.spotless'
 }
 
 def localProperties = new Properties()
@@ -26,7 +27,7 @@ if (flutterVersionName == null) {
 
 android {
 
-    namespace 'com.yubico.authenticator'
+    namespace = 'com.yubico.authenticator'
 
     compileSdkVersion project.compileSdkVersion
 
@@ -53,9 +54,9 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled true
-            shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            minifyEnabled = true
+            shrinkResources = true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
             applicationIdSuffix ".debug"
@@ -63,11 +64,11 @@ android {
     }
 
     buildFeatures {
-        buildConfig true
+        buildConfig = true
     }
 
     lint {
-        abortOnError false
+        abortOnError = false
     }
 
     applicationVariants.all { variant ->
@@ -84,13 +85,28 @@ android {
         exclude 'META-INF/versions/9/OSGI-INF/bcpkix.provider.bc.Licenses'
     }
 
+    ndkVersion = flutter.ndkVersion
 }
 
 apply from: "signing.gradle"
 apply from: "collect_licenses.gradle"
 
 flutter {
-    source '../..'
+    source = '../..'
+}
+
+spotless {
+    kotlin {
+        target("**/*.kt")
+        targetExclude("**/generated/*.kt")
+        targetExclude("src/**/ndef/**KeyboardLayout.kt")
+        ktlint().editorConfigOverride([ktlint_code_style: "android_studio"])
+    }
+
+    kotlinGradle {
+        target("*.gradle.kts")
+        ktlint()
+    }
 }
 
 dependencies {
@@ -105,7 +121,7 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0'
 
     // Lifecycle
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.3'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.10.0'
 
     implementation "androidx.core:core-ktx:1.17.0"
     implementation 'androidx.fragment:fragment-ktx:1.8.9'
@@ -115,11 +131,20 @@ dependencies {
 
     implementation 'com.github.tony19:logback-android:3.0.0'
 
-    implementation 'org.bouncycastle:bcprov-jdk18on:1.81'
-    implementation 'org.bouncycastle:bcpkix-jdk18on:1.81'
+    implementation 'org.bouncycastle:bcprov-jdk18on:1.83'
+    implementation 'org.bouncycastle:bcpkix-jdk18on:1.83'
 
     // testing dependencies
     testImplementation "junit:junit:$project.junitVersion"
     testImplementation "org.mockito:mockito-core:$project.mockitoVersion"
-    testImplementation 'android.arch.core:core-testing:1.1.1'
+    testImplementation 'androidx.arch.core:core-testing:2.2.0'
+}
+
+// disable OssLicensesTask during testing
+gradle.taskGraph.whenReady { taskGraph ->
+    if (taskGraph.hasTask(":app:test") || taskGraph.allTasks.any { it.name.contains("Test") }) {
+        tasks.matching { it.name.contains("OssLicensesTask") }.configureEach { task ->
+            task.enabled = false
+        }
+    }
 }

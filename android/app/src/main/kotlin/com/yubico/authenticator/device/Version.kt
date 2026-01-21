@@ -24,12 +24,10 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
 @Serializable(with = VersionSerializer::class)
-data class Version(
-    val major: Byte,
-    val minor: Byte,
-    val micro: Byte
-) {
-    constructor(version: com.yubico.yubikit.core.Version) : this(version.major, version.minor, version.micro)
+data class Version(val major: Byte, val minor: Byte, val micro: Byte) {
+    constructor(
+        version: com.yubico.yubikit.core.Version
+    ) : this(version.major, version.minor, version.micro)
 }
 
 object VersionSerializer : KSerializer<Version> {

@@ -41,13 +41,13 @@ val UnknownDevice = Info(
     fipsCapable = 0,
     fipsApproved = 0,
     resetBlocked = 0,
-    versionQualifier = VersionQualifier(),
+    versionQualifier = VersionQualifier()
 )
 
-fun unknownDeviceWithCapability(transport: Transport, bit: Int = 0) : Info {
+fun unknownDeviceWithCapability(transport: Transport, bit: Int = 0): Info {
     val isNfc = transport == Transport.NFC
     val capabilities = Capabilities(
-        nfc = if (isNfc)  bit else null,
+        nfc = if (isNfc) bit else null,
         usb = if (!isNfc) bit else null
     )
     return UnknownDevice.copy(
@@ -57,19 +57,17 @@ fun unknownDeviceWithCapability(transport: Transport, bit: Int = 0) : Info {
     )
 }
 
-fun unknownOathDeviceInfo(transport: Transport) : Info {
-    return unknownDeviceWithCapability(transport, Capability.OATH.bit).copy(
+fun unknownOathDeviceInfo(transport: Transport): Info =
+    unknownDeviceWithCapability(transport, Capability.OATH.bit).copy(
         name = "OATH device"
     )
-}
 
-fun unknownFido2DeviceInfo(transport: Transport) : Info {
-    return unknownDeviceWithCapability(transport, Capability.FIDO2.bit).copy(
+fun unknownFido2DeviceInfo(transport: Transport): Info =
+    unknownDeviceWithCapability(transport, Capability.FIDO2.bit).copy(
         name = "FIDO2 device"
     )
-}
 
-fun restrictedNfcDeviceInfo(transport: Transport) : Info {
+fun restrictedNfcDeviceInfo(transport: Transport): Info {
     if (transport != Transport.NFC) {
         return UnknownDevice
     }

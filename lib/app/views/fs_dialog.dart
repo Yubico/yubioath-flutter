@@ -34,7 +34,7 @@ class FsDialog extends StatelessWidget {
       ).colorScheme.surface.withValues(alpha: 0.7),
       child: SafeArea(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: .spaceBetween,
           children: [
             Flexible(child: SingleChildScrollView(child: child)),
             Padding(

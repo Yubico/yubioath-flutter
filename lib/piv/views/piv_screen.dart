@@ -65,7 +65,7 @@ class _PivScreenState extends ConsumerState<PivScreen> {
     final (fipsCapable, fipsApproved) =
         ref
             .watch(currentDeviceDataProvider)
-            .valueOrNull
+            .value
             ?.info
             .getFipsStatus(Capability.piv) ??
         (false, false);
@@ -149,7 +149,7 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                   capabilities: const [Capability.piv],
                   detailViewBuilder: selected != null
                       ? (context) => Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          crossAxisAlignment: .stretch,
                           children: [
                             ListTitle(l10n.s_details),
                             Padding(
@@ -168,7 +168,7 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                                         selected.slot.getDisplayName(l10n),
                                         style: textTheme.headlineSmall,
                                         softWrap: true,
-                                        textAlign: TextAlign.center,
+                                        textAlign: .center,
                                       ),
                                       const SizedBox(height: 16),
                                       if (selected.certInfo != null ||
@@ -214,7 +214,7 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                                         Text(
                                           l10n.l_no_certificate,
                                           softWrap: true,
-                                          textAlign: TextAlign.center,
+                                          textAlign: .center,
                                           style: subtitleStyle,
                                         ),
                                     ],

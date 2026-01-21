@@ -36,7 +36,7 @@ class SlotDialog extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // TODO: Solve this in a cleaner way
-    final node = ref.watch(currentDeviceDataProvider).valueOrNull?.node;
+    final node = ref.watch(currentDeviceDataProvider).value?.node;
     if (node == null) {
       // The rest of this method assumes there is a device, and will throw an exception if not.
       // This will never be shown, as the dialog will be immediately closed
@@ -46,7 +46,7 @@ class SlotDialog extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final textTheme = Theme.of(context).textTheme;
 
-    final otpState = ref.watch(otpStateProvider(node.path)).valueOrNull;
+    final otpState = ref.watch(otpStateProvider(node.path)).value;
     final otpSlot = otpState!.slots.firstWhereOrNull(
       (element) => element.slot == slot,
     );
@@ -72,7 +72,7 @@ class SlotDialog extends ConsumerWidget {
                         otpSlot.slot.getDisplayName(l10n),
                         style: textTheme.headlineSmall,
                         softWrap: true,
-                        textAlign: TextAlign.center,
+                        textAlign: .center,
                       ),
                       const SizedBox(height: 8),
                       Icon(
