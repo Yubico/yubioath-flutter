@@ -61,7 +61,7 @@ dependencies:
   url_launcher: ^6.3.2
   path_provider: ^2.1.5
   vector_graphics: ^1.1.19
-  vector_graphics_compiler: ^1.1.19
+  vector_graphics_compiler: ^1.1.20
   path: ^1.9.1
   file_picker: ^10.3.7
   archive: ^4.0.7
