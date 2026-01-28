@@ -291,3 +291,24 @@ class FilteredCredentialsNotifier extends StateNotifier<List<OathPair>> {
             .toList(),
       );
 }
+
+final oathTimerNotifierProvider =
+    ChangeNotifierProvider.autoDispose<OathTimerNotifier>(
+      (ref) => OathTimerNotifier(),
+    );
+
+class OathTimerNotifier extends ValueNotifier<DateTime> {
+  late final Timer _timer;
+
+  OathTimerNotifier() : super(DateTime.now()) {
+    _timer = Timer.periodic(const Duration(milliseconds: 300), (_) {
+      value = DateTime.now();
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+}
