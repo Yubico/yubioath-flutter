@@ -258,7 +258,7 @@ abstract class CredentialData with _$CredentialData {
       'secret': secret,
       if (oathType == OathType.totp) 'period': period.toString(),
       if (oathType == OathType.hotp) 'counter': counter.toString(),
-      if (issuer != null) 'issuer': issuer!,
+      'issuer': ?issuer,
       if (digits != 6) 'digits': digits.toString(),
       if (hashAlgorithm != HashAlgorithm.sha1) 'algorithm': hashAlgorithm.name,
     },

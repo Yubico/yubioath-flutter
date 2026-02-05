@@ -102,7 +102,7 @@ class DevicePickerContent extends ConsumerWidget {
           selected: currentNode == null,
           extended: extended,
         ),
-      if (androidNoKeyWidget != null) androidNoKeyWidget,
+      ?androidNoKeyWidget,
       ...devices.map(
         (e) => e.path == currentNode?.path
             ? _buildCurrentDeviceRow(
