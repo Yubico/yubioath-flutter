@@ -9,7 +9,7 @@ allprojects {
         targetSdkVersion = 36
         compileSdkVersion = 36
 
-        yubiKitVersion = "3.0.0"
+        yubiKitVersion = "3.0.1"
         junitVersion = "4.13.2"
         mockitoVersion = "5.21.0"
     }
