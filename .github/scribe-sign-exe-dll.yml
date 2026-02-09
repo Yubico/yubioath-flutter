@@ -1,0 +1,21 @@
+stub: yubioath-flutter
+releaseType: public
+jobs:
+  - name: sign-source
+    platform: linux
+    steps:
+      - id: 1
+        action: windows
+        description: Yubico Authenticator
+        files:
+          - yubioath-desktop-windows/*/authenticator.exe
+          - yubioath-desktop-windows/*/helper/authenticator-helper.exe
+          - yubioath-desktop-windows/*/desktop_drop_plugin.dll
+          - yubioath-desktop-windows/*/flutter_windows.dll
+          - yubioath-desktop-windows/*/local_notifier_plugin.dll
+          - yubioath-desktop-windows/*/screen_retriever_windows_plugin.dll
+          - yubioath-desktop-windows/*/tray_manager_plugin.dll
+          - yubioath-desktop-windows/*/url_launcher_windows_plugin.dll
+          - yubioath-desktop-windows/*/window_manager_plugin.dll
+          - yubioath-desktop-windows/*/helper/pywin32_system32/pythoncom314.dll
+          - yubioath-desktop-windows/*/helper/pywin32_system32/pywintypes314.dll
