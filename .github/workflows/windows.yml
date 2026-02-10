@@ -85,6 +85,7 @@ jobs:
           mkdir $dest
           mv build\windows\x64\runner\Release\* $dest\
           mv resources\win\release-win.ps1 deploy
+          mv resources\win\verify_dll.ps1 deploy
           mv resources deploy
 
       - name: Upload artifact
@@ -129,7 +130,7 @@ jobs:
         echo "${GAC}" > scribe_sa.json
         echo "GOOGLE_APPLICATION_CREDENTIALS=/scribe/scribe_sa.json" >> $GITHUB_ENV
 
-    - name: run scribe exe
+    - name: run scribe exe dll
       run: >
         docker run
         --user $(id -u):$(id -g)
@@ -138,12 +139,12 @@ jobs:
         ghcr.io/yubico/scribe-ci:v1
         --project-id scribe-prod-987134
         --bucket scribe-u-pub-yubioath-flutter-f94pro
-        --config /scribe/.github/scribe-sign-exe.yml
+        --config /scribe/.github/scribe-sign-exe-dll.yml
         submit .
         --synchronous
         --download-artifacts
 
-    - name: unpack signed artifacts-exe
+    - name: unpack signed artifacts
       run: |
         mkdir -p signed
         mv scribe-download/*/sign-source/1.zip signed/
@@ -154,6 +155,15 @@ jobs:
         cd ..
         cp signed/authenticator-helper.exe yubioath-desktop-windows/*/helper/authenticator-helper.exe
         cp signed/authenticator.exe yubioath-desktop-windows/*/authenticator.exe
+        cp signed/desktop_drop_plugin.dll yubioath-desktop-windows/*/desktop_drop_plugin.dll
+        cp signed/flutter_windows.dll yubioath-desktop-windows/*/flutter_windows.dll
+        cp signed/local_notifier_plugin.dll yubioath-desktop-windows/*/local_notifier_plugin.dll
+        cp signed/screen_retriever_windows_plugin.dll yubioath-desktop-windows/*/screen_retriever_windows_plugin.dll
+        cp signed/tray_manager_plugin.dll yubioath-desktop-windows/*/tray_manager_plugin.dll
+        cp signed/url_launcher_windows_plugin.dll yubioath-desktop-windows/*/url_launcher_windows_plugin.dll
+        cp signed/window_manager_plugin.dll yubioath-desktop-windows/*/window_manager_plugin.dll
+        cp signed/pythoncom314.dll yubioath-desktop-windows/*/helper/_internal/pywin32_system32/pythoncom314.dll
+        cp signed/pywintypes314.dll yubioath-desktop-windows/*/helper/_internal/pywin32_system32/pywintypes314.dll
 
     - name: upload signed artifacts
       uses: actions/upload-artifact@v6
@@ -269,27 +279,6 @@ jobs:
         rm 1.zip
         cd ..
 
-    - name: run scribe gpg
-      run: >
-        docker run
-        --user $(id -u):$(id -g)
-        --volume $(pwd):/scribe
-        --env-file <(env)
-        ghcr.io/yubico/scribe-ci:v1
-        --project-id scribe-prod-987134
-        --bucket scribe-u-pub-yubioath-flutter-f94pro
-        --config /scribe/.github/scribe-sign-gpg.yml
-        submit .
-        --synchronous
-        --download-artifacts
-
-    - name: unpack signed artifacts-gpg
-      run: |
-        mv scribe-download/*/sign-source/1.zip signed/
-        cd signed
-        unzip -j 1.zip || true
-        rm 1.zip
-
     - name: upload signed artifacts
       uses: actions/upload-artifact@v6
       with:
@@ -297,3 +286,17 @@ jobs:
         path: signed/*
         if-no-files-found: error
         compression-level: 0
+
+  verify-signatures:
+    needs: [sign-msi]
+    runs-on: windows-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v7
+        with:
+          name: signed-files
+          path: downloaded-artifact
+
+      - name: Check for unsigned DLLs
+        working-directory: .\downloaded-artifact
+        run: .\verify_dll.ps1
