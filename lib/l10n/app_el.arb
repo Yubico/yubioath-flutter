@@ -24,8 +24,8 @@
     },
     "l_incomplete_translation": "Ελλιπής μετάφραση",
     "p_translation_progress_desc": "Οι δείκτες προόδου αντικατοπτρίζουν την ωριμότητα της μετάφρασης.",
-    "s_community": null,
-    "l_localization_project": null,
+    "s_community": "Κοινότητα",
+    "l_localization_project": "Έργο τοπικής προσαρμογής",
 
     "s_save": "Αποθήκευση",
     "s_cancel": "Άκυρο",
@@ -42,9 +42,9 @@
     "s_import": "Εισαγωγή",
     "s_overwrite": "Αντικατάσταση",
     "s_done": "Τέλος",
-    "s_success": null,
-    "s_loading": null,
-    "s_more": null,
+    "s_success": "Επιτυχία",
+    "s_loading": "Φόρτωση\u2026",
+    "s_more": "Περισσότερα",
     "s_label": "Ετικέτα",
     "s_name": "Όνομα",
     "s_usb": "USB",
@@ -79,17 +79,17 @@
     "s_device": "Συσκευή",
     "s_application": "Εφαρμογή",
     "s_settings": "Ρυθμίσεις",
-    "s_reset_settings": null,
-    "l_reset_settings_desc": null,
-    "q_reset_settings": null,
-    "p_reset_settings_confirmation_desc": null,
-    "s_support": null,
+    "s_reset_settings": "Επαναφορά ρυθμίσεων",
+    "l_reset_settings_desc": "Επαναφορά των ρυθμίσεων στις προεπιλεγμένες",
+    "q_reset_settings": "Επαναφορά ρυθμίσεων;",
+    "p_reset_settings_confirmation_desc": "Αυτό θα επαναφέρει όλες τις ρυθμίσεις στις προεπιλεγμένες τιμές τους.",
+    "s_support": "Υποστήριξη",
     "s_certificates": "Πιστοποιητικά",
     "s_security_key": "Κλειδί ασφαλείας",
     "s_slots": "Υποδοχές",
-    "s_help_and_about": null,
-    "s_help": null,
-    "s_app_information": null,
+    "s_help_and_about": "Βοήθεια & πληροφορίες",
+    "s_help": "Βοήθεια",
+    "s_app_information": "Πληροφορίες εφαρμογής",
     "s_home": "Αρχική",
     "s_user_guide": "Οδηγός χρήσης",
     "s_i_need_help": "Χρειάζομαι βοήθεια",
@@ -114,11 +114,11 @@
     "l_invalid_keyboard_character": "Μη έγκυροι χαρακτήρες για το επιλεγμένο πληκτρολόγιο",
     "s_require_touch": "Απαίτηση αφής",
     "q_have_account_info": "Έχετε πληροφορίες λογαριασμού;",
-    "s_debugging_tools": null,
+    "s_debugging_tools": "Εργαλεία εντοπισμού σφαλμάτων",
     "s_run_diagnostics": "Εκτέλεση διαγνωστικών",
-    "l_run_diagnostics_desc": null,
-    "s_logging_level": null,
-    "s_current_log_level": null,
+    "l_run_diagnostics_desc": "Εκτελέστε διαγνωστικούς ελέγχους για την αντιμετώπιση προβλημάτων",
+    "s_logging_level": "Επίπεδο καταγραφής",
+    "s_current_log_level": "Επίπεδο καταγραφής: {level}",
     "@s_current_log_level": {
         "placeholders": {
             "level": {
@@ -195,7 +195,7 @@
     "p_try_reinsert_yk": "Δοκιμάστε να αφαιρέσετε και να επανεισαγάγετε το YubiKey σας.",
     "s_touch_required": "Απαιτείται άγγιγμα",
     "l_touch_button_now": "Αγγίξτε το κουμπί στο YubiKey σας τώρα",
-    "l_long_touch_button_now": null,
+    "l_long_touch_button_now": "Πατήστε παρατεταμένα το κουμπί στο YubiKey σας για 5 δευτερόλεπτα τώρα",
     "l_keep_touching_yk": "Συνεχίστε να αγγίζετε επανειλημμένα το YubiKey σας\u2026",
     "@_capabilities": {},
 
@@ -282,7 +282,7 @@
             }
         }
     },
-    "l_attempts_remaining": null,
+    "l_attempts_remaining": "{retries, plural, =1{{retries} προσπάθεια που απομένει}other{{retries} προσπάθειες που απομένουν}}",
     "@l_attempts_remaining": {
         "placeholders": {
             "retries": {
@@ -290,7 +290,7 @@
             }
         }
     },
-    "l_wrong_pin_attempts_remaining": null,
+    "l_wrong_pin_attempts_remaining": "Λάθος PIN, {retries, plural, =1{{retries} προσπάθεια που απομένει}other{{retries} προσπάθειες που απομένουν}}",
     "@l_wrong_pin_attempts_remaining": {
         "placeholders": {
             "retries": {
@@ -298,7 +298,7 @@
             }
         }
     },
-    "l_wrong_puk_attempts_remaining": null,
+    "l_wrong_puk_attempts_remaining": "Λάθος PUK, {retries, plural, =1{{retries} προσπάθεια που απομένει}other{{retries} προσπάθειες που απομένουν}}",
     "@l_wrong_puk_attempts_remaining": {
         "placeholders": {
             "retries": {
@@ -309,7 +309,7 @@
     "s_fido_pin_protection": "Προστασία PIN FIDO",
     "s_pin_change_required": "Απαιτείται αλλαγή PIN",
     "l_enter_fido2_pin": "Εισαγάγετε το PIN FIDO2 για το YubiKey σας",
-    "p_fido2_pin_required": null,
+    "p_fido2_pin_required": "Η ενέργεια που πρόκειται να εκτελέσετε απαιτεί την εισαγωγή του PIN FIDO2.",
     "l_pin_blocked_reset": "Το PIN είναι μπλοκαρισμένο. Κάντε επαναφορά εργοστασιακών ρυθμίσεων της εφαρμογής FIDO",
     "l_pin_blocked": "Το PIN είναι μπλοκαρισμένο",
     "l_set_pin_first": "Απαιτείται PIN",
@@ -391,7 +391,7 @@
     },
     "s_dismiss": "Παράβλεψη",
     "p_default_pin_puk_key_desc": "Συνιστάται η αλλαγή του προεπιλεγμένου PIN, PUK και κλειδιού διαχείρισης.",
-    "p_default_pin_puk_key_fips_desc": null,
+    "p_default_pin_puk_key_fips_desc": "Για συμμόρφωση με το FIPS, απαιτείται η αλλαγή του προεπιλεγμένου PIN, του PUK και του κλειδιού διαχείρισης.",
     "l_warning_default_pin": "Προειδοποίηση: Χρησιμοποιείται προεπιλεγμένο PIN",
     "l_warning_default_puk": "Προειδοποίηση: Χρησιμοποιείται προεπιλεγμένο PUK",
     "l_default_pin_used": "Χρησιμοποιήθηκε προεπιλεγμένο PIN",
@@ -568,7 +568,7 @@
     "s_passkey_deleted": "Το κλειδί πρόσβασης διαγράφηκε",
     "p_warning_delete_passkey": "Προειδοποίηση! Αυτή η ενέργεια θα διαγράψει το κλειδί πρόσβασης από το YubiKey σας.",
     "p_warning_delete_passkey_desc": "Δεν θα μπορείτε πλέον να χρησιμοποιείτε αυτό το κλειδί πρόσβασης για την υπηρεσία όπου είναι καταχωρημένο.",
-    "l_do_not_remove_yk_delete": null,
+    "l_do_not_remove_yk_delete": "Μην αφαιρέσετε το YubiKey κατά τη διαγραφή",
     "s_search_passkeys": "Αναζήτηση κλειδιών πρόσβασης",
     "p_passkeys_used": "{used} από {max} κλειδιά πρόσβασης σε χρήση.",
     "@p_passkeys_used": {
@@ -704,7 +704,7 @@
     "p_warning_delete_certificate": "Προειδοποίηση! Αυτή η ενέργεια θα διαγράψει το πιστοποιητικό από το YubiKey σας.",
     "p_warning_delete_key": "Προειδοποίηση! Αυτή η ενέργεια θα διαγράψει το ιδιωτικό κλειδί από το YubiKey σας.",
     "p_warning_delete_certificate_and_key": "Προειδοποίηση! Αυτή η ενέργεια θα διαγράψει το πιστοποιητικό και το ιδιωτικό κλειδί από το YubiKey σας.",
-    "p_warning_usb_preferred": null,
+    "p_warning_usb_preferred": "Προτιμήστε το USB για τα κλειδιά RSA. Το NFC ενδέχεται να προκαλέσει σφάλματα.",
     "p_delete_certificate_desc": "Αυτό θα διαγράψει το πιστοποιητικό στην υποδοχή PIV {slot}.",
     "@p_delete_certificate_desc": {
         "placeholders": {
@@ -925,7 +925,7 @@
     "l_admin_privileges_required": "Απαιτούνται δικαιώματα διαχειριστή",
     "p_elevated_permissions_required": "Η διαχείριση αυτής της συσκευής απαιτεί αυξημένα δικαιώματα. Εναλλακτικά, μπορείτε να χρησιμοποιήσετε τις Ρυθμίσεις των Windows για τη διαχείριση της διαμόρφωσης FIDO.",
     "p_webauthn_elevated_permissions_required": "Η διαχείριση WebAuthn απαιτεί αυξημένα δικαιώματα. Εναλλακτικά, μπορείτε να χρησιμοποιήσετε τις Ρυθμίσεις των Windows για τη διαχείριση της διαμόρφωσης FIDO.",
-    "p_ms_store_permission_note": null,
+    "p_ms_store_permission_note": "Η έκδοση της εφαρμογής από το Microsoft Store γενικά δεν μπορεί να αυξήσει τα δικαιώματα λόγω των περιορισμών sandboxing των Windows. Συνιστούμε να εγκαταστήσετε το Yubico Authenticator από το επίσημο πρόγραμμα εγκατάστασης .msi.",
     "p_need_camera_permission": "Το Yubico Authenticator χρειάζεται δικαιώματα Κάμερας για τη σάρωση κωδικών QR.",
     "@_qr_codes": {},
 
@@ -979,7 +979,7 @@
     "p_warning_disable_credentials": "Τα διαπιστευτήριά σας OATH, καθώς και οποιοσδήποτε ορισμένος κωδικός πρόσβασης, θα καταργηθούν από αυτό το YubiKey. Βεβαιωθείτε ότι τα έχετε απενεργοποιήσει από τις αντίστοιχες ιστοσελίδες τους για να αποφύγετε τον αποκλεισμό από τους λογαριασμούς σας.",
     "p_warning_deletes_accounts": "Προειδοποίηση! Αυτό θα διαγράψει αμετάκλητα όλους τους λογαριασμούς U2F και FIDO2, συμπεριλαμβανομένων των κλειδιών πρόσβασης, από το YubiKey σας.",
     "p_warning_disable_accounts": "Τα διαπιστευτήριά σας, καθώς και οποιοδήποτε ορισμένο PIN, θα καταργηθούν από αυτό το YubiKey. Βεβαιωθείτε ότι τα έχετε απενεργοποιήσει από τις αντίστοιχες ιστοσελίδες τους για να αποφύγετε τον αποκλεισμό από τους λογαριασμούς σας.",
-    "l_reset_not_allowed_over": null,
+    "l_reset_not_allowed_over": "Η επαναφορά FIDO δεν επιτρέπεται μέσω {transport}",
     "@l_reset_not_allowed_over": {
         "placeholders": {
             "transport": {
@@ -997,7 +997,7 @@
     "s_code_copied": "Ο κωδικός αντιγράφηκε",
     "l_code_copied_clipboard": "Ο κωδικός αντιγράφηκε στο πρόχειρο",
     "s_copy_log": "Αντιγραφή αρχείου καταγραφής",
-    "l_copy_log_clipboard": null,
+    "l_copy_log_clipboard": "Αντιγραφή του αρχείου καταγραφής στο πρόχειρο",
     "l_log_copied": "Το αρχείο καταγραφής αντιγράφηκε στο πρόχειρο",
     "l_diagnostics_copied": "Τα διαγνωστικά δεδομένα αντιγράφηκαν στο πρόχειρο",
     "p_target_copied_clipboard": "Το {label} αντιγράφηκε στο πρόχειρο.",
@@ -1024,9 +1024,9 @@
     "s_replace_icon_pack": "Αντικατάσταση πακέτου εικονιδίων",
     "l_loading_icon_pack": "Φόρτωση πακέτου εικονιδίων\u2026",
     "s_load_icon_pack": "Φόρτωση πακέτου εικονιδίων",
-    "l_load_icon_pack_desc": null,
+    "l_load_icon_pack_desc": "Φόρτωση πακέτου εικονιδίων από αρχείο",
     "s_remove_icon_pack": "Κατάργηση πακέτου εικονιδίων",
-    "l_remove_icon_pack_desc": null,
+    "l_remove_icon_pack_desc": "Διαγραφή του ενεργού πακέτου εικονιδίων",
     "l_icon_pack_removed": "Το πακέτο εικονιδίων καταργήθηκε",
     "l_remove_icon_pack_failed": "Σφάλμα κατάργησης πακέτου εικονιδίων",
     "s_choose_icon_pack": "Επιλογή πακέτου εικονιδίων",
@@ -1043,10 +1043,10 @@
     "l_icon_pack_copy_failed": "Αποτυχία αντιγραφής αρχείων πακέτου εικονιδίων",
     "@_android_settings": {},
 
-    "s_nfc_and_usb_options": null,
-    "l_nfc_and_usb_options_desc": null,
-    "l_on_yk_nfc_tap": null,
-    "l_on_yk_usb_insert": null,
+    "s_nfc_and_usb_options": "Επιλογές NFC & USB",
+    "l_nfc_and_usb_options_desc": "Διαμόρφωση ενέργειας για το YubiKey",
+    "l_on_yk_nfc_tap": "Με άγγιγμα NFC",
+    "l_on_yk_usb_insert": "Κατά την εισαγωγή USB",
     "l_do_nothing": "Καμία ενέργεια",
     "l_launch_ya": "Εκκίνηση του Yubico Authenticator",
     "l_copy_otp_clipboard": "Αντιγραφή OTP στο πρόχειρο",
@@ -1062,13 +1062,13 @@
     "l_launch_app_on_usb_on": "Αυτό εμποδίζει άλλες εφαρμογές να χρησιμοποιούν το YubiKey μέσω USB",
     "l_launch_app_on_usb_off": "Άλλες εφαρμογές μπορούν να χρησιμοποιούν το YubiKey μέσω USB",
     "s_allow_screenshots": "Να επιτρέπονται τα στιγμιότυπα οθόνης",
-    "l_allow_screenshots_desc": null,
+    "l_allow_screenshots_desc": "Να επιτρέπεται η λήψη στιγμιοτύπων από άλλες εφαρμογές",
     "@_nfc": {},
 
     "s_nfc_ready_to_scan": "Έτοιμο για σάρωση",
     "s_nfc_hold_still": "Μείνετε ακίνητοι\u2026",
     "s_nfc_tap_your_yubikey": "Αγγίξτε το YubiKey σας",
-    "s_nfc_remove_key": null,
+    "s_nfc_remove_key": "Αφαιρέστε το YubiKey",
     "l_nfc_failed_to_scan": "Αποτυχία σάρωσης, προσπαθήστε ξανά",
     "@_usb": {},
 

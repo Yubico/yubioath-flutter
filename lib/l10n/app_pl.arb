@@ -195,7 +195,7 @@
     "p_try_reinsert_yk": "Spróbuj podłączyć ponownie klucz YubiKey.",
     "s_touch_required": "Dotknięcie wymagane",
     "l_touch_button_now": "Dotknij przycisku na kluczu YubiKey",
-    "l_long_touch_button_now": "Przytrzymaj przycisk klucza YubiKey przez 10 sekund",
+    "l_long_touch_button_now": "Przytrzymaj przycisk klucza YubiKey przez 5 sekund",
     "l_keep_touching_yk": "Wielokrotnie dotykaj klucza YubiKey\u2026",
     "@_capabilities": {},
 
@@ -390,8 +390,8 @@
         }
     },
     "s_dismiss": "Odrzuć",
-    "p_default_pin_puk_key_desc": "Zalecana jest zmiana domyślnego kodu PIN, PUK i kluczu zarządzania.",
-    "p_default_pin_puk_key_fips_desc": "Aby zapewnić zgodność z normą FIPS, wymagana jest zmiana domyślnego kodu PIN, PUK i kluczu zarządzania.",
+    "p_default_pin_puk_key_desc": "Zalecana jest zmiana domyślnego kodu PIN, PUK i klucza zarządzania.",
+    "p_default_pin_puk_key_fips_desc": "Aby zapewnić zgodność z normą FIPS, wymagana jest zmiana domyślnego kodu PIN, PUK i klucza zarządzania.",
     "l_warning_default_pin": "Ostrzeżenie: Używany jest domyślny kod PIN",
     "l_warning_default_puk": "Ostrzeżenie: Używany jest domyślny kod PUK",
     "l_default_pin_used": "Używany jest domyślny kod PIN",
@@ -704,7 +704,7 @@
     "p_warning_delete_certificate": "Ostrzeżenie! Spowoduje to usunięcie certyfikatu z klucza YubiKey.",
     "p_warning_delete_key": "Ostrzeżenie! Spowoduje to usunięcie klucza prywatnego z YubiKey.",
     "p_warning_delete_certificate_and_key": "Ostrzeżenie! Spowoduje to usunięcie certyfikatu i klucza prywatnego z YubiKey.",
-    "p_warning_usb_preferred": "Do obsługi kluczy RSA używaj głównie interfejsu USB, ponieważ połączenie NFC może powodować błędy.",
+    "p_warning_usb_preferred": "Do obsługi kluczy RSA używaj interfejsu USB. Połączenie NFC może powodować błędy.",
     "p_delete_certificate_desc": "Spowoduje to usunięcie certyfikatu ze slotu PIV {slot}.",
     "@p_delete_certificate_desc": {
         "placeholders": {
@@ -925,7 +925,7 @@
     "l_admin_privileges_required": "Uprawnienia administratora są wymagane",
     "p_elevated_permissions_required": "Zarządzanie tym urządzeniem wymaga podwyższonych uprawnień. Opcjonalnie, możesz użyć ustawień systemu Windows do zarządzania konfiguracją FIDO.",
     "p_webauthn_elevated_permissions_required": "Zarządzanie WebAuthn wymaga podwyższonych uprawnień. Opcjonalnie, możesz użyć ustawień systemu Windows do zarządzania konfiguracją FIDO.",
-    "p_ms_store_permission_note": "Ze względu na ograniczenia związane z piaskownicą systemu Windows, wersja aplikacji ze sklepu Microsoft Store zazwyczaj może nie być w stanie podnieść uprawnień. Zalecamy zainstalowanie aplikacji Yubico Authenticator za pomocą naszego oficjalnego instalatora MSI.",
+    "p_ms_store_permission_note": "Wersja aplikacji ze sklepu Microsoft Store zazwyczaj nie pozwala na podniesienie uprawnień ze względu na ograniczenia piaskownicy systemu Windows. Zalecamy zainstalowanie aplikacji Yubico Authenticator za pomocą naszego oficjalnego instalatora MSI.",
     "p_need_camera_permission": "Yubico Authenticator wymaga dostępu do aparatu w celu skanowania kodów QR.",
     "@_qr_codes": {},
 
@@ -1054,8 +1054,8 @@
     "l_kbd_layout_for_static": "Układ klawiatury (dla hasła statycznego)",
     "s_choose_kbd_layout": "Wybierz układ klawiatury",
     "l_bypass_touch_requirement": "Pomiń wymagane dotknięcie",
-    "l_bypass_touch_requirement_on": "Konta, które wymagają dotknięcia, będą automatycznie wyświetlane przez NFC",
-    "l_bypass_touch_requirement_off": "Konta, które wymagają dotknięcia, będą wymagały dodatkowego zbliżenia przez NFC",
+    "l_bypass_touch_requirement_on": "Dotknięcie klucza nie będzie wymagane",
+    "l_bypass_touch_requirement_off": "Dotknięcie klucza będzie wymagane",
     "s_silence_nfc_sounds": "Wycisz dźwięki NFC",
     "l_silence_nfc_sounds_on": "Dźwięk zbliżenia NFC nie będzie odtwarzany",
     "l_silence_nfc_sounds_off": "Dźwięk zbliżenia NFC będzie odtwarzany",

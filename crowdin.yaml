@@ -56,6 +56,8 @@ files: [
         "zh-CN": "zh",
         "zh-TW" : "zh_TW",
         "tr": "tr",
+        "pt-BR": "pt",
+        "hu": "hu",
       }
     }
 

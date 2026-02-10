@@ -1,0 +1,1123 @@
+{
+    "@@locale": "hu",
+
+    "app_name": "Yubico Authenticator",
+    "native_language_name": "Magyar",
+    "@native_language_name": {
+        "description": "IMPORTANT: This is the name of YOUR language written in YOUR language. For example: 'Deutsch' for German, 'Français' for French. DO NOT translate the word 'English'."
+    },
+    "s_translated": "Lefordítva: {percentage}%",
+    "@s_translated": {
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "s_proofread": "Lektorálva: {percentage}%",
+    "@s_proofread": {
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "l_incomplete_translation": "Befejezetlen fordítás",
+    "p_translation_progress_desc": "Az előrehaladási mutatók a fordítás állapotát tükrözik.",
+    "s_community": "Közösség",
+    "l_localization_project": "Fordítási projekt",
+
+    "s_save": "Mentés",
+    "s_cancel": "Mégsem",
+    "s_close": "Bezárás",
+    "s_delete": "Törlés",
+    "s_move": "Áthelyezés",
+    "s_quit": "Kilépés",
+    "s_enable": "Aktivál",
+    "s_enabled": "Aktiválva",
+    "s_disabled": "Deaktiválva",
+    "s_status": "Állapot",
+    "s_unlock": "Feloldás",
+    "s_calculate": "Kiszámítás",
+    "s_import": "Importálás",
+    "s_overwrite": "Felülírás",
+    "s_done": "Kész",
+    "s_success": "Sikeres",
+    "s_loading": "Betöltés\u2026",
+    "s_more": "Továbbiak",
+    "s_label": "Címke",
+    "s_name": "Név",
+    "s_usb": "USB",
+    "s_nfc": "NFC",
+    "s_options": "Beállítások",
+    "s_details": "Részletek",
+    "s_show_window": "Ablak megjelenítése",
+    "s_hide_window": "Ablak elrejtése",
+    "s_show_navigation": "Navigáció megjelenítése",
+    "s_expand_navigation": "Navigációs sáv kibontása",
+    "s_collapse_navigation": "Navigációs sáv összecsukása",
+    "s_expand_collapse_navigation": "Navigációs sáv kibontása/összecsukása",
+    "s_show_menu": "Menü megjelenítése",
+    "s_toggle_menu_bar": "Menüsor ki/bekapcsolása",
+    "s_more_info": "Több infó",
+    "l_bullet": "• {item}",
+    "@l_bullet": {
+        "placeholders": {
+            "item": {
+                "type": "String"
+            }
+        }
+    },
+    "s_none": "<none>",
+
+    "s_about": "Névjegy",
+    "s_algorithm": "Algoritmus",
+    "s_appearance": "Megjelenítés",
+    "s_actions": "Műveletek",
+    "s_manage": "Kezelés",
+    "s_setup": "Telepítő",
+    "s_device": "Eszköz",
+    "s_application": "Alkalmazás",
+    "s_settings": "Beállítások",
+    "s_reset_settings": "Beállítások visszaállítása",
+    "l_reset_settings_desc": "Beállítások visszaállítása alapértelmezettre",
+    "q_reset_settings": "Beállítások visszaállítása?",
+    "p_reset_settings_confirmation_desc": "Ez minden beállítást visszaállít az alapértelmezett értékre.",
+    "s_support": "Támogatás",
+    "s_certificates": "Tanúsítványok",
+    "s_security_key": "Biztonsági kulcs",
+    "s_slots": "Helyek",
+    "s_help_and_about": "Súgó és névjegy",
+    "s_help": "Súgó",
+    "s_app_information": "Alkalmazásinformációk",
+    "s_home": "Főképernyő",
+    "s_user_guide": "Felhasználói kézikönyv",
+    "s_i_need_help": "Segítségre van szükségem",
+    "s_terms_of_use": "Felhasználási feltételek",
+    "s_privacy_policy": "Adatvédelmi irányelvek",
+    "s_open_src_licenses": "Nyílt forráskódú licencek",
+    "s_please_wait": "Kérem várjon\u2026",
+    "s_secret_key": "Titkos kulcs",
+    "s_show_secret_key": "Titkos kulcs megmutatása",
+    "s_hide_secret_key": "Titkos kulcs elrejtése",
+    "s_private_key": "Privát kulcs",
+    "s_public_key": "Nyilvános kulcs",
+    "s_invalid_length": "Érvénytelen hossz",
+    "l_invalid_format_allowed_chars": "Érvénytelen formátum, engedélyezett karakterek: {characters}",
+    "@l_invalid_format_allowed_chars": {
+        "placeholders": {
+            "characters": {
+                "type": "String"
+            }
+        }
+    },
+    "l_invalid_keyboard_character": "Érvénytelen karakterek a kiválasztott billentyűzethez",
+    "s_require_touch": "Érintés megkövetelése",
+    "q_have_account_info": "Rendelkezik fiókinformációval?",
+    "s_debugging_tools": "Hibakeresési eszközök",
+    "s_run_diagnostics": "Diagnosztika futtatása",
+    "l_run_diagnostics_desc": "Diagnosztika futtatása a hibaelhárításhoz",
+    "s_logging_level": "Naplózás szintje",
+    "s_current_log_level": "Naplózás szintje: {level}",
+    "@s_current_log_level": {
+        "placeholders": {
+            "level": {
+                "type": "String"
+            }
+        }
+    },
+    "s_character_count": "Karakterek száma",
+    "@_language": {},
+
+    "s_language": "Nyelv",
+    "@_theme": {},
+
+    "s_app_theme": "Alkalmazás témája",
+    "s_system_default": "Rendszer alapértelmezett",
+    "s_light_mode": "Világos mód",
+    "s_dark_mode": "Sötét mód",
+    "@_layout": {},
+
+    "s_list_layout": "Lista nézet",
+    "s_grid_layout": "Rácsos nézet",
+    "s_mixed_layout": "Vegyes nézet",
+    "s_select_layout": "Nézet kiválasztása",
+    "@_yubikey_selection": {},
+
+    "s_select_to_scan": "Szkennelésre kiválasztás",
+    "s_hide_reader": "Olvasó elrejtése",
+    "s_show_hidden_readers": "Rejtett olvasók megjelenítése",
+    "s_toggle_readers": "Olvasók ki/bekapcsolása",
+    "l_toggle_readers_desc": "Olvasók megjelenítése vagy elrejtése",
+    "s_sn_serial": "S/N: {serial}",
+    "@s_sn_serial": {
+        "placeholders": {
+            "serial": {
+                "type": "int"
+            }
+        }
+    },
+    "s_fw_version": "F/W: {version}",
+    "@s_fw_version": {
+        "placeholders": {
+            "version": {
+                "type": "Object"
+            }
+        }
+    },
+    "l_serial_number": "Sorozatszám: {serial}",
+    "@l_serial_number": {
+        "placeholders": {
+            "serial": {
+                "type": "int"
+            }
+        }
+    },
+    "l_firmware_version": "Firmware verzió: {version}",
+    "@l_firmware_version": {
+        "placeholders": {
+            "version": {
+                "type": "Object"
+            }
+        }
+    },
+    "l_fips_capable": "FIPS-képes",
+    "l_fips_approved": "FIPS jóváhagyott",
+    "@_yubikey_interactions": {},
+
+    "l_insert_yk": "Helyezze be a YubiKey-t",
+    "l_insert_or_tap_yk": "YubiKey behelyezése vagy megérintése",
+    "l_unplug_yk": "Távolítsa el a YubiKey-t",
+    "l_reinsert_yk": "Helyezze be újra a YubiKey-t",
+    "l_place_on_nfc_reader": "Helyezze a YubiKey-t az NFC-olvasóra.",
+    "l_replace_yk_on_reader": "Helyezze vissza a YubiKey-t az olvasóra.",
+    "l_remove_yk_from_reader": "Távolítsa el a YubiKey-t az NFC-olvasóról",
+    "p_try_reinsert_yk": "Próbálja meg eltávolítani és újra behelyezni a YubiKey-t.",
+    "s_touch_required": "Érintés szükséges",
+    "l_touch_button_now": "Most érintse meg a gombot a YubiKey-n",
+    "l_long_touch_button_now": "Most tartsa nyomva a gombot a YubiKey-n 5 másodpercig",
+    "l_keep_touching_yk": "Érintse meg többször a YubiKey-t\u2026",
+    "@_capabilities": {},
+
+    "s_capability_otp": "Yubico OTP",
+    "s_capability_u2f": "FIDO U2F",
+    "s_capability_fido2": "FIDO2",
+    "s_capability_oath": "OATH",
+    "s_capability_piv": "PIV",
+    "s_capability_openpgp": "OpenPGP",
+    "s_capability_hsmauth": "YubiHSM azonosítás",
+    "@_app_configuration": {},
+
+    "s_toggle_applications": "Alkalmazások ki/bekapcsolása",
+    "s_toggle_interfaces": "Interfészek ki/bekapcsolása",
+    "p_toggle_applications_desc": "Alkalmazások engedélyezése vagy letiltása a rendelkezésre álló átviteli módokhoz.",
+    "p_toggle_interfaces_desc": "USB-interfészek engedélyezése vagy letiltása.",
+    "l_toggle_applications_desc": "Alkalmazások aktiválása/deaktiválása",
+    "l_toggle_interfaces_desc": "Interfészek engedélyezése/letiltása",
+    "s_reconfiguring_yk": "A YubiKey újrakonfigurálása\u2026",
+    "s_config_updated": "Konfiguráció frissítve",
+    "l_config_updated_reinsert": "Konfiguráció frissítve, távolítsa el és csatlakoztassa újra a YubiKey kulcsot",
+    "s_fido_disabled": "FIDO2 deaktiválva",
+    "l_webauthn_req_fido2": "A WebAuthn megköveteli, hogy a FIDO2 alkalmazás engedélyezve legyen a YubiKey-n",
+    "s_lock_code": "Zároló kód",
+    "l_wrong_lock_code": "Helytelen zároló kód",
+    "s_show_lock_code": "Zároló kód megmutatása",
+    "s_hide_lock_code": "Zároló kód elrejtése",
+    "p_lock_code_required_desc": "Olyan műveletre készül, melyhez a zároló kód megadása szükséges.",
+    "@_connectivity_issues": {},
+
+    "l_helper_not_responding": "A Helper folyamat nem válaszol",
+    "l_yk_no_access": "Ez a YubiKey nem érhető el",
+    "s_yk_inaccessible": "Eszköz nem hozzáférhető",
+    "l_open_connection_failed": "Kapcsolat felépítése sikertelen",
+    "l_ccid_connection_failed": "Smartcard-kapcsolat megnyitása sikertelen",
+    "p_ccid_service_unavailable": "Győződjön meg arról, hogy a smartcard-szolgáltatás működik.",
+    "p_pcscd_unavailable": "Győződjön meg róla, hogy a pcscd telepítve van és fut.",
+    "l_no_yk_present": "YubiKey nem található",
+    "s_unknown_type": "Ismeretlen típus",
+    "s_unknown_device": "Ismeretlen eszköz",
+    "s_restricted_nfc": "NFC aktiválása",
+    "l_deactivate_restricted_nfc": "Hogyan aktiváljuk az NFC-t",
+    "p_deactivate_restricted_nfc_desc": "Csatlakoztassa a YubiKey-t bármilyen USB áramforráshoz, például számítógéphez, legalább 3 másodpercig.\n\nAz áramellátást követően az NFC aktiválódik és használatra kész.",
+    "p_deactivate_restricted_nfc_footer": "A YubiKey korlátozott NFC-vel van felszerelve, amely a szállítás során a vezeték nélküli manipuláció elleni védelemre szolgál. Ez azt jelenti, hogy az NFC műveletek ideiglenesen le vannak tiltva, amíg Ön nem aktiválja azokat.",
+    "s_unsupported_yk": "Nem támogatott YubiKey",
+    "p_operation_failed_try_again": "A művelet sikertelen volt, próbálja újra.",
+    "l_configuration_unsupported": "Nem támogatott konfiguráció",
+    "p_scp_unsupported": "Az NFC-n keresztüli kommunikációhoz a YubiKey olyan technológiát igényel, amelyet ez a telefon nem támogat. Kérjük, csatlakoztassa a YubiKey-t a telefon USB-portjához.",
+    "@_general_errors": {},
+
+    "l_error_occurred": "Hiba lépett fel",
+    "s_application_error": "Alkalmazáshiba",
+    "l_import_error": "Importálási hiba",
+    "l_file_not_found": "Fájl nem található",
+    "l_file_too_big": "A fájl túl nagy",
+    "l_filesystem_error": "Fájlműveleti hiba",
+    "@_pins": {},
+
+    "s_pin": "PIN",
+    "s_puk": "PUK",
+    "s_set_pin": "PIN beállítása",
+    "s_change_pin": "PIN megváltoztatása",
+    "s_change_puk": "PUK megváltoztatása",
+    "s_show_pin": "PIN megmutatása",
+    "s_hide_pin": "PIN elrejtése",
+    "s_show_puk": "PUK megmutatása",
+    "s_hide_puk": "PUK elrejtése",
+    "s_current_pin": "Jelenlegi PIN",
+    "s_current_puk": "Jelenlegi PUK",
+    "s_new_pin": "Új PIN",
+    "s_new_puk": "Új PUK",
+    "s_confirm_pin": "PIN megerősítése",
+    "s_confirm_puk": "PUK megerősítése",
+    "s_unblock_pin": "PIN visszaállítása",
+    "l_pin_mismatch": "A PIN-ek nem egyeznek",
+    "l_puk_mismatch": "A PUK-ok nem egyeznek",
+    "s_pin_set": "PIN beállítva",
+    "s_puk_set": "PUK beállítva",
+    "l_set_pin_failed": "PIN beállítása sikertelen: {message}",
+    "@l_set_pin_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_attempts_remaining": "{retries, plural, =1{{retries} próbálkozás maradt}other{{retries} próbálkozás maradt}}",
+    "@l_attempts_remaining": {
+        "placeholders": {
+            "retries": {
+                "type": "int"
+            }
+        }
+    },
+    "l_wrong_pin_attempts_remaining": "Helytelen PIN, {retries, plural, =1{{retries} próbálkozás maradt}other{{retries} próbálkozás maradt}}",
+    "@l_wrong_pin_attempts_remaining": {
+        "placeholders": {
+            "retries": {
+                "type": "int"
+            }
+        }
+    },
+    "l_wrong_puk_attempts_remaining": "Helytelen PUK, {retries, plural, =1{{retries} próbálkozás maradt}other{{retries} próbálkozás maradt}}",
+    "@l_wrong_puk_attempts_remaining": {
+        "placeholders": {
+            "retries": {
+                "type": "int"
+            }
+        }
+    },
+    "s_fido_pin_protection": "FIDO PIN védelem",
+    "s_pin_change_required": "PIN változtatás szükséges",
+    "l_enter_fido2_pin": "Adja meg a YubiKey FIDO2 PIN-jét",
+    "p_fido2_pin_required": "A végrehajtandó művelethez a FIDO2 PIN-kód megadása szükséges.",
+    "l_pin_blocked_reset": "A PIN kód blokkolva; a FIDO alkalmazás gyári visszaállítása",
+    "l_pin_blocked": "PIN blokkolva",
+    "l_set_pin_first": "PIN szükséges",
+    "l_unlock_pin_first": "Feloldás PIN-nel",
+    "l_pin_soft_locked": "A PIN blokkolva lett, távolítsa el a YubiKey-t, majd csatlakoztassa újra",
+    "l_pin_change_required_desc": "Az alkalmazás használata előtt új PIN-kódot kell beállítani.",
+    "p_new_fido2_pin_requirements": "A PIN-kódnak a {min_length}-{max_length} karakter hosszúnak kell lennie, és tartalmazhat betűket, számokat és speciális karaktereket.",
+    "@p_new_fido2_pin_requirements": {
+        "placeholders": {
+            "min_length": {
+                "type": "int"
+            },
+            "max_length": {
+                "type": "int"
+            }
+        }
+    },
+    "p_new_fido2_pin_complexity_active_requirements": "A PIN-kódnak {min_length}-{max_length} karakterek hosszúnak kell lennie, legalább {unique_characters} egyedi karaktert kell tartalmaznia, és nem lehet egy általánosan használt PIN-kód, mint például \"{common_pin}\". A PIN betűket, számokat és speciális karaktereket tartalmazhat.",
+    "@p_new_fido2_pin_complexity_active_requirements": {
+        "placeholders": {
+            "min_length": {
+                "type": "int"
+            },
+            "max_length": {
+                "type": "int"
+            },
+            "unique_characters": {
+                "type": "int"
+            },
+            "common_pin": {
+                "type": "String"
+            }
+        }
+    },
+    "s_ep_attestation": "Vállalati tanúsítás",
+    "s_ep_attestation_enabled": "Vállalati tanúsítás engedélyezve",
+    "q_enable_ep_attestation": "Engedélyezze a vállalati tanúsítást?",
+    "p_enable_ep_attestation_desc": "Ez engedélyezi a vállalati tanúsítást, amely lehetővé teszi az engedélyezett domain-ek számára, hogy egyedileg azonosítsák a YubiKey-t.",
+    "p_enable_ep_attestation_disable_with_factory_reset": "A vállalati tanúsítást csak a FIDO gyári visszaállításával lehet letiltani.",
+    "s_pin_required": "PIN szükséges",
+    "p_pin_required_desc": "A végrehajtandó művelethez a PIV PIN-kód megadása szükséges.",
+    "l_piv_pin_blocked": "Blokkolva, használja a PUK-ot a visszaállításhoz",
+    "p_piv_pin_blocked_desc": "A PIN blokkolva van. Használja a PUK-ot a visszaállításhoz.",
+    "p_piv_pin_blocked_bio_desc": "A PIN blokkolva van. Visszaállítás gyári beállításokra szükséges.",
+    "l_piv_pin_puk_blocked": "Blokkolva, visszaállítás gyári beállításokra szükséges",
+    "p_piv_pin_puk_blocked_desc": "A PIN és a PUK is blokkolva lett. A PIV alkalmazás visszaállítása szükséges.",
+    "p_new_piv_pin_puk_requirements": "A(z) {name} legalább {length} karakter hosszú legyen.",
+    "@p_new_piv_pin_puk_requirements": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "length": {
+                "type": "int"
+            }
+        }
+    },
+    "p_new_piv_pin_puk_complexity_active_requirements": "A {name} legalább {length} karakter hosszú legyen, legalább 2 egyedi karaktert kell tartalmazzon, és nem lehet egy általánosan használt {name}, például \"{common}\".",
+    "@p_new_piv_pin_puk_complexity_active_requirements": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "length": {
+                "type": "int"
+            },
+            "common": {
+                "type": "String"
+            }
+        }
+    },
+    "p_pin_puk_complexity_failure": "Az új {name} nem felel meg a bonyolultsági követelményeknek.",
+    "@p_pin_puk_complexity_failure": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "s_dismiss": "Elvetés",
+    "p_default_pin_puk_key_desc": "Ajánlott az alapértelmezett PIN, PUK és kezelési kulcs megváltoztatása.",
+    "p_default_pin_puk_key_fips_desc": "A FIPS-megfelelőség érdekében meg kell változtatni az alapértelmezett PIN-kódot, a PUK-kódot és a kezelési kulcsot.",
+    "l_warning_default_pin": "Figyelem: alapértelmezett PIN használva",
+    "l_warning_default_puk": "Figyelem: alapértelmezett PUK használva",
+    "l_default_pin_used": "Alapértelmezett PIN használva",
+    "l_default_puk_used": "Alapértelmezett PUK használva",
+    "l_pin_complexity": "Bonyolult PIN kötelező",
+    "@_passwords": {},
+
+    "s_password": "Jelszó",
+    "s_manage_password": "Jelszó kezelése",
+    "s_set_password": "Jelszó beállítása",
+    "s_password_set": "Jelszó beállítva",
+    "s_show_password": "Jelszó megmutatása",
+    "s_hide_password": "Jelszó elrejtése",
+    "l_password_protection": "Fiókok jelszó általi védelme",
+    "s_new_password": "Új jelszó",
+    "s_current_password": "Jelenlegi jelszó",
+    "s_confirm_password": "Jelszó megerősítése",
+    "l_password_mismatch": "A jelszavak nem egyeznek",
+    "s_wrong_password": "Helytelen jelszó",
+    "p_wrong_password": "Helytelen jelszó. Ha nem ismeri a jelszót, vissza kell állítani a YubiKey-t.",
+    "s_remove_password": "Jelszó eltávolítása",
+    "s_password_removed": "Jelszó eltávolítva",
+    "s_remember_password": "Jelszóra emlékezés",
+    "s_clear_saved_password": "Mentett jelszó törlése",
+    "s_password_forgotten": "Jelszó elfelejtve",
+    "l_keystore_unavailable": "Az operációs rendszer kulcstára nem elérhető",
+    "l_remember_pw_failed": "Jelszóra emlékezés sikertelen",
+    "l_unlock_first": "Feloldás jelszóval",
+    "l_set_password_first": "Jelszó beállítása",
+    "l_enter_oath_pw": "Adja meg a YubiKey OATH jelszavát",
+    "p_new_password_requirements": "A jelszó tartalmazhat betűket, számokat és speciális karaktereket.",
+    "@_management_key": {},
+
+    "s_management_key": "Kezelési kulcs",
+    "s_current_management_key": "Jelenlegi kezelési kulcs",
+    "s_new_management_key": "Új kezelési kulcs",
+    "l_change_management_key": "Kezelési kulcs megváltoztatása",
+    "l_management_key_changed": "Kezelési kulcs megváltoztatva",
+    "l_default_key_used": "Alapértelmezett kezelési kulcs van használatban",
+    "s_generate_random": "Véletlenszerű generálása",
+    "s_use_default": "Alapértelmezett használata",
+    "l_warning_default_key": "Figyelmeztetés: alapértelmezett kulcs használva",
+    "s_protect_key": "Védelem PIN-nel",
+    "p_protect_key_desc": "Használja a PIN-kódot a kezelési kulcs helyett a kezelési kulcs hitelesítését igénylő műveletek során.",
+    "s_management_key_algorithm": "Kezelési kulcs algoritmusa",
+    "p_management_key_algorithm_desc": "A kezelési kulcshoz választandó algoritmus.",
+    "l_pin_protected_key": "PIN használható helyette",
+    "l_wrong_key": "Helytelen kulcs",
+    "l_unlock_piv_management": "PIV-kezelés feloldása",
+    "p_unlock_piv_management_desc": "A végrehajtandó művelethez a PIV-kezelési kulcsra van szükség.",
+    "@_oath_accounts": {},
+
+    "l_account": "Fiók: {label}",
+    "@l_account": {
+        "placeholders": {
+            "label": {
+                "type": "String"
+            }
+        }
+    },
+    "s_accounts": "Fiókok",
+    "s_no_accounts": "Nincsenek fiókok",
+    "l_results_for": "\"{query}\" eredménye",
+    "@l_results_for": {
+        "placeholders": {
+            "query": {
+                "type": "String"
+            }
+        }
+    },
+    "l_authenticator_get_started": "Kezdje el az OTP-fiókok használatát",
+    "l_no_accounts_desc": "Hozzáadhat fiókokat a YubiKey-hez bármely szolgáltatótól, amely támogatja az OATH TOTP/HOTP-t",
+    "s_add_account": "Fiók hozzáadása",
+    "p_add_account_desc": "Szkennelje be a QR-kódot, vagy adja meg kézzel az azonosítókat.",
+    "s_add_accounts": "Fiók(ok) hozzáadása",
+    "l_drop_qr_description": "QR-kód bedobása a fiók(ok) hozzáadásához",
+    "p_add_account_three_ways": "Háromféle módon lehet fiókokat hozzáadni.",
+    "s_scanning": "Szkennelés (ajánlott)",
+    "p_scanning_desc": "A QR-kód beolvasása előtt győződjön meg arról, hogy a teljes kód látható a képernyőn.",
+    "s_drag_and_drop": "Fogd és vidd",
+    "p_drag_and_drop_desc": "A QR-kódot tartalmazó képet bárhová be lehet dobni a Fiókok nézetben.",
+    "s_manually": "Manuálisan",
+    "p_manually_desc": "A fiók hitelesítő adatait manuálisan is be lehet írni az űrlapra.",
+    "s_account_added": "Fiók hozzáadva",
+    "l_account_add_failed": "Fiók hozzáadása sikertelen: {message}",
+    "@l_account_add_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_add_account_password_required": "Jelszó szükséges",
+    "l_add_account_unlock_required": "Feloldás szükséges",
+    "l_add_account_func_missing": "Hiányzó vagy letiltott funkció",
+    "l_account_name_required": "Adjon nevet a fióknak",
+    "l_name_already_exists": "Ez a név már létezik a kibocsátó számára",
+    "l_account_already_exists": "Ez a fiók már létezik a YubiKey-n.",
+    "l_invalid_character_issuer": "Érvénytelen karakter: ':' nem megengedett a kibocsátó nevében",
+    "l_select_accounts": "Válassza ki a YubiKey-hez hozzáadandó fiók(ok)at",
+    "s_pin_account": "Fiók kitűzése",
+    "s_unpin_account": "Fiók kitűzésének megszüntetése",
+    "s_no_pinned_accounts": "Nincsenek kitűzött fiókok",
+    "s_pinned": "Kitűzve",
+    "l_pin_account_desc": "Tartsa együtt a fontos fiókjait",
+    "s_rename_account": "Fiók átnevezése",
+    "l_rename_account_desc": "A fiók kibocsátójának/nevének szerkesztése",
+    "s_account_renamed": "Fiók átnevezve",
+    "l_rename_account_failed": "Fiók átnevezése sikertelen: {message}",
+    "@l_rename_account_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "p_rename_will_change_account_displayed": "Ez megváltoztatja a fiók megjelenítését a listában.",
+    "s_delete_account": "Fiók törlése",
+    "q_delete_account": "Törli a fiókot?",
+    "l_delete_account_desc": "Fiók eltávolítása a YubiKey-ről",
+    "s_account_deleted": "Fiók törölve",
+    "p_warning_delete_account": "Figyelmeztetés! Ezzel letörli a fiókot a YubiKey-ről.",
+    "p_warning_disable_credential": "Győződjön meg róla, hogy letiltotta ezt a fiókot a szolgáltatásból, amelyhez regisztrálták, hogy elkerülje a hozzáférés elvesztését.",
+    "s_account_name": "Fiók neve",
+    "s_search_accounts": "Fiók keresése",
+    "l_accounts_used": "{capacity}/{used} fiók használatban",
+    "@l_accounts_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "capacity": {
+                "type": "int"
+            }
+        }
+    },
+    "s_num_digits": "{num} számjegy",
+    "@s_num_digits": {
+        "placeholders": {
+            "num": {
+                "type": "int"
+            }
+        }
+    },
+    "s_num_sec": "{num} mp",
+    "@s_num_sec": {
+        "placeholders": {
+            "num": {
+                "type": "int"
+            }
+        }
+    },
+    "s_issuer_optional": "Kibocsátó (opcionális)",
+    "s_counter_based": "Számláló alapú",
+    "s_time_based": "Időalapú",
+    "l_copy_code_desc": "Kód beillesztése másik alkalmazásba",
+    "l_calculate_code_desc": "Új kód kérése a YubiKey-től",
+    "@_fido_credentials": {},
+
+    "s_rp_id": "RP ID",
+    "s_user_id": "Felhasználó ID",
+    "s_credential_id": "Azonosító ID",
+    "s_display_name": "Kijelzett név",
+    "s_user_name": "Felhasználónév",
+    "s_passkeys": "Azonosítókulcsok",
+    "s_no_passkeys": "Nincsenek azonosítókulcsok",
+    "l_ready_to_use": "Használatra kész",
+    "l_register_sk_on_websites": "Regisztráljon biztonsági kulcsként a webhelyeken",
+    "l_no_discoverable_accounts": "Nincsenek azonosítókulcsok tárolva",
+    "p_non_passkeys_note": "Nem azonosítókulcsos hitelesítő adatok létezhetnek, de nem listázhatóak.",
+    "s_delete_passkey": "Azonosítókulcs törlése",
+    "q_delete_passkey": "Törli az azonosítókulcsot?",
+    "l_delete_passkey_desc": "Az azonosítókulcs eltávolítása a YubiKey-ból",
+    "s_passkey_deleted": "Azonosítókulcs törölve",
+    "p_warning_delete_passkey": "Figyelem! Ez a művelet törli a jelszót a YubiKey-ről.",
+    "p_warning_delete_passkey_desc": "Többé nem fogja tudni használni ezt az azonosítókulcsot ahhoz a szolgáltatáshoz, ahol regisztrálva van.",
+    "l_do_not_remove_yk_delete": "Ne távolítsa el a YubiKey-t a törlés alatt",
+    "s_search_passkeys": "Azonosítókulcs keresése",
+    "p_passkeys_used": "{max}/{used} azonosítókulcs használatban.",
+    "@p_passkeys_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "max": {
+                "type": "int"
+            }
+        }
+    },
+    "@_fingerprints": {},
+    "s_biometrics": "Biometria",
+    "l_fingerprint": "Ujjlenyomat: {label}",
+    "@l_fingerprint": {
+        "placeholders": {
+            "label": {
+                "type": "String"
+            }
+        }
+    },
+    "s_fingerprints": "Ujjlenyomatok",
+    "l_fingerprint_captured": "Ujjlenyomat sikeresen rögzítve!",
+    "s_fingerprint_added": "Ujjlenyomat hozzáadva",
+    "l_adding_fingerprint_failed": "Ujjlenyomat hozzáadása sikertelen: {message}",
+    "@l_adding_fingerprint_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_setting_name_failed": "Név beállítása sikertelen: {message}",
+    "@l_setting_name_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "s_setup_fingerprints": "Ujjlenyomatok beállítása",
+    "p_setup_fingerprints_desc": "Ujjlenyomatok beállítása szükséges a kulcs használata előtt.",
+    "s_add_fingerprint": "Ujjlenyomat hozzádása",
+    "s_delete_fingerprint": "Ujjlenyomat törlése",
+    "q_delete_fingerprint": "Törli az ujjlenyomatot?",
+    "l_delete_fingerprint_desc": "Ujjlenyomat eltávolítása a YubiKey-ről",
+    "s_fingerprint_deleted": "Ujjlenyomat törölve",
+    "p_warning_delete_fingerprint": "Ezzel letörli az ujjlenyomatot a YubiKey-ről.",
+    "s_fingerprints_get_started": "Kezdje el az ujjlenyomatok használatát",
+    "p_set_fingerprints_desc": "Az ujjlenyomatok regisztrálása előtt be kell állítani egy PIN-kódot.",
+    "l_no_fps_added": "Nem lettek ujjlenyomatok hozzáadva",
+    "s_rename_fp": "Ujjlenyomat átnevezése",
+    "l_rename_fp_desc": "Név megváltoztatása",
+    "s_fingerprint_renamed": "Ujjlenyomat átnevezve",
+    "l_rename_fp_failed": "Átnevezés sikertelen: {message}",
+    "@l_rename_fp_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_add_one_or_more_fps": "Egy vagy több (maximum öt) ujjlenyomat hozzáadása",
+    "l_fingerprints_used": "5/{used} ujjlenyomat regisztrálva",
+    "@l_fingerprints_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            }
+        }
+    },
+    "p_press_fingerprint_begin": "Nyomja az ujját a YubiKey-re a kezdéshez.",
+    "l_name_fingerprint": "Ujjlenyomat elnevezése",
+    "@_fido_errors": {},
+
+    "l_user_action_timeout_error": "Sikertelen felhasználói inaktivitás miatt",
+    "l_wrong_inserted_yk_error": "Az újra behelyezett YubiKey nem egyezik az eredeti eszközzel",
+    "l_failed_connecting_to_fido": "Sikertelen csatlakozás a FIDO-interfészhez",
+    "@_certificates": {},
+
+    "l_self_signed_certificate": "Önaláírt tanúsítvány",
+    "l_certificate_signing_request": "Tanúsítvány aláírási kérelem (CSR)",
+    "s_certificate": "Tanúsítvány",
+    "s_subject": "Tárgy",
+    "l_export_csr_file": "Mentés CSR fájlba",
+    "l_export_public_key": "Nyilvános kulcs exportálása",
+    "l_export_public_key_file": "Nyilvános kulcs fájlba mentése",
+    "l_export_public_key_desc": "Nyilvános kulcs fájba exportálása",
+    "l_public_key_exported": "Nyilvános kulcs exportálva",
+    "l_export_certificate": "Tanúsítvány exportálása",
+    "l_export_certificate_file": "Tanúsítvány fájba exportálása",
+    "l_export_certificate_desc": "A tanúsítvány fájba exportálása",
+    "l_certificate_exported": "Tanúsítvány exportálva",
+    "l_select_import_file": "Válassza ki az importálni kívánt fájlt",
+    "l_import_file": "Fájl importálása",
+    "l_import_desc": "Kulcs és/vagy tanúsítvány importálása",
+    "l_import_nothing": "Nincs mit importálni",
+    "l_importing_file": "Fájl importálása...",
+    "s_file_imported": "Fájl importálva",
+    "l_unsupported_key_type": "Nem támogatott kulcstípus",
+    "l_delete_certificate": "Tanúsítvány törlése",
+    "q_delete_certificate": "Törli a tanúsítványt?",
+    "l_delete_certificate_desc": "Tanúsítvány eltávolítása a YubiKey-ről",
+    "l_delete_key": "Kulcs törlése",
+    "q_delete_key": "Törli a kulcsot?",
+    "l_delete_key_desc": "Kulcs eltávolítása a YubiKey-ről",
+    "l_delete_certificate_or_key": "Tanúsítvány/kulcs törlése",
+    "q_delete_certificate_or_key": "Törli a tanúsítványt/kulcsot?",
+    "l_delete_certificate_or_key_desc": "A tanúsítvány vagy kulcs eltávolítása a YubiKey-ről",
+    "l_move_key": "Kulcs áthelyezése",
+    "l_move_key_desc": "Kulcs áthelyezése az egyik PIV-helyről egy másikra",
+    "l_change_defaults": "Alapértelmezett hozzáférési kódok módosítása",
+    "s_issuer": "Kibocsátó",
+    "s_serial": "Sorozatszám",
+    "s_certificate_fingerprint": "Ujjlenyomat",
+    "s_valid_from": "Érvényesség kezdete",
+    "s_valid_to": "Érvényesség vége",
+    "l_no_certificate": "Nincs tanúsítvány betöltve",
+    "l_key_no_certificate": "Tanúsítvány nélküli kulcs betöltve",
+    "s_generate_key": "Kulcs generálása",
+    "l_generate_desc": "Új tanúsítvány vagy CSR generálása",
+    "p_generate_desc": "Ez egy új kulcsot generál a YubiKey-n a(z) {slot}. PIV-helyen.",
+    "@p_generate_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "s_private_key_generated": "Privát kulcs generálása",
+    "p_select_what_to_delete": "Válassza ki, hogy mit szeretne törölni a helyről.",
+    "p_warning_delete_certificate": "Figyelem! Ez a művelet törli a tanúsítványt a YubiKey-ről.",
+    "p_warning_delete_key": "Figyelem! Ez a művelet törli a privát kulcsot a YubiKey-ről.",
+    "p_warning_delete_certificate_and_key": "Figyelem! Ez a művelet törli a tanúsítványt és a privát kulcsot a YubiKey-ről.",
+    "p_warning_usb_preferred": "Az RSA-kulcsok esetében előnyben részesíti az USB-t. Az NFC hibákat okozhat.",
+    "p_delete_certificate_desc": "Ezzel törli a tanúsítványt a(z) {slot}. PIV-helyről.",
+    "@p_delete_certificate_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "p_delete_key_desc": "Ezzel törli a privát kulcsot a(z) {slot}. PIV-helyről.",
+    "@p_delete_key_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "p_delete_certificate_and_key_desc": "Ezzel törli a tanúsítványt és a magánkulcsot a(z) {slot}. PIV-helyről.",
+    "@p_delete_certificate_and_key_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "l_certificate_deleted": "Tanúsítvány törölve",
+    "l_key_deleted": "Kulcs törölve",
+    "l_certificate_and_key_deleted": "Tanúsítvány és kulcs törölve",
+    "l_include_certificate": "Tanúsítvány tartalmazása",
+    "l_select_destination_slot": "Célhely kiválasztása",
+    "q_move_key_confirm": "Áthelyezi a privát kulcsot a(z) {from_slot}. PIV-helyről?",
+    "@q_move_key_confirm": {
+        "placeholders": {
+            "from_slot": {
+                "type": "String"
+            }
+        }
+    },
+    "q_move_key_to_slot_confirm": "Áthelyezi a privát kulcsot a(z) {from_slot}. PIV-helyről a(z) {to_slot}. helyre?",
+    "@q_move_key_to_slot_confirm": {
+        "placeholders": {
+            "from_slot": {
+                "type": "String"
+            },
+            "to_slot": {
+                "type": "String"
+            }
+        }
+    },
+    "q_move_key_and_certificate_to_slot_confirm": "Áthelyezi a privát kulcsot és tanúsítványt a(z) {from_slot}. PIV-helyről a(z) {to_slot}. helyre?",
+    "@q_move_key_and_certificate_to_slot_confirm": {
+        "placeholders": {
+            "from_slot": {
+                "type": "String"
+            },
+            "to_slot": {
+                "type": "String"
+            }
+        }
+    },
+    "p_password_protected_file": "A kiválasztott fájl jelszóval védett.",
+    "p_import_items_desc": "A következő tétel(ek) lesz(nek) importálva a(z) {slot}. PIV-helyre.",
+    "@p_import_items_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "l_warning_public_key_mismatch": "A tanúsítvány nyilvános kulcsa nem egyezik meg a helyen lévő privát kulccsal.",
+    "l_key_moved": "Kulcs áthelyezve",
+    "l_key_and_certificate_moved": "Kulcs és tanúsítvány áthelyezve",
+    "p_subject_desc": "Az RFC 4514 specifikációnak megfelelően formázott megkülönböztető név (DN).",
+    "l_rfc4514_invalid": "Érvénytelen RFC 4514 formátum",
+    "rfc4514_examples": "Példák:\nCN=Példa Név\nCN=jsmith,DC=példa,DC=net",
+    "s_allow_fingerprint": "Ujjlenyomat engedélyezése",
+    "s_pin_policy": "PIN-irányelvek",
+    "s_output_format": "Kimeneti formátum",
+    "s_expiration_date": "Lejárat dátuma",
+    "p_algorithm_desc": "Használni kívánt kulcsalgoritmus.",
+    "p_expiration_date_desc": "A tanúsítvány lejáratának dátuma, alapértelmezett 1 év (csak tanúsítvány).",
+    "p_key_options_bio_desc": "Lehetővé teszi a biometrikus adatok használatát a PIN-kód helyett.",
+    "q_overwrite_slot": "Hely felülírása?",
+    "p_overwrite_slot_desc": "Ez véglegesen felülírja a(z) {slot}. helyen található tartalmakat.",
+    "@p_overwrite_slot_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "l_overwrite_cert": "Ez a tanúsítvány felül lesz írva",
+    "l_overwrite_key": "A privát kulcs felülírásra kerül",
+    "l_overwrite_key_maybe": "A helyen lévő privát kulcsok felülíródnak.",
+    "@_piv_slots": {},
+
+    "s_slot_display_name": "{name} ({hexid})",
+    "@s_slot_display_name": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "hexid": {
+                "type": "String"
+            }
+        }
+    },
+    "s_slot_9a": "Azonosítás",
+    "s_slot_9c": "Digitális aláírás",
+    "s_slot_9d": "Kulcskezelés",
+    "s_slot_9e": "Kártya azonosítás",
+    "s_retired_slot": "Visszavont kulcsok kezelése",
+    "@_otp_slots": {},
+
+    "s_otp_slot_one": "Rövid érintés",
+    "s_otp_slot_two": "Hosszú érintés",
+    "l_otp_slot_empty": "A hely üres",
+    "l_otp_slot_configured": "A hely konfigurálva",
+    "@_otp_slot_configurations": {},
+
+    "l_yubiotp_desc": "Programozzon egy Yubico OTP azonosítót",
+    "s_challenge_response": "Kihívás-válasz",
+    "l_challenge_response_desc": "Kihívás-válasz alapú hitelesítés programozása",
+    "s_static_password": "Állandó jelszó",
+    "l_static_password_desc": "Állandó jelszó megadása",
+    "s_hotp": "OATH-HOTP",
+    "l_hotp_desc": "HMAC-SHA1 alapú hitelesítés programozása",
+    "s_public_id": "Nyilvános ID",
+    "s_private_id": "Privát ID",
+    "s_use_serial": "Soros port használata",
+    "l_select_file": "Fájl kiválasztása",
+    "l_no_export_file": "Nincs exportfálj",
+    "s_no_export": "Nincs export",
+    "s_export": "Export",
+    "l_export_configuration_file": "Beállítások exportálása fájlba",
+    "l_exported_can_be_uploaded_at": "Az exportált hitelesítő adatokat a {url} címre lehet feltölteni.",
+    "@l_exported_can_be_uploaded_at": {
+        "placeholders": {
+            "url": {
+                "type": "String"
+            }
+        }
+    },
+    "l_keyboard_layout": "{layout} billentyűzet",
+    "@l_keyboard_layout": {
+        "placeholders": {
+            "layout": {
+                "type": "Object"
+            }
+        }
+    },
+    "@_otp_slot_actions": {},
+
+    "s_delete_slot": "Azonosító törlése",
+    "q_delete_slot": "Törli az azonosítót?",
+    "l_delete_slot_desc": "Azonosító törlése a helyről",
+    "p_warning_delete_slot_configuration": "Figyelem! Ez a művelet véglegesen eltávolítja a hitelesítő adatot a(z) {slot_id}. helyről.",
+    "@p_warning_delete_slot_configuration": {
+        "placeholders": {
+            "slot_id": {
+                "type": "int"
+            }
+        }
+    },
+    "l_slot_deleted": "Azonosító törölve",
+    "s_swap": "Felcserél",
+    "s_swap_slots": "Helyek felcserélése",
+    "q_swap_slots": "Felcseréli a helyeket?",
+    "l_swap_slots_desc": "Rövid/hosszú érintés felcserélése",
+    "p_swap_slots_desc": "Ez felcseréli a két hely konfigurációját.",
+    "l_slots_swapped": "Helyek beállításai felcserélve",
+    "l_slot_credential_configured": "Beállított {type} hitelesítő adatok",
+    "@l_slot_credential_configured": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "l_slot_credential_configured_and_exported": "A {type} hitelesítő adatok konfigurálva és exportálva: {file}",
+    "@l_slot_credential_configured_and_exported": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            },
+            "file": {
+                "type": "String"
+            }
+        }
+    },
+    "s_append_enter": "Hozzáfűzés⏎",
+    "l_append_enter_desc": "Enter billentyűleütés hozzáadása az OTP kód beírása után",
+    "@_otp_errors": {},
+
+    "p_otp_swap_error": "Helyek felcserélése sikertelen! Győződjön meg róla, hogy a YubiKey hozzáférése nincs korlátozva.",
+    "l_wrong_access_code": "Helytelen hozzáférési kód",
+    "@_otp_access_code": {},
+
+    "s_access_code": "Hozzáférési kód",
+    "s_show_access_code": "Hozzáférési kód megmutatása",
+    "s_hide_access_code": "Hozzáférési kód elrejtése",
+    "p_enter_access_code": "Adja meg az {slot}. hely hozzáférési kódját.",
+    "@p_enter_access_code": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "@_permissions": {},
+
+
+    "s_enable_nfc": "NFC aktiválása",
+    "s_request_access": "Hozzáférés kérése",
+    "s_permission_denied": "Hozzáférés megtagadva",
+    "l_elevating_permissions": "Jogosultságok emelése\u2026",
+    "s_review_permissions": "Jogosultságok áttekintése",
+    "s_open_windows_settings": "Windows beállítások megnyitása",
+    "l_admin_privileges_required": "Rendszergazdai jogosultságok szükségesek",
+    "p_elevated_permissions_required": "Ennek az eszköznek a kezeléséhez emelt szintű jogosultságok szükségesek. Alternatív megoldásként a Windows-beállítások segítségével is kezelheti a FIDO-konfigurációt.",
+    "p_webauthn_elevated_permissions_required": "A WebAuthn kezelése emelt szintű jogosultságokat igényel. Alternatív megoldásként a Windows-beállítások segítségével is kezelheti a FIDO-konfigurációt.",
+    "p_ms_store_permission_note": "Az alkalmazás Microsoft Store verziója a Windows sandbox-korlátozásai miatt általában nem képes a jogosultságok emelésére. Javasoljuk, hogy a Yubico Authenticator-t a hivatalos .msi telepítőnkből telepítse.",
+    "p_need_camera_permission": "A Yubico Authenticatornak kamera-hozzáférésre van szüksége a QR-kódok beolvasásához.",
+    "@_qr_codes": {},
+
+    "s_qr_scan": "QR-kód szkennelése",
+    "l_invalid_qr": "Érvénytelen QR-kód",
+    "l_qr_not_found": "QR-kód nem található",
+    "l_qr_scanned": "QR-kód beszkennelve",
+    "l_qr_file_too_large": "A fálj túl nagy",
+    "@l_qr_file_too_large": {
+        "placeholders": {
+            "max": {
+                "type": "String"
+            }
+        }
+    },
+    "l_qr_invalid_image_file": "Érvénytelen képfájl",
+    "l_qr_select_file": "QR-kódot tartalmazó fájl kiválasztása",
+    "l_qr_not_read": "QR-kód olvasása sikertelen: {message}",
+    "@l_qr_not_read": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_point_camera_scan": "Szkenneléshez tartsa a kamerát a QR-kód irányába",
+    "q_want_to_scan": "Szkennelni szeretne?",
+    "q_no_qr": "Nincs QR-kód?",
+    "s_enter_manually": "Megadás manuálisan",
+    "s_read_from_file": "Fájlból olvasás",
+    "@_factory_reset": {},
+
+    "s_reset": "Visszaállítás",
+    "s_factory_reset": "Gyári beállítások visszaállítása",
+    "l_factory_reset_desc": "YubiKey alapértelmezett beállításainak visszaállítása",
+    "l_factory_reset_required": "Visszaállítás gyári beállításokra szükséges",
+    "l_oath_application_reset": "OATH alkalmazás visszaállítása",
+    "l_fido_app_reset": "FIDO alkalmazás visszaállítása",
+    "l_reset_failed": "Visszaállítás sikertelen: {message}",
+    "@l_reset_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_piv_app_reset": "PIV alkalmazás visszaállítása",
+    "p_factory_reset_an_app": "Egy alkalmazás visszaállítása a YubiKey-n.",
+    "p_factory_reset_desc": "Az adatokat több alkalmazás tárolja a YubiKey-n, amelyek közül néhány egymástól függetlenül visszaállítható.\n\nVálasszon ki egy alkalmazást a fentiekből a visszaállításhoz.",
+    "p_warning_factory_reset": "Figyelem! Ez visszavonhatatlanul törli az összes OATH TOTP/HOTP fiókot a YubiKey-ről.",
+    "p_warning_disable_credentials": "Az OATH hitelesítő adatai, valamint a beállított jelszavak eltávolításra kerülnek erről a YubiKey-ről. Győződjön meg róla, hogy letiltotta ezeket a megfelelő webhelyekről, hogy elkerülje a hozzáférés elvesztését.",
+    "p_warning_deletes_accounts": "Figyelem! Ez visszavonhatatlanul törli az összes U2F és FIDO2 fiókot, beleértve a jelszavakat is, a YubiKey-ről.",
+    "p_warning_disable_accounts": "Az Ön hitelesítő adatai, valamint a beállított PIN-kódok eltávolításra kerülnek erről a YubiKey-ről. Győződjön meg róla, hogy ezeket a megfelelő webhelyekről letiltotta, hogy elkerülje a hozzáférés elvesztését.",
+    "l_reset_not_allowed_over": "FIDO visszaállítás letiltva ehhez: {transport}",
+    "@l_reset_not_allowed_over": {
+        "placeholders": {
+            "transport": {
+                "type": "String"
+            }
+        }
+    },
+    "p_warning_piv_reset": "Figyelem! Minden PIV adat visszavonhatatlanul törlésre kerül a YubiKey-ről.",
+    "p_warning_piv_reset_desc": "Ez magában foglalja a magánkulcsokat és a tanúsítványokat. A PIN, a PUK és a kezelési kulcs visszaáll a gyári alapértelmezett értékekre.",
+    "p_warning_global_reset": "Figyelem! Ez visszavonhatatlanul törli az összes elmentett adatot, beleértve a hitelesítő adatokat is, a YubiKey-ről.",
+    "p_warning_global_reset_desc": "Állítsa vissza a YubiKey alkalmazásainak gyári beállításait. A PIN-kód visszaáll a gyári alapértékre, és a regisztrált ujjlenyomatok törlődnek. Minden kulcs, tanúsítvány vagy egyéb hitelesítő adat véglegesen eltávolításra kerül.",
+    "@_copy_to_clipboard": {},
+
+    "l_copy_to_clipboard": "Másolás vágólapra",
+    "s_code_copied": "Kód másolva",
+    "l_code_copied_clipboard": "Kód másolva a vágólapra",
+    "s_copy_log": "Napló másolása",
+    "l_copy_log_clipboard": "Napló másolása a vágólapra",
+    "l_log_copied": "Napló másolva a vágólapra",
+    "l_diagnostics_copied": "Diagnosztikai adatok másolva a vágólapra",
+    "p_target_copied_clipboard": "{label} másolva a vágólapra.",
+    "@p_target_copied_clipboard": {
+        "placeholders": {
+            "label": {
+                "type": "String"
+            }
+        }
+    },
+    "@_custom_icons": {},
+
+    "s_custom_icons": "Egyedi ikonok",
+    "l_set_icons_for_accounts": "Ikonok beállítása fiókokhoz",
+    "p_custom_icons_description": "Az ikoncsomagok ismerős logókkal és színekkel könnyebben megkülönböztethetővé tehetik fiókjait.",
+    "p_custom_icons_format_desc": "Az ikoncsomagok a {aegis_icon_pack} formátumot használják. Letölthet egy előre elkészített ikoncsomagot, vagy létrehozhatja sajátját.",
+    "@p_custom_icons_format_desc": {
+        "placeholders": {
+            "aegis_icon_pack": {
+                "type": "String"
+            }
+        }
+    },
+    "s_replace_icon_pack": "Ikoncsomag cseréje",
+    "l_loading_icon_pack": "Ikoncsomag betöltése\u2026",
+    "s_load_icon_pack": "Ikoncsomag betöltése",
+    "l_load_icon_pack_desc": "Ikoncsomag betöltése fájlból",
+    "s_remove_icon_pack": "Ikoncsomag eltávolítása",
+    "l_remove_icon_pack_desc": "Aktív ikoncsomag törlése",
+    "l_icon_pack_removed": "Ikoncsomag eltávolítva",
+    "l_remove_icon_pack_failed": "Ikoncsomag eltávolítása sikertelen",
+    "s_choose_icon_pack": "Ikoncsomag kiválasztása",
+    "l_icon_pack_imported": "Ikoncsomag importálva",
+    "l_import_icon_pack_failed": "Ikoncsomag importálása sikertelen: {message}",
+    "@l_import_icon_pack_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_invalid_icon_pack": "Érvénytelen ikoncsomag",
+    "l_icon_pack_copy_failed": "Ikoncsomag fájlok másolása sikertelen",
+    "@_android_settings": {},
+
+    "s_nfc_and_usb_options": "NFC és USB beállítások",
+    "l_nfc_and_usb_options_desc": "A YubiKey művelet beállítása",
+    "l_on_yk_nfc_tap": "NFC érintésnél",
+    "l_on_yk_usb_insert": "USB behelyezésnél",
+    "l_do_nothing": "Ne csináljon semmit",
+    "l_launch_ya": "Indítsa el a Yubico Authenticator-t",
+    "l_copy_otp_clipboard": "OTP másolása vágólapra",
+    "l_launch_and_copy_otp": "Indítsa el az alkalmazást és másolja az OTP-t",
+    "l_kbd_layout_for_static": "Billentyűzetkiosztás (statikus jelszóhoz)",
+    "s_choose_kbd_layout": "Billentyűzetkiosztás választása",
+    "l_bypass_touch_requirement": "Érintés megkerülése",
+    "l_bypass_touch_requirement_on": "Az érintést igénylő fiókok automatikusan megjelennek az NFC-n keresztül.",
+    "l_bypass_touch_requirement_off": "Az érintést igénylő fiókokhoz további koppintásra van szükség az NFC-n keresztül.",
+    "s_silence_nfc_sounds": "NFC hangok elnémítása",
+    "l_silence_nfc_sounds_on": "NFC-érintéskor nem szólal meg hang",
+    "l_silence_nfc_sounds_off": "NFC-érintéskor hang szólal meg",
+    "l_launch_app_on_usb_on": "Ez megakadályozza, hogy más alkalmazások USB-n keresztül használják a YubiKey-t.",
+    "l_launch_app_on_usb_off": "Más alkalmazások használhatják a YubiKey-t USB-n keresztül",
+    "s_allow_screenshots": "Képernyőmentés engedélyezése",
+    "l_allow_screenshots_desc": "Más alkalmazások készíthetnek képernyőmentést",
+    "@_nfc": {},
+
+    "s_nfc_ready_to_scan": "Szkennelésre kész",
+    "s_nfc_hold_still": "Tartsa nyugodtan\u2026",
+    "s_nfc_tap_your_yubikey": "Érintse meg a YubiKey-t",
+    "s_nfc_remove_key": "Távolítsa el a YubiKey-t",
+    "l_nfc_failed_to_scan": "Szkennelés sikertelen, próbálja újra",
+    "@_usb": {},
+
+    "s_usb_processing": "Adatok olvasása a YubiKey-ről",
+    "s_usb_dont_remove": "Ne távolítsa el a kulcsot\u2026",
+    "l_usb_read_error": "Adatok olvasása a YubiKey-ről sikertelen",
+    "@_ndef": {},
+
+    "p_ndef_set_otp": "Sikeresen másolta az OTP kódot a YubiKey-ről a vágólapra.",
+    "p_ndef_set_password": "Sikeresen másolta a jelszót a YubiKey-ről a vágólapra.",
+    "p_ndef_parse_failure": "Nem sikerült beolvasni az OTP kódot a YubiKey-ről.",
+    "p_ndef_set_clip_failure": "Az OTP-kód YubiKey-ről való másolása közben nem sikerült elérni a vágólapot.",
+    "@_key_customization": {},
+
+    "s_set_label": "Címke beállítása",
+    "s_set_color": "Szín beállítása",
+    "s_change_label": "Címke módosítása",
+    "p_set_will_add_custom_name": "Ezáltal a YubiKey-nek egy egyéni nevet ad.",
+    "p_rename_will_change_custom_name": "Ez megváltoztatja a YubiKey címkéjét.",
+    "@_shortcuts": {},
+
+    "s_keyboard_shortcuts": "Billentyűparancsok",
+    "s_global_shortcuts": "Globális gyorsbillentyűk",
+    "s_application_shortcuts": "Alkalmazás gyorsbillentyűi",
+    "@s_quit_app": {
+        "placeholders": {
+            "app": {
+                "type": "String"
+            }
+        }
+    },
+    "s_quit_app": "{app} bezárása",
+    "@s_hide_app": {
+        "placeholders": {
+            "app": {
+                "type": "String"
+            }
+        }
+    },
+    "s_hide_app": "{app} elrejtése",
+    "s_search": "Keresés",
+    "s_next_device": "Következő eszköz",
+    "s_previous_device": "Előző eszköz",
+    "s_open_settings": "Beállítások megnyitása",
+    "s_open_item": "Elem megnyitása",
+    "s_edit_item": "Elem szerkesztese",
+    "s_delete_item": "Elem törlése",
+    "s_calculate_oath_code": "OATH-kód kiszámítása",
+    "s_open_keyboard_shortcuts": "Billentyűparancsok megnyitása",
+    "@_eof": {}
+
+}

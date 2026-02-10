@@ -1,0 +1,1123 @@
+{
+    "@@locale": "nl",
+
+    "app_name": "Yubico Authenticator",
+    "native_language_name": "Nederlands",
+    "@native_language_name": {
+        "description": "IMPORTANT: This is the name of YOUR language written in YOUR language. For example: 'Deutsch' for German, 'Français' for French. DO NOT translate the word 'English'."
+    },
+    "s_translated": "Vertaald: {percentage}%",
+    "@s_translated": {
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "s_proofread": "Proeflezen: {percentage}%",
+    "@s_proofread": {
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "l_incomplete_translation": "Onvolledige vertaling",
+    "p_translation_progress_desc": "Voortgangsindicatoren geven de hoeveelheid vertaling aan.",
+    "s_community": "Gemeenschap",
+    "l_localization_project": "Lokalisatieproject",
+
+    "s_save": "Opslaan",
+    "s_cancel": "Annuleren",
+    "s_close": "Sluiten",
+    "s_delete": "Verwijderen",
+    "s_move": "Verplaatsen",
+    "s_quit": "Afbreken",
+    "s_enable": "Activeren",
+    "s_enabled": "Geactiveerd",
+    "s_disabled": "Uitgeschakeld",
+    "s_status": "Status",
+    "s_unlock": "Ontgrendelen",
+    "s_calculate": "Berekenen",
+    "s_import": "Importeren",
+    "s_overwrite": "Overschrijven",
+    "s_done": "Klaar",
+    "s_success": "Succes",
+    "s_loading": "Laden\u2026",
+    "s_more": "Meer",
+    "s_label": "Label",
+    "s_name": "Naam",
+    "s_usb": "USB",
+    "s_nfc": "NFC",
+    "s_options": "Opties",
+    "s_details": "Details",
+    "s_show_window": "Venster weergeven",
+    "s_hide_window": "Venster verbergen",
+    "s_show_navigation": "Navigatie weergeven",
+    "s_expand_navigation": "Navigatiebalk uitklappen",
+    "s_collapse_navigation": "Navigatiebalk inklappen",
+    "s_expand_collapse_navigation": "Navigatiebalk uit-/inklappen",
+    "s_show_menu": "Menu weergeven",
+    "s_toggle_menu_bar": "Menubalk wisselen",
+    "s_more_info": "Meer info",
+    "l_bullet": "• {item}",
+    "@l_bullet": {
+        "placeholders": {
+            "item": {
+                "type": "String"
+            }
+        }
+    },
+    "s_none": "geen",
+
+    "s_about": "Over",
+    "s_algorithm": "Algoritme",
+    "s_appearance": "Weergave",
+    "s_actions": "Acties",
+    "s_manage": "Beheren",
+    "s_setup": "Instellen",
+    "s_device": "Apparaat",
+    "s_application": "Toepassing",
+    "s_settings": "Instellingen",
+    "s_reset_settings": "Instellingen herstellen",
+    "l_reset_settings_desc": "Standaardinstellingen herstellen",
+    "q_reset_settings": "Instellingen herstellen?",
+    "p_reset_settings_confirmation_desc": "Dit herstelt alle instellingen naar hun standaardwaarden.",
+    "s_support": "Ondersteuning",
+    "s_certificates": "Certificaten",
+    "s_security_key": "Beveiligingssleutel",
+    "s_slots": "Slots",
+    "s_help_and_about": "Help & over",
+    "s_help": "Help",
+    "s_app_information": "Toepassingsinformatie",
+    "s_home": "Thuis",
+    "s_user_guide": "Gebruikershandleiding",
+    "s_i_need_help": "Hulp nodig",
+    "s_terms_of_use": "Gebruikersvoorwaarden",
+    "s_privacy_policy": "Privacybeleid",
+    "s_open_src_licenses": "Open-source licenties",
+    "s_please_wait": "Even geduld\u2026",
+    "s_secret_key": "Wachtwoord",
+    "s_show_secret_key": "Wachtwoord weergeven",
+    "s_hide_secret_key": "Wachtwoord verbergen",
+    "s_private_key": "Privé sleutel",
+    "s_public_key": "Publieke sleutel",
+    "s_invalid_length": "Ongeldige lengte",
+    "l_invalid_format_allowed_chars": "Ongeldige indeling, toegestane tekens: {characters}",
+    "@l_invalid_format_allowed_chars": {
+        "placeholders": {
+            "characters": {
+                "type": "String"
+            }
+        }
+    },
+    "l_invalid_keyboard_character": "Ongeldige tekens voor geselecteerd toetsenbord",
+    "s_require_touch": "Aanraken verplicht",
+    "q_have_account_info": "Heeft u accountgegevens?",
+    "s_debugging_tools": "Hulpmiddelen voor foutopsporing",
+    "s_run_diagnostics": "Diagnose uitvoeren",
+    "l_run_diagnostics_desc": "Diagnose uitvoeren voor probleemoplossing",
+    "s_logging_level": "Niveau loggen",
+    "s_current_log_level": "Niveau loggen: {level}",
+    "@s_current_log_level": {
+        "placeholders": {
+            "level": {
+                "type": "String"
+            }
+        }
+    },
+    "s_character_count": "Aantal tekens",
+    "@_language": {},
+
+    "s_language": "Taal",
+    "@_theme": {},
+
+    "s_app_theme": "Thema toepassing",
+    "s_system_default": "Systeemstandaard",
+    "s_light_mode": "Lichte modus",
+    "s_dark_mode": "Donkere modus",
+    "@_layout": {},
+
+    "s_list_layout": "Lijstweergave",
+    "s_grid_layout": "Rasterweergave",
+    "s_mixed_layout": "Gemengde weergave",
+    "s_select_layout": "Schermindeling selecteren",
+    "@_yubikey_selection": {},
+
+    "s_select_to_scan": "Selecteren om te scannen",
+    "s_hide_reader": "Lezer verbergen",
+    "s_show_hidden_readers": "Geef verborgen lezers weer",
+    "s_toggle_readers": "Lezers weergeven/verbergen",
+    "l_toggle_readers_desc": "Toon of verberg lezers",
+    "s_sn_serial": "S/N: {serial}",
+    "@s_sn_serial": {
+        "placeholders": {
+            "serial": {
+                "type": "int"
+            }
+        }
+    },
+    "s_fw_version": "F/W: {version}",
+    "@s_fw_version": {
+        "placeholders": {
+            "version": {
+                "type": "Object"
+            }
+        }
+    },
+    "l_serial_number": "Serienummer: {serial}",
+    "@l_serial_number": {
+        "placeholders": {
+            "serial": {
+                "type": "int"
+            }
+        }
+    },
+    "l_firmware_version": "Firmware versie: {version}",
+    "@l_firmware_version": {
+        "placeholders": {
+            "version": {
+                "type": "Object"
+            }
+        }
+    },
+    "l_fips_capable": "FIPS geschikt",
+    "l_fips_approved": "FIPS goedgekeurd",
+    "@_yubikey_interactions": {},
+
+    "l_insert_yk": "Voer uw YubiKey in",
+    "l_insert_or_tap_yk": "Plaats of scan een YubiKey",
+    "l_unplug_yk": "Verwijder uw YubiKey",
+    "l_reinsert_yk": "Plaats uw YubiKey terug",
+    "l_place_on_nfc_reader": "Plaats uw YubiKey op de NFC-lezer",
+    "l_replace_yk_on_reader": "Plaats uw YubiKey terug op de lezer",
+    "l_remove_yk_from_reader": "Verwijder uw YubiKey uit de NFC-lezer",
+    "p_try_reinsert_yk": "Probeer uw YubiKey te verwijderen en opnieuw te plaatsen.",
+    "s_touch_required": "Aanraken verplicht",
+    "l_touch_button_now": "Raak nu de knop op uw YubiKey aan",
+    "l_long_touch_button_now": "Houd de knop op uw YubiKey nu 5 seconden ingedrukt",
+    "l_keep_touching_yk": "Blijf uw YubiKey herhaaldelijk aanraken\u2026",
+    "@_capabilities": {},
+
+    "s_capability_otp": "Yubico OTP",
+    "s_capability_u2f": "FIDO U2F",
+    "s_capability_fido2": "FIDO2",
+    "s_capability_oath": "OATH",
+    "s_capability_piv": "PIV",
+    "s_capability_openpgp": "OpenPGP",
+    "s_capability_hsmauth": "YubiHSM Auth",
+    "@_app_configuration": {},
+
+    "s_toggle_applications": "Toepassingen wisselen",
+    "s_toggle_interfaces": "Interfaces wisselen",
+    "p_toggle_applications_desc": "In- of uitschakelen van toepassingen voor beschikbare transporten.",
+    "p_toggle_interfaces_desc": "In- of uitschakelen USB-interfaces.",
+    "l_toggle_applications_desc": "Inschakelen/uitschakelen toepassingen",
+    "l_toggle_interfaces_desc": "Inschakelen/uitschakelen interfaces",
+    "s_reconfiguring_yk": "YubiKey opnieuw configureren\u2026",
+    "s_config_updated": "Configuratie bijgewerkt",
+    "l_config_updated_reinsert": "Configuratie bijgewerkt, verwijder en plaats uw YubiKey opnieuw",
+    "s_fido_disabled": "FIDO2 uitgeschakeld",
+    "l_webauthn_req_fido2": "WebAuthn vereist dat de toepassing FIDO2 is ingeschakeld op uw YubiKey",
+    "s_lock_code": "Vergrendelcode",
+    "l_wrong_lock_code": "Verkeerde vergrendelcode",
+    "s_show_lock_code": "Vergrendelcode weergeven",
+    "s_hide_lock_code": "Vergrendelcode verbergen",
+    "p_lock_code_required_desc": "De actie die u gaat uitvoeren vereist dat de vergendelcode van de configuratie wordt ingevoerd.",
+    "@_connectivity_issues": {},
+
+    "l_helper_not_responding": "Het proces van Helper reageert niet",
+    "l_yk_no_access": "Deze YubiKey kan niet geopend worden",
+    "s_yk_inaccessible": "Apparaat niet toegankelijk",
+    "l_open_connection_failed": "Verbinding openen mislukt",
+    "l_ccid_connection_failed": "Smartcard-verbinding niet geopend",
+    "p_ccid_service_unavailable": "Controleer of de smartcard service werkt.",
+    "p_pcscd_unavailable": "Zorg ervoor dat pcscd geïnstalleerd en actief is.",
+    "l_no_yk_present": "Geen YubiKey aanwezig",
+    "s_unknown_type": "Onbekend type",
+    "s_unknown_device": "Onbekend apparaat",
+    "s_restricted_nfc": "Activeer NFC",
+    "l_deactivate_restricted_nfc": "Hoe NFC te activeren",
+    "p_deactivate_restricted_nfc_desc": "Sluit uw YubiKey aan op een USB-poort, zoals een computer, gedurende tenminste 3 seconden.\n\nZodra er stroom op staat, wordt NFC geactiveerd en is het klaar voor gebruik.",
+    "p_deactivate_restricted_nfc_footer": "Uw YubiKey is uitgerust met beperkte NFC, een functie ontworpen om te beschermen tegen draadloze manipulatie tijdens het verzenden. Dit betekent dat NFC tijdelijk is uitgeschakeld totdat u het activeert.",
+    "s_unsupported_yk": "Niet ondersteunde YubiKey",
+    "p_operation_failed_try_again": "De bewerking is mislukt, probeer het opnieuw.",
+    "l_configuration_unsupported": "Configuratie niet ondersteund",
+    "p_scp_unsupported": "Om NFC te gebruiken vereist de YubiKey technologie die niet door deze telefoon wordt ondersteund. Sluit de YubiKey aan op de USB-poort van de telefoon.",
+    "@_general_errors": {},
+
+    "l_error_occurred": "Er is een fout opgetreden",
+    "s_application_error": "Toepassingsfout",
+    "l_import_error": "Fout bij importeren",
+    "l_file_not_found": "Bestand niet gevonden",
+    "l_file_too_big": "Bestand is te groot",
+    "l_filesystem_error": "Fout in bestandssysteem",
+    "@_pins": {},
+
+    "s_pin": "Pincode",
+    "s_puk": "Pukcode",
+    "s_set_pin": "Pincode instellen",
+    "s_change_pin": "Pincode wijzigen",
+    "s_change_puk": "Pukcode wijzigen",
+    "s_show_pin": "Pincode weergeven",
+    "s_hide_pin": "Pincode verbergen",
+    "s_show_puk": "Pukcode weergeven",
+    "s_hide_puk": "Pukcode verbergen",
+    "s_current_pin": "Huidige pincode",
+    "s_current_puk": "Huidige pukcode",
+    "s_new_pin": "Nieuwe pincode",
+    "s_new_puk": "Nieuwe pukcode",
+    "s_confirm_pin": "Pincode bevestigen",
+    "s_confirm_puk": "Pukcode bevestigen",
+    "s_unblock_pin": "Pincode terugzetten",
+    "l_pin_mismatch": "Pincodes zijn niet gelijk",
+    "l_puk_mismatch": "Pukcodes zijn niet gelijk",
+    "s_pin_set": "Pincode ingesteld",
+    "s_puk_set": "Pukcode ingesteld",
+    "l_set_pin_failed": "Pincode instellen mislukt: {message}",
+    "@l_set_pin_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_attempts_remaining": "{retries, plural, =1{{retries} resterende poging}other{{retries} resterende pogingen}}",
+    "@l_attempts_remaining": {
+        "placeholders": {
+            "retries": {
+                "type": "int"
+            }
+        }
+    },
+    "l_wrong_pin_attempts_remaining": "Verkeerde pincode, {retries, plural, =1{{retries} resterende poging}other{{retries} resterende pogingen}}",
+    "@l_wrong_pin_attempts_remaining": {
+        "placeholders": {
+            "retries": {
+                "type": "int"
+            }
+        }
+    },
+    "l_wrong_puk_attempts_remaining": "Verkeerde pukcode, {retries, plural, =1{{retries} resterende poging}other{{retries} resterende pogingen}}",
+    "@l_wrong_puk_attempts_remaining": {
+        "placeholders": {
+            "retries": {
+                "type": "int"
+            }
+        }
+    },
+    "s_fido_pin_protection": "FIDO beveiliging pincode",
+    "s_pin_change_required": "Pincode wijzigen vereist",
+    "l_enter_fido2_pin": "Voer de FIDO2-pincode in voor uw YubiKey",
+    "p_fido2_pin_required": "De actie die u gaat uitvoeren vereist dat de FIDO2-pincode wordt ingevoerd.",
+    "l_pin_blocked_reset": "Pincode is geblokkeerd; zet FIDO terug naar de fabrieksinstellingen",
+    "l_pin_blocked": "Pincode is geblokkeerd",
+    "l_set_pin_first": "Pincode is vereist",
+    "l_unlock_pin_first": "Ontgrendelen met pincode",
+    "l_pin_soft_locked": "Pincode is geblokkeerd totdat de YubiKey is verwijderd en opnieuw is geplaatst",
+    "l_pin_change_required_desc": "Er moet een nieuwe pincode worden ingesteld voordat u deze toepassing kunt gebruiken",
+    "p_new_fido2_pin_requirements": "Een pincode moet {min_length}-{max_length} tekens lang zijn en mag letters, cijfers en speciale tekens bevatten.",
+    "@p_new_fido2_pin_requirements": {
+        "placeholders": {
+            "min_length": {
+                "type": "int"
+            },
+            "max_length": {
+                "type": "int"
+            }
+        }
+    },
+    "p_new_fido2_pin_complexity_active_requirements": "Een pincode moet {min_length}-{max_length} tekens lang zijn, ten minste {unique_characters} unieke tekens bevatten en niet een vaak gebruikte pincode zijn, zoals \"{common_pin}\". Het mag letters, cijfers en speciale karakters bevatten.",
+    "@p_new_fido2_pin_complexity_active_requirements": {
+        "placeholders": {
+            "min_length": {
+                "type": "int"
+            },
+            "max_length": {
+                "type": "int"
+            },
+            "unique_characters": {
+                "type": "int"
+            },
+            "common_pin": {
+                "type": "String"
+            }
+        }
+    },
+    "s_ep_attestation": "Bedrijf herkenning",
+    "s_ep_attestation_enabled": "Bedrijfsherkenning ingeschakeld",
+    "q_enable_ep_attestation": "Bedrijfsherkenning inschakelen?",
+    "p_enable_ep_attestation_desc": "Dit zal bedrijfsherkenning mogelijk maken, waardoor geautoriseerde domeinen uw YubiKey uniek kunnen identificeren.",
+    "p_enable_ep_attestation_disable_with_factory_reset": "Eenmaal ingeschakeld kan Bedrijfsherkenning alleen worden uitgeschakeld door het terugzetten van FIDO naar de fabrieksinstellingen uit te voeren.",
+    "s_pin_required": "Pincode vereist",
+    "p_pin_required_desc": "De actie die u gaat uitvoeren vereist dat de FIDO2 pincode wordt ingevoerd.",
+    "l_piv_pin_blocked": "Geblokkeerd, gebruik pukcode om terug te zetten",
+    "p_piv_pin_blocked_desc": "De pincode is geblokkeerd. Gebruik de pukcode om deze opnieuw in te stellen.",
+    "p_piv_pin_blocked_bio_desc": "De pincode is geblokkeerd. Terugzetten naar fabrieksinstellingen is vereist.",
+    "l_piv_pin_puk_blocked": "Geblokkeerd, terugzetten naar fabrieksinstellingen is nodig",
+    "p_piv_pin_puk_blocked_desc": "Zowel de pincode als de pukcode zijn geblokkeerd. Terugzetten naar de fabrieksinstellingen van de toepassing PIV is vereist.",
+    "p_new_piv_pin_puk_requirements": "Een {name} moet ten minste {length} tekens lang zijn.",
+    "@p_new_piv_pin_puk_requirements": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "length": {
+                "type": "int"
+            }
+        }
+    },
+    "p_new_piv_pin_puk_complexity_active_requirements": "Een {name} moet ten minste {length} tekens lang zijn, ten minste 2 unieke tekens bevatten en geen veelgebruikte {name} zijn, zoals \"{common}\".",
+    "@p_new_piv_pin_puk_complexity_active_requirements": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "length": {
+                "type": "int"
+            },
+            "common": {
+                "type": "String"
+            }
+        }
+    },
+    "p_pin_puk_complexity_failure": "Nieuwe {name} voldoet niet aan de vereisten voor moeilijkheid.",
+    "@p_pin_puk_complexity_failure": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "s_dismiss": "Afwijzen",
+    "p_default_pin_puk_key_desc": "Aanbevolen wordt om de standaard pincode, pukcode en beheersleutel te wijzigen.",
+    "p_default_pin_puk_key_fips_desc": "Om te voldoen aan FIPS is het nodig om de standaard pincode, pukcode en beheersleutel te wijzigen.",
+    "l_warning_default_pin": "Waarschuwing: Standaard pincode gebruikt",
+    "l_warning_default_puk": "Waarschuwing: Standaard pukcode gebruikt",
+    "l_default_pin_used": "Standaard pincode gebruikt",
+    "l_default_puk_used": "Standaard pukcode gebruikt",
+    "l_pin_complexity": "Moeilijkheid pincode afgedwongen",
+    "@_passwords": {},
+
+    "s_password": "Wachtwoord",
+    "s_manage_password": "Wachtwoord beheren",
+    "s_set_password": "Wachtwoord instellen",
+    "s_password_set": "Wachtwoord ingesteld",
+    "s_show_password": "Wachtwoord weergeven",
+    "s_hide_password": "Wachtwoord verbergen",
+    "l_password_protection": "Wachtwoordbeveiliging van accounts",
+    "s_new_password": "Nieuwe wachtwoord",
+    "s_current_password": "Huidige wachtwoord",
+    "s_confirm_password": "Wachtwoord bevestigen",
+    "l_password_mismatch": "Wachtwoorden zijn niet gelijk",
+    "s_wrong_password": "Verkeerde wachtwoord",
+    "p_wrong_password": "Verkeerd wachtwoord. Als u uw wachtwoord niet weet, moet u de YubiKey opnieuw instellen.",
+    "s_remove_password": "Wachtwoord verwijderen",
+    "s_password_removed": "Wachtwoord verwijderd",
+    "s_remember_password": "Wachtwoord onthouden",
+    "s_clear_saved_password": "Opgeslagen wachtwoord wissen",
+    "s_password_forgotten": "Wachtwoord vergeten",
+    "l_keystore_unavailable": "OS sleutelopslag niet beschikbaar",
+    "l_remember_pw_failed": "Wachtwoord onthouden is mislukt",
+    "l_unlock_first": "Ontgrendelen met wachtwoord",
+    "l_set_password_first": "Stel een wachtwoord in",
+    "l_enter_oath_pw": "Voer het OATH voor uw YubiKey in",
+    "p_new_password_requirements": "Een wachtwoord mag letters, cijfers en speciale tekens bevatten.",
+    "@_management_key": {},
+
+    "s_management_key": "Beheersleutel",
+    "s_current_management_key": "Huidige beheersleutel",
+    "s_new_management_key": "Nieuwe beheersleutel",
+    "l_change_management_key": "Beheersleutel wijzigen",
+    "l_management_key_changed": "Beheersleutel gewijzigd",
+    "l_default_key_used": "Standaard beheersleutel gebruikt",
+    "s_generate_random": "Genereer willekeurige",
+    "s_use_default": "Gebruik standaard",
+    "l_warning_default_key": "Waarschuwing: standaard sleutel gebruikt",
+    "s_protect_key": "Beveiligen met pincode",
+    "p_protect_key_desc": "Gebruik de pincode in plaats van de beheersleutel tijdens bewerkingen waarvoor verificatie van de beheersleutel vereist is.",
+    "s_management_key_algorithm": "Algoritme voor beheersleutel",
+    "p_management_key_algorithm_desc": "Het te kiezen algoritme voor de beheersleutel.",
+    "l_pin_protected_key": "Pincode mag in plaats daarvan gebruikt worden",
+    "l_wrong_key": "Verkeerde sleutel",
+    "l_unlock_piv_management": "Beheren PIV ontgrendelen",
+    "p_unlock_piv_management_desc": "De actie die u gaat uitvoeren vereist dat de pincode voor FIDO2 wordt ingevoerd.",
+    "@_oath_accounts": {},
+
+    "l_account": "Account: {label}",
+    "@l_account": {
+        "placeholders": {
+            "label": {
+                "type": "String"
+            }
+        }
+    },
+    "s_accounts": "Accounts",
+    "s_no_accounts": "Geen accounts",
+    "l_results_for": "Resultaat voor \"{query}\"",
+    "@l_results_for": {
+        "placeholders": {
+            "query": {
+                "type": "String"
+            }
+        }
+    },
+    "l_authenticator_get_started": "Aan de slag met OTP-accounts",
+    "l_no_accounts_desc": "Accounts aan uw YubiKey toevoegen vanuit een serviceprovider die OATH TOTP/HOTP ondersteunt",
+    "s_add_account": "Account toevoegen",
+    "p_add_account_desc": "Scan de QR-code of voer de inloggegevens handmatig in.",
+    "s_add_accounts": "Account(s) toevoegen",
+    "l_drop_qr_description": "Sleep de QR-code om account(s) toe te voegen",
+    "p_add_account_three_ways": "Er zijn drie manieren om accounts toe te voegen.",
+    "s_scanning": "Scannen (aanbevolen)",
+    "p_scanning_desc": "Zorg dat de volledige code zichtbaar is op het scherm voordat u de QR-code scant.",
+    "s_drag_and_drop": "Slepen en neerzetten",
+    "p_drag_and_drop_desc": "Een afbeelding met een QR-code kan overal in het account worden geplaatst.",
+    "s_manually": "Handmatig",
+    "p_manually_desc": "Accountgegevens kunnen handmatig in het formulier worden ingevoerd.",
+    "s_account_added": "Account toegevoegd",
+    "l_account_add_failed": "Account toevoegen mislukt: {message}",
+    "@l_account_add_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_add_account_password_required": "Wachtwoord vereist",
+    "l_add_account_unlock_required": "Ontgrendelen vereist",
+    "l_add_account_func_missing": "Functionaliteit ontbreekt of is uitgeschakeld",
+    "l_account_name_required": "Uw account moet een naam hebben",
+    "l_name_already_exists": "Deze naam bestaat al voor deze uitgever",
+    "l_account_already_exists": "Dit account bestaat al op de YubiKey",
+    "l_invalid_character_issuer": "Ongeldig teken. : is niet toegestaan",
+    "l_select_accounts": "Selecteer account(s) om toe te voegen aan de YubiKey",
+    "s_pin_account": "Account vastzetten",
+    "s_unpin_account": "Account losmaken",
+    "s_no_pinned_accounts": "Geen vastgezette accounts",
+    "s_pinned": "Vastgezet",
+    "l_pin_account_desc": "Houd uw belangrijke accounts bij elkaar",
+    "s_rename_account": "Account hernoemen",
+    "l_rename_account_desc": "Wijzig de uitgever/naam van het account",
+    "s_account_renamed": "Account hernoemd",
+    "l_rename_account_failed": "Account hernoemen mislukt: {message}",
+    "@l_rename_account_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "p_rename_will_change_account_displayed": "Dit wijzigt hoe het account wordt weergegeven in de lijst.",
+    "s_delete_account": "Wachtwoord verwijderen",
+    "q_delete_account": "Account verwijderen?",
+    "l_delete_account_desc": "Verwijder het account van uw YubiKey",
+    "s_account_deleted": "Account verwijderd",
+    "p_warning_delete_account": "Waarschuwing! Deze actie verwijdert het account van uw YubiKey.",
+    "p_warning_disable_credential": "Zorg ervoor dat u dit account uitschakelt bij de service waarbij het is geregistreerd om te voorkomen dat u wordt buitengesloten.",
+    "s_account_name": "Accountnaam",
+    "s_search_accounts": "Accounts zoeken",
+    "l_accounts_used": "{used} van {capacity} accounts gebruikt",
+    "@l_accounts_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "capacity": {
+                "type": "int"
+            }
+        }
+    },
+    "s_num_digits": "{num} cijfers",
+    "@s_num_digits": {
+        "placeholders": {
+            "num": {
+                "type": "int"
+            }
+        }
+    },
+    "s_num_sec": "{num} sec",
+    "@s_num_sec": {
+        "placeholders": {
+            "num": {
+                "type": "int"
+            }
+        }
+    },
+    "s_issuer_optional": "Uitgever (optioneel)",
+    "s_counter_based": "Op tellen gebaseerd",
+    "s_time_based": "Op tijd gebaseerd",
+    "l_copy_code_desc": "De code in een andere toepassing plakken",
+    "l_calculate_code_desc": "Een nieuwe code van uw YubiKey krijgen",
+    "@_fido_credentials": {},
+
+    "s_rp_id": "RP ID",
+    "s_user_id": "Gebruikers Identiteit",
+    "s_credential_id": "Inloggegevens ID",
+    "s_display_name": "Weergavenaam",
+    "s_user_name": "Gebruikersnaam",
+    "s_passkeys": "Passkeys",
+    "s_no_passkeys": "Geen passkeys",
+    "l_ready_to_use": "Klaar voor gebruik",
+    "l_register_sk_on_websites": "Als beveiligingssleutel op websites registreren",
+    "l_no_discoverable_accounts": "Geen passkeys opgeslagen",
+    "p_non_passkeys_note": "Andere inloggegevens dan van een passkey kunnen bestaan, maar kunnen niet worden weergegeven.",
+    "s_delete_passkey": "Passkey verwijderen",
+    "q_delete_passkey": "Verwijder passkey?",
+    "l_delete_passkey_desc": "De passkey uit de YubiKey verwijderen",
+    "s_passkey_deleted": "Passkey verwijderd",
+    "p_warning_delete_passkey": "Waarschuwing! Deze actie verwijdert de passkey van uw YubiKey.",
+    "p_warning_delete_passkey_desc": "U zult deze passkey niet langer kunnen gebruiken voor de service waar het geregistreerd is.",
+    "l_do_not_remove_yk_delete": "YubiKey niet verwijderen tijdens het verwijderen",
+    "s_search_passkeys": "Passkeys zoeken",
+    "p_passkeys_used": "{used} van {max} passkeys gebruikt.",
+    "@p_passkeys_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "max": {
+                "type": "int"
+            }
+        }
+    },
+    "@_fingerprints": {},
+    "s_biometrics": "Biometrie",
+    "l_fingerprint": "Vingerafdruk: {label}",
+    "@l_fingerprint": {
+        "placeholders": {
+            "label": {
+                "type": "String"
+            }
+        }
+    },
+    "s_fingerprints": "Vingerafdrukken",
+    "l_fingerprint_captured": "Vingerafdruk met succes geregistreerd!",
+    "s_fingerprint_added": "Vingerafdruk toegevoegd",
+    "l_adding_fingerprint_failed": "Fout bij toevoegen vingerafdruk: {message}",
+    "@l_adding_fingerprint_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_setting_name_failed": "Fout bij instellen naam: {message}",
+    "@l_setting_name_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "s_setup_fingerprints": "Vingerafdrukken instellen",
+    "p_setup_fingerprints_desc": "Vingerafdrukken moeten zijn ingesteld voordat de sleutel kan worden gebruikt.",
+    "s_add_fingerprint": "Vingerafdruk toevoegen",
+    "s_delete_fingerprint": "Vingerafdruk verwijderen",
+    "q_delete_fingerprint": "Vingerafdruk verwijderen?",
+    "l_delete_fingerprint_desc": "De vingerafdruk van de YubiKey verwijderen",
+    "s_fingerprint_deleted": "Vingerafdruk verwijderd",
+    "p_warning_delete_fingerprint": "Dit zal de vingerafdruk van uw YubiKey verwijderen.",
+    "s_fingerprints_get_started": "Aan de slag met vingerafdrukken",
+    "p_set_fingerprints_desc": "Voordat het mogelijk is om vingerafdrukken te registreren, moet een pincode worden ingesteld.",
+    "l_no_fps_added": "Er zijn geen vingerafdrukken toegevoegd",
+    "s_rename_fp": "Vingerafdruk hernoemen",
+    "l_rename_fp_desc": "Wijzig de naam",
+    "s_fingerprint_renamed": "Vingerafdruk hernoemd",
+    "l_rename_fp_failed": "Fout bij hernoemen: {message}",
+    "@l_rename_fp_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_add_one_or_more_fps": "Voeg een of meer (tot vijf) vingerafdrukken toe",
+    "l_fingerprints_used": "{used}/5 vingerafdrukken geregistreerd",
+    "@l_fingerprints_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            }
+        }
+    },
+    "p_press_fingerprint_begin": "Druk uw vinger tegen de YubiKey om te beginnen.",
+    "l_name_fingerprint": "Geef deze vingerafdruk een naam",
+    "@_fido_errors": {},
+
+    "l_user_action_timeout_error": "Mislukt door inactiviteit van gebruiker",
+    "l_wrong_inserted_yk_error": "De opnieuw geplaatste YubiKey komt niet overeen met het oorspronkelijke apparaat",
+    "l_failed_connecting_to_fido": "Verbinding met FIDO-interface mislukt",
+    "@_certificates": {},
+
+    "l_self_signed_certificate": "Zelf ondertekend certificaat",
+    "l_certificate_signing_request": "Verzoek voor ondertekenen certificaat (CDR)",
+    "s_certificate": "Certificaat",
+    "s_subject": "Onderwerp",
+    "l_export_csr_file": "CSR opslaan in bestand",
+    "l_export_public_key": "Publieke sleutel exporteren",
+    "l_export_public_key_file": "Publieke sleutel opslaan in bestand",
+    "l_export_public_key_desc": "De publieke sleutel naar een bestand exporteren",
+    "l_public_key_exported": "Publieke sleutel geëxporteerd",
+    "l_export_certificate": "Certificaat exporteren",
+    "l_export_certificate_file": "Certificaat exporteren naar bestand",
+    "l_export_certificate_desc": "Het certificaat naar een bestand exporteren",
+    "l_certificate_exported": "Certificaat geëxporteerd",
+    "l_select_import_file": "Selecteer bestand om te importeren",
+    "l_import_file": "Bestand importeren",
+    "l_import_desc": "Een sleutel en/of certificaat importeren",
+    "l_import_nothing": "Niets te importeren",
+    "l_importing_file": "Bestand importeren\u2026",
+    "s_file_imported": "Bestand geïmporteerd",
+    "l_unsupported_key_type": "Niet ondersteund type sleutel",
+    "l_delete_certificate": "Certificaat verwijderen",
+    "q_delete_certificate": "Certificaat verwijderen?",
+    "l_delete_certificate_desc": "Het certificaat van uw YubiKey verwijderen",
+    "l_delete_key": "Sleutel verwijderen",
+    "q_delete_key": "Sleutel verwijderen?",
+    "l_delete_key_desc": "De sleutel van uw YubiKey verwijderen",
+    "l_delete_certificate_or_key": "Certificaat/sleutel verwijderen",
+    "q_delete_certificate_or_key": "Certificaat/sleutel verwijderen?",
+    "l_delete_certificate_or_key_desc": "Het certificaat of de sleutel van uw YubiKey verwijderen",
+    "l_move_key": "Sleutel verplaatsen",
+    "l_move_key_desc": "Een sleutel van het ene PIV naar een ander verplaatsen",
+    "l_change_defaults": "Standaard toegangscodes wijzigen",
+    "s_issuer": "Uitgever",
+    "s_serial": "Serienummer",
+    "s_certificate_fingerprint": "Vingerafdruk",
+    "s_valid_from": "Geldig van",
+    "s_valid_to": "Geldig tot",
+    "l_no_certificate": "Geen certificaat geladen",
+    "l_key_no_certificate": "Sleutel zonder certificaat geladen",
+    "s_generate_key": "Sleutel genereren",
+    "l_generate_desc": "Een nieuw certificaat of CSR genereren",
+    "p_generate_desc": "Dit genereert een nieuwe sleutel op de YubiKey in PIV {slot}.",
+    "@p_generate_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "s_private_key_generated": "Privésleutel gegenereerd",
+    "p_select_what_to_delete": "Selecteer wat u wilt verwijderen uit het slot.",
+    "p_warning_delete_certificate": "Waarschuwing! Deze actie verwijdert het certificaat van uw YubiKey.",
+    "p_warning_delete_key": "Waarschuwing! Deze actie verwijdert de privésleutel van uw YubiKey.",
+    "p_warning_delete_certificate_and_key": "Waarschuwing! Deze actie verwijdert het certificaat en de privésleutel van uw YubiKey.",
+    "p_warning_usb_preferred": "Voorkeur voor USB voor RSA-sleutels. NFC kan fouten veroorzaken.",
+    "p_delete_certificate_desc": "Dit verwijdert het certificaat in PIV-slot {slot}.",
+    "@p_delete_certificate_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "p_delete_key_desc": "Dit verwijdert de privésleutel in PIV-slot {slot}.",
+    "@p_delete_key_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "p_delete_certificate_and_key_desc": "Hierdoor worden het certificaat en de privésleutel in het PIV-slot {slot} verwijderd.",
+    "@p_delete_certificate_and_key_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "l_certificate_deleted": "Certificaat verwijderd",
+    "l_key_deleted": "Sleutel verwijderd",
+    "l_certificate_and_key_deleted": "Certificaat en sleutel verwijderd",
+    "l_include_certificate": "Certificaat opnemen",
+    "l_select_destination_slot": "Bestemmingsslot selecteren",
+    "q_move_key_confirm": "De privésleutel in PIV-slot {from_slot} verplaatsen?",
+    "@q_move_key_confirm": {
+        "placeholders": {
+            "from_slot": {
+                "type": "String"
+            }
+        }
+    },
+    "q_move_key_to_slot_confirm": "De privésleutel in PIV-slot {from_slot} naar slot {to_slot} verplaatsen?",
+    "@q_move_key_to_slot_confirm": {
+        "placeholders": {
+            "from_slot": {
+                "type": "String"
+            },
+            "to_slot": {
+                "type": "String"
+            }
+        }
+    },
+    "q_move_key_and_certificate_to_slot_confirm": "De privésleutel en het certificaat in PIV-slot {from_slot} naar slot {to_slot} verplaatsen?",
+    "@q_move_key_and_certificate_to_slot_confirm": {
+        "placeholders": {
+            "from_slot": {
+                "type": "String"
+            },
+            "to_slot": {
+                "type": "String"
+            }
+        }
+    },
+    "p_password_protected_file": "Het geselecteerde bestand is beveiligd met een wachtwoord.",
+    "p_import_items_desc": "De volgende item(s) worden geïmporteerd in PIV-slot {slot}.",
+    "@p_import_items_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "l_warning_public_key_mismatch": "De publieke sleutel van het certificaat komt niet overeen met de privésleutel in het slot",
+    "l_key_moved": "Sleutel verplaatst",
+    "l_key_and_certificate_moved": "Sleutel en certificaat verplaatst",
+    "p_subject_desc": "Een DN (distinguished name=onderscheidende naam) opgemaakt volgens de specificatie RFC 4514.",
+    "l_rfc4514_invalid": "Ongeldig opmaak RFC 4514",
+    "rfc4514_examples": "Voorbeelden:\nCN=Voorbeeld naam\nCN=jsmit,DC=voorbeeld,DC=net",
+    "s_allow_fingerprint": "Vingerafdruk toestaan",
+    "s_pin_policy": "Beleid pincode",
+    "s_output_format": "Indeling uitvoer",
+    "s_expiration_date": "Vervaldatum",
+    "p_algorithm_desc": "Te gebruiken sleutelalgoritme.",
+    "p_expiration_date_desc": "Datum waarop het certificaat verloopt, standaard 1 jaar (alleen certificaat).",
+    "p_key_options_bio_desc": "Gebruiken van biometrische gegevens in plaats van een pincode toestaan.",
+    "q_overwrite_slot": "Slot overschrijven?",
+    "p_overwrite_slot_desc": "Dit overschrijft de bestaande inhoud in slot {slot} permanent.",
+    "@p_overwrite_slot_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "l_overwrite_cert": "Het certificaat zal worden overschreven",
+    "l_overwrite_key": "De privésleutel zal worden overschreven",
+    "l_overwrite_key_maybe": "Elke bestaande privésleutel in het slot zal worden overschreven",
+    "@_piv_slots": {},
+
+    "s_slot_display_name": "{name} ({hexid})",
+    "@s_slot_display_name": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "hexid": {
+                "type": "String"
+            }
+        }
+    },
+    "s_slot_9a": "Authenticatie",
+    "s_slot_9c": "Digitale handtekening",
+    "s_slot_9d": "Sleutelbeheer",
+    "s_slot_9e": "Authenticatie met kaart",
+    "s_retired_slot": "Beheren beëindigde sleutels",
+    "@_otp_slots": {},
+
+    "s_otp_slot_one": "Kort aanraken",
+    "s_otp_slot_two": "Lang aanraken",
+    "l_otp_slot_empty": "Slot is leeg",
+    "l_otp_slot_configured": "Slot is geconfigureerd",
+    "@_otp_slot_configurations": {},
+
+    "l_yubiotp_desc": "Een Yubico OTP inloggegeven programmeren",
+    "s_challenge_response": "Antwoord uitdaging",
+    "l_challenge_response_desc": "Een inloggegeven voor een \"challenge-response\" programmeren",
+    "s_static_password": "Statisch wachtwoord",
+    "l_static_password_desc": "Een statisch wachtwoord instellen",
+    "s_hotp": "OATH-HOTP",
+    "l_hotp_desc": "Een op HMAC-SHA1-gebaseerde verwijzing programmeren",
+    "s_public_id": "Publieke ID",
+    "s_private_id": "Privé-ID",
+    "s_use_serial": "Serienummer gebruiken",
+    "l_select_file": "Bestand selecteren",
+    "l_no_export_file": "Geen exportbestand",
+    "s_no_export": "Geen export",
+    "s_export": "Exporteren",
+    "l_export_configuration_file": "Configuratie naar bestand exporteren",
+    "l_exported_can_be_uploaded_at": "Geëxporteerde verwijzingen kunnen worden geüpload op {url}",
+    "@l_exported_can_be_uploaded_at": {
+        "placeholders": {
+            "url": {
+                "type": "String"
+            }
+        }
+    },
+    "l_keyboard_layout": "Toetsenbord {layout}",
+    "@l_keyboard_layout": {
+        "placeholders": {
+            "layout": {
+                "type": "Object"
+            }
+        }
+    },
+    "@_otp_slot_actions": {},
+
+    "s_delete_slot": "Inloggegevens verwijderen",
+    "q_delete_slot": "Inloggegevens verwijderen?",
+    "l_delete_slot_desc": "Inloggegevens uit het slot verwijderen",
+    "p_warning_delete_slot_configuration": "Waarschuwing! Deze actie verwijdert de inloggegevens permanent uit het slot {slot_id}.",
+    "@p_warning_delete_slot_configuration": {
+        "placeholders": {
+            "slot_id": {
+                "type": "int"
+            }
+        }
+    },
+    "l_slot_deleted": "Toegangsgegevens verwijderd",
+    "s_swap": "Wisselen",
+    "s_swap_slots": "Wissel slots",
+    "q_swap_slots": "Slots wisselen?",
+    "l_swap_slots_desc": "Kort/lang aanraken wisselen",
+    "p_swap_slots_desc": "Dit zal de configuratie voor de twee slots wisselen.",
+    "l_slots_swapped": "Slot configuraties gewisseld",
+    "l_slot_credential_configured": "Geconfigureerd {type} wachtwoord",
+    "@l_slot_credential_configured": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "l_slot_credential_configured_and_exported": "Geconfigureerd {type} inloggegevens en geëxporteerd naar {file}",
+    "@l_slot_credential_configured_and_exported": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            },
+            "file": {
+                "type": "String"
+            }
+        }
+    },
+    "s_append_enter": "Toevoegen ⏎",
+    "l_append_enter_desc": "Een toetsaanslag Enter toevoegen na het verzenden van de OTP",
+    "@_otp_errors": {},
+
+    "p_otp_swap_error": "Kan geen slots wisselen! Controleer of de YubiKey geen beperkte toegang heeft.",
+    "l_wrong_access_code": "Verkeerde toegangscode",
+    "@_otp_access_code": {},
+
+    "s_access_code": "Toegangscode",
+    "s_show_access_code": "Toegangscode weergeven",
+    "s_hide_access_code": "Toegangscode verbergen",
+    "p_enter_access_code": "Toegangscode invoeren voor slot {slot}.",
+    "@p_enter_access_code": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "@_permissions": {},
+
+
+    "s_enable_nfc": "NFC inschakelen",
+    "s_request_access": "Toegang aanvragen",
+    "s_permission_denied": "Toegang geweigerd",
+    "l_elevating_permissions": "Rechten verhogen\u2026",
+    "s_review_permissions": "Rechten controleren",
+    "s_open_windows_settings": "Windows-instellingen openen",
+    "l_admin_privileges_required": "Beheerdersrechten vereist",
+    "p_elevated_permissions_required": "Voor het beheren van dit apparaat zijn verhoogde rechten nodig. U kunt ook Windows-instellingen gebruiken om de FIDO te beheren.",
+    "p_webauthn_elevated_permissions_required": "Voor het beheren van WebAuthn zijn verhoogde rechten vereist. U kunt ook Windows-instellingen gebruiken om FIDO te beheren.",
+    "p_ms_store_permission_note": "De Microsoft Store-versie van de app is over het algemeen niet in staat om rechten te verhogen vanwege de beperkingen voor sandboxen van Windows. We raden aan Yubico Authenticator te installeren via ons officiële .msi-installatieprogramma.",
+    "p_need_camera_permission": "Yubico Authenticator heeft rechten voor de camera nodig voor het scannen van QR-codes.",
+    "@_qr_codes": {},
+
+    "s_qr_scan": "QR-code scannen",
+    "l_invalid_qr": "Ongeldige QR-code",
+    "l_qr_not_found": "Geen QR-code gevonden",
+    "l_qr_scanned": "QR-code gescanned",
+    "l_qr_file_too_large": "Bestand te groot (max {max})",
+    "@l_qr_file_too_large": {
+        "placeholders": {
+            "max": {
+                "type": "String"
+            }
+        }
+    },
+    "l_qr_invalid_image_file": "Ongeldige afbeelding",
+    "l_qr_select_file": "Bestand met QR-code selecteren",
+    "l_qr_not_read": "QR-code lezen mislukt: {message}",
+    "@l_qr_not_read": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_point_camera_scan": "Richt uw camera op een QR-code om deze te scannen",
+    "q_want_to_scan": "Wilt u scannen?",
+    "q_no_qr": "Geen QR-code?",
+    "s_enter_manually": "Voer handmatig in",
+    "s_read_from_file": "Lees uit bestand",
+    "@_factory_reset": {},
+
+    "s_reset": "Herstellen",
+    "s_factory_reset": "Fabrieksinstellingen herstellen",
+    "l_factory_reset_desc": "YubiKey standaardwaarden herstellen",
+    "l_factory_reset_required": "Herstellen naar fabrieksinstellingen vereist",
+    "l_oath_application_reset": "OATH-toepassing herstellen",
+    "l_fido_app_reset": "FIDO-toepassing herstellen",
+    "l_reset_failed": "Fout bij herstellen: {message}",
+    "@l_reset_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_piv_app_reset": "PIV-toepassing herstellen",
+    "p_factory_reset_an_app": "Een toepassing op uw YubiKey herstellen.",
+    "p_factory_reset_desc": "Gegevens worden in meerdere applicaties op de YubiKey opgeslagen, waarvan sommige onafhankelijk van elkaar hersteld kunnen worden.\n\nSelecteer hierboven een toepassing om te herstellen.",
+    "p_warning_factory_reset": "Waarschuwing! Hierdoor worden alle OATH TOTP/HOTP-accounts onherroepelijk verwijderd van uw YubiKey.",
+    "p_warning_disable_credentials": "Uw OATH gegevens en eventueel ingestelde wachtwoorden worden van deze YubiKey verwijderd. Zorg ervoor dat u deze uitschakelt op hun respectievelijke websites om te voorkomen dat u wordt uitgesloten van uw accounts.",
+    "p_warning_deletes_accounts": "Waarschuwing! Hierdoor worden alle U2F- en FIDO2-accounts, inclusief passkeys, onherroepelijk verwijderd van uw YubiKey.",
+    "p_warning_disable_accounts": "Uw inloggegevens en ook elke ingestelde pincode zullen van deze YubiKey worden verwijderd. Zorg ervoor dat u deze uitschakelt op hun respectievelijke websites om te voorkomen dat u wordt buitengesloten van uw accounts.",
+    "l_reset_not_allowed_over": "FIDO herstellen is uitgeschakeld via {transport}",
+    "@l_reset_not_allowed_over": {
+        "placeholders": {
+            "transport": {
+                "type": "String"
+            }
+        }
+    },
+    "p_warning_piv_reset": "Waarschuwing! Alle voor PIV opgeslagen gegevens worden onherroepelijk van uw YubiKey verwijderd.",
+    "p_warning_piv_reset_desc": "Dit geldt ook voor privésleutels en certificaten. Uw pincode, pukcode en beheersleutel worden teruggezet naar de standaard fabriekswaarden.",
+    "p_warning_global_reset": "Waarschuwing! Hierdoor worden alle opgeslagen gegevens, inclusief inloggegevens, onherroepelijk verwijderd van uw YubiKey.",
+    "p_warning_global_reset_desc": "De toepassingen op uw YubiKey herstellen. Pincode wordt teruggezet naar de standaard fabriekswaarde en geregistreerde vingerafdrukken worden verwijderd. Alle sleutels, certificaten of andere inloggegevens worden permanent verwijderd.",
+    "@_copy_to_clipboard": {},
+
+    "l_copy_to_clipboard": "Naar klembord kopiëren",
+    "s_code_copied": "Code gekopieerd",
+    "l_code_copied_clipboard": "Code naar klembord gekopieerd",
+    "s_copy_log": "Logboek kopiëren",
+    "l_copy_log_clipboard": "Logboek naar klembord kopiëren",
+    "l_log_copied": "Logboek naar klembord gekopieerd",
+    "l_diagnostics_copied": "Diagnostische gegevens naar klembord gekopieerd",
+    "p_target_copied_clipboard": "{label} naar klembord gekopieerd.",
+    "@p_target_copied_clipboard": {
+        "placeholders": {
+            "label": {
+                "type": "String"
+            }
+        }
+    },
+    "@_custom_icons": {},
+
+    "s_custom_icons": "Aangepaste pictogrammen",
+    "l_set_icons_for_accounts": "Pictogrammen voor accounts instellen",
+    "p_custom_icons_description": "Pictogrampakketten kunnen uw accounts, met bekende logo's en kleuren, beter herkenbaar maken.",
+    "p_custom_icons_format_desc": "Pictogrampakketten gebruiken de indeling {aegis_icon_pack}. U kunt een kant-en-klaar pictogrampakket downloaden of u kunt uw eigen maken.",
+    "@p_custom_icons_format_desc": {
+        "placeholders": {
+            "aegis_icon_pack": {
+                "type": "String"
+            }
+        }
+    },
+    "s_replace_icon_pack": "Vervang pictogrampakket",
+    "l_loading_icon_pack": "Pictogrampakket laden\u2026",
+    "s_load_icon_pack": "Pictogrampakket laden",
+    "l_load_icon_pack_desc": "Pictogrampakket uit bestand laden",
+    "s_remove_icon_pack": "Pictogrampakket verwijderen",
+    "l_remove_icon_pack_desc": "Het actieve pictogrampakket verwijderen",
+    "l_icon_pack_removed": "Pictogrampakket verwijderd",
+    "l_remove_icon_pack_failed": "Fout bij verwijderen pictogrampakket",
+    "s_choose_icon_pack": "Kies pictogrampakket",
+    "l_icon_pack_imported": "Pictogrampakket geïmporteerd",
+    "l_import_icon_pack_failed": "Fout bij importeren pictogrampakket: {message}",
+    "@l_import_icon_pack_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_invalid_icon_pack": "Ongeldig pictogrampakket",
+    "l_icon_pack_copy_failed": "Fout bij het kopiëren van bestanden voor pictogrampakket",
+    "@_android_settings": {},
+
+    "s_nfc_and_usb_options": "NFC- & USB-opties",
+    "l_nfc_and_usb_options_desc": "Actie voor YubiKey configureren",
+    "l_on_yk_nfc_tap": "Bij tik op NFC",
+    "l_on_yk_usb_insert": "Bij invoegen USB",
+    "l_do_nothing": "Doe niets",
+    "l_launch_ya": "Yubico Authenticator starten",
+    "l_copy_otp_clipboard": "OTP naar klembord kopiëren",
+    "l_launch_and_copy_otp": "Toepassing starten en OTP kopiëren",
+    "l_kbd_layout_for_static": "Toetsenbordindeling (voor statisch wachtwoord)",
+    "s_choose_kbd_layout": "Toetsenbordindeling kiezen",
+    "l_bypass_touch_requirement": "\"Aanraken vereist\" omzeilen",
+    "l_bypass_touch_requirement_on": "Accounts die aangeraakt moeten worden, worden automatisch weergegeven via NFC",
+    "l_bypass_touch_requirement_off": "Accounts die aanraken vereisen, hebben een extra tik nodig via NFC",
+    "s_silence_nfc_sounds": "NFC-geluiden dempen",
+    "l_silence_nfc_sounds_on": "Geen geluid wordt afgespeeld bij een tik op NFC",
+    "l_silence_nfc_sounds_off": "Geluid wordt afgespeeld bij een tik op NFC",
+    "l_launch_app_on_usb_on": "Dit voorkomt dat andere apps de YubiKey via USB kunnen gebruiken",
+    "l_launch_app_on_usb_off": "Andere apps mogen de YubiKey via USB gebruiken",
+    "s_allow_screenshots": "Schermopnames toestaan",
+    "l_allow_screenshots_desc": "Andere apps toestaan om schermafbeeldingen te maken",
+    "@_nfc": {},
+
+    "s_nfc_ready_to_scan": "Klaar om te scannen",
+    "s_nfc_hold_still": "Houd stil\u2026",
+    "s_nfc_tap_your_yubikey": "Tik op uw YubiKey",
+    "s_nfc_remove_key": "YubiKey verwijderen",
+    "l_nfc_failed_to_scan": "Scannen mislukt, probeer opnieuw",
+    "@_usb": {},
+
+    "s_usb_processing": "Gegevens van YubiKey lezen",
+    "s_usb_dont_remove": "De sleutel niet verwijderen\u2026",
+    "l_usb_read_error": "Gegevens van YubiKey lezen mislukt",
+    "@_ndef": {},
+
+    "p_ndef_set_otp": "OTP-code met succes gekopieerd van YubiKey naar klembord.",
+    "p_ndef_set_password": "Wachtwoord met succes gekopieerd van YubiKey naar klembord.",
+    "p_ndef_parse_failure": "Parsen van de OTP-code van YubiKey is mislukt.",
+    "p_ndef_set_clip_failure": "Toegang tot het klembord is mislukt bij het kopiëren van de OTP-code vanaf YubiKey.",
+    "@_key_customization": {},
+
+    "s_set_label": "Label instellen",
+    "s_set_color": "Kleur instellen",
+    "s_change_label": "Label wijzigen",
+    "p_set_will_add_custom_name": "Dit geeft uw YubiKey een aangepaste naam.",
+    "p_rename_will_change_custom_name": "Dit verandert het label van uw YubiKey.",
+    "@_shortcuts": {},
+
+    "s_keyboard_shortcuts": "Sneltoetsen",
+    "s_global_shortcuts": "Globale sneltoetsen",
+    "s_application_shortcuts": "Toepassingssneltoetsen",
+    "@s_quit_app": {
+        "placeholders": {
+            "app": {
+                "type": "String"
+            }
+        }
+    },
+    "s_quit_app": "{app} afsluiten",
+    "@s_hide_app": {
+        "placeholders": {
+            "app": {
+                "type": "String"
+            }
+        }
+    },
+    "s_hide_app": "{app} verbergen",
+    "s_search": "Zoeken",
+    "s_next_device": "Volgende apparaat",
+    "s_previous_device": "Vorige apparaat",
+    "s_open_settings": "Instellingen openen",
+    "s_open_item": "Item openen",
+    "s_edit_item": "Item bewerken",
+    "s_delete_item": "Item verwijderen",
+    "s_calculate_oath_code": "OATH berekenen",
+    "s_open_keyboard_shortcuts": "Sneltoetsen openen",
+    "@_eof": {}
+
+}

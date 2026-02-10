@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="p_ndef_set_otp">Sikeresen másolta az OTP kódot a YubiKey-ről a vágólapra.</string>
+    <string name="p_ndef_set_password">Sikeresen másolta a jelszót a YubiKey-ről a vágólapra.</string>
+    <string name="p_ndef_parse_failure">Nem sikerült beolvasni az OTP kódot a YubiKey-ről.</string>
+    <string name="p_ndef_set_clip_failure">Az OTP-kód YubiKey-ről való másolása közben nem sikerült elérni a vágólapot.</string>
+</resources>

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="p_ndef_set_otp">OTP-code met succes gekopieerd van YubiKey naar klembord.</string>
+    <string name="p_ndef_set_password">Wachtwoord met succes gekopieerd van YubiKey naar klembord.</string>
+    <string name="p_ndef_parse_failure">Parsen van de OTP-code van YubiKey is mislukt.</string>
+    <string name="p_ndef_set_clip_failure">Toegang tot het klembord is mislukt bij het kopiëren van de OTP-code vanaf YubiKey.</string>
+</resources>
