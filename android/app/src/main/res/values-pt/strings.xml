@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="p_ndef_set_otp">Código OTP copiado com sucesso da YubiKey para a área de transferência.</string>
+    <string name="p_ndef_set_password">Senha copiada com sucesso da YubiKey para a área de transferência.</string>
+    <string name="p_ndef_parse_failure">Falha ao analisar o código OTP da YubiKey.</string>
+    <string name="p_ndef_set_clip_failure">Falha ao acessar a área de transferência ao tentar copiar o código OTP da YubiKey.</string>
+</resources>
