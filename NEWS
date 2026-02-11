@@ -1,3 +1,10 @@
+* Version 7.3.2 (unreleased)
+ ** Fix: crashes or window not appearing on startup related to invalid application preferences.
+ ** Fix: improve systray behaviour when running in a container.
+ ** Fix: reduce CPU usage in OATH credential timer.
+ ** Binaries compiled with Flutter 3.38.9 and Python 3.14.3 (desktop).
+ ** New translations: Portuguese (Brazil), Italian, Hungarian and Dutch.
+
 * Version 7.3.1 (released 2025-10-09) Windows-only release
  ** Fix rendering issue with the Home screen when connecting a FIDO-only YubiKey.
 
