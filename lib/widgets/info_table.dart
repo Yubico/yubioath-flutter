@@ -56,25 +56,33 @@ class InfoTable extends ConsumerWidget {
             children: values.entries.map((e) {
               final title = e.key;
               final (value, key) = e.value;
-              return GestureDetector(
-                onDoubleTap: () async {
-                  await clipboard.setText(value);
-                  if (!clipboard.platformGivesFeedback()) {
-                    await withContext((context) async {
-                      showMessage(
-                        context,
-                        l10n.p_target_copied_clipboard(title),
-                      );
-                    });
-                  }
-                },
-                child: TooltipIfTruncated(
-                  key: key,
-                  text: value,
-                  style: subtitleStyle,
-                  tooltip: value.replaceAllMapped(
-                    RegExp(r',([A-Z]+)='),
-                    (match) => '\n${match[1]}=',
+              void copyToClipboard() async {
+                await clipboard.setText(value);
+                if (!clipboard.platformGivesFeedback()) {
+                  await withContext((context) async {
+                    showMessage(context, l10n.p_target_copied_clipboard(title));
+                  });
+                }
+              }
+
+              return Semantics(
+                button: true,
+                label: '$title: $value',
+                hint: l10n.l_copy_to_clipboard,
+                onTap: copyToClipboard,
+                child: InkWell(
+                  excludeFromSemantics: true,
+                  onTap: copyToClipboard,
+                  child: ExcludeSemantics(
+                    child: TooltipIfTruncated(
+                      key: key,
+                      text: value,
+                      style: subtitleStyle,
+                      tooltip: value.replaceAllMapped(
+                        RegExp(r',([A-Z]+)='),
+                        (match) => '\n${match[1]}=',
+                      ),
+                    ),
                   ),
                 ),
               );

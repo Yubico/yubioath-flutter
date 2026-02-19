@@ -19,6 +19,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -219,7 +220,18 @@ class _HelpView extends ConsumerWidget {
                 l10n.app_name,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
-              const Text(version),
+              InkWell(
+                canRequestFocus: true,
+                onTap: () async {
+                  await Clipboard.setData(const ClipboardData(text: version));
+                  if (!context.mounted) return;
+                  showMessage(context, l10n.p_target_copied_clipboard(version));
+                },
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 4.0),
+                  child: Text(version),
+                ),
+              ),
             ],
           ),
         ),

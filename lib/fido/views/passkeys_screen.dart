@@ -234,6 +234,7 @@ class _FidoUnlockedPage extends ConsumerStatefulWidget {
 class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
   late FocusNode searchFocus;
   late TextEditingController searchController;
+  late FocusScopeNode _credentialsScope;
   FidoCredential? _selected;
   bool _canRequestFocus = true;
 
@@ -244,6 +245,11 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
     searchController = TextEditingController(
       text: ref.read(passkeysSearchProvider),
     );
+    _credentialsScope = FocusScopeNode(
+      debugLabel: 'passkeys-credentials',
+      onKeyEvent: _handleCredentialsScopeKeyEvent,
+      traversalEdgeBehavior: TraversalEdgeBehavior.parentScope,
+    );
     searchFocus.addListener(_onFocusChange);
   }
 
@@ -251,6 +257,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
   void dispose() {
     searchFocus.dispose();
     searchController.dispose();
+    _credentialsScope.dispose();
     super.dispose();
   }
 
@@ -272,6 +279,26 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
   void _onFocusChange() {
     _scrollSearchField();
     setState(() {});
+  }
+
+  KeyEventResult _handleCredentialsScopeKeyEvent(
+    FocusNode node,
+    KeyEvent event,
+  ) {
+    if (event is! KeyDownEvent || event.logicalKey != LogicalKeyboardKey.tab) {
+      return KeyEventResult.ignored;
+    }
+
+    final parentScope = node.enclosingScope;
+    if (parentScope != null) {
+      if (HardwareKeyboard.instance.isShiftPressed) {
+        parentScope.previousFocus();
+      } else {
+        parentScope.nextFocus();
+      }
+    }
+
+    return KeyEventResult.handled;
   }
 
   @override
@@ -484,6 +511,9 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                           suffixIcons: [
                             if (searchController.text.isNotEmpty)
                               IconButton(
+                                tooltip: MaterialLocalizations.of(
+                                  context,
+                                ).clearButtonTooltip,
                                 icon: const Icon(Icons.clear),
                                 iconSize: 16,
                                 onPressed: () {
@@ -510,23 +540,46 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                                         _canRequestFocus = true;
                                       });
                                     },
-                                    child: IconButton(
-                                      tooltip: e.getDisplayName(l10n),
-                                      onPressed: () {
-                                        ref
-                                            .read(
-                                              passkeysLayoutProvider.notifier,
-                                            )
-                                            .setLayout(e);
+                                    child: Builder(
+                                      builder: (context) {
+                                        final selected = e == layout;
+                                        final label = e.getDisplayName(l10n);
+                                        final icon = Semantics(
+                                          label: label,
+                                          child: ExcludeSemantics(
+                                            child: Icon(
+                                              e.icon,
+                                              color: selected
+                                                  ? Theme.of(
+                                                      context,
+                                                    ).colorScheme.primary
+                                                  : null,
+                                            ),
+                                          ),
+                                        );
+
+                                        return Tooltip(
+                                          message: label,
+                                          excludeFromSemantics: true,
+                                          child: MergeSemantics(
+                                            child: Semantics(
+                                              selected: selected ? true : null,
+                                              inMutuallyExclusiveGroup: true,
+                                              child: IconButton(
+                                                onPressed: () {
+                                                  ref
+                                                      .read(
+                                                        passkeysLayoutProvider
+                                                            .notifier,
+                                                      )
+                                                      .setLayout(e);
+                                                },
+                                                icon: icon,
+                                              ),
+                                            ),
+                                          ),
+                                        );
                                       },
-                                      icon: Icon(
-                                        e.icon,
-                                        color: e == layout
-                                            ? Theme.of(
-                                                context,
-                                              ).colorScheme.primary
-                                            : null,
-                                      ),
                                     ),
                                   ),
                                 ),
@@ -544,49 +597,62 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                                       _canRequestFocus = true;
                                     });
                                   },
-                                  child: PopupMenuButton(
-                                    constraints:
-                                        const BoxConstraints.tightFor(),
-                                    tooltip: l10n.s_select_layout,
-                                    popUpAnimationStyle: AnimationStyle(
-                                      duration: Duration.zero,
-                                    ),
-                                    icon: Icon(
-                                      layout.icon,
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.primary,
-                                    ),
-                                    itemBuilder: (context) => [
-                                      ...FlexLayout.values.map(
-                                        (e) => PopupMenuItem(
-                                          child: Row(
-                                            mainAxisAlignment: .center,
-                                            children: [
-                                              Tooltip(
-                                                message: e.getDisplayName(l10n),
+                                  child: Builder(
+                                    builder: (context) {
+                                      final label = l10n.s_select_layout;
+                                      final value = layout.getDisplayName(l10n);
+                                      return Tooltip(
+                                        message: label,
+                                        excludeFromSemantics: true,
+                                        child: MergeSemantics(
+                                          child: Semantics(
+                                            label: label,
+                                            value: value,
+                                            child: PopupMenuButton<FlexLayout>(
+                                              constraints:
+                                                  const BoxConstraints.tightFor(),
+                                              popUpAnimationStyle:
+                                                  const AnimationStyle(
+                                                    duration: Duration.zero,
+                                                  ),
+                                              initialValue: layout,
+                                              onSelected: (layout) {
+                                                ref
+                                                    .read(
+                                                      passkeysLayoutProvider
+                                                          .notifier,
+                                                    )
+                                                    .setLayout(layout);
+                                              },
+                                              icon: ExcludeSemantics(
                                                 child: Icon(
-                                                  e.icon,
-                                                  color: e == layout
-                                                      ? Theme.of(
-                                                          context,
-                                                        ).colorScheme.primary
-                                                      : null,
+                                                  layout.icon,
+                                                  color: Theme.of(
+                                                    context,
+                                                  ).colorScheme.primary,
                                                 ),
                                               ),
-                                            ],
+                                              itemBuilder: (context) => [
+                                                ...FlexLayout.values.map(
+                                                  (e) =>
+                                                      CheckedPopupMenuItem<
+                                                        FlexLayout
+                                                      >(
+                                                        value: e,
+                                                        checked: e == layout,
+                                                        child: Text(
+                                                          e.getDisplayName(
+                                                            l10n,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                ),
+                                              ],
+                                            ),
                                           ),
-                                          onTap: () {
-                                            ref
-                                                .read(
-                                                  passkeysLayoutProvider
-                                                      .notifier,
-                                                )
-                                                .setLayout(e);
-                                          },
                                         ),
-                                      ),
-                                    ],
+                                      );
+                                    },
                                   ),
                                 ),
                             ],
@@ -672,39 +738,42 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                     ),
               },
             },
-            child: Consumer(
-              builder: (context, ref, child) {
-                final layout = ref.watch(passkeysLayoutProvider);
-                return Padding(
-                  padding: const EdgeInsets.only(
-                    left: 10.0,
-                    right: 10.0,
-                    top: 8.0,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: .start,
-                    children: [
-                      if (filteredCredentials.isEmpty)
-                        Center(child: Text(l10n.s_no_passkeys)),
-                      FlexBox<FidoCredential>(
-                        items: filteredCredentials,
-                        itemBuilder: (cred) => _CredentialListItem(
-                          cred,
-                          expanded: expanded,
-                          selected: _selected == cred,
-                          tileColor: layout == FlexLayout.grid
-                              ? Theme.of(context).hoverColor
-                              : null,
+            child: FocusScope(
+              node: _credentialsScope,
+              child: Consumer(
+                builder: (context, ref, child) {
+                  final layout = ref.watch(passkeysLayoutProvider);
+                  return Padding(
+                    padding: const EdgeInsets.only(
+                      left: 10.0,
+                      right: 10.0,
+                      top: 8.0,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: .start,
+                      children: [
+                        if (filteredCredentials.isEmpty)
+                          Center(child: Text(l10n.s_no_passkeys)),
+                        FlexBox<FidoCredential>(
+                          items: filteredCredentials,
+                          itemBuilder: (cred) => _CredentialListItem(
+                            cred,
+                            expanded: expanded,
+                            selected: _selected == cred,
+                            tileColor: layout == FlexLayout.grid
+                                ? Theme.of(context).hoverColor
+                                : null,
+                          ),
+                          layout: layout,
+                          cellMinWidth: 265,
+                          spacing: layout == FlexLayout.grid ? 4.0 : 0.0,
+                          runSpacing: layout == FlexLayout.grid ? 4.0 : 0.0,
                         ),
-                        layout: layout,
-                        cellMinWidth: 265,
-                        spacing: layout == FlexLayout.grid ? 4.0 : 0.0,
-                        runSpacing: layout == FlexLayout.grid ? 4.0 : 0.0,
-                      ),
-                    ],
-                  ),
-                );
-              },
+                      ],
+                    ),
+                  );
+                },
+              ),
             ),
           );
         },

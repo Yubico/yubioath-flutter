@@ -62,49 +62,105 @@ class _NavigationItemState extends State<NavigationItem> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final borderRadius = widget.borderRadius ?? BorderRadius.circular(48);
 
     if (widget.collapsed) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6.5),
-        child: widget.selected
-            ? Theme(
-                data: theme.copyWith(
-                  colorScheme: colorScheme.copyWith(
-                    primary: colorScheme.secondaryContainer,
-                    onPrimary: colorScheme.onSecondaryContainer,
-                  ),
+      final icon = Semantics(
+        label: widget.title,
+        child: ExcludeSemantics(child: widget.leading),
+      );
+      Widget button = widget.selected
+          ? Theme(
+              data: theme.copyWith(
+                colorScheme: colorScheme.copyWith(
+                  primary: colorScheme.secondaryContainer,
+                  onPrimary: colorScheme.onSecondaryContainer,
                 ),
-                child: IconButton.filled(
-                  focusNode: _focusNode,
-                  icon: widget.leading,
-                  tooltip: widget.title,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  onPressed: widget.onTap,
-                ),
-              )
-            : IconButton(
+              ),
+              child: IconButton.filled(
                 focusNode: _focusNode,
-                icon: widget.leading,
-                tooltip: widget.title,
+                icon: icon,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 onPressed: widget.onTap,
               ),
+            )
+          : IconButton(
+              focusNode: _focusNode,
+              icon: icon,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              onPressed: widget.onTap,
+            );
+
+      if (widget.selected) {
+        button = Semantics(selected: true, child: button);
+      }
+
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6.5),
+        child: Tooltip(
+          message: widget.title,
+          excludeFromSemantics: true,
+          child: MergeSemantics(child: button),
+        ),
       );
     } else {
-      return ListTile(
-        enabled: widget.onTap != null,
-        shape: RoundedRectangleBorder(
-          borderRadius: widget.borderRadius ?? BorderRadius.circular(48),
+      final enabled = widget.onTap != null;
+      final selectedForegroundColor =
+          widget.selected ? colorScheme.onSecondaryContainer : null;
+      final disabledForegroundColor = theme.disabledColor;
+
+      Widget leading = ExcludeSemantics(child: widget.leading);
+      Widget title = Text(widget.title);
+
+      if (!enabled) {
+        leading = IconTheme.merge(
+          data: IconThemeData(color: disabledForegroundColor),
+          child: leading,
+        );
+        title = DefaultTextStyle.merge(
+          style: TextStyle(color: disabledForegroundColor),
+          child: title,
+        );
+      } else if (selectedForegroundColor != null) {
+        leading = IconTheme.merge(
+          data: IconThemeData(color: selectedForegroundColor),
+          child: leading,
+        );
+        title = DefaultTextStyle.merge(
+          style: TextStyle(color: selectedForegroundColor),
+          child: title,
+        );
+      }
+
+      Widget result = Material(
+        color: widget.selected ? colorScheme.secondaryContainer : null,
+        shape: RoundedRectangleBorder(borderRadius: borderRadius),
+        child: InkWell(
+          focusNode: _focusNode,
+          canRequestFocus: enabled,
+          customBorder: RoundedRectangleBorder(borderRadius: borderRadius),
+          onTap: widget.onTap,
+          child: Padding(
+            padding: const EdgeInsetsDirectional.only(start: 16.0),
+            child: SizedBox(
+              height: 53,
+              child: Row(
+                children: [
+                  leading,
+                  const SizedBox(width: 16.0),
+                  Flexible(child: title),
+                ],
+              ),
+            ),
+          ),
         ),
-        leading: widget.leading,
-        title: Text(widget.title),
-        minVerticalPadding: 14.5,
-        onTap: widget.onTap,
-        tileColor: widget.selected ? colorScheme.secondaryContainer : null,
-        textColor: widget.selected ? colorScheme.onSecondaryContainer : null,
-        iconColor: widget.selected ? colorScheme.onSecondaryContainer : null,
-        contentPadding: const EdgeInsets.only(left: 16.0),
       );
+
+      if (widget.selected) {
+        result = Semantics(selected: true, child: result);
+      }
+
+      return result;
     }
   }
 }
@@ -229,7 +285,6 @@ class NavigationContent extends ConsumerWidget {
                   leading: Icon(
                     app._icon,
                     fill: app == currentSection ? 1.0 : 0.0,
-                    semanticLabel: !extended ? app.getDisplayName(l10n) : null,
                   ),
                   collapsed: !extended,
                   selected: app == currentSection,
@@ -272,9 +327,6 @@ class NavigationContent extends ConsumerWidget {
             leading: Icon(
               settingsSection._icon,
               fill: settingsSection == currentSection ? 1.0 : 0.0,
-              semanticLabel: !extended
-                  ? settingsSection.getDisplayName(l10n)
-                  : null,
             ),
             collapsed: !extended,
             selected: settingsSection == currentSection,

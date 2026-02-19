@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -46,7 +49,9 @@ class ManagePasswordDialog extends ConsumerStatefulWidget {
 class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
   final _currentPasswordController = TextEditingController();
   final _currentPasswordFocus = FocusNode();
+  final _newPasswordController = TextEditingController();
   final _newPasswordFocus = FocusNode();
+  final _confirmPasswordController = TextEditingController();
   final _confirmPasswordFocus = FocusNode();
   String _newPassword = '';
   String _confirmPassword = '';
@@ -59,7 +64,9 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
   void dispose() {
     _currentPasswordController.dispose();
     _currentPasswordFocus.dispose();
+    _newPasswordController.dispose();
     _newPasswordFocus.dispose();
+    _confirmPasswordController.dispose();
     _confirmPasswordFocus.dispose();
     super.dispose();
   }
@@ -72,32 +79,39 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
 
   Future<void> _submit() async {
     _removeFocus();
+    final l10n = AppLocalizations.of(context);
 
-    try {
-      final result = await ref
-          .read(oathStateProvider(widget.path).notifier)
-          .setPassword(_currentPasswordController.text, _newPassword);
-      if (result) {
-        if (mounted) {
-          await ref.read(withContextProvider)((context) async {
-            Navigator.of(context).pop();
-            showMessage(context, AppLocalizations.of(context).s_password_set);
-          });
-        }
-      } else {
-        _currentPasswordController.selection = TextSelection(
-          baseOffset: 0,
-          extentOffset: _currentPasswordController.text.length,
+	    try {
+	      final result = await ref
+	          .read(oathStateProvider(widget.path).notifier)
+	          .setPassword(_currentPasswordController.text, _newPassword);
+	      if (!mounted) return;
+	      if (result) {
+	        await ref.read(withContextProvider)((context) async {
+	          Navigator.of(context).pop();
+	          showMessage(context, AppLocalizations.of(context).s_password_set);
+	        });
+	      } else {
+	        _currentPasswordController.selection = TextSelection(
+	          baseOffset: 0,
+	          extentOffset: _currentPasswordController.text.length,
         );
         _currentPasswordFocus.requestFocus();
-        setState(() {
-          _currentIsWrong = true;
-        });
-      }
-    } on CancellationException catch (_) {
-      // ignored
-    }
-  }
+	        setState(() {
+	          _currentIsWrong = true;
+	        });
+	        unawaited(
+	          SemanticsService.sendAnnouncement(
+	            View.of(context),
+	            l10n.p_wrong_password,
+	            Directionality.of(context),
+	          ),
+	        );
+	      }
+	    } on CancellationException catch (_) {
+	      // ignored
+	    }
+	  }
 
   @override
   Widget build(BuildContext context) {
@@ -201,44 +215,50 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                                     ? () async {
                                         _removeFocus();
 
-                                        final result = await ref
-                                            .read(
-                                              oathStateProvider(
-                                                widget.path,
-                                              ).notifier,
-                                            )
-                                            .unsetPassword(
-                                              _currentPasswordController.text,
-                                            );
-                                        if (result) {
-                                          if (mounted) {
-                                            await ref.read(withContextProvider)(
-                                              (context) async {
-                                                Navigator.of(context).pop();
-                                                showMessage(
-                                                  context,
-                                                  l10n.s_password_removed,
-                                                );
-                                              },
-                                            );
-                                          }
-                                        } else {
-                                          _currentPasswordController.selection =
-                                              TextSelection(
-                                                baseOffset: 0,
+	                                        final result = await ref
+	                                            .read(
+	                                              oathStateProvider(
+	                                                widget.path,
+	                                              ).notifier,
+	                                            )
+	                                            .unsetPassword(
+	                                              _currentPasswordController.text,
+	                                            );
+	                                        if (!context.mounted) return;
+	                                        if (result) {
+	                                          await ref.read(withContextProvider)(
+	                                            (context) async {
+	                                              Navigator.of(context).pop();
+	                                              showMessage(
+	                                                context,
+	                                                l10n.s_password_removed,
+	                                              );
+	                                            },
+	                                          );
+	                                        } else {
+	                                          _currentPasswordController.selection =
+	                                              TextSelection(
+	                                                baseOffset: 0,
                                                 extentOffset:
                                                     _currentPasswordController
                                                         .text
                                                         .length,
                                               );
                                           _currentPasswordFocus.requestFocus();
-                                          setState(() {
-                                            _currentIsWrong = true;
-                                          });
-                                        }
-                                      }
-                                    : null,
-                                child: Text(l10n.s_remove_password),
+	                                          setState(() {
+	                                            _currentIsWrong = true;
+	                                          });
+	                                          unawaited(
+	                                            SemanticsService.sendAnnouncement(
+	                                              View.of(context),
+	                                              l10n.p_wrong_password,
+	                                              Directionality.of(context),
+	                                            ),
+	                                          );
+	                                        }
+	                                      }
+	                                    : null,
+	                                child: Text(l10n.s_remove_password),
                               ),
                             if (widget.state.remembered)
                               OutlinedButton(
@@ -272,6 +292,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                       autofocus: !widget.state.hasKey,
                       obscureText: _isObscureNew,
                       autofillHints: const [AutofillHints.newPassword],
+                      controller: _newPasswordController,
                       focusNode: _newPasswordFocus,
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
@@ -317,6 +338,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                       key: keys.confirmPasswordField,
                       obscureText: _isObscureConfirm,
                       focusNode: _confirmPasswordFocus,
+                      controller: _confirmPasswordController,
                       autofillHints: const [AutofillHints.newPassword],
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),

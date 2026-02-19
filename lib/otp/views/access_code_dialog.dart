@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -60,35 +63,52 @@ class _AccessCodeDialogState extends ConsumerState<AccessCodeDialog> {
   void _submit() async {
     final l10n = AppLocalizations.of(context);
     if (!Format.hex.isValid(_accessCodeController.text)) {
+      final message = l10n.l_invalid_format_allowed_chars(
+        Format.hex.allowedCharacters,
+      );
       _accessCodeController.selection = TextSelection(
         baseOffset: 0,
         extentOffset: _accessCodeController.text.length,
       );
       _accessCodeFocus.requestFocus();
-      setState(() {
-        _accessCodeError = l10n.l_invalid_format_allowed_chars(
-          Format.hex.allowedCharacters,
-        );
-        _accessCodeIsWrong = true;
-      });
-      return;
-    }
-    try {
-      final navigator = Navigator.of(context);
-      await widget.action(_accessCodeController.text);
-      navigator.pop(true);
-    } catch (e) {
-      _accessCodeController.selection = TextSelection(
-        baseOffset: 0,
-        extentOffset: _accessCodeController.text.length,
+	      setState(() {
+	        _accessCodeError = message;
+	        _accessCodeIsWrong = true;
+	      });
+	      unawaited(
+	        SemanticsService.sendAnnouncement(
+	          View.of(context),
+	          message,
+	          Directionality.of(context),
+	        ),
+	      );
+	      return;
+	    }
+	    try {
+	      final navigator = Navigator.of(context);
+	      await widget.action(_accessCodeController.text);
+	      navigator.pop(true);
+	    } catch (e) {
+	      if (!mounted) return;
+	      final message = l10n.l_wrong_access_code;
+	      _accessCodeController.selection = TextSelection(
+	        baseOffset: 0,
+	        extentOffset: _accessCodeController.text.length,
       );
       _accessCodeFocus.requestFocus();
-      setState(() {
-        _accessCodeIsWrong = true;
-        _accessCodeError = l10n.l_wrong_access_code;
-      });
-    }
-  }
+	      setState(() {
+	        _accessCodeIsWrong = true;
+	        _accessCodeError = message;
+	      });
+	      unawaited(
+	        SemanticsService.sendAnnouncement(
+	          View.of(context),
+	          message,
+	          Directionality.of(context),
+	        ),
+	      );
+	    }
+	  }
 
   @override
   Widget build(BuildContext context) {

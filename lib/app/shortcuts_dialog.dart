@@ -50,44 +50,58 @@ class ShortcutsDialog extends StatelessWidget {
     final theme = Theme.of(context);
     final itemIntents = getItemIntents(Object());
     final globalIntents = getGlobalIntents();
+    final globalEntries = globalIntents.entries.toList();
     return ResponsiveDialog(
       title: Text(l10n.s_keyboard_shortcuts),
-      showDialogCloseButton: false,
       builder: (context, fullScreen) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 16.0),
-          child: Column(
-            crossAxisAlignment: .start,
-            spacing: 8.0,
-            children: [
-              Column(
-                crossAxisAlignment: .start,
-                children: [
-                  Text(
-                    l10n.s_global_shortcuts,
-                    style: theme.textTheme.titleMedium,
+        return Shortcuts(
+          shortcuts: {
+            SingleActivator(LogicalKeyboardKey.arrowDown):
+                const DirectionalFocusIntent(TraversalDirection.down),
+            SingleActivator(LogicalKeyboardKey.arrowUp):
+                const DirectionalFocusIntent(TraversalDirection.up),
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 18.0,
+              vertical: 16.0,
+            ),
+            child: Column(
+              crossAxisAlignment: .start,
+              spacing: 8.0,
+              children: [
+                Column(
+                  crossAxisAlignment: .start,
+                  children: [
+                    Text(
+                      l10n.s_global_shortcuts,
+                      style: theme.textTheme.titleMedium,
+                    ),
+                    const Divider(),
+                  ],
+                ),
+                for (var i = 0; i < globalEntries.length; i++)
+                  _IntentItem(
+                    intent: globalEntries[i].key,
+                    shortcuts: globalEntries[i].value,
+                    autofocus: i == 0,
                   ),
-                  const Divider(),
-                ],
-              ),
-              ...globalIntents.entries.map(
-                (e) => _IntentItem(intent: e.key, shortcuts: e.value),
-              ),
-              const SizedBox(height: 8.0),
-              Column(
-                crossAxisAlignment: .start,
-                children: [
-                  Text(
-                    l10n.s_application_shortcuts,
-                    style: theme.textTheme.titleMedium,
-                  ),
-                  const Divider(),
-                ],
-              ),
-              ...itemIntents.entries.map(
-                (e) => _IntentItem(intent: e.key, shortcuts: e.value),
-              ),
-            ],
+                const SizedBox(height: 8.0),
+                Column(
+                  crossAxisAlignment: .start,
+                  children: [
+                    Text(
+                      l10n.s_application_shortcuts,
+                      style: theme.textTheme.titleMedium,
+                    ),
+                    const Divider(),
+                  ],
+                ),
+                ...itemIntents.entries.map(
+                  (e) => _IntentItem(intent: e.key, shortcuts: e.value),
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -98,25 +112,65 @@ class ShortcutsDialog extends StatelessWidget {
 class _IntentItem extends StatelessWidget {
   final AppIntent intent;
   final List<SingleActivator> shortcuts;
-  const _IntentItem({required this.intent, required this.shortcuts});
+  final bool autofocus;
+  const _IntentItem({
+    required this.intent,
+    required this.shortcuts,
+    this.autofocus = false,
+  });
+
+  String _formatShortcut(SingleActivator shortcut) =>
+      shortcut.getElements().join(' + ');
+
+  String _semanticLabel(AppLocalizations l10n) {
+    final description = intent.getDescription(l10n);
+    final filtered = shortcuts
+        .where((s) => !_ignoredTriggers.contains(s.trigger))
+        .toList();
+    if (filtered.isEmpty) {
+      return description;
+    }
+    final shortcutsText = filtered.map(_formatShortcut).join(' / ');
+    return '$description: $shortcutsText';
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return Row(
-      mainAxisAlignment: .spaceBetween,
-      spacing: 4.0,
-      children: [
-        Flexible(
-          child: Text(
-            intent.getDescription(l10n),
-            overflow: .fade,
-            maxLines: 1,
-            softWrap: false,
+    return Focus(
+      autofocus: autofocus,
+      onFocusChange: (focused) {
+        if (focused) {
+          Scrollable.ensureVisible(
+            context,
+            duration: const Duration(milliseconds: 100),
+            alignment: 0.1,
+          );
+        }
+      },
+      child: Semantics(
+        label: _semanticLabel(l10n),
+        child: ExcludeSemantics(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6.0),
+            child: Row(
+              mainAxisAlignment: .spaceBetween,
+              spacing: 4.0,
+              children: [
+                Flexible(
+                  child: Text(
+                    intent.getDescription(l10n),
+                    overflow: .fade,
+                    maxLines: 1,
+                    softWrap: false,
+                  ),
+                ),
+                _ShortcutsItem(shortcuts: shortcuts),
+              ],
+            ),
           ),
         ),
-        _ShortcutsItem(shortcuts: shortcuts),
-      ],
+      ),
     );
   }
 }

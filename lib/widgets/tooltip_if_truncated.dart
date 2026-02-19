@@ -45,13 +45,14 @@ class TooltipIfTruncated extends StatelessWidget {
         );
         final TextPainter textPainter = TextPainter(
           text: TextSpan(text: text, style: style),
-          textDirection: .ltr,
+          textDirection: Directionality.of(context),
           maxLines: maxLines,
         )..layout(minWidth: 0, maxWidth: constraints.maxWidth);
         return textPainter.didExceedMaxLines
             ? Tooltip(
                 margin: const EdgeInsets.all(16),
                 message: tooltip ?? text,
+                excludeFromSemantics: true,
                 child: textWidget,
               )
             : textWidget;

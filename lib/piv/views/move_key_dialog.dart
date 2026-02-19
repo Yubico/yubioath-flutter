@@ -23,6 +23,7 @@ import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../exception/cancellation_exception.dart';
 import '../../generated/l10n/app_localizations.dart';
+import '../../widgets/app_toggle_chip.dart';
 import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../keys.dart' as keys;
@@ -161,7 +162,7 @@ class _MoveKeyDialogState extends ConsumerState<MoveKeyDialog> {
                           },
                         ),
                         if (widget.pivSlot.certInfo != null)
-                          FilterChip(
+                          AppToggleChip(
                             key: keys.includeCertificateChip,
                             label: Text(l10n.l_include_certificate),
                             selected: _includeCertificate,

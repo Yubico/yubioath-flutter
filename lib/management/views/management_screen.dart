@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
+import 'dart:async';
+
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -26,6 +29,7 @@ import '../../core/state.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
+import '../../widgets/app_toggle_chip.dart';
 import '../../widgets/delayed_visibility.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../models.dart';
@@ -63,7 +67,7 @@ class _CapabilityForm extends StatelessWidget {
       children: Capability.values
           .where((c) => capabilities & c.value != 0)
           .map(
-            (c) => FilterChip(
+            (c) => AppToggleChip(
               label: Text(c.getDisplayName(l10n)),
               key: Key('$keyPrefix.${c.name}'),
               selected: enabled & c.value != 0,
@@ -101,7 +105,7 @@ class _ModeForm extends StatelessWidget {
             runSpacing: 8.0,
             children: UsbInterface.values
                 .map(
-                  (iface) => FilterChip(
+                  (iface) => AppToggleChip(
                     label: Text(iface.name.toUpperCase()),
                     selected: iface.value & interfaces != 0,
                     onSelected: (_) {
@@ -293,19 +297,27 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
     final isLocked = widget.deviceData.info.isLocked;
 
     if (isLocked && !Format.hex.isValid(_lockCodeController.text)) {
+      final message = l10n.l_invalid_format_allowed_chars(
+        Format.hex.allowedCharacters,
+      );
       _lockCodeController.selection = TextSelection(
         baseOffset: 0,
         extentOffset: _lockCodeController.text.length,
       );
       _lockCodeFocus.requestFocus();
-      setState(() {
-        _lockCodeError = l10n.l_invalid_format_allowed_chars(
-          Format.hex.allowedCharacters,
-        );
-        _lockCodeIsWrong = true;
-      });
-      return;
-    }
+	      setState(() {
+	        _lockCodeError = message;
+	        _lockCodeIsWrong = true;
+	      });
+	      unawaited(
+	        SemanticsService.sendAnnouncement(
+	          View.of(context),
+	          message,
+	          Directionality.of(context),
+	        ),
+	      );
+	      return;
+	    }
 
     final bool reboot;
     if (widget.deviceData.node is UsbYubiKeyNode) {
@@ -347,22 +359,31 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
       Navigator.pop(context);
       showMessage(context, l10n.s_config_updated);
     } catch (_) {
+      if (!mounted) return;
       if (isLocked) {
+        final message = l10n.l_wrong_lock_code;
         _lockCodeController.selection = TextSelection(
           baseOffset: 0,
           extentOffset: _lockCodeController.text.length,
         );
         _lockCodeFocus.requestFocus();
-        setState(() {
-          _lockCodeIsWrong = true;
-          _configuring = false;
-          _lockCodeError = l10n.l_wrong_lock_code;
-        });
-      }
-    } finally {
-      close?.call();
-    }
-  }
+	        setState(() {
+	          _lockCodeIsWrong = true;
+	          _configuring = false;
+	          _lockCodeError = message;
+	        });
+	        unawaited(
+	          SemanticsService.sendAnnouncement(
+	            View.of(context),
+	            message,
+	            Directionality.of(context),
+	          ),
+	        );
+	      }
+	    } finally {
+	      close?.call();
+	    }
+	  }
 
   Widget _buildModeForm(BuildContext context, WidgetRef ref, DeviceInfo info) =>
       _ModeForm(

@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 import 'package:material_symbols_icons/symbols.dart';
 
+import '../app/accessibility_announcer.dart';
 import '../generated/l10n/app_localizations.dart';
 import 'basic_dialog.dart';
 
@@ -37,6 +41,39 @@ class InfoPopupButton extends StatelessWidget {
     this.icon = Symbols.info,
     this.iconColor,
   });
+
+  static String _plainTextFromSpan(InlineSpan span) {
+    final buffer = StringBuffer();
+    void visit(InlineSpan current) {
+      if (current is TextSpan) {
+        final text = current.text;
+        if (text != null) {
+          buffer.write(text);
+        }
+        final children = current.children;
+        if (children != null) {
+          for (final child in children) {
+            visit(child);
+          }
+        }
+      }
+    }
+
+    visit(span);
+    return buffer.toString();
+  }
+
+  String _plainInfoText() {
+    final data = infoText.data;
+    if (data != null) {
+      return data;
+    }
+    final span = infoText.textSpan;
+    if (span != null) {
+      return _plainTextFromSpan(span);
+    }
+    return '';
+  }
 
   Widget _buildInfoContent(BuildContext context) {
     final theme = Theme.of(context);
@@ -86,6 +123,14 @@ class InfoPopupButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final mediaQuery = MediaQuery.maybeOf(context);
+    final useDialog =
+        displayDialog ||
+        mediaQuery?.accessibleNavigation == true ||
+        SemanticsBinding.instance.semanticsEnabled;
+    final announceInfo =
+        mediaQuery?.accessibleNavigation == true ||
+        SemanticsBinding.instance.semanticsEnabled;
 
     return SizedBox(
       height: size,
@@ -94,16 +139,24 @@ class InfoPopupButton extends StatelessWidget {
         tooltip: l10n.s_more_info,
         onPressed: () {
           // Show info content in dialog on smaller screens and mobile
-          if (displayDialog) {
+          if (useDialog) {
             showDialog(
               context: context,
               builder: (context) => BasicDialog(
                 icon: Icon(icon),
+                title: Text(l10n.s_more_info),
                 content: _buildInfoContent(context),
               ),
             );
           } else {
             _showPopupMenu(context);
+          }
+
+          if (announceInfo) {
+            final text = _plainInfoText().replaceAll(RegExp(r'\s+'), ' ').trim();
+            if (text.isNotEmpty) {
+              unawaited(AccessibilityAnnouncer.announce(context, text));
+            }
           }
         },
         icon: Icon(

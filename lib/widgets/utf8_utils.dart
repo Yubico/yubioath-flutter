@@ -36,10 +36,14 @@ InputCounterWidgetBuilder buildByteCounterFor(String currentValue) =>
       final style = (byteLength(currentValue) <= (maxLength ?? 0))
           ? caption
           : caption?.copyWith(color: theme.colorScheme.error);
-      return Text(
-        maxLength != null ? '${byteLength(currentValue)}/$maxLength' : '',
-        style: style,
-        semanticsLabel: AppLocalizations.of(context).s_character_count,
+      final text = maxLength != null
+          ? '${byteLength(currentValue)}/$maxLength'
+          : '';
+      final label = AppLocalizations.of(context).s_character_count;
+      return Semantics(
+        label: label,
+        value: text,
+        child: ExcludeSemantics(child: Text(text, style: style)),
       );
     };
 

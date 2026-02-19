@@ -55,6 +55,7 @@ Future<T?> showBlurDialog<T>({
   barrierDismissible: true,
   barrierColor: barrierColor,
   barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+  requestFocus: true,
   pageBuilder: (ctx, anim1, anim2) => builder(ctx),
   transitionDuration: const Duration(milliseconds: 150),
   transitionBuilder: (ctx, anim1, anim2, child) => BackdropFilter(

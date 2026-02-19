@@ -19,6 +19,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
+import '../app/accessibility_announcer.dart';
+
 class Toast extends StatefulWidget {
   final String message;
   final Duration duration;
@@ -82,15 +84,21 @@ class _ToastState extends State<Toast> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     return FadeTransition(
       opacity: _opacity,
-      child: Material(
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(4.0)),
-        ),
-        color: widget.backgroundColor,
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Text(widget.message, style: widget.textStyle),
+      alwaysIncludeSemantics: true,
+      child: Semantics(
+        container: true,
+        role: SemanticsRole.alert,
+        label: widget.message,
+        child: Material(
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(4.0)),
+          ),
+          color: widget.backgroundColor,
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Text(widget.message, style: widget.textStyle),
+            ),
           ),
         ),
       ),
@@ -154,7 +162,7 @@ void Function() showToast(
     Overlay.of(context).insert(entry!);
   });
 
-  SemanticsService.sendAnnouncement(View.of(context), message, .ltr);
+  unawaited(AccessibilityAnnouncer.announce(context, message));
 
   return close;
 }

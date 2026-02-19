@@ -42,37 +42,47 @@ class _FileDropTargetState extends State<FileDropTarget> {
 
   @override
   Widget build(BuildContext context) {
-    return DropTarget(
-      onDragEntered: (_) {
-        // Multiple FileDropTarget widgets can be in the tree at the same
-        // time. We only want to use the top-most.
-        if (ModalRoute.of(context)!.isCurrent) {
-          setState(() {
-            _hovering = true;
-          });
-        }
-      },
-      onDragExited: (_) {
-        setState(() {
-          _hovering = false;
-        });
-      },
-      onDragDone: (details) async {
-        if (ModalRoute.of(context)!.isCurrent) {
-          for (final file in details.files) {
-            widget.onFileDropped(File(file.path));
-          }
-        }
-      },
-      enable: !isAndroid,
-      child: Stack(
-        fit: .expand,
-        children: [
-          widget.child,
-          if (_hovering)
-            Padding(padding: const EdgeInsets.all(8.0), child: widget.overlay),
-        ],
-      ),
+    return Stack(
+      fit: .expand,
+      children: [
+        widget.child,
+        if (!isAndroid)
+          IgnorePointer(
+            child: ExcludeSemantics(
+              child: DropTarget(
+                onDragEntered: (_) {
+                  // Multiple FileDropTarget widgets can be in the tree at the same
+                  // time. We only want to use the top-most.
+                  if (ModalRoute.of(context)!.isCurrent) {
+                    setState(() {
+                      _hovering = true;
+                    });
+                  }
+                },
+                onDragExited: (_) {
+                  setState(() {
+                    _hovering = false;
+                  });
+                },
+                onDragDone: (details) async {
+                  if (ModalRoute.of(context)!.isCurrent) {
+                    for (final file in details.files) {
+                      widget.onFileDropped(File(file.path));
+                    }
+                  }
+                  if (mounted) {
+                    setState(() {
+                      _hovering = false;
+                    });
+                  }
+                },
+                child: const SizedBox.expand(),
+              ),
+            ),
+          ),
+        if (_hovering)
+          Padding(padding: const EdgeInsets.all(8.0), child: widget.overlay),
+      ],
     );
   }
 }

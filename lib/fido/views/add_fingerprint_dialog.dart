@@ -50,6 +50,7 @@ class AddFingerprintDialog extends ConsumerStatefulWidget {
 class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
     with SingleTickerProviderStateMixin {
   late FocusNode _nameFocus;
+  final _labelController = TextEditingController();
 
   late AnimationController _animator;
   late Animation<Color?> _color;
@@ -62,6 +63,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
 
   @override
   void dispose() {
+    _labelController.dispose();
     _animator.dispose();
     _nameFocus.dispose();
     _subscription.cancel();
@@ -272,6 +274,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
                             child: Padding(
                               padding: const EdgeInsets.only(right: 40),
                               child: AppTextField(
+                                controller: _labelController,
                                 focusNode: _nameFocus,
                                 maxLength: 15,
                                 inputFormatters: [limitBytesLength(15)],

@@ -79,14 +79,17 @@ class _ChoiceFilterChipState<T> extends State<ChoiceFilterChip<T>> {
       popUpAnimationStyle: AnimationStyle(duration: Duration.zero),
       items: widget.items
           .map(
-            (e) => PopupMenuItem<T>(
+            (e) => CheckedPopupMenuItem<T>(
               enabled: widget.disableHover != null
                   ? !widget.disableHover!
                   : true,
               value: e,
+              checked: e == widget.value,
               height: chipBox.size.height,
-              textStyle: ChipTheme.of(context).labelStyle,
-              child: widget.itemBuilder(e),
+              child: DefaultTextStyle.merge(
+                style: ChipTheme.of(context).labelStyle,
+                child: widget.itemBuilder(e),
+              ),
             ),
           )
           .toList(),
@@ -95,10 +98,17 @@ class _ChoiceFilterChipState<T> extends State<ChoiceFilterChip<T>> {
 
   @override
   Widget build(BuildContext context) {
-    return FilterChip(
+    final chipTheme = ChipTheme.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
+    final selectedBackgroundColor = widget.selected
+        ? (chipTheme.selectedColor ?? colorScheme.secondaryContainer)
+        : null;
+
+    return ActionChip(
       tooltip: widget.tooltip,
       avatar: widget.avatar,
       labelPadding: const EdgeInsets.only(left: 4),
+      backgroundColor: selectedBackgroundColor,
       label: Row(
         mainAxisSize: .min,
         children: [
@@ -113,10 +123,8 @@ class _ChoiceFilterChipState<T> extends State<ChoiceFilterChip<T>> {
           ),
         ],
       ),
-      selected: widget.selected,
-      showCheckmark: false,
-      onSelected: widget.onChanged != null
-          ? (_) async {
+      onPressed: widget.onChanged != null
+          ? () async {
               setState(() {
                 _showing = true;
               });

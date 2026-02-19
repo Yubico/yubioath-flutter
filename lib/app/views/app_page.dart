@@ -337,7 +337,7 @@ class _AppPageState extends ConsumerState<AppPage> {
       ), // Same style as title
       maxLines: 1,
       textScaler: MediaQuery.textScalerOf(context),
-      textDirection: .ltr,
+      textDirection: Directionality.of(context),
     )..layout()).size;
     return size.height;
   }
@@ -787,15 +787,20 @@ class _AppPageState extends ConsumerState<AppPage> {
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8),
-                          child: IconButton(
-                            icon: Icon(
-                              Symbols.menu,
-                              semanticLabel: navigationText,
-                            ),
-                            tooltip: navigationText,
-                            onPressed: () => _handleNavigationVisibility(
-                              context,
-                              fullyExpanded,
+                          child: Tooltip(
+                            message: navigationText,
+                            excludeFromSemantics: true,
+                            child: MergeSemantics(
+                              child: IconButton(
+                                icon: Icon(
+                                  Symbols.menu,
+                                  semanticLabel: navigationText,
+                                ),
+                                onPressed: () => _handleNavigationVisibility(
+                                  context,
+                                  fullyExpanded,
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -806,13 +811,18 @@ class _AppPageState extends ConsumerState<AppPage> {
                 : Builder(
                     builder: (context) {
                       // Need to wrap with builder to get Scaffold context
-                      return IconButton(
-                        key: drawerIconButtonKey,
-                        tooltip: l10n.s_show_navigation,
-                        onPressed: () => Scaffold.of(context).openDrawer(),
-                        icon: Icon(
-                          Symbols.menu,
-                          semanticLabel: l10n.s_show_navigation,
+                      return Tooltip(
+                        message: l10n.s_show_navigation,
+                        excludeFromSemantics: true,
+                        child: MergeSemantics(
+                          child: IconButton(
+                            key: drawerIconButtonKey,
+                            onPressed: () => Scaffold.of(context).openDrawer(),
+                            icon: Icon(
+                              Symbols.menu,
+                              semanticLabel: l10n.s_show_navigation,
+                            ),
+                          ),
                         ),
                       );
                     },
@@ -822,24 +832,29 @@ class _AppPageState extends ConsumerState<AppPage> {
                   (widget.keyActionsBuilder != null && !hasManage))
                 Padding(
                   padding: const EdgeInsets.only(left: 4),
-                  child: IconButton(
-                    key: actionsIconButtonKey,
-                    onPressed: () =>
-                        _handleDetailViewVisibility(context, hasManage),
-                    icon: widget.keyActionsBadge
-                        ? Badge(
-                            child: Icon(
-                              Symbols.more_vert,
-                              semanticLabel: l10n.s_show_menu,
-                            ),
-                          )
-                        : Icon(
-                            Symbols.more_vert,
-                            semanticLabel: l10n.s_show_menu,
-                          ),
-                    iconSize: 24,
-                    tooltip: l10n.s_show_menu,
-                    padding: const EdgeInsets.all(12),
+                  child: Tooltip(
+                    message: l10n.s_show_menu,
+                    excludeFromSemantics: true,
+                    child: MergeSemantics(
+                      child: IconButton(
+                        key: actionsIconButtonKey,
+                        onPressed: () =>
+                            _handleDetailViewVisibility(context, hasManage),
+                        icon: widget.keyActionsBadge
+                            ? Badge(
+                                child: Icon(
+                                  Symbols.more_vert,
+                                  semanticLabel: l10n.s_show_menu,
+                                ),
+                              )
+                            : Icon(
+                                Symbols.more_vert,
+                                semanticLabel: l10n.s_show_menu,
+                              ),
+                        iconSize: 24,
+                        padding: const EdgeInsets.all(12),
+                      ),
+                    ),
                   ),
                 ),
               if (hasManage &&
@@ -847,18 +862,29 @@ class _AppPageState extends ConsumerState<AppPage> {
                       widget.detailViewBuilder != null))
                 Padding(
                   padding: const EdgeInsets.only(left: 4),
-                  child: IconButton(
-                    key: toggleDetailViewIconButtonKey,
-                    onPressed: () =>
-                        _handleDetailViewVisibility(context, hasManage),
-                    icon: Icon(
-                      Symbols.dock_to_left,
-                      fill: showExpandedSideMenuBar ? 1 : 0,
-                      weight: 600.0,
+                  child: MergeSemantics(
+                    child: Semantics(
+                      toggled: showExpandedSideMenuBar,
+                      child: Tooltip(
+                        message: l10n.s_toggle_menu_bar,
+                        excludeFromSemantics: true,
+                        child: MergeSemantics(
+                          child: IconButton(
+                            key: toggleDetailViewIconButtonKey,
+                            onPressed: () =>
+                                _handleDetailViewVisibility(context, hasManage),
+                            icon: Icon(
+                              Symbols.dock_to_left,
+                              fill: showExpandedSideMenuBar ? 1 : 0,
+                              weight: 600.0,
+                              semanticLabel: l10n.s_toggle_menu_bar,
+                            ),
+                            iconSize: 24,
+                            padding: const EdgeInsets.all(12),
+                          ),
+                        ),
+                      ),
                     ),
-                    iconSize: 24,
-                    tooltip: l10n.s_toggle_menu_bar,
-                    padding: const EdgeInsets.all(12),
                   ),
                 ),
               if (widget.actionButtonBuilder != null)

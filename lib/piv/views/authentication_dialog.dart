@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -58,58 +61,77 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final hasMetadata = widget.pivState.metadata != null;
-    final keyLen =
-        (widget.pivState.metadata?.managementKeyMetadata.keyType ??
-                ManagementKeyType.tdes)
-            .keyLength *
-        2;
-    final keyFormatInvalid = !Format.hex.isValid(_keyController.text);
+	    final keyLen =
+	        (widget.pivState.metadata?.managementKeyMetadata.keyType ??
+	                ManagementKeyType.tdes)
+	            .keyLength *
+	        2;
+	    final keyFormatInvalid = !Format.hex.isValid(_keyController.text);
+	    final view = View.of(context);
+	    final directionality = Directionality.of(context);
 
-    void submit() async {
-      _keyFocus.unfocus();
-      if (keyFormatInvalid) {
+	    void submit() async {
+	      _keyFocus.unfocus();
+	      if (keyFormatInvalid) {
+        final message = l10n.l_invalid_format_allowed_chars(
+          Format.hex.allowedCharacters,
+        );
         _keyController.selection = TextSelection(
           baseOffset: 0,
           extentOffset: _keyController.text.length,
         );
-        _keyFocus.requestFocus();
-        setState(() {
-          _keyFormatInvalid = true;
-        });
+	        _keyFocus.requestFocus();
+	        setState(() {
+	          _keyFormatInvalid = true;
+	        });
+	        unawaited(
+	          SemanticsService.sendAnnouncement(view, message, directionality),
+	        );
 
-        return;
-      }
-      final navigator = Navigator.of(context);
-      try {
-        final status = await ref
-            .read(pivStateProvider(widget.devicePath).notifier)
-            .authenticate(_keyController.text);
-        if (status) {
-          navigator.pop(true);
-        } else {
+	        return;
+	      }
+	      final navigator = Navigator.of(context);
+	      try {
+	        final status = await ref
+	            .read(pivStateProvider(widget.devicePath).notifier)
+	            .authenticate(_keyController.text);
+	        if (!mounted) return;
+	        if (status) {
+	          navigator.pop(true);
+	        } else {
+	          final message = l10n.l_wrong_key;
           _keyController.selection = TextSelection(
             baseOffset: 0,
             extentOffset: _keyController.text.length,
           );
           _keyFocus.requestFocus();
-          setState(() {
-            _keyIsWrong = true;
-          });
-        }
-      } on CancellationException catch (_) {
-        navigator.pop(false);
-      } catch (_) {
-        _keyController.selection = TextSelection(
-          baseOffset: 0,
-          extentOffset: _keyController.text.length,
+	          setState(() {
+	            _keyIsWrong = true;
+	          });
+	          unawaited(
+	            SemanticsService.sendAnnouncement(view, message, directionality),
+	          );
+	        }
+	      } on CancellationException catch (_) {
+	        if (!mounted) return;
+	        navigator.pop(false);
+	      } catch (_) {
+	        if (!mounted) return;
+	        final message = l10n.l_wrong_key;
+	        _keyController.selection = TextSelection(
+	          baseOffset: 0,
+	          extentOffset: _keyController.text.length,
         );
         _keyFocus.requestFocus();
         // TODO: More error cases
-        setState(() {
-          _keyIsWrong = true;
-        });
-      }
-    }
+	        setState(() {
+	          _keyIsWrong = true;
+	        });
+	        unawaited(
+	          SemanticsService.sendAnnouncement(view, message, directionality),
+	        );
+	      }
+	    }
 
     return ResponsiveDialog(
       title: Text(l10n.l_unlock_piv_management),

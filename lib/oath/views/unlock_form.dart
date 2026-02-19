@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -25,6 +28,7 @@ import '../../exception/cancellation_exception.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
+import '../../widgets/app_toggle_chip.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
@@ -68,18 +72,26 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
           .unlock(_passwordController.text, remember: _remember);
       if (!mounted) return;
       if (!success) {
+        final l10n = AppLocalizations.of(context);
         _passwordController.selection = TextSelection(
           baseOffset: 0,
           extentOffset: _passwordController.text.length,
         );
         _passwordFocus.requestFocus();
-        setState(() {
-          _passwordIsWrong = true;
-        });
-      } else if (_remember && !remembered) {
-        showMessage(context, AppLocalizations.of(context).l_remember_pw_failed);
-      }
-    } on CancellationException catch (_) {
+	        setState(() {
+	          _passwordIsWrong = true;
+	        });
+	        unawaited(
+	          SemanticsService.sendAnnouncement(
+	            View.of(context),
+	            l10n.s_wrong_password,
+	            Directionality.of(context),
+	          ),
+	        );
+	      } else if (_remember && !remembered) {
+	        showMessage(context, AppLocalizations.of(context).l_remember_pw_failed);
+	      }
+	    } on CancellationException catch (_) {
       // ignored
     }
   }
@@ -167,7 +179,7 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
                                   Text(l10n.l_keystore_unavailable),
                                 ],
                               )
-                            : FilterChip(
+                            : AppToggleChip(
                                 label: Text(l10n.s_remember_password),
                                 selected: _remember,
                                 onSelected: (value) {

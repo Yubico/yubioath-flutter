@@ -18,6 +18,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -38,6 +39,7 @@ import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
+import '../../widgets/app_toggle_chip.dart';
 import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/file_drop_overlay.dart';
 import '../../widgets/file_drop_target.dart';
@@ -346,8 +348,21 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
         setState(() {
           _validateSecret = true;
         });
-      }
-    }
+        _secretFocus.requestFocus();
+	        final message = !secretLengthValid
+	            ? l10n.s_invalid_length
+	            : l10n.l_invalid_format_allowed_chars(
+	                Format.base32.allowedCharacters,
+	              );
+	        unawaited(
+	          SemanticsService.sendAnnouncement(
+	            View.of(context),
+	            message,
+	            Directionality.of(context),
+	          ),
+	        );
+	      }
+	    }
 
     void clearCredentialData() {
       _issuerController.clear();
@@ -373,13 +388,20 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
 
           if (creds.length == 1) {
             _loadCredentialData(creds[0]);
-            setState(() {
-              _qrScanSuccess = true;
-            });
-          } else {
-            Navigator.of(context).pop();
-            await handleUri(
-              context,
+	            setState(() {
+	              _qrScanSuccess = true;
+	            });
+	            unawaited(
+	              SemanticsService.sendAnnouncement(
+	                View.of(context),
+	                l10n.l_qr_scanned,
+	                Directionality.of(context),
+	              ),
+	            );
+	          } else {
+	            Navigator.of(context).pop();
+	            await handleUri(
+	              context,
               widget.credentials,
               qrData,
               widget.devicePath,
@@ -718,7 +740,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                                     children: [
                                       if (oathState?.version.isAtLeast(4, 2) ??
                                           true)
-                                        FilterChip(
+                                        AppToggleChip(
                                           key: keys.requireTouchFilterChip,
                                           label: Text(l10n.s_require_touch),
                                           selected: _touch,
@@ -726,6 +748,11 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                                             setState(() {
                                               _touch = value;
                                             });
+                                            SemanticsService.sendAnnouncement(
+                                              View.of(context),
+                                              '${l10n.s_require_touch}: ${value ? l10n.s_enabled : l10n.s_disabled}',
+                                              Directionality.of(context),
+                                            );
                                           },
                                         ),
                                       ChoiceFilterChip<OathType>(
@@ -744,6 +771,11 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                                                 setState(() {
                                                   _oathType = value;
                                                 });
+                                                SemanticsService.sendAnnouncement(
+                                                  View.of(context),
+                                                  value.getDisplayName(l10n),
+                                                  Directionality.of(context),
+                                                );
                                               }
                                             : null,
                                       ),
