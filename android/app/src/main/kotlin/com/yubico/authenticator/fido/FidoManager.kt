@@ -398,22 +398,19 @@ class FidoManager(
         return JSONObject(mapOf("success" to true)).toString()
     }
 
-    private fun catchPinErrors(
-        fidoSession: YubiKitFidoSession,
-        clientPin: ClientPin,
-        block: () -> String
-    ): String = try {
+    private fun catchPinErrors(clientPin: ClientPin, block: () -> String): String = try {
         block()
     } catch (ctapException: CtapException) {
         when (ctapException.ctapError) {
-            CtapException.ERR_PIN_INVALID -> {
+            CtapException.ERR_PIN_INVALID,
+            CtapException.ERR_PIN_AUTH_BLOCKED -> {
                 // Just lock the session, don't clear credentials
                 pinStore.setPin(null)
                 pinRetries = clientPin.pinRetries.count
 
                 fidoViewModel.currentSession()?.let {
                     fidoViewModel.setSessionState(
-                        it.copy(unlocked = false, unlockedRead = false, pinRetries = pinRetries)
+                        it.copy(unlocked = false, pinRetries = pinRetries)
                     )
                 }
 
@@ -421,14 +418,14 @@ class FidoManager(
                     mapOf(
                         "success" to false,
                         "pinRetries" to pinRetries,
-                        "authBlocked" to false
+                        "authBlocked" to
+                            (ctapException.ctapError == CtapException.ERR_PIN_AUTH_BLOCKED)
                     )
                 ).toString()
             }
 
-            CtapException.ERR_PIN_BLOCKED,
-            CtapException.ERR_PIN_AUTH_BLOCKED -> {
-                // Severe errors - clear everything
+            CtapException.ERR_PIN_BLOCKED -> {
+                // Severe error - clear everything
                 pinStore.setPin(null)
                 fidoViewModel.updateCredentials(null)
                 fidoViewModel.updateFingerprints(emptyList())
@@ -439,10 +436,9 @@ class FidoManager(
                     persistentPinUvAuthToken = null
                 }
 
-                pinRetries =
-                    if (ctapException.ctapError == CtapException.ERR_PIN_BLOCKED) 0 else pinRetries
+                pinRetries = clientPin.pinRetries.count
 
-                // Update session state to reflect locked/blocked status
+                // Update session state to reflect blocked status
                 fidoViewModel.currentSession()?.let {
                     fidoViewModel.setSessionState(
                         it.copy(unlocked = false, unlockedRead = false, pinRetries = pinRetries)
@@ -453,8 +449,7 @@ class FidoManager(
                     mapOf(
                         "success" to false,
                         "pinRetries" to pinRetries,
-                        "authBlocked" to
-                            (ctapException.ctapError == CtapException.ERR_PIN_AUTH_BLOCKED)
+                        "authBlocked" to true
                     )
                 ).toString()
             }
@@ -479,7 +474,7 @@ class FidoManager(
                 val clientPin =
                     ClientPin(fidoSession, getPreferredPinUvAuthProtocol(fidoSession.cachedInfo))
 
-                catchPinErrors(fidoSession, clientPin) {
+                catchPinErrors(clientPin) {
                     unlockSession(fidoSession, clientPin, pin)
                 }
             } catch (e: IOException) {
@@ -515,7 +510,7 @@ class FidoManager(
                 val clientPin =
                     ClientPin(fidoSession, getPreferredPinUvAuthProtocol(fidoSession.cachedInfo))
 
-                catchPinErrors(fidoSession, clientPin) {
+                catchPinErrors(clientPin) {
                     setOrChangePin(fidoSession, clientPin, pin, newPin)
                     unlockSession(fidoSession, clientPin, newPin)
                 }
