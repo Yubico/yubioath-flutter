@@ -19,13 +19,13 @@ package com.yubico.authenticator.piv
 import com.yubico.yubikit.piv.KeyType
 import com.yubico.yubikit.piv.PivSession
 import com.yubico.yubikit.piv.Slot
+import com.yubico.yubikit.piv.jca.PivPrivateKey
 import com.yubico.yubikit.piv.jca.PivProvider
 import java.io.ByteArrayOutputStream
 import java.math.BigInteger
 import java.security.GeneralSecurityException
 import java.security.KeyFactory
 import java.security.KeyStore
-import java.security.PrivateKey
 import java.security.PublicKey
 import java.security.SecureRandom
 import java.security.Signature
@@ -153,7 +153,8 @@ class PivContentSigner(
     private val session: PivSession,
     private val slot: Slot,
     private val publicKey: PublicKey,
-    private val signatureAlgorithm: SignatureAlgorithm
+    private val signatureAlgorithm: SignatureAlgorithm,
+    private val pinProvider: (() -> CharArray?)? = null
 ) : ContentSigner {
 
     private val buffer = ByteArrayOutputStream()
@@ -174,17 +175,25 @@ class PivContentSigner(
 
     @Throws(OperatorCreationException::class)
     override fun getSignature(): ByteArray {
+        var privateKey: PivPrivateKey? = null
         try {
             val provider = PivProvider(session)
             val keyStore = KeyStore.getInstance("YKPiv", provider)
             keyStore.load(null)
 
+            privateKey = keyStore.getKey(slot.stringAlias, null) as PivPrivateKey
+            // Set PIN on the private key for slots that require PIN verification before signing (e.g., 9c)
+            pinProvider?.invoke()?.let { privateKey.setPin(it) }
+
             return Signature.getInstance(signatureAlgorithm.jcaName, provider).apply {
-                initSign(keyStore.getKey(slot.stringAlias, null) as PrivateKey)
+                initSign(privateKey)
                 update(buffer.toByteArray())
             }.sign()
         } catch (e: GeneralSecurityException) {
             throw OperatorCreationException("PIV signing failed", e)
+        } finally {
+            // Destroy the private key to clear any PIN copy from memory
+            privateKey?.destroy()
         }
     }
 }
@@ -195,10 +204,11 @@ fun signCsrBuilder(
     slot: Slot,
     publicKey: PublicKey,
     builder: JcaPKCS10CertificationRequestBuilder,
-    hashAlgorithm: HashAlgorithm = HashAlgorithm.SHA256
+    hashAlgorithm: HashAlgorithm = HashAlgorithm.SHA256,
+    pinProvider: (() -> CharArray?)? = null
 ): PKCS10CertificationRequest {
     val sigAlg = resolveSignatureAlgorithm(publicKey, hashAlgorithm)
-    val signer = PivContentSigner(session, slot, publicKey, sigAlg)
+    val signer = PivContentSigner(session, slot, publicKey, sigAlg, pinProvider)
     return builder.build(signer)
 }
 
@@ -208,11 +218,12 @@ fun generateCsr(
     slot: Slot,
     publicKey: PublicKey,
     subjectRfc4514: String,
-    hashAlgorithm: HashAlgorithm = HashAlgorithm.SHA256
+    hashAlgorithm: HashAlgorithm = HashAlgorithm.SHA256,
+    pinProvider: (() -> CharArray?)? = null
 ): PKCS10CertificationRequest {
     val subject = X500Principal(subjectRfc4514)
     val builder = JcaPKCS10CertificationRequestBuilder(subject, publicKey)
-    return signCsrBuilder(session, slot, publicKey, builder, hashAlgorithm)
+    return signCsrBuilder(session, slot, publicKey, builder, hashAlgorithm, pinProvider)
 }
 
 @Throws(GeneralSecurityException::class)
@@ -223,7 +234,8 @@ fun generateSelfSignedCertificate(
     subjectRfc4514: String,
     notBefore: Date,
     notAfter: Date,
-    hashAlgorithm: HashAlgorithm = HashAlgorithm.SHA256
+    hashAlgorithm: HashAlgorithm = HashAlgorithm.SHA256,
+    pinProvider: (() -> CharArray?)? = null
 ): X509Certificate {
     val subject = X500Principal(subjectRfc4514)
     val serial = randomSerialNumber()
@@ -238,7 +250,7 @@ fun generateSelfSignedCertificate(
     )
 
     val sigAlg = resolveSignatureAlgorithm(publicKey, hashAlgorithm)
-    val signer = PivContentSigner(session, slot, publicKey, sigAlg)
+    val signer = PivContentSigner(session, slot, publicKey, sigAlg, pinProvider)
     val holder: X509CertificateHolder = certBuilder.build(signer)
 
     return JcaX509CertificateConverter()
