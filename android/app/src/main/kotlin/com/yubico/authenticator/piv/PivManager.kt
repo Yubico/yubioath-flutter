@@ -760,12 +760,15 @@ class PivManager(
                 touchPolicy
             )
 
-            if (pinPolicy != PinPolicy.NEVER) {
-                doVerifyPin(piv, serial)
-            }
-
             val publicKey = keyValues.toPublicKey()
             val publicKeyPem = publicKey.toPem()
+
+            // Create PIN provider for signing operations (required for slots like 9c with PIN policy)
+            val pinProvider: (() -> CharArray?)? = if (pinPolicy != PinPolicy.NEVER) {
+                { pinStorage[serial] }
+            } else {
+                null
+            }
 
             val result = when (generateType) {
                 "publicKey" -> publicKeyPem
@@ -777,7 +780,8 @@ class PivManager(
                         piv,
                         slot,
                         publicKey,
-                        parsedSubject
+                        parsedSubject,
+                        pinProvider = pinProvider
                     ).toPem()
                 }
 
@@ -795,7 +799,8 @@ class PivManager(
                         publicKey,
                         parsedSubject,
                         validFromDate,
-                        validToDate
+                        validToDate,
+                        pinProvider = pinProvider
                     )
                     val result = cert.toPem()
                     piv.putCertificate(slot, cert)
@@ -930,6 +935,8 @@ class PivManager(
         }
 
     override fun onDisconnected() {
+        // Zero out PINs before clearing storage
+        pinStorage.values.forEach { pin -> Arrays.fill(pin, 0.toChar()) }
         pinStorage.clear()
         managementKeyStorage.clear()
         pivViewModel.setSerial(null)
