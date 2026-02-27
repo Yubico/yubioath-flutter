@@ -760,10 +760,6 @@ class PivManager(
                 touchPolicy
             )
 
-            if (pinPolicy != PinPolicy.NEVER) {
-                doVerifyPin(piv, serial)
-            }
-
             val publicKey = keyValues.toPublicKey()
             val publicKeyPem = publicKey.toPem()
 
