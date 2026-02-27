@@ -345,11 +345,12 @@ class FidoManager(
         clientPin: ClientPin,
         pin: CharArray
     ): String {
-        if (CredentialManagement.isReadonlySupported(fidoSession.cachedInfo)) {
+        val infoData = fidoSession.info
+        if (CredentialManagement.isReadonlySupported(infoData)) {
             persistentPinUvAuthToken =
                 clientPin.getPinToken(pin, ClientPin.PIN_PERMISSION_PCMR, null)
             persistentPinUvAuthToken?.let { persistentPinUvAuthToken ->
-                identifier = fidoSession.cachedInfo.getIdentifier(persistentPinUvAuthToken)
+                identifier = infoData.getIdentifier(persistentPinUvAuthToken)
                 identifier?.let {
                     persistentPinUvAuthTokenStore.addToken(
                         it,
@@ -376,7 +377,7 @@ class FidoManager(
 
         fidoViewModel.setSessionState(
             Session(
-                fidoSession.info,
+                infoData,
                 pinStore.hasPin(),
                 pinStore.hasPin() || persistentPinUvAuthToken != null,
                 pinRetries
@@ -404,14 +405,26 @@ class FidoManager(
         when (ctapException.ctapError) {
             CtapException.ERR_PIN_INVALID,
             CtapException.ERR_PIN_AUTH_BLOCKED -> {
-                // Just lock the session, don't clear credentials
                 pinStore.setPin(null)
                 pinRetries = clientPin.pinRetries.count
 
-                fidoViewModel.currentSession()?.let {
-                    fidoViewModel.setSessionState(
-                        it.copy(unlocked = false, pinRetries = pinRetries)
-                    )
+                if (persistentPinUvAuthToken != null) {
+                    // PPUAT exists: lock session but keep credentials and unlockedRead as-is
+                    fidoViewModel.currentSession()?.let {
+                        fidoViewModel.setSessionState(
+                            it.copy(unlocked = false, pinRetries = pinRetries)
+                        )
+                    }
+                } else {
+                    // No PPUAT: lock session and reset credentials/fingerprints
+                    fidoViewModel.updateCredentials(null)
+                    fidoViewModel.updateFingerprints(emptyList())
+
+                    fidoViewModel.currentSession()?.let {
+                        fidoViewModel.setSessionState(
+                            it.copy(unlocked = false, unlockedRead = false, pinRetries = pinRetries)
+                        )
+                    }
                 }
 
                 JSONObject(
