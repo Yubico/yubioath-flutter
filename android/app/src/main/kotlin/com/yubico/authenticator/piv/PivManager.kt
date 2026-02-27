@@ -68,7 +68,6 @@ import java.util.Arrays
 import java.util.Locale
 import java.util.TimeZone
 import java.util.concurrent.atomic.AtomicBoolean
-import org.bouncycastle.asn1.x500.X500Name
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
 
@@ -148,7 +147,7 @@ class PivManager(
                     (args["password"] as String?)
                 )
 
-                "validateRfc4514" -> validateRfc4514(
+                "validateRfc4514" -> validateSubjectDn(
                     (args["data"] as String)
                 )
 
@@ -726,13 +725,9 @@ class PivManager(
         JSONObject(mapOf("status" to false)).toString()
     }
 
-    private fun getX500Name(data: String) = X500Name(data)
-
-    private fun validateRfc4514(data: String): String = try {
-        getX500Name(data)
-        JSONObject(mapOf("status" to true)).toString()
-    } catch (_: IllegalArgumentException) {
-        JSONObject(mapOf("status" to false)).toString()
+    private fun validateSubjectDn(data: String): String {
+        val isValid = runCatching { X500DnUtils.parse(data) }.isSuccess
+        return JSONObject(mapOf("status" to isValid)).toString()
     }
 
     private suspend fun generate(
@@ -782,17 +777,22 @@ class PivManager(
             val result = when (generateType) {
                 "publicKey" -> publicKeyPem
                 "csr" -> {
-                    if (subject == null) {
-                        throw IllegalArgumentException("Subject missing for csr")
-                    }
-                    generateCsr(piv, slot, publicKey, subject, pinProvider = pinProvider).toPem()
+                    val subjectDn =
+                        subject ?: throw IllegalArgumentException("Subject missing for csr")
+                    val parsedSubject = X500DnUtils.parse(subjectDn)
+                    generateCsr(
+                        piv,
+                        slot,
+                        publicKey,
+                        parsedSubject,
+                        pinProvider = pinProvider
+                    ).toPem()
                 }
 
                 "certificate" -> {
-                    if (subject == null) {
-                        throw IllegalArgumentException("Subject missing for csr")
-                    }
-
+                    val subjectDn =
+                        subject ?: throw IllegalArgumentException("Subject missing for certificate")
+                    val parsedSubject = X500DnUtils.parse(subjectDn)
                     val format = SimpleDateFormat("yyyy-MM-dd", Locale.US)
                     format.timeZone = TimeZone.getTimeZone("UTC")
                     val validFromDate = format.parse(validFrom!!)!!
@@ -801,7 +801,7 @@ class PivManager(
                         piv,
                         slot,
                         publicKey,
-                        subject,
+                        parsedSubject,
                         validFromDate,
                         validToDate,
                         pinProvider = pinProvider
@@ -877,6 +877,7 @@ class PivManager(
                         is ApduException,
                         is BadResponseException,
                         is UnsupportedOperationException -> null
+
                         else -> throw e
                     }
                 }
