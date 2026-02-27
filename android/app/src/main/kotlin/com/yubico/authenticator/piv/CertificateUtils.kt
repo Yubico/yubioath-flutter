@@ -175,25 +175,26 @@ class PivContentSigner(
 
     @Throws(OperatorCreationException::class)
     override fun getSignature(): ByteArray {
-        var privateKey: PivPrivateKey? = null
         try {
             val provider = PivProvider(session)
             val keyStore = KeyStore.getInstance("YKPiv", provider)
             keyStore.load(null)
 
-            privateKey = keyStore.getKey(slot.stringAlias, null) as PivPrivateKey
-            // Set PIN on the private key for slots that require PIN verification before signing (e.g., 9c)
-            pinProvider?.invoke()?.let { privateKey.setPin(it) }
+            // Use provided PIN for slots that require PIN verification before signing (e.g., 9c)
+            val pin = pinProvider?.invoke()
+            val privateKey = keyStore.getKey(slot.stringAlias, pin) as PivPrivateKey
 
-            return Signature.getInstance(signatureAlgorithm.jcaName, provider).apply {
-                initSign(privateKey)
-                update(buffer.toByteArray())
-            }.sign()
+            try {
+                return Signature.getInstance(signatureAlgorithm.jcaName, provider).apply {
+                    initSign(privateKey)
+                    update(buffer.toByteArray())
+                }.sign()
+            } finally {
+                // Destroy the private key to clear any PIN copy from memory
+                privateKey.destroy()
+            }
         } catch (e: GeneralSecurityException) {
             throw OperatorCreationException("PIV signing failed", e)
-        } finally {
-            // Destroy the private key to clear any PIN copy from memory
-            privateKey?.destroy()
         }
     }
 }
