@@ -6,7 +6,7 @@
  ** Fix(android): ensure only one OATH touch prompt timer is active.
  ** Fix(android): return to the correct screen after an invalid FIDO PIN when changing PIN.
  ** Fix(android): validate PIV Subject DN consistently.
- ** Binaries compiled with Flutter 3.38.9 and Python 3.14.3 (desktop).
+ ** Binaries compiled with Flutter 3.41.2 and Python 3.14.3 (desktop).
  ** New translations: Portuguese (Brazil), Italian, Hungarian and Dutch.
 
 * Version 7.3.1 (released 2025-10-09) Windows-only release
