@@ -12,7 +12,7 @@ https://flutter.dev/desktop
 Development has been done using the "Install from git" method of installing the
 SDK, from the "stable" channel.
 
-Additional macOS Requirements
+=== Additional macOS Requirements
 Building for macOS requires specific Apple developer tools and package managers:
 
 Xcode (Full Application): Required to compile native Swift/Objective-C code. The "Command Line Tools" alone are insufficient for Flutter desktop builds. Install via the Mac App Store.
