@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -77,27 +80,41 @@ class _FidoPinConfirmationDialog
       final result = await ref
           .read(fidoStateProvider(widget.devicePath).notifier)
           .unlock(_pinController.text);
+      if (!mounted) return;
       switch (result) {
         case PinResultFailure(:final reason):
           {
             switch (reason) {
               case FidoInvalidPin(:final retries, :final authBlocked):
                 {
+                  final l10n = AppLocalizations.of(context);
+                  final message = retries == 0
+                      ? l10n.l_pin_blocked_reset
+                      : authBlocked
+                      ? l10n.l_pin_soft_locked
+                      : l10n.l_wrong_pin_attempts_remaining(retries);
                   _pinController.selection = TextSelection(
                     baseOffset: 0,
                     extentOffset: _pinController.text.length,
                   );
                   _pinFocus.requestFocus();
-                  setState(() {
-                    _pinIsWrong = true;
-                    _retries = retries;
-                    _blocked = authBlocked;
-                  });
-                }
-              default:
-              // nothing
-            }
-          }
+	                  setState(() {
+	                    _pinIsWrong = true;
+	                    _retries = retries;
+	                    _blocked = authBlocked;
+	                  });
+	                  unawaited(
+	                    SemanticsService.sendAnnouncement(
+	                      View.of(context),
+	                      message,
+	                      Directionality.of(context),
+	                    ),
+	                  );
+	                }
+	              default:
+	              // nothing
+	            }
+	          }
         case PinResultSuccess():
           {
             navigator.pop(true);

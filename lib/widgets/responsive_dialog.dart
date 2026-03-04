@@ -53,8 +53,8 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
 
   @override
   void dispose() {
-    super.dispose();
     _focus.dispose();
+    super.dispose();
   }
 
   String _getCancelText(BuildContext context) {
@@ -143,7 +143,10 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
         node: _focus,
         autofocus: true,
         onFocusChange: (focused) {
-          if (!focused && !_hasLostFocus) {
+          if (focused) {
+            _hasLostFocus = false;
+          } else if (!_hasLostFocus &&
+              (ModalRoute.of(context)?.isCurrent ?? false)) {
             _focus.requestFocus();
             _hasLostFocus = true;
           }

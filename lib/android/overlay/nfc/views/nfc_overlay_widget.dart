@@ -62,6 +62,7 @@ class NfcOverlayWidget extends ConsumerWidget {
                 top: 10,
                 right: 10,
                 child: IconButton(
+                  tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
                   onPressed: () => Navigator.of(context).pop(),
                   icon: const Icon(Symbols.close, fill: 1, size: 24),
                 ),

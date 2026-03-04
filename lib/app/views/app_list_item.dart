@@ -76,14 +76,25 @@ class _AppListItemState<T> extends ConsumerState<AppListItem> {
     final trailing = widget.trailing;
     final hasFeature = ref.watch(featureProvider);
     final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final shape = RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(16),
+    );
+    final semanticTitle = widget.semanticTitle ?? widget.title;
+    final semanticLabel = subtitle == null
+        ? semanticTitle
+        : '$semanticTitle\n$subtitle';
 
     return Semantics(
-      label: widget.semanticTitle ?? widget.title,
+      label: semanticLabel,
+      selected: widget.selected ? true : null,
       child: ItemShortcuts<T>(
         item: widget.item,
         child: InkWell(
           focusNode: _focusNode,
-          borderRadius: BorderRadius.circular(16),
+          mouseCursor:
+              widget.tapIntent != null ? SystemMouseCursors.click : null,
+          customBorder: shape,
           onSecondaryTapDown: buildPopupActions == null
               ? null
               : (details) {
@@ -124,61 +135,97 @@ class _AppListItemState<T> extends ConsumerState<AppListItem> {
                 },
           child: widget.itemBuilder != null
               ? widget.itemBuilder!.call(context)
-              : Stack(
-                  alignment: AlignmentDirectional.center,
-                  children: [
-                    const SizedBox(height: 64),
-                    ListTile(
-                      mouseCursor: widget.tapIntent != null
-                          ? SystemMouseCursors.click
-                          : null,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      selectedTileColor: colorScheme.secondaryContainer,
-                      selectedColor: colorScheme.onSecondaryContainer,
-                      tileColor: widget.tileColor,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-                      selected: widget.selected,
-                      leading: widget.leading,
-                      title: subtitle == null
-                          // We use SizedBox to fill entire space
-                          ? SizedBox(
-                              height: 48,
-                              child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text(
-                                  widget.title,
-                                  overflow: .fade,
-                                  maxLines: 1,
-                                  softWrap: false,
-                                ),
-                              ),
-                            )
-                          : Text(
-                              widget.title,
-                              overflow: .fade,
-                              maxLines: 1,
-                              softWrap: false,
-                            ),
-                      subtitle: subtitle != null
-                          ? Text(
-                              subtitle,
-                              overflow: .fade,
-                              maxLines: 1,
-                              softWrap: false,
-                            )
-                          : null,
-                      trailing: trailing == null
-                          ? null
-                          : Focus(
+              : SizedBox(
+                  height: 64,
+                  child: Ink(
+                    decoration: ShapeDecoration(
+                      shape: shape,
+                      color: widget.selected
+                          ? colorScheme.secondaryContainer
+                          : widget.tileColor,
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Row(
+                        children: [
+                          if (widget.leading != null) ...[
+                            ExcludeSemantics(child: widget.leading!),
+                            const SizedBox(width: 16),
+                          ],
+                          Expanded(
+                            child: subtitle == null
+                                ? SizedBox(
+                                    height: 48,
+                                    child: Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: ExcludeSemantics(
+                                        child: Text(
+                                          widget.title,
+                                          overflow: .fade,
+                                          maxLines: 1,
+                                          softWrap: false,
+                                          style: widget.selected
+                                              ? theme.textTheme.bodyLarge
+                                                  ?.copyWith(
+                                                    color: colorScheme
+                                                        .onSecondaryContainer,
+                                                  )
+                                              : theme.textTheme.bodyLarge,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                : Column(
+                                    mainAxisAlignment: .center,
+                                    crossAxisAlignment: .start,
+                                    children: [
+                                      ExcludeSemantics(
+                                        child: Text(
+                                          widget.title,
+                                          overflow: .fade,
+                                          maxLines: 1,
+                                          softWrap: false,
+                                          style: widget.selected
+                                              ? theme.textTheme.bodyLarge
+                                                  ?.copyWith(
+                                                    color: colorScheme
+                                                        .onSecondaryContainer,
+                                                  )
+                                              : theme.textTheme.bodyLarge,
+                                        ),
+                                      ),
+                                      ExcludeSemantics(
+                                        child: Text(
+                                          subtitle,
+                                          overflow: .fade,
+                                          maxLines: 1,
+                                          softWrap: false,
+                                          style: theme.textTheme.bodyMedium
+                                              ?.copyWith(
+                                                color: widget.selected
+                                                    ? colorScheme
+                                                        .onSecondaryContainer
+                                                    : colorScheme
+                                                        .onSurfaceVariant,
+                                              ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                          ),
+                          if (trailing != null) ...[
+                            const SizedBox(width: 8),
+                            Focus(
                               key: keys.appListItemActionKey,
                               skipTraversal: true,
                               descendantsAreTraversable: false,
                               child: trailing,
                             ),
+                          ],
+                        ],
+                      ),
                     ),
-                  ],
+                  ),
                 ),
         ),
       ),

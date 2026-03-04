@@ -321,26 +321,33 @@ class _DeviceRowState extends ConsumerState<DeviceRow> {
         onLongPressStart: isAndroid ? showMenuFn : null,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 6.5),
-          child: widget.selected
-              ? Semantics(
-                  label: tooltip,
-                  child: IconButton.filled(
-                    tooltip: isDesktop ? tooltip : null,
-                    icon: widget.leading,
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    onPressed: widget.onTap,
-                  ),
-                )
-              : Semantics(
-                  label: tooltip,
-                  child: IconButton(
-                    tooltip: isDesktop ? tooltip : null,
-                    icon: widget.leading,
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    onPressed: widget.onTap,
-                    color: colorScheme.secondary,
-                  ),
-                ),
+          child: Builder(
+            builder: (context) {
+              final icon = ExcludeSemantics(child: widget.leading);
+              Widget button = widget.selected
+                  ? IconButton.filled(
+                      tooltip: isDesktop ? tooltip : null,
+                      icon: icon,
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      onPressed: widget.onTap,
+                    )
+                  : IconButton(
+                      tooltip: isDesktop ? tooltip : null,
+                      icon: icon,
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      onPressed: widget.onTap,
+                      color: colorScheme.secondary,
+                    );
+
+              // On desktop we rely on the tooltip for the accessible name.
+              // On non-desktop platforms tooltips may be disabled.
+              if (!isDesktop) {
+                button = Semantics(label: tooltip, child: button);
+              }
+
+              return button;
+            },
+          ),
         ),
       );
     }

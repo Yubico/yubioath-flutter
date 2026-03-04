@@ -30,6 +30,7 @@ import '../../core/state.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
+import '../../widgets/app_toggle_chip.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
@@ -220,7 +221,7 @@ class _ConfigureChalrespDialogState
                           ),
                         ),
                         const SizedBox(width: 16.0),
-                        FilterChip(
+                        AppToggleChip(
                           label: Text(l10n.s_require_touch),
                           selected: _requireTouch,
                           onSelected: (value) {

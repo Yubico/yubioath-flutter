@@ -29,6 +29,7 @@ import '../../exception/cancellation_exception.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
+import '../../widgets/app_toggle_chip.dart';
 import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/info_popup_button.dart';
 import '../../widgets/responsive_dialog.dart';
@@ -63,6 +64,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
   late DateTime _validToMax;
   late bool _allowMatch;
   bool _generating = false;
+  final _subjectController = TextEditingController();
   final _subjectFocus = FocusNode();
 
   @override
@@ -80,6 +82,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
 
   @override
   void dispose() {
+    _subjectController.dispose();
     _subjectFocus.dispose();
     super.dispose();
   }
@@ -186,6 +189,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                       autofocus: true,
                       focusNode: _subjectFocus,
                       key: keys.subjectField,
+                      controller: _subjectController,
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_subject,
@@ -303,15 +307,15 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                                         });
                                       },
                               ),
-                              FilterChip(
+                              ActionChip(
                                 tooltip: l10n.s_expiration_date,
                                 label: Text(dateFormatter.format(_validTo)),
-                                onSelected:
+                                onPressed:
                                     _generating ||
                                         (_generateType !=
                                             GenerateType.certificate)
                                     ? null
-                                    : (value) async {
+                                    : () async {
                                         final selected = await showDatePicker(
                                           context: context,
                                           initialDate: _validTo,
@@ -324,9 +328,9 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                                           });
                                         }
                                       },
-                              ),
+                                ),
                               if (widget.showMatch)
-                                FilterChip(
+                                AppToggleChip(
                                   tooltip: l10n.s_pin_policy,
                                   label: Text(l10n.s_allow_fingerprint),
                                   selected: _allowMatch,

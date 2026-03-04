@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -63,14 +66,15 @@ class _PinDialogState extends ConsumerState<PinDialog> {
   Future<void> _submit() async {
     _pinFocus.unfocus();
     final navigator = Navigator.of(context);
-    try {
-      final status = await ref
-          .read(pivStateProvider(widget.devicePath).notifier)
-          .verifyPin(_pinController.text);
+	    try {
+	      final status = await ref
+	          .read(pivStateProvider(widget.devicePath).notifier)
+	          .verifyPin(_pinController.text);
+	      if (!mounted) return;
 
-      switch (status) {
-        case PinSuccess():
-          {
+	      switch (status) {
+	        case PinSuccess():
+	          {
             navigator.pop(true);
           }
         case PinFailure(:final reason):
@@ -78,23 +82,34 @@ class _PinDialogState extends ConsumerState<PinDialog> {
             switch (reason) {
               case PivInvalidPin(:final attemptsRemaining):
                 {
+                  final l10n = AppLocalizations.of(context);
+                  final message = attemptsRemaining == 0
+                      ? l10n.l_piv_pin_blocked
+                      : l10n.l_wrong_pin_attempts_remaining(attemptsRemaining);
                   _pinController.selection = TextSelection(
                     baseOffset: 0,
                     extentOffset: _pinController.text.length,
                   );
                   _pinFocus.requestFocus();
-                  setState(() {
-                    _attemptsRemaining = attemptsRemaining;
-                    _pinIsWrong = true;
-                    if (_attemptsRemaining == 0) {
-                      _pinIsBlocked = true;
-                    }
-                  });
-                }
-              default:
-              // nothing
-            }
-          }
+	                  setState(() {
+	                    _attemptsRemaining = attemptsRemaining;
+	                    _pinIsWrong = true;
+	                    if (_attemptsRemaining == 0) {
+	                      _pinIsBlocked = true;
+	                    }
+	                  });
+	                  unawaited(
+	                    SemanticsService.sendAnnouncement(
+	                      View.of(context),
+	                      message,
+	                      Directionality.of(context),
+	                    ),
+	                  );
+	                }
+	              default:
+	              // nothing
+	            }
+	          }
       }
     } on CancellationException catch (_) {
       navigator.pop(false);

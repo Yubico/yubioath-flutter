@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -29,6 +31,7 @@ import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
+import '../../widgets/app_toggle_chip.dart';
 import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/info_popup_button.dart';
 import '../../widgets/responsive_dialog.dart';
@@ -98,21 +101,47 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
   Future<void> _submit() async {
     _currentFocus.unfocus();
     _newFocus.unfocus();
+    final l10n = AppLocalizations.of(context);
     final currentValidFormat =
         _usesStoredKey || Format.hex.isValid(_currentController.text);
     final newValidFormat = Format.hex.isValid(_keyController.text);
     if (!currentValidFormat || !newValidFormat) {
+      final message = l10n.l_invalid_format_allowed_chars(
+        Format.hex.allowedCharacters,
+      );
+      if (!currentValidFormat) {
+        _currentController.selection = TextSelection(
+          baseOffset: 0,
+          extentOffset: _currentController.text.length,
+        );
+        _currentFocus.requestFocus();
+      } else if (!newValidFormat) {
+        _keyController.selection = TextSelection(
+          baseOffset: 0,
+          extentOffset: _keyController.text.length,
+        );
+        _newFocus.requestFocus();
+      }
       setState(() {
         _currentInvalidFormat = !currentValidFormat;
         _newInvalidFormat = !newValidFormat;
       });
+      unawaited(
+        SemanticsService.sendAnnouncement(
+          View.of(context),
+          message,
+          Directionality.of(context),
+        ),
+      );
       return;
     }
 
     final notifier = ref.read(pivStateProvider(widget.path).notifier);
     if (_usesStoredKey) {
       bool status = false;
-      switch (await notifier.verifyPin(_currentController.text)) {
+      final pinResult = await notifier.verifyPin(_currentController.text);
+      if (!mounted) return;
+      switch (pinResult) {
         case PinSuccess():
           status = true;
         case PinFailure(:final reason):
@@ -120,6 +149,9 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
             switch (reason) {
               case PivInvalidPin(:final attemptsRemaining):
                 {
+                  final message = l10n.l_wrong_pin_attempts_remaining(
+                    attemptsRemaining,
+                  );
                   _currentController.selection = TextSelection(
                     baseOffset: 0,
                     extentOffset: _currentController.text.length,
@@ -129,6 +161,13 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                     _attemptsRemaining = attemptsRemaining;
                     _currentIsWrong = true;
                   });
+                  unawaited(
+                    SemanticsService.sendAnnouncement(
+                      View.of(context),
+                      message,
+                      Directionality.of(context),
+                    ),
+                  );
                 }
               default:
               // nothing
@@ -140,7 +179,10 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
         return;
       }
     } else {
-      if (!await notifier.authenticate(_currentController.text)) {
+      final authenticated = await notifier.authenticate(_currentController.text);
+      if (!mounted) return;
+      if (!authenticated) {
+        final message = l10n.l_wrong_key;
         _currentController.selection = TextSelection(
           baseOffset: 0,
           extentOffset: _currentController.text.length,
@@ -149,6 +191,13 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
         setState(() {
           _currentIsWrong = true;
         });
+        unawaited(
+          SemanticsService.sendAnnouncement(
+            View.of(context),
+            message,
+            Directionality.of(context),
+          ),
+        );
         return;
       }
     }
@@ -180,7 +229,6 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
     );
     if (!mounted) return;
 
-    final l10n = AppLocalizations.of(context);
     showMessage(context, l10n.l_management_key_changed);
 
     Navigator.of(context).pop();
@@ -434,7 +482,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                                   },
                                 ),
                               if (!fipsUnready)
-                                FilterChip(
+                                AppToggleChip(
                                   key: keys.pinLockManagementKeyChip,
                                   label: Text(l10n.s_protect_key),
                                   selected: _storeKey,

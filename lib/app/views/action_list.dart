@@ -55,43 +55,71 @@ class ActionListItem extends StatelessWidget {
     //   ActionStyle.error => (theme.onError, theme.error),
     // };
     final theme = Theme.of(context);
+    final enabled = onTap != null;
+    final border = RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(borderRadius ?? 48),
+    );
+    final disabledTextColor = theme.disabledColor;
 
     return GestureDetector(
-      onTap: onTap == null
+      onTap: !enabled
           ? () {
               // Needed to avoid triggering escape intent when tapping
               // on a disabled item
             }
           : null,
-      child: ListTile(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(borderRadius ?? 48),
-        ),
-        title: TooltipIfTruncated(
-          text: title,
-          style: TextStyle(fontSize: theme.textTheme.bodyLarge!.fontSize),
-        ),
-        subtitle: subtitle != null
-            ? TooltipIfTruncated(
-                text: subtitle!,
-                style: TextStyle(
-                  fontSize: theme.textTheme.bodyMedium!.fontSize,
+      child: Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          customBorder: border,
+          canRequestFocus: enabled,
+          onTap: enabled ? () => onTap?.call(context) : null,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12),
+            child: Row(
+              children: [
+                Opacity(
+                  opacity: enabled ? 1.0 : 0.4,
+                  child: CircleAvatar(
+                    foregroundColor: theme.colorScheme.onSurfaceVariant,
+                    backgroundColor: Colors.transparent,
+                    child: icon,
+                  ),
                 ),
-                maxLines: 2,
-                overflow: .ellipsis,
-              )
-            : null,
-        leading: Opacity(
-          opacity: onTap != null ? 1.0 : 0.4,
-          child: CircleAvatar(
-            foregroundColor: theme.colorScheme.onSurfaceVariant,
-            backgroundColor: Colors.transparent,
-            child: icon,
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TooltipIfTruncated(
+                        text: title,
+                        style: TextStyle(
+                          fontSize: theme.textTheme.bodyLarge!.fontSize,
+                          color: enabled ? null : disabledTextColor,
+                        ),
+                      ),
+                      if (subtitle != null)
+                        TooltipIfTruncated(
+                          text: subtitle!,
+                          style: TextStyle(
+                            fontSize: theme.textTheme.bodyMedium!.fontSize,
+                            color: enabled ? null : disabledTextColor,
+                          ),
+                          maxLines: 2,
+                          overflow: .ellipsis,
+                        ),
+                    ],
+                  ),
+                ),
+                if (trailing != null) ...[
+                  const SizedBox(width: 8),
+                  trailing!,
+                ],
+              ],
+            ),
           ),
         ),
-        trailing: trailing,
-        onTap: onTap != null ? () => onTap?.call(context) : null,
-        enabled: onTap != null,
       ),
     );
   }

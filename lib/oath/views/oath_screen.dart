@@ -134,6 +134,7 @@ class _UnlockedView extends ConsumerStatefulWidget {
 class _UnlockedViewState extends ConsumerState<_UnlockedView> {
   late FocusNode searchFocus;
   late TextEditingController searchController;
+  late FocusScopeNode _credentialsScope;
   OathCredential? _selected;
   bool _canRequestFocus = true;
 
@@ -144,6 +145,11 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
     searchController = TextEditingController(
       text: ref.read(accountsSearchProvider),
     );
+    _credentialsScope = FocusScopeNode(
+      debugLabel: 'oath-credentials',
+      onKeyEvent: _handleCredentialsScopeKeyEvent,
+      traversalEdgeBehavior: TraversalEdgeBehavior.parentScope,
+    );
     searchFocus.addListener(_onFocusChange);
   }
 
@@ -151,6 +157,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
   void dispose() {
     searchFocus.dispose();
     searchController.dispose();
+    _credentialsScope.dispose();
     super.dispose();
   }
 
@@ -172,6 +179,26 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
   void _onFocusChange() {
     _scrollSearchField();
     setState(() {});
+  }
+
+  KeyEventResult _handleCredentialsScopeKeyEvent(
+    FocusNode node,
+    KeyEvent event,
+  ) {
+    if (event is! KeyDownEvent || event.logicalKey != LogicalKeyboardKey.tab) {
+      return KeyEventResult.ignored;
+    }
+
+    final parentScope = node.enclosingScope;
+    if (parentScope != null) {
+      if (HardwareKeyboard.instance.isShiftPressed) {
+        parentScope.previousFocus();
+      } else {
+        parentScope.nextFocus();
+      }
+    }
+
+    return KeyEventResult.handled;
   }
 
   @override
@@ -528,6 +555,9 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                           suffixIcons: [
                             if (searchController.text.isNotEmpty)
                               IconButton(
+                                tooltip: MaterialLocalizations.of(
+                                  context,
+                                ).clearButtonTooltip,
                                 icon: const Icon(Icons.clear),
                                 iconSize: 16,
                                 onPressed: () {
@@ -554,21 +584,46 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                                         _canRequestFocus = true;
                                       });
                                     },
-                                    child: IconButton(
-                                      tooltip: e.getDisplayName(l10n),
-                                      onPressed: () {
-                                        ref
-                                            .read(oathLayoutProvider.notifier)
-                                            .setLayout(e);
+                                    child: Builder(
+                                      builder: (context) {
+                                        final selected = e == oathLayout;
+                                        final label = e.getDisplayName(l10n);
+                                        final icon = Semantics(
+                                          label: label,
+                                          child: ExcludeSemantics(
+                                            child: Icon(
+                                              e._icon,
+                                              color: selected
+                                                  ? Theme.of(
+                                                      context,
+                                                    ).colorScheme.primary
+                                                  : null,
+                                            ),
+                                          ),
+                                        );
+
+                                        return Tooltip(
+                                          message: label,
+                                          excludeFromSemantics: true,
+                                          child: MergeSemantics(
+                                            child: Semantics(
+                                              selected: selected ? true : null,
+                                              inMutuallyExclusiveGroup: true,
+                                              child: IconButton(
+                                                onPressed: () {
+                                                  ref
+                                                      .read(
+                                                        oathLayoutProvider
+                                                            .notifier,
+                                                      )
+                                                      .setLayout(e);
+                                                },
+                                                icon: icon,
+                                              ),
+                                            ),
+                                          ),
+                                        );
                                       },
-                                      icon: Icon(
-                                        e._icon,
-                                        color: e == oathLayout
-                                            ? Theme.of(
-                                                context,
-                                              ).colorScheme.primary
-                                            : null,
-                                      ),
                                     ),
                                   ),
                                 ),
@@ -586,48 +641,65 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                                       _canRequestFocus = true;
                                     });
                                   },
-                                  child: PopupMenuButton(
-                                    constraints:
-                                        const BoxConstraints.tightFor(),
-                                    tooltip: l10n.s_select_layout,
-                                    popUpAnimationStyle: AnimationStyle(
-                                      duration: Duration.zero,
-                                    ),
-                                    icon: Icon(
-                                      oathLayout._icon,
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.primary,
-                                    ),
-                                    itemBuilder: (context) => [
-                                      ...availableLayouts.map(
-                                        (e) => PopupMenuItem(
-                                          child: Row(
-                                            mainAxisAlignment: .center,
-                                            children: [
-                                              Tooltip(
-                                                message: e.getDisplayName(l10n),
+                                  child: Builder(
+                                    builder: (context) {
+                                      final label = l10n.s_select_layout;
+                                      final value = oathLayout.getDisplayName(
+                                        l10n,
+                                      );
+                                      return Tooltip(
+                                        message: label,
+                                        excludeFromSemantics: true,
+                                        child: MergeSemantics(
+                                          child: Semantics(
+                                            label: label,
+                                            value: value,
+                                            child: PopupMenuButton<OathLayout>(
+                                              constraints:
+                                                  const BoxConstraints.tightFor(),
+                                              popUpAnimationStyle:
+                                                  const AnimationStyle(
+                                                    duration: Duration.zero,
+                                                  ),
+                                              initialValue: oathLayout,
+                                              onSelected: (layout) {
+                                                ref
+                                                    .read(
+                                                      oathLayoutProvider
+                                                          .notifier,
+                                                    )
+                                                    .setLayout(layout);
+                                              },
+                                              icon: ExcludeSemantics(
                                                 child: Icon(
-                                                  e._icon,
-                                                  color: e == oathLayout
-                                                      ? Theme.of(
-                                                          context,
-                                                        ).colorScheme.primary
-                                                      : null,
+                                                  oathLayout._icon,
+                                                  color: Theme.of(
+                                                    context,
+                                                  ).colorScheme.primary,
                                                 ),
                                               ),
-                                            ],
+                                              itemBuilder: (context) => [
+                                                ...availableLayouts.map(
+                                                  (e) =>
+                                                      CheckedPopupMenuItem<
+                                                        OathLayout
+                                                      >(
+                                                        value: e,
+                                                        checked:
+                                                            e == oathLayout,
+                                                        child: Text(
+                                                          e.getDisplayName(
+                                                            l10n,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                ),
+                                              ],
+                                            ),
                                           ),
-                                          onTap: () {
-                                            ref
-                                                .read(
-                                                  oathLayoutProvider.notifier,
-                                                )
-                                                .setLayout(e);
-                                          },
                                         ),
-                                      ),
-                                    ],
+                                      );
+                                    },
                                   ),
                                 ),
                             ],
@@ -677,19 +749,22 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                       },
                     ),
             },
-            child: Column(
-              children: [
-                Consumer(
-                  builder: (context, ref, _) {
-                    return AccountList(
-                      ref.watch(credentialListProvider(widget.devicePath)) ??
-                          [],
-                      expanded: expanded,
-                      selected: _selected,
-                    );
-                  },
-                ),
-              ],
+            child: FocusScope(
+              node: _credentialsScope,
+              child: Column(
+                children: [
+                  Consumer(
+                    builder: (context, ref, _) {
+                      return AccountList(
+                        ref.watch(credentialListProvider(widget.devicePath)) ??
+                            [],
+                        expanded: expanded,
+                        selected: _selected,
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
           );
         },

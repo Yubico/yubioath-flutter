@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -55,6 +58,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
   final _currentPinFocus = FocusNode();
   final _newPinController = TextEditingController();
   final _newPinFocus = FocusNode();
+  final _confirmPinController = TextEditingController();
   final _confirmPinFocus = FocusNode();
   String _confirmPin = '';
   bool _pinIsBlocked = false;
@@ -90,6 +94,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
     _currentPinFocus.dispose();
     _newPinController.dispose();
     _newPinFocus.dispose();
+    _confirmPinController.dispose();
     _confirmPinFocus.dispose();
     super.dispose();
   }
@@ -101,29 +106,29 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
     final notifier = ref.read(pivStateProvider(widget.path).notifier);
     final l10n = AppLocalizations.of(context);
 
-    final result = await switch (widget.target) {
-      ManageTarget.pin => notifier.changePin(
-        _currentPinController.text,
-        _newPinController.text,
+	    final result = await switch (widget.target) {
+	      ManageTarget.pin => notifier.changePin(
+	        _currentPinController.text,
+	        _newPinController.text,
       ),
       ManageTarget.puk => notifier.changePuk(
         _currentPinController.text,
         _newPinController.text,
       ),
-      ManageTarget.unblock => notifier.unblockPin(
-        _currentPinController.text,
-        _newPinController.text,
-      ),
-    };
+	      ManageTarget.unblock => notifier.unblockPin(
+	        _currentPinController.text,
+	        _newPinController.text,
+	      ),
+	    };
+	    if (!mounted) return;
 
-    switch (result) {
-      case PinSuccess():
-        {
-          if (!mounted) return;
-          Navigator.of(context).pop();
-          showMessage(context, switch (widget.target) {
-            ManageTarget.puk => l10n.s_puk_set,
-            _ => l10n.s_pin_set,
+	    switch (result) {
+	      case PinSuccess():
+	        {
+	          Navigator.of(context).pop();
+	          showMessage(context, switch (widget.target) {
+	            ManageTarget.puk => l10n.s_puk_set,
+	            _ => l10n.s_pin_set,
           });
         }
       case PinFailure(:final reason):
@@ -131,37 +136,68 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
           switch (reason) {
             case PivInvalidPin(:final attemptsRemaining):
               {
+                final deviceData = ref.read(currentDeviceDataProvider).value;
+                final isBio = [
+                  FormFactor.usbABio,
+                  FormFactor.usbCBio,
+                ].contains(deviceData?.info.formFactor);
+                final message = attemptsRemaining == 0
+                    ? (widget.target == ManageTarget.pin && !isBio
+                          ? l10n.l_piv_pin_blocked
+                          : l10n.l_piv_pin_puk_blocked)
+                    : (widget.target == ManageTarget.pin
+                          ? l10n.l_wrong_pin_attempts_remaining(
+                              attemptsRemaining,
+                            )
+                          : l10n.l_wrong_puk_attempts_remaining(
+                              attemptsRemaining,
+                            ));
                 _currentPinController.selection = TextSelection(
                   baseOffset: 0,
                   extentOffset: _currentPinController.text.length,
                 );
                 _currentPinFocus.requestFocus();
-                setState(() {
-                  _attemptsRemaining = attemptsRemaining;
-                  _currentIsWrong = true;
-                  if (_attemptsRemaining == 0) {
-                    _pinIsBlocked = true;
-                  }
-                });
-              }
-            case PivWeakPin():
-              {
+	                setState(() {
+	                  _attemptsRemaining = attemptsRemaining;
+	                  _currentIsWrong = true;
+	                  if (_attemptsRemaining == 0) {
+	                    _pinIsBlocked = true;
+	                  }
+	                });
+	                unawaited(
+	                  SemanticsService.sendAnnouncement(
+	                    View.of(context),
+	                    message,
+	                    Directionality.of(context),
+	                  ),
+	                );
+	              }
+	            case PivWeakPin():
+	              {
+                final message = l10n.p_pin_puk_complexity_failure(
+                  widget.target == ManageTarget.puk ? l10n.s_puk : l10n.s_pin,
+                );
                 _newPinController.selection = TextSelection(
                   baseOffset: 0,
                   extentOffset: _newPinController.text.length,
                 );
                 _newPinFocus.requestFocus();
-                setState(() {
-                  _newPinError = l10n.p_pin_puk_complexity_failure(
-                    widget.target == ManageTarget.puk ? l10n.s_puk : l10n.s_pin,
-                  );
-                  _newIsWrong = true;
-                });
-              }
-          }
-        }
-    }
-  }
+	                setState(() {
+	                  _newPinError = message;
+	                  _newIsWrong = true;
+	                });
+	                unawaited(
+	                  SemanticsService.sendAnnouncement(
+	                    View.of(context),
+	                    message,
+	                    Directionality.of(context),
+	                  ),
+	                );
+	              }
+	          }
+	        }
+	    }
+	  }
 
   @override
   Widget build(BuildContext context) {
@@ -370,6 +406,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                       inputFormatters: [limitBytesLength(8)],
                       buildCounter: buildByteCounterFor(_confirmPin),
                       focusNode: _confirmPinFocus,
+                      controller: _confirmPinController,
                       autofillHints: const [AutofillHints.newPassword],
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),

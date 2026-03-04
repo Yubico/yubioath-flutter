@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -327,16 +330,17 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
     final oldPin = _currentPinController.text.isNotEmpty
         ? _currentPinController.text
         : null;
-    final newPin = _newPinController.text;
-    try {
-      final result = await ref
-          .read(fidoStateProvider(widget.devicePath).notifier)
-          .setPin(newPin, oldPin: oldPin);
-      switch (result) {
-        case PinResultSuccess():
-          {
-            await ref.read(withContextProvider)((context) async {
-              Navigator.of(context).pop(true);
+	    final newPin = _newPinController.text;
+	    try {
+	      final result = await ref
+	          .read(fidoStateProvider(widget.devicePath).notifier)
+	          .setPin(newPin, oldPin: oldPin);
+	      if (!mounted) return;
+	      switch (result) {
+	        case PinResultSuccess():
+	          {
+	            await ref.read(withContextProvider)((context) async {
+	              Navigator.of(context).pop(true);
               showMessage(context, l10n.s_pin_set);
             });
           }
@@ -345,6 +349,11 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
             switch (reason) {
               case FidoInvalidPin(:final retries, :final authBlocked):
                 {
+                  final message = authBlocked || retries == 0
+                      ? (retries == 0
+                            ? l10n.l_pin_blocked_reset
+                            : l10n.l_pin_soft_locked)
+                      : l10n.l_wrong_pin_attempts_remaining(retries);
                   _currentPinController.selection = TextSelection(
                     baseOffset: 0,
                     extentOffset: _currentPinController.text.length,
@@ -360,29 +369,42 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                     } else {
                       _currentPinError = l10n.l_wrong_pin_attempts_remaining(
                         retries,
-                      );
-                      _currentIsWrong = true;
-                    }
-                  });
-                }
-              case FidoWeakPin():
-                {
+	                      );
+	                      _currentIsWrong = true;
+	                    }
+	                  });
+	                  unawaited(
+	                    SemanticsService.sendAnnouncement(
+	                      View.of(context),
+	                      message,
+	                      Directionality.of(context),
+	                    ),
+	                  );
+	                }
+	              case FidoWeakPin():
+	                {
+	                  final message = l10n.p_pin_puk_complexity_failure(l10n.s_pin);
                   _newPinController.selection = TextSelection(
                     baseOffset: 0,
                     extentOffset: _newPinController.text.length,
                   );
                   _newPinFocus.requestFocus();
-                  setState(() {
-                    _newPinError = l10n.p_pin_puk_complexity_failure(
-                      l10n.s_pin,
-                    );
-                    _newIsWrong = true;
-                  });
-                }
-            }
-          }
-      }
-    } on CancellationException catch (_) {
+	                  setState(() {
+	                    _newPinError = message;
+	                    _newIsWrong = true;
+	                  });
+	                  unawaited(
+	                    SemanticsService.sendAnnouncement(
+	                      View.of(context),
+	                      message,
+	                      Directionality.of(context),
+	                    ),
+	                  );
+	                }
+	            }
+	          }
+	      }
+	    } on CancellationException catch (_) {
       // ignored
     } catch (e) {
       _log.error('Failed to set PIN', e);

@@ -34,6 +34,7 @@ import '../../core/state.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
+import '../../widgets/app_toggle_chip.dart';
 import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../keys.dart' as keys;
@@ -416,7 +417,7 @@ class _ConfigureYubiOtpDialogState
                             spacing: 4.0,
                             runSpacing: 8.0,
                             children: [
-                              FilterChip(
+                              AppToggleChip(
                                 label: Text(l10n.s_append_enter),
                                 tooltip: l10n.l_append_enter_desc,
                                 selected: _appendEnter,

@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -26,6 +28,7 @@ import '../../app/state.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
+import '../../widgets/app_toggle_chip.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
@@ -97,11 +100,14 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
           _data,
           password: password.isNotEmpty ? password : null,
         );
+    if (!mounted) return;
 
     final passwordIsWrong = switch (result) {
       PivExamineResultInvalidPassword() => password.isNotEmpty,
       PivExamineResultResult() => true,
     };
+    final shouldAnnounceWrongPassword =
+        result is PivExamineResultInvalidPassword && password.isNotEmpty;
     if (passwordIsWrong) {
       _passwordController.selection = TextSelection(
         baseOffset: 0,
@@ -112,8 +118,18 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
     setState(() {
       _state = result;
       _passwordIsWrong = passwordIsWrong;
-    });
-  }
+	    });
+	    if (shouldAnnounceWrongPassword) {
+	      final l10n = AppLocalizations.of(context);
+	      unawaited(
+	        SemanticsService.sendAnnouncement(
+	          View.of(context),
+	          l10n.s_wrong_password,
+	          Directionality.of(context),
+	        ),
+	      );
+	    }
+	  }
 
   @override
   Widget build(BuildContext context) {
@@ -417,7 +433,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
                               ],
                             ),
                             Text(l10n.p_key_options_bio_desc),
-                            FilterChip(
+                            AppToggleChip(
                               tooltip: l10n.s_pin_policy,
                               label: Text(l10n.s_allow_fingerprint),
                               selected: _allowMatch,

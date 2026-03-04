@@ -344,6 +344,12 @@ class GlobalShortcuts extends ConsumerWidget {
       EscapeIntent: CallbackAction<EscapeIntent>(
         onInvoke: (_) async {
           await ref.read(withContextProvider)((context) async {
+            final navigator = Navigator.of(context);
+            if (navigator.canPop()) {
+              await navigator.maybePop();
+              return;
+            }
+
             FocusScopeNode mainScope = FocusScope.of(context);
             // Avoid moving focus outside of main scope
             if (!mainScope.hasPrimaryFocus) {
