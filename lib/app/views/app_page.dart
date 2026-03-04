@@ -393,7 +393,11 @@ class _AppPageState extends ConsumerState<AppPage> {
     return null;
   }
 
-  Widget _buildMainContent(BuildContext context, bool expanded) {
+  Widget _buildMainContent(
+    BuildContext context,
+    bool expanded, {
+    double navBarOffset = 0,
+  }) {
     final showExpandedSideMenuBar = ref.watch(_sideMenuBarVisibilityProvider);
     final actions =
         widget.actionsBuilder?.call(
@@ -471,19 +475,22 @@ class _AppPageState extends ConsumerState<AppPage> {
           Positioned.fill(
             // Header height = title height + vertical padding
             top: widget.title != null ? _getTitleHeight(context) + 24 : 0,
-            child: Align(
-              alignment: Alignment.center,
-              child: ScrollConfiguration(
-                behavior: ScrollConfiguration.of(
-                  context,
-                ).copyWith(scrollbars: false),
-                child: SingleChildScrollView(
-                  physics: isAndroid
-                      ? const ClampingScrollPhysics(
-                          parent: AlwaysScrollableScrollPhysics(),
-                        )
-                      : null,
-                  child: safeArea,
+            child: Transform.translate(
+              offset: Offset(-navBarOffset / 2, 0),
+              child: Align(
+                alignment: Alignment.center,
+                child: ScrollConfiguration(
+                  behavior: ScrollConfiguration.of(
+                    context,
+                  ).copyWith(scrollbars: false),
+                  child: SingleChildScrollView(
+                    physics: isAndroid
+                        ? const ClampingScrollPhysics(
+                            parent: AlwaysScrollableScrollPhysics(),
+                          )
+                        : null,
+                    child: safeArea,
+                  ),
                 ),
               ),
             ),
@@ -633,7 +640,29 @@ class _AppPageState extends ConsumerState<AppPage> {
     final showExpandedSideMenuBar = ref.watch(_sideMenuBarVisibilityProvider);
     final hasDetailsOrKeyActions =
         widget.detailViewBuilder != null || widget.keyActionsBuilder != null;
-    var body = _buildMainContent(context, hasManage);
+
+    // Calculate offset for global centering
+    // Offset = (leftNavWidth - rightMenuWidth) / 2
+    double leftWidth = 0;
+    double rightWidth = 0;
+    if (hasRail) {
+      if (fullyExpanded && showExpandedNavigationBar) {
+        leftWidth = 280 + 8; // expanded nav bar width + spacing
+      } else {
+        leftWidth = 72 + 8; // collapsed nav bar width + spacing
+      }
+    }
+    // Account for right side panel (either content or placeholder)
+    if (hasManage && showExpandedSideMenuBar) {
+      if (hasDetailsOrKeyActions) {
+        rightWidth = 320 + 16; // side menu bar width + horizontal padding
+      } else if (widget.capabilities?.firstOrNull != Capability.u2f) {
+        rightWidth = 336; // placeholder width
+      }
+    }
+    final navBarOffset = leftWidth - rightWidth;
+
+    var body = _buildMainContent(context, hasManage, navBarOffset: navBarOffset);
 
     var navigationText = fullyExpanded
         ? (showExpandedNavigationBar
