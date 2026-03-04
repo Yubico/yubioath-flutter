@@ -19,8 +19,6 @@ Xcode (Full Application): Required to compile native Swift/Objective-C code. The
 
 CocoaPods: A dependency manager used by Flutter to link native macOS hardware libraries.
 
-UV: A Python package installer used to build the Yubico Authenticator Helper.
-
 === Dependencies
 This project uses several dependencies specified in the pubspec.yaml file, as
 well as in the helper/pyproject.toml file. These files specify version ranges
