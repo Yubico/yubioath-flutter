@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="p_ndef_set_otp">Il codice OTP è stato copiato dalla YubiKey negli appunti.</string>
+    <string name="p_ndef_set_password">La password è stata copiata dalla YubiKey negli appunti.</string>
+    <string name="p_ndef_parse_failure">Impossibile analizzare il codice OTP dalla YubiKey.</string>
+    <string name="p_ndef_set_clip_failure">Impossibile accedere agli appunti quando si cerca di copiare il codice OTP dalla YubiKey.</string>
+</resources>

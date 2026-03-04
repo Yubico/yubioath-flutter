@@ -249,6 +249,7 @@ class AndroidCredentialListNotifier extends OathCredentialListNotifier {
   late OathMethodChannelNotifier oath = _ref.read(
     _oathMethodsProvider.notifier,
   );
+  Timer? _touchTimer;
 
   AndroidCredentialListNotifier(this._withContext, this._ref) : super() {
     _sub = _events.receiveBroadcastStream().listen((event) {
@@ -262,6 +263,7 @@ class AndroidCredentialListNotifier extends OathCredentialListNotifier {
 
   @override
   void dispose() {
+    _touchTimer?.cancel();
     _sub.cancel();
     super.dispose();
   }
@@ -274,7 +276,6 @@ class AndroidCredentialListNotifier extends OathCredentialListNotifier {
   }) async {
     // Prompt for touch if needed
     UserInteractionController? controller;
-    Timer? touchTimer;
     if (_ref.read(currentDeviceProvider)?.transport == Transport.usb) {
       void triggerTouchPrompt() async {
         controller = await _withContext((context) async {
@@ -288,10 +289,14 @@ class AndroidCredentialListNotifier extends OathCredentialListNotifier {
         });
       }
 
+      // cancel any ongoing timer
+      _touchTimer?.cancel();
+      _touchTimer = null;
+
       if (credential.touchRequired) {
         triggerTouchPrompt();
       } else if (credential.oathType == OathType.hotp) {
-        touchTimer = Timer(
+        _touchTimer = Timer(
           const Duration(milliseconds: 500),
           triggerTouchPrompt,
         );
@@ -307,7 +312,8 @@ class AndroidCredentialListNotifier extends OathCredentialListNotifier {
     } on PlatformException catch (pe) {
       throw pe.decode();
     } finally {
-      touchTimer?.cancel();
+      _touchTimer?.cancel();
+      _touchTimer = null;
       controller?.close();
     }
   }

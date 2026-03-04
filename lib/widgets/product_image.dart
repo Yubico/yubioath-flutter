@@ -68,7 +68,7 @@ class ProductImage extends StatelessWidget {
       return Image.asset(
         'assets/product-images/generic.png',
         filterQuality: .medium,
-        color: IconTheme.of(context).color,
+        color: Theme.of(context).colorScheme.onPrimary,
       );
     }
 

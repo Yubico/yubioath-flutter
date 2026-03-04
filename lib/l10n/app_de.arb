@@ -195,7 +195,7 @@
     "p_try_reinsert_yk": "Versuche deinen YubiKey zu entfernen und wieder anzuschließen.",
     "s_touch_required": "Berührung erforderlich",
     "l_touch_button_now": "Berühre jetzt deinen YubiKey",
-    "l_long_touch_button_now": "Bitte berühre jetzt Deinen YubiKey für 10 Sekunden",
+    "l_long_touch_button_now": "Bitte berühre jetzt Deinen YubiKey für 5 Sekunden",
     "l_keep_touching_yk": "Berühre wiederholt deinen YubiKey\u2026",
     "@_capabilities": {},
 

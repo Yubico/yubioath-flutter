@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Yubico.
+ * Copyright (C) 2025-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package com.yubico.authenticator.piv
 
-import com.yubico.yubikit.piv.KeyType
 import com.yubico.yubikit.piv.PivSession
 import com.yubico.yubikit.piv.Slot
 import com.yubico.yubikit.piv.jca.PivProvider
@@ -152,12 +151,11 @@ fun resolveSignatureAlgorithm(publicKey: PublicKey, hash: HashAlgorithm): Signat
 class PivContentSigner(
     private val session: PivSession,
     private val slot: Slot,
-    private val publicKey: PublicKey,
-    private val signatureAlgorithm: SignatureAlgorithm
+    private val signatureAlgorithm: SignatureAlgorithm,
+    private val pinProvider: (() -> CharArray?)? = null
 ) : ContentSigner {
 
     private val buffer = ByteArrayOutputStream()
-    private val keyAlg = KeyType.fromKey(publicKey)
     private val algId: AlgorithmIdentifier = run {
         // For Ed25519 we must emit the Ed25519 OID; for others, use the default finder.
         val maybeOid = signatureAlgorithm.fixedAlgId
@@ -179,10 +177,19 @@ class PivContentSigner(
             val keyStore = KeyStore.getInstance("YKPiv", provider)
             keyStore.load(null)
 
-            return Signature.getInstance(signatureAlgorithm.jcaName, provider).apply {
-                initSign(keyStore.getKey(slot.stringAlias, null) as PrivateKey)
-                update(buffer.toByteArray())
-            }.sign()
+            // Use provided PIN for slots that require PIN verification before signing (e.g., 9c)
+            val pin = pinProvider?.invoke()
+            val privateKey = keyStore.getKey(slot.stringAlias, pin) as PrivateKey
+
+            try {
+                return Signature.getInstance(signatureAlgorithm.jcaName, provider).apply {
+                    initSign(privateKey)
+                    update(buffer.toByteArray())
+                }.sign()
+            } finally {
+                // Destroy the private key to clear any PIN copy from memory
+                privateKey.destroy()
+            }
         } catch (e: GeneralSecurityException) {
             throw OperatorCreationException("PIV signing failed", e)
         }
@@ -195,10 +202,11 @@ fun signCsrBuilder(
     slot: Slot,
     publicKey: PublicKey,
     builder: JcaPKCS10CertificationRequestBuilder,
-    hashAlgorithm: HashAlgorithm = HashAlgorithm.SHA256
+    hashAlgorithm: HashAlgorithm = HashAlgorithm.SHA256,
+    pinProvider: (() -> CharArray?)? = null
 ): PKCS10CertificationRequest {
     val sigAlg = resolveSignatureAlgorithm(publicKey, hashAlgorithm)
-    val signer = PivContentSigner(session, slot, publicKey, sigAlg)
+    val signer = PivContentSigner(session, slot, sigAlg, pinProvider)
     return builder.build(signer)
 }
 
@@ -208,11 +216,12 @@ fun generateCsr(
     slot: Slot,
     publicKey: PublicKey,
     subjectRfc4514: String,
-    hashAlgorithm: HashAlgorithm = HashAlgorithm.SHA256
+    hashAlgorithm: HashAlgorithm = HashAlgorithm.SHA256,
+    pinProvider: (() -> CharArray?)? = null
 ): PKCS10CertificationRequest {
     val subject = X500Principal(subjectRfc4514)
     val builder = JcaPKCS10CertificationRequestBuilder(subject, publicKey)
-    return signCsrBuilder(session, slot, publicKey, builder, hashAlgorithm)
+    return signCsrBuilder(session, slot, publicKey, builder, hashAlgorithm, pinProvider)
 }
 
 @Throws(GeneralSecurityException::class)
@@ -223,7 +232,8 @@ fun generateSelfSignedCertificate(
     subjectRfc4514: String,
     notBefore: Date,
     notAfter: Date,
-    hashAlgorithm: HashAlgorithm = HashAlgorithm.SHA256
+    hashAlgorithm: HashAlgorithm = HashAlgorithm.SHA256,
+    pinProvider: (() -> CharArray?)? = null
 ): X509Certificate {
     val subject = X500Principal(subjectRfc4514)
     val serial = randomSerialNumber()
@@ -238,7 +248,7 @@ fun generateSelfSignedCertificate(
     )
 
     val sigAlg = resolveSignatureAlgorithm(publicKey, hashAlgorithm)
-    val signer = PivContentSigner(session, slot, publicKey, sigAlg)
+    val signer = PivContentSigner(session, slot, sigAlg, pinProvider)
     val holder: X509CertificateHolder = certBuilder.build(signer)
 
     return JcaX509CertificateConverter()

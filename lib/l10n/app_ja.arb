@@ -6,7 +6,7 @@
     "@native_language_name": {
         "description": "IMPORTANT: This is the name of YOUR language written in YOUR language. For example: 'Deutsch' for German, 'Français' for French. DO NOT translate the word 'English'."
     },
-    "s_translated": "翻訳済み: {percentage}%",
+    "s_translated": "翻訳: {percentage}%",
     "@s_translated": {
         "placeholders": {
             "percentage": {
@@ -14,7 +14,7 @@
             }
         }
     },
-    "s_proofread": "校閲済み: {percentage}%",
+    "s_proofread": "校閲: {percentage}%",
     "@s_proofread": {
         "placeholders": {
             "percentage": {
@@ -22,8 +22,8 @@
             }
         }
     },
-    "l_incomplete_translation": "未翻訳",
-    "p_translation_progress_desc": "進捗メーターで翻訳の進行状況を表示しています。",
+    "l_incomplete_translation": "翻訳中",
+    "p_translation_progress_desc": "翻訳の進捗状況をメーターで表示しています。",
     "s_community": "コミュニティ",
     "l_localization_project": "翻訳プロジェクト",
 
@@ -195,7 +195,7 @@
     "p_try_reinsert_yk": "YubiKey を取り外して、もう一度挿入してください。",
     "s_touch_required": "タッチが必要です",
     "l_touch_button_now": "YubiKey のボタンをタッチしてください",
-    "l_long_touch_button_now": "YubiKey のボタンを今から 10 秒間長押してください",
+    "l_long_touch_button_now": "YubiKey のボタンを今から 5 秒間長押してください",
     "l_keep_touching_yk": "YubiKey を繰り返しタッチしてください...",
     "@_capabilities": {},
 
@@ -1025,7 +1025,7 @@
     "l_loading_icon_pack": "アイコンパックを読み込んでいます\u2026",
     "s_load_icon_pack": "アイコンパックを読み込む",
     "l_load_icon_pack_desc": "アイコンパックをファイルから読み込みます",
-    "s_remove_icon_pack": "アイコンパックを削除します",
+    "s_remove_icon_pack": "アイコンパックを削除",
     "l_remove_icon_pack_desc": "有効になっているアイコンパックを削除します",
     "l_icon_pack_removed": "アイコンパックを削除しました",
     "l_remove_icon_pack_failed": "アイコンパックの削除エラー",

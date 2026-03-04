@@ -195,7 +195,7 @@
     "p_try_reinsert_yk": "Спробуйте вийняти та знову вставити свій YubiKey.",
     "s_touch_required": "Потрібен дотик",
     "l_touch_button_now": "Натисніть кнопку на вашому YubiKey зараз",
-    "l_long_touch_button_now": "Натисніть і утримуйте кнопку на вашому YubiKey протягом 10 секунд",
+    "l_long_touch_button_now": "Натисніть і утримуйте кнопку на вашому YubiKey протягом 5 секунд",
     "l_keep_touching_yk": "Продовжуйте торкатися свого YubiKey кілька разів\u2026",
     "@_capabilities": {},
 
