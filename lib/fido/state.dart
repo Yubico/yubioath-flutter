@@ -19,6 +19,7 @@ import 'package:flutter_riverpod/legacy.dart';
 
 import '../app/models.dart';
 import '../core/state.dart';
+import '../desktop/models.dart';
 import '../widgets/flex_box.dart';
 import 'models.dart';
 
@@ -43,6 +44,12 @@ final passkeysLayoutProvider =
 final fidoStateProvider = AsyncNotifierProvider.autoDispose
     .family<FidoStateNotifier, FidoState, DevicePath>(
       (_) => throw UnimplementedError(),
+      retry: (retryCount, error) {
+        if (error is RpcError && error.status == 'fido-blocked-error') {
+          return null;
+        }
+        return Duration(milliseconds: 200 * (1 << retryCount));
+      },
     );
 
 abstract class FidoStateNotifier extends ApplicationStateNotifier<FidoState> {

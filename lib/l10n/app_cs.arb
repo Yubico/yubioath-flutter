@@ -195,7 +195,7 @@
     "p_try_reinsert_yk": "Zkuste odpojit a znovu připojit YubiKey.",
     "s_touch_required": "Vyžaduje se dotyk",
     "l_touch_button_now": "Dotkněte se tlačítka na vašem YubiKey",
-    "l_long_touch_button_now": "Stiskněte a podržte tlačítko na vašem YubiKey po dobu 10 sekund",
+    "l_long_touch_button_now": "Stiskněte a podržte tlačítko na vašem YubiKey po dobu 5 sekund",
     "l_keep_touching_yk": "Opakovaně se dotkněte vašeho YubiKey\u2026",
     "@_capabilities": {},
 

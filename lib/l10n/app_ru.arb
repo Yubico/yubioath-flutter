@@ -195,7 +195,7 @@
     "p_try_reinsert_yk": "Попробуйте снять и снова вставить свой YubiKey.",
     "s_touch_required": "Требуется касание",
     "l_touch_button_now": "Прикоснись к кнопке на своем YubiKey прямо сейчас",
-    "l_long_touch_button_now": "Нажмите и удерживайте кнопку на вашем YubiKey в течение 10 секунд",
+    "l_long_touch_button_now": "Нажмите и удерживайте кнопку на вашем YubiKey в течение 5 секунд",
     "l_keep_touching_yk": "Продолжайте постоянно прикасаться к своему YubiKey\u2026",
     "@_capabilities": {},
 
@@ -241,7 +241,7 @@
     "p_deactivate_restricted_nfc_desc": "Подключите YubiKey к любому USB-источнику питания, например к компьютеру, не менее чем на 3 секунды.\n\nПосле включения NFC будет активирован и готов к использованию.",
     "p_deactivate_restricted_nfc_footer": "Ваш YubiKey оснащен функцией NFC с ограниченным доступом, разработанной для защиты от беспроводных манипуляций во время доставки. Это означает, что операции NFC временно отключены до тех пор, пока вы их не активируете.",
     "s_unsupported_yk": "Неподдерживаемый YubiKey",
-    "p_operation_failed_try_again": "Операция завершилась неудачей, пожалуйста, попробуйте еще раз.",
+    "p_operation_failed_try_again": "Операция не удалась, пожалуйста, попробуйте еще раз.",
     "l_configuration_unsupported": "Конфигурация не поддерживается",
     "p_scp_unsupported": "Для связи по NFC YubiKey требуется технология, которая не поддерживается данным телефоном. Пожалуйста, подключите YubiKey к USB-порту телефона.",
     "@_general_errors": {},
@@ -272,8 +272,8 @@
     "s_unblock_pin": "Сбросить PIN-код",
     "l_pin_mismatch": "PIN-коды не совпадают",
     "l_puk_mismatch": "PUK-коды не совпадают",
-    "s_pin_set": "Набор ПИН кодов",
-    "s_puk_set": "Набор PUK",
+    "s_pin_set": "PIN-код установлен",
+    "s_puk_set": "PUK-код установлен",
     "l_set_pin_failed": "Не удалось установить PIN-код: {message}",
     "@l_set_pin_failed": {
         "placeholders": {
@@ -290,7 +290,7 @@
             }
         }
     },
-    "l_wrong_pin_attempts_remaining": "Неверный PIN, {retries, plural, =1{{retries} попытки остаются}other{{retries}}}",
+    "l_wrong_pin_attempts_remaining": "Неверный PIN, {retries, plural, =1{осталась {retries} попытка}few{осталось {retries} попытки}many{осталось {retries} попыток}other{осталась {retries} попытка}}",
     "@l_wrong_pin_attempts_remaining": {
         "placeholders": {
             "retries": {
@@ -298,7 +298,7 @@
             }
         }
     },
-    "l_wrong_puk_attempts_remaining": "Неправильно PUK, {retries, plural, =1{{retries} попытки остаются}other{{retries} попытки остаются}}",
+    "l_wrong_puk_attempts_remaining": "Неправильно PUK, {retries, plural, =1{осталась {retries} попытка}few{осталось {retries} попытки}many{осталось {retries} попыток}other{осталась {retries} попытка}}",
     "@l_wrong_puk_attempts_remaining": {
         "placeholders": {
             "retries": {
@@ -309,14 +309,14 @@
     "s_fido_pin_protection": "Защита PIN-кода FIDO",
     "s_pin_change_required": "Требуется замена PIN-кода",
     "l_enter_fido2_pin": "Введите PIN-код FIDO2 для вашего YubiKey",
-    "p_fido2_pin_required": "Действие, которое вы собираетесь выполнить, требует ввода PIN-кода FIDO2",
-    "l_pin_blocked_reset": "PIN-код заблокирован; сброс настроек приложения FIDO к заводским настройкам",
+    "p_fido2_pin_required": "Действие, которое вы собираетесь выполнить, требует ввода PIN-кода FIDO2.",
+    "l_pin_blocked_reset": "PIN-код заблокирован; сбросьте настроек приложения FIDO к заводским настройкам",
     "l_pin_blocked": "PIN-код заблокирован",
     "l_set_pin_first": "Требуется PIN-код",
     "l_unlock_pin_first": "Разблокировка с помощью PIN-кода",
     "l_pin_soft_locked": "PIN-код был заблокирован до тех пор, пока YubiKey не будет извлечен и вставлен заново",
     "l_pin_change_required_desc": "Прежде чем вы сможете использовать это приложение, необходимо установить новый PIN-код",
-    "p_new_fido2_pin_requirements": "PIN-код должен состоять из символов {min_length}-{max_length} и может содержать буквы, цифры и специальные символы.",
+    "p_new_fido2_pin_requirements": "PIN-код должен состоять из {min_length}-{max_length} символов и может содержать буквы, цифры и специальные символы.",
     "@p_new_fido2_pin_requirements": {
         "placeholders": {
             "min_length": {
@@ -327,7 +327,7 @@
             }
         }
     },
-    "p_new_fido2_pin_complexity_active_requirements": "PIN-код должен быть длиной в символы {min_length}-{max_length}, содержать не менее уникальных символов {unique_characters} и не быть часто используемым PIN-кодом, например \"{common_pin}\". Он может содержать буквы, цифры и специальные символы.",
+    "p_new_fido2_pin_complexity_active_requirements": "PIN-код должен состоять из {min_length}-{max_length} символов, содержать не менее {unique_characters} уникальных символов и не быть часто используемым PIN-кодом, например \"{common_pin}\". Он может содержать буквы, цифры и специальные символы.",
     "@p_new_fido2_pin_complexity_active_requirements": {
         "placeholders": {
             "min_length": {
@@ -344,18 +344,18 @@
             }
         }
     },
-    "s_ep_attestation": "Аттестация предприятия",
-    "s_ep_attestation_enabled": "Включена Корпоративная аттестация",
-    "q_enable_ep_attestation": "Включить корпоративную аттестацию?",
-    "p_enable_ep_attestation_desc": "Это позволит провести корпоративную аттестацию, позволяя авторизованным доменам однозначно идентифицировать ваш YubiKey.",
-    "p_enable_ep_attestation_disable_with_factory_reset": "После включения корпоративную аттестацию можно отключить, только выполнив сброс настроек FIDO к заводским настройкам.",
+    "s_ep_attestation": "Корпоративная Аттестация",
+    "s_ep_attestation_enabled": "Включена Корпоративная Аттестация",
+    "q_enable_ep_attestation": "Включить Корпоративную Аттестацию?",
+    "p_enable_ep_attestation_desc": "Это позволит Корпоративную Аттестацию, позволяя авторизованным доменам однозначно идентифицировать ваш YubiKey.",
+    "p_enable_ep_attestation_disable_with_factory_reset": "После включения Корпоративную Аттестацию можно отключить, только выполнив сброс настроек FIDO к заводским настройкам.",
     "s_pin_required": "Требуется PIN-код",
     "p_pin_required_desc": "Действие, которое вы собираетесь выполнить, требует ввода PIN-кода PIV.",
     "l_piv_pin_blocked": "Заблокирован, используйте PUK для сброса",
     "p_piv_pin_blocked_desc": "PIN-код заблокирован. Используйте PUK для его сброса.",
     "p_piv_pin_blocked_bio_desc": "PIN-код заблокирован. Требуется сброс к заводским настройкам.",
     "l_piv_pin_puk_blocked": "Заблокирован, требуется сброс к заводским настройкам",
-    "p_piv_pin_puk_blocked_desc": "И PIN-код, и PUK заблокированы. Требуется сброс настроек приложения PIV к заводским настройкам.",
+    "p_piv_pin_puk_blocked_desc": "И PIN, и PUK заблокированы. Требуется сброс настроек приложения PIV к заводским настройкам.",
     "p_new_piv_pin_puk_requirements": "{name} должен содержать не менее {length} символов.",
     "@p_new_piv_pin_puk_requirements": {
         "placeholders": {
@@ -391,18 +391,18 @@
     },
     "s_dismiss": "Отменить",
     "p_default_pin_puk_key_desc": "Рекомендуется изменить PIN-код по умолчанию, PUK и ключ управления.",
-    "p_default_pin_puk_key_fips_desc": "Для соответствия требованиям FIPS необходимо изменить PIN-код, PUK-код и ключ управления по умолчанию",
+    "p_default_pin_puk_key_fips_desc": "Для соответствия требованиям FIPS необходимо изменить PIN-код, PUK-код и ключ управления по умолчанию.",
     "l_warning_default_pin": "Предупреждение: Используется PIN-код по умолчанию",
-    "l_warning_default_puk": "Предупреждение: Используется PUK по умолчанию",
+    "l_warning_default_puk": "Предупреждение: Используется PUK-код по умолчанию",
     "l_default_pin_used": "Используется PIN-код по умолчанию",
     "l_default_puk_used": "Используется PUK-код по умолчанию",
-    "l_pin_complexity": "Принудительная сложность ПИН код",
+    "l_pin_complexity": "Принудительная сложность PIN-кода",
     "@_passwords": {},
 
     "s_password": "Пароль",
     "s_manage_password": "Управление паролем",
     "s_set_password": "Установите пароль",
-    "s_password_set": "Установленный пароль",
+    "s_password_set": "Пароль установлен",
     "s_show_password": "Показать пароль",
     "s_hide_password": "Скрыть пароль",
     "l_password_protection": "Защита учетных записей паролем",
@@ -416,7 +416,7 @@
     "s_password_removed": "Пароль удален",
     "s_remember_password": "Запомнить пароль",
     "s_clear_saved_password": "Очистить сохраненный пароль",
-    "s_password_forgotten": "Забытый пароль",
+    "s_password_forgotten": "Пароль забыт",
     "l_keystore_unavailable": "Хранилище ключей операционной системы недоступно",
     "l_remember_pw_failed": "Не удалось запомнить пароль",
     "l_unlock_first": "Разблокировать паролем",
@@ -509,10 +509,10 @@
         }
     },
     "p_rename_will_change_account_displayed": "Это изменит отображаемое имя учётной записи в списке.",
-    "s_delete_account": "Профиль удален",
-    "q_delete_account": "Удалить профиль?",
-    "l_delete_account_desc": "Удаление профиля на YubiKey",
-    "s_account_deleted": "Профиль удалено",
+    "s_delete_account": "Удалить учетную запись",
+    "q_delete_account": "Удалить учетную запись?",
+    "l_delete_account_desc": "Удалите учетную запись из вашего YubiKey",
+    "s_account_deleted": "Учётная запись удалена",
     "p_warning_delete_account": "Внимание! Это действие удалит учётную запись с вашего YubiKey.",
     "p_warning_disable_credential": "Отключите эту учётную запись в сервисе, иначе вы можете потерять к нему доступ.",
     "s_account_name": "Имя учётной записи",
@@ -548,23 +548,23 @@
     "s_counter_based": "На основе счётчика",
     "s_time_based": "На основе времени",
     "l_copy_code_desc": "Вставьте код в другое приложение",
-    "l_calculate_code_desc": "Получить новый код YubiKey",
+    "l_calculate_code_desc": "Получите новый код из вашего YubiKey",
     "@_fido_credentials": {},
 
     "s_rp_id": "RP ID",
-    "s_user_id": "User ID",
+    "s_user_id": "ID пользователя",
     "s_credential_id": "Идентификатор учетных данных",
     "s_display_name": "Отображаемое имя",
     "s_user_name": "Имя пользователя",
-    "s_passkeys": "Ключи входа",
-    "s_no_passkeys": "Нет ключей входа",
+    "s_passkeys": "Ключи доступа",
+    "s_no_passkeys": "Нет ключей доступа",
     "l_ready_to_use": "Готово к использованию",
     "l_register_sk_on_websites": "Зарегистрируйте как ключ безопасности на сайтах",
-    "l_no_discoverable_accounts": "Ключи входа не сохранены",
+    "l_no_discoverable_accounts": "Ключи доступа не сохранены",
     "p_non_passkeys_note": "Могут существовать другие учётные данные, но их нельзя отобразить.",
-    "s_delete_passkey": "Ключ входа удален",
+    "s_delete_passkey": "Удалить ключ доступа",
     "q_delete_passkey": "Удалить ключ входа?",
-    "l_delete_passkey_desc": "Удаление ключа для входа YubiKey",
+    "l_delete_passkey_desc": "Удалить ключ входа с YubiKey",
     "s_passkey_deleted": "Ключ входа удалён",
     "p_warning_delete_passkey": "Внимание! Это действие удалит ключ входа с вашего YubiKey.",
     "p_warning_delete_passkey_desc": "Вы больше не сможете использовать этот ключ входа для сервиса, где он был зарегистрирован.",
@@ -655,9 +655,9 @@
     "s_certificate": "Сертификат",
     "s_subject": "Субъект",
     "l_export_csr_file": "Сохранить CSR в файл",
-    "l_export_public_key": "Экспорт публичного ключа",
+    "l_export_public_key": "Экспортировать публичный ключ",
     "l_export_public_key_file": "Сохранить публичный ключ в файл",
-    "l_export_public_key_desc": "Экспорт публичного ключа в файл",
+    "l_export_public_key_desc": "Экспортировать публичный ключ в файл",
     "l_public_key_exported": "Публичный ключ экспортирован",
     "l_export_certificate": "Экспортировать сертификат",
     "l_export_certificate_file": "Экспортировать сертификат в файл",
@@ -667,7 +667,7 @@
     "l_import_file": "Импортировать файл",
     "l_import_desc": "Импортировать ключ и/или сертификат",
     "l_import_nothing": "Нечего импортировать",
-    "l_importing_file": "Импортирование файла\u2026",
+    "l_importing_file": "Файл импортируется\u2026",
     "s_file_imported": "Файл импортирован",
     "l_unsupported_key_type": "Неподдерживаемый тип ключа",
     "l_delete_certificate": "Удалить сертификат",
@@ -675,10 +675,10 @@
     "l_delete_certificate_desc": "Удалить сертификат с вашего YubiKey",
     "l_delete_key": "Удалить ключ",
     "q_delete_key": "Удалить ключ?",
-    "l_delete_key_desc": "Извлеките ключ из вашего YubiKey",
+    "l_delete_key_desc": "Удалите ключ из вашего YubiKey",
     "l_delete_certificate_or_key": "Удалить сертификат/ключ",
     "q_delete_certificate_or_key": "Удалить сертификат/ключ?",
-    "l_delete_certificate_or_key_desc": "Удалите сертификат или ключ с вашего YubiKey",
+    "l_delete_certificate_or_key_desc": "Удалите сертификат или ключ из вашего YubiKey",
     "l_move_key": "Переместить ключ",
     "l_move_key_desc": "Перемещение ключа из одного слота PIV в другой",
     "l_change_defaults": "Изменить коды доступа по умолчанию",
@@ -815,7 +815,7 @@
     "s_slot_9c": "Цифровая подпись",
     "s_slot_9d": "Управление ключами",
     "s_slot_9e": "Аутентификация карты",
-    "s_retired_slot": null,
+    "s_retired_slot": "Управление устаревшими ключами",
     "@_otp_slots": {},
 
     "s_otp_slot_one": "Короткое касание",
@@ -824,19 +824,19 @@
     "l_otp_slot_configured": "Слот настроен",
     "@_otp_slot_configurations": {},
 
-    "l_yubiotp_desc": null,
-    "s_challenge_response": null,
-    "l_challenge_response_desc": null,
-    "s_static_password": null,
-    "l_static_password_desc": null,
+    "l_yubiotp_desc": "Запрограммировать учетные данные Yubico OTP",
+    "s_challenge_response": "Challenge-response",
+    "l_challenge_response_desc": "Запрограммировать учетные данные challenge-response",
+    "s_static_password": "Статический пароль",
+    "l_static_password_desc": "Настроить статический пароль",
     "s_hotp": "OATH-HOTP",
-    "l_hotp_desc": null,
+    "l_hotp_desc": "Запрограммировать учетные данные на основе HMAC-SHA1",
     "s_public_id": "Публичный ID",
     "s_private_id": "Приватный ID",
-    "s_use_serial": null,
+    "s_use_serial": "Использовать серийный номер",
     "l_select_file": "Выбрать файл",
     "l_no_export_file": "Нет файла для экспорта",
-    "s_no_export": null,
+    "s_no_export": "Без экспорта",
     "s_export": "Экспорт",
     "l_export_configuration_file": "Экспорт конфигурации в файл",
     "l_exported_can_be_uploaded_at": "Экспортированные учетные данные можно загрузить на сайт {url}",
@@ -857,10 +857,10 @@
     },
     "@_otp_slot_actions": {},
 
-    "s_delete_slot": null,
-    "q_delete_slot": null,
-    "l_delete_slot_desc": null,
-    "p_warning_delete_slot_configuration": null,
+    "s_delete_slot": "Удалить учетные данные",
+    "q_delete_slot": "Удалить учетные данные?",
+    "l_delete_slot_desc": "Удалить учетные данные из слота",
+    "p_warning_delete_slot_configuration": "Внимание! Это действие навсегда удалит учетные данные из слота {slot_id}.",
     "@p_warning_delete_slot_configuration": {
         "placeholders": {
             "slot_id": {
@@ -868,14 +868,14 @@
             }
         }
     },
-    "l_slot_deleted": null,
-    "s_swap": null,
-    "s_swap_slots": null,
-    "q_swap_slots": null,
-    "l_swap_slots_desc": null,
+    "l_slot_deleted": "Учетные данные удалены",
+    "s_swap": "Поменять",
+    "s_swap_slots": "Поменять слоты",
+    "q_swap_slots": "Поменять слоты?",
+    "l_swap_slots_desc": "Поменять короткое/длинное нажатие",
     "p_swap_slots_desc": "Это изменит конфигурацию двух слотов.",
-    "l_slots_swapped": null,
-    "l_slot_credential_configured": null,
+    "l_slots_swapped": "Конфигурации слотов поменяны местами",
+    "l_slot_credential_configured": "Настроены учетные данные {type}",
     "@l_slot_credential_configured": {
         "placeholders": {
             "type": {
@@ -883,7 +883,7 @@
             }
         }
     },
-    "l_slot_credential_configured_and_exported": null,
+    "l_slot_credential_configured_and_exported": "Настроены учетные данные {type} и экспортированы в {file}",
     "@l_slot_credential_configured_and_exported": {
         "placeholders": {
             "type": {
@@ -894,11 +894,11 @@
             }
         }
     },
-    "s_append_enter": null,
-    "l_append_enter_desc": null,
+    "s_append_enter": "Добавить ⏎",
+    "l_append_enter_desc": "Добавить нажатие Enter после ввода OTP",
     "@_otp_errors": {},
 
-    "p_otp_swap_error": null,
+    "p_otp_swap_error": "Не удалось поменять слоты местами! Убедитесь, что YubiKey не имеет ограничений доступа.",
     "l_wrong_access_code": "Неправильный код доступа",
     "@_otp_access_code": {},
 
@@ -919,12 +919,12 @@
     "s_enable_nfc": "Включить NFC",
     "s_request_access": "Запросить доступ",
     "s_permission_denied": "Доступ запрещен",
-    "l_elevating_permissions": null,
+    "l_elevating_permissions": "Повышение прав доступа\u2026",
     "s_review_permissions": "Просмотр разрешений",
     "s_open_windows_settings": "Открыть Параметры Windows",
     "l_admin_privileges_required": "Требуются права администратора",
-    "p_elevated_permissions_required": null,
-    "p_webauthn_elevated_permissions_required": null,
+    "p_elevated_permissions_required": "Для управления этим устройством требуются повышенные права. Также вы можете использовать Параметры Windows для управления конфигурацией FIDO.",
+    "p_webauthn_elevated_permissions_required": "Для управления WebAuthn требуются повышенные права. Также вы можете использовать Параметры Windows для управления конфигурацией FIDO.",
     "p_ms_store_permission_note": "Версия приложения для Microsoft Store, как правило, не может повысить разрешения из-за ограничений в песочнице Windows. Мы рекомендуем установить Yubico Authenticator с нашего официального установщика .msi.",
     "p_need_camera_permission": "Yubico Authenticator требует разрешения камеры для сканирования QR-кодов.",
     "@_qr_codes": {},
@@ -962,9 +962,9 @@
     "s_factory_reset": "Сброс к заводским настройкам",
     "l_factory_reset_desc": "Восстановление настроек YubiKey по умолчанию",
     "l_factory_reset_required": "Требуется сброс к заводским настройкам",
-    "l_oath_application_reset": null,
-    "l_fido_app_reset": null,
-    "l_reset_failed": null,
+    "l_oath_application_reset": "Сброс приложения OATH",
+    "l_fido_app_reset": "Сброс приложения FIDO",
+    "l_reset_failed": "Ошибка при выполнении сброса: {message}",
     "@l_reset_failed": {
         "placeholders": {
             "message": {
@@ -972,14 +972,14 @@
             }
         }
     },
-    "l_piv_app_reset": null,
-    "p_factory_reset_an_app": null,
-    "p_factory_reset_desc": null,
-    "p_warning_factory_reset": null,
-    "p_warning_disable_credentials": null,
-    "p_warning_deletes_accounts": null,
-    "p_warning_disable_accounts": null,
-    "l_reset_not_allowed_over": null,
+    "l_piv_app_reset": "Сброс приложения PIV",
+    "p_factory_reset_an_app": "Сброс приложения YubiKey до заводских настроек.",
+    "p_factory_reset_desc": "Данные хранятся в нескольких приложениях YubiKey, некоторые из которых можно независимо сбросить до заводских настроек.\n\nВыберите приложение для сброса.",
+    "p_warning_factory_reset": "Внимание! Это безвозвратно удалит все учетные записи OATH TOTP/HOTP с вашего YubiKey.",
+    "p_warning_disable_credentials": "Ваши учетные данные OATH и все установленные пароли будут удалены с этого YubiKey. Обязательно отключите их на соответствующих веб-сайтах, чтобы не потерять доступ к вашим аккаунтам.",
+    "p_warning_deletes_accounts": "Внимание! Это безвозвратно удалит все учетные записи U2F и FIDO2, включая passkeys, с вашего YubiKey.",
+    "p_warning_disable_accounts": "Ваши учетные данные и все установленные PIN-коды будут удалены с этого YubiKey. Обязательно отключите их на соответствующих веб-сайтах, чтобы не потерять доступ к вашим аккаунтам.",
+    "l_reset_not_allowed_over": "Сброс FIDO отключен через {transport}",
     "@l_reset_not_allowed_over": {
         "placeholders": {
             "transport": {
@@ -987,10 +987,10 @@
             }
         }
     },
-    "p_warning_piv_reset": null,
-    "p_warning_piv_reset_desc": null,
-    "p_warning_global_reset": "Внимание! Это безвозвратно удалит из YubiKee все сохраненные данные, включая учетные записи.",
-    "p_warning_global_reset_desc": null,
+    "p_warning_piv_reset": "Внимание! Все данные PIV будут безвозвратно удалены с вашего YubiKey.",
+    "p_warning_piv_reset_desc": "Это включает закрытые ключи и сертификаты. Ваши PIN, PUK и ключ управления будут сброшены до заводских значений.",
+    "p_warning_global_reset": "Внимание! Это безвозвратно удалит из YubiKey все сохраненные данные, включая учетные записи.",
+    "p_warning_global_reset_desc": "Заводской сброс приложений на YubiKey. PIN будет сброшен до заводского значения, зарегистрированные отпечатки пальцев будут удалены. Все ключи, сертификаты и другие учетные данные будут навсегда удалены.",
     "@_copy_to_clipboard": {},
 
     "l_copy_to_clipboard": "Скопировать в буфер обмена",
@@ -1012,8 +1012,8 @@
 
     "s_custom_icons": "Пользовательские иконки",
     "l_set_icons_for_accounts": "Установить иконки для аккаунтов",
-    "p_custom_icons_description": null,
-    "p_custom_icons_format_desc": null,
+    "p_custom_icons_description": "Наборы иконок помогут легче различать учетные записи благодаря знакомым логотипам и цветам.",
+    "p_custom_icons_format_desc": "Наборы иконок используют формат {aegis_icon_pack}. Вы можете скачать готовый набор или создать свой.",
     "@p_custom_icons_format_desc": {
         "placeholders": {
             "aegis_icon_pack": {
@@ -1031,7 +1031,7 @@
     "l_remove_icon_pack_failed": "Ошибка удаления набора значков",
     "s_choose_icon_pack": "Выбрать набор значков",
     "l_icon_pack_imported": "Пакет значков импортирован",
-    "l_import_icon_pack_failed": null,
+    "l_import_icon_pack_failed": "Ошибка импорта набора иконок: {message}",
     "@l_import_icon_pack_failed": {
         "placeholders": {
             "message": {
@@ -1045,35 +1045,35 @@
 
     "s_nfc_and_usb_options": "Настройки NFC & USB",
     "l_nfc_and_usb_options_desc": "Настроить действие для YubiKey",
-    "l_on_yk_nfc_tap": null,
-    "l_on_yk_usb_insert": null,
-    "l_do_nothing": null,
-    "l_launch_ya": null,
+    "l_on_yk_nfc_tap": "При касании NFC",
+    "l_on_yk_usb_insert": "При подключении USB",
+    "l_do_nothing": "Ничего не делать",
+    "l_launch_ya": "Запустить Yubico Authenticator",
     "l_copy_otp_clipboard": "Скопировать OTP в буфер обмена",
-    "l_launch_and_copy_otp": null,
-    "l_kbd_layout_for_static": null,
+    "l_launch_and_copy_otp": "Запустить приложение и скопировать OTP",
+    "l_kbd_layout_for_static": "Раскладка клавиатуры (для статического пароля)",
     "s_choose_kbd_layout": "Выберите раскладку клавиатуры",
     "l_bypass_touch_requirement": "Обход требования к прикосновению",
-    "l_bypass_touch_requirement_on": null,
-    "l_bypass_touch_requirement_off": null,
-    "s_silence_nfc_sounds": null,
-    "l_silence_nfc_sounds_on": null,
-    "l_silence_nfc_sounds_off": null,
-    "l_launch_app_on_usb_on": null,
-    "l_launch_app_on_usb_off": null,
+    "l_bypass_touch_requirement_on": "Учетные записи, требующие касания, автоматически показываются через NFC",
+    "l_bypass_touch_requirement_off": "Учетные записи, требующие касания, нуждаются в дополнительном касании через NFC",
+    "s_silence_nfc_sounds": "Отключить звуки NFC",
+    "l_silence_nfc_sounds_on": "Звуки не будут воспроизводиться при касании NFC",
+    "l_silence_nfc_sounds_off": "Звук будет воспроизводиться при касании NFC",
+    "l_launch_app_on_usb_on": "Это запрещает другим приложениям использовать YubiKey через USB",
+    "l_launch_app_on_usb_off": "Другие приложения могут использовать YubiKey через USB",
     "s_allow_screenshots": "Разрешить скриншоты",
     "l_allow_screenshots_desc": "Разрешить другим приложениям делать снимки экрана",
     "@_nfc": {},
 
-    "s_nfc_ready_to_scan": null,
-    "s_nfc_hold_still": null,
-    "s_nfc_tap_your_yubikey": null,
-    "s_nfc_remove_key": null,
-    "l_nfc_failed_to_scan": null,
+    "s_nfc_ready_to_scan": "Готов к сканированию",
+    "s_nfc_hold_still": "Держите неподвижно\u2026",
+    "s_nfc_tap_your_yubikey": "Коснитесь своего YubiKey",
+    "s_nfc_remove_key": "Уберите YubiKey",
+    "l_nfc_failed_to_scan": "Не удалось отсканировать, попробуйте снова",
     "@_usb": {},
 
     "s_usb_processing": "Чтение данных на YubiKey",
-    "s_usb_dont_remove": null,
+    "s_usb_dont_remove": "Не извлекайте ключ\u2026",
     "l_usb_read_error": "Не удалось считать данные из YubiKey",
     "@_ndef": {},
 
@@ -1090,9 +1090,9 @@
     "p_rename_will_change_custom_name": "Это изменит метку YubiKey.",
     "@_shortcuts": {},
 
-    "s_keyboard_shortcuts": null,
+    "s_keyboard_shortcuts": "Горячие клавиши",
     "s_global_shortcuts": "Горячие клавиши",
-    "s_application_shortcuts": null,
+    "s_application_shortcuts": "Сочетания клавиш приложения",
     "@s_quit_app": {
         "placeholders": {
             "app": {
@@ -1113,11 +1113,11 @@
     "s_next_device": "Следующее устройство",
     "s_previous_device": "Предыдущее устройство",
     "s_open_settings": "Открыть настройки",
-    "s_open_item": null,
-    "s_edit_item": null,
-    "s_delete_item": null,
-    "s_calculate_oath_code": null,
-    "s_open_keyboard_shortcuts": null,
+    "s_open_item": "Открыть элемент",
+    "s_edit_item": "Редактировать элемент",
+    "s_delete_item": "Удалить элемент",
+    "s_calculate_oath_code": "Вычислить код OATH",
+    "s_open_keyboard_shortcuts": "Открыть горячие клавиши",
     "@_eof": {}
 
 }

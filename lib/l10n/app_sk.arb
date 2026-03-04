@@ -195,7 +195,7 @@
     "p_try_reinsert_yk": "Skúste vybrať a znovu vložiť kľúč YubiKey.",
     "s_touch_required": "Vyžaduje sa dotyk",
     "l_touch_button_now": "Teraz sa dotknite tlačidla na svojom YubiKey",
-    "l_long_touch_button_now": "Teraz stlačte a podržte tlačidlo na vašom YubiKey po dobu 10 sekúnd",
+    "l_long_touch_button_now": "Teraz stlačte a podržte tlačidlo na vašom YubiKey po dobu 5 sekúnd",
     "l_keep_touching_yk": "Opakovane sa dotýkajte tlačidla YubiKey\u2026",
     "@_capabilities": {},
 

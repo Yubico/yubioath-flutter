@@ -51,6 +51,7 @@ class UsbDeviceNotifier extends StateNotifier<List<UsbYubiKeyNode>> {
   final RpcSession? _rpc;
   Timer? _pollTimer;
   int _usbState = -1;
+  bool _unaccountedRetry = false;
   UsbDeviceNotifier(this._rpc) : super([]);
 
   void refresh() {
@@ -93,7 +94,9 @@ class UsbDeviceNotifier extends StateNotifier<List<UsbYubiKeyNode>> {
         0,
         (a, b) => a + b as int,
       );
-      if (_usbState != scan['state'] || state.length != numDevices) {
+      if (_usbState != scan['state'] ||
+          state.length != numDevices ||
+          _unaccountedRetry) {
         var usbResult = await rpc.command('get', ['usb']);
         _log.info('USB state change', jsonEncode(usbResult));
         _usbState = usbResult['data']['state'];
@@ -135,6 +138,9 @@ class UsbDeviceNotifier extends StateNotifier<List<UsbYubiKeyNode>> {
               );
             }
           });
+          _unaccountedRetry = !_unaccountedRetry;
+        } else {
+          _unaccountedRetry = false;
         }
 
         _log.info('USB state updated, unaccounted for: $pids');
