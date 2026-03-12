@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2025 Yubico.
+ * Copyright (C) 2022-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,8 +68,15 @@ const String _hidden = 'hidden';
 const String _shown = 'shown';
 
 Timer? _saveWindowManagerPropertiesTimer;
+bool _isInitializingWindow = false;
 
 void _queueSaveWindowManagerProperties(WindowManagerHelper helper) {
+  // Guard: Don't save during initialization
+  if (_isInitializingWindow) {
+    _log.debug('Skipping save during window initialization');
+    return;
+  }
+
   _saveWindowManagerPropertiesTimer?.cancel();
   _saveWindowManagerPropertiesTimer = Timer(
     const Duration(
@@ -160,6 +167,8 @@ Future<Widget> initialize(List<String> argv) async {
         const WindowOptions(minimumSize: WindowDefaults.minSize),
       )
       .then((_) async {
+        _isInitializingWindow = true;
+
         await windowManagerHelper.restoreWindowManagerProperties();
 
         if (isHidden) {
@@ -171,6 +180,9 @@ Future<Widget> initialize(List<String> argv) async {
         screenRetriever.addListener(
           _ScreenRetrieverListener(windowManagerHelper),
         );
+
+        _isInitializingWindow = false;
+        _log.debug('Window initialization complete, saves enabled');
       });
 
   // Either use the _HELPER_PATH environment variable, or look relative to executable.
