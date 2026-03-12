@@ -16,15 +16,10 @@
 
 import 'dart:ui';
 
-import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
 
-import '../../app/logging.dart';
 import 'defaults.dart';
-import 'window_manager_helper.dart';
-
-final _log = Logger('wm_helper_linux');
 
 /// Linux-specific window manager implementation.
 ///
@@ -38,9 +33,7 @@ class WindowManagerHelperLinux {
   static Future<void> saveWindowManagerProperties(
     SharedPreferences prefs,
   ) async {
-    // Linux: No additional properties to save beyond size
-    // Position is not saved as it's controlled by the window manager
-    _log.debug('Saved Linux window manager properties (size only)');
+    // Linux: Currently no additional properties to save
   }
 
   static Future<void> restoreWindowManagerProperties(
@@ -52,21 +45,8 @@ class WindowManagerHelperLinux {
 
   static Future<void> setBounds(SharedPreferences prefs, Rect bounds) async {
     await windowManager.setMinimumSize(WindowDefaults.minSize);
-
-    // Validate size is reasonable
-    final width = bounds.width.clamp(
-      WindowDefaults.minSize.width,
-      WindowDefaults.maxWidth,
-    );
-    final height = bounds.height.clamp(
-      WindowDefaults.minSize.height,
-      WindowDefaults.maxHeight,
-    );
-
-    _log.debug('setBounds (size only): ${Size(width, height)}');
-
     // Only set size - position is controlled by window manager
-    await windowManager.setSize(Size(width, height));
+    await windowManager.setSize(bounds.size);
   }
 
   static Future<Rect> getBounds() async {
@@ -84,7 +64,6 @@ class WindowManagerHelperLinux {
       size.height,
     );
 
-    _log.debug('getBounds (size only): ${bounds.pretty}');
     return bounds;
   }
 }
