@@ -169,20 +169,22 @@ Future<Widget> initialize(List<String> argv) async {
       .then((_) async {
         _isInitializingWindow = true;
 
-        await windowManagerHelper.restoreWindowManagerProperties();
+        try {
+          await windowManagerHelper.restoreWindowManagerProperties();
 
-        if (isHidden) {
-          await windowManager.setSkipTaskbar(true);
-        } else {
-          await windowManager.show();
+          if (isHidden) {
+            await windowManager.setSkipTaskbar(true);
+          } else {
+            await windowManager.show();
+          }
+          windowManager.addListener(_WindowEventListener(windowManagerHelper));
+          screenRetriever.addListener(
+            _ScreenRetrieverListener(windowManagerHelper),
+          );
+        } finally {
+          _isInitializingWindow = false;
+          _log.debug('Window initialization complete, saves enabled');
         }
-        windowManager.addListener(_WindowEventListener(windowManagerHelper));
-        screenRetriever.addListener(
-          _ScreenRetrieverListener(windowManagerHelper),
-        );
-
-        _isInitializingWindow = false;
-        _log.debug('Window initialization complete, saves enabled');
       });
 
   // Either use the _HELPER_PATH environment variable, or look relative to executable.
