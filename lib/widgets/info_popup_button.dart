@@ -110,6 +110,7 @@ class InfoPopupButton extends StatelessWidget {
           icon,
           size: iconSize,
           color: iconColor ?? Theme.of(context).colorScheme.primary,
+          semanticLabel: l10n.s_more_info,
         ),
         padding: EdgeInsets.zero,
       ),

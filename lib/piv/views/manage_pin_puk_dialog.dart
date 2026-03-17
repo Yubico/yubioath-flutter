@@ -28,6 +28,7 @@ import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../../widgets/utf8_utils.dart';
+import '../../widgets/visibility_toggle_button.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
@@ -257,24 +258,19 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                                   : null),
                         errorMaxLines: 3,
                         icon: const Icon(Symbols.pin),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _isObscureCurrent
-                                ? Symbols.visibility
-                                : Symbols.visibility_off,
-                          ),
-                          onPressed: () {
+                        suffixIcon: VisibilityToggleButton(
+                          isObscured: _isObscureCurrent,
+                          onToggle: () {
                             setState(() {
                               _isObscureCurrent = !_isObscureCurrent;
                             });
                           },
-                          tooltip: widget.target == ManageTarget.pin
-                              ? (_isObscureCurrent
-                                    ? l10n.s_show_pin
-                                    : l10n.s_hide_pin)
-                              : (_isObscureCurrent
-                                    ? l10n.s_show_puk
-                                    : l10n.s_hide_puk),
+                          showLabel: widget.target == ManageTarget.pin
+                              ? l10n.s_show_pin
+                              : l10n.s_show_puk,
+                          hideLabel: widget.target == ManageTarget.pin
+                              ? l10n.s_hide_pin
+                              : l10n.s_hide_puk,
                         ),
                       ),
                       textInputAction: .next,
@@ -326,24 +322,19 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                             : l10n.s_new_pin,
                         errorText: _newIsWrong ? _newPinError : null,
                         icon: const Icon(Symbols.pin),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _isObscureNew
-                                ? Symbols.visibility
-                                : Symbols.visibility_off,
-                          ),
-                          onPressed: () {
+                        suffixIcon: VisibilityToggleButton(
+                          isObscured: _isObscureNew,
+                          onToggle: () {
                             setState(() {
                               _isObscureNew = !_isObscureNew;
                             });
                           },
-                          tooltip: widget.target == ManageTarget.pin
-                              ? (_isObscureNew
-                                    ? l10n.s_show_pin
-                                    : l10n.s_hide_pin)
-                              : (_isObscureNew
-                                    ? l10n.s_show_puk
-                                    : l10n.s_hide_puk),
+                          showLabel: widget.target == ManageTarget.pin
+                              ? l10n.s_show_pin
+                              : l10n.s_show_puk,
+                          hideLabel: widget.target == ManageTarget.pin
+                              ? l10n.s_hide_pin
+                              : l10n.s_hide_puk,
                         ),
                         enabled:
                             currentPinLen >= currentMinPinLen ||
@@ -377,24 +368,19 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                             ? l10n.s_confirm_puk
                             : l10n.s_confirm_pin,
                         icon: const Icon(Symbols.pin),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _isObscureConfirm
-                                ? Symbols.visibility
-                                : Symbols.visibility_off,
-                          ),
-                          onPressed: () {
+                        suffixIcon: VisibilityToggleButton(
+                          isObscured: _isObscureConfirm,
+                          onToggle: () {
                             setState(() {
                               _isObscureConfirm = !_isObscureConfirm;
                             });
                           },
-                          tooltip: widget.target == ManageTarget.pin
-                              ? (_isObscureConfirm
-                                    ? l10n.s_show_pin
-                                    : l10n.s_hide_pin)
-                              : (_isObscureConfirm
-                                    ? l10n.s_show_puk
-                                    : l10n.s_hide_puk),
+                          showLabel: widget.target == ManageTarget.pin
+                              ? l10n.s_show_pin
+                              : l10n.s_show_puk,
+                          hideLabel: widget.target == ManageTarget.pin
+                              ? l10n.s_hide_pin
+                              : l10n.s_hide_puk,
                         ),
                         enabled: newPinLen >= newMinPinLen,
                         errorText:

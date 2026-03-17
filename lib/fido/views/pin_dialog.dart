@@ -31,6 +31,7 @@ import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../../widgets/utf8_utils.dart';
+import '../../widgets/visibility_toggle_button.dart';
 import '../keys.dart';
 import '../models.dart';
 import '../state.dart';
@@ -153,20 +154,15 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                           errorText: _currentIsWrong ? _currentPinError : null,
                           errorMaxLines: 3,
                           icon: const Icon(Symbols.pin),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _isObscureCurrent
-                                  ? Symbols.visibility
-                                  : Symbols.visibility_off,
-                            ),
-                            onPressed: () {
+                          suffixIcon: VisibilityToggleButton(
+                            isObscured: _isObscureCurrent,
+                            onToggle: () {
                               setState(() {
                                 _isObscureCurrent = !_isObscureCurrent;
                               });
                             },
-                            tooltip: _isObscureCurrent
-                                ? l10n.s_show_pin
-                                : l10n.s_hide_pin,
+                            showLabel: l10n.s_show_pin,
+                            hideLabel: l10n.s_hide_pin,
                           ),
                         ),
                         textInputAction: .next,
@@ -218,20 +214,15 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                         icon: const Icon(Symbols.pin),
                         suffixIcon: ExcludeFocusTraversal(
                           excluding: !newPinEnabled,
-                          child: IconButton(
-                            icon: Icon(
-                              _isObscureNew
-                                  ? Symbols.visibility
-                                  : Symbols.visibility_off,
-                            ),
-                            onPressed: () {
+                          child: VisibilityToggleButton(
+                            isObscured: _isObscureNew,
+                            onToggle: () {
                               setState(() {
                                 _isObscureNew = !_isObscureNew;
                               });
                             },
-                            tooltip: _isObscureNew
-                                ? l10n.s_show_pin
-                                : l10n.s_hide_pin,
+                            showLabel: l10n.s_show_pin,
+                            hideLabel: l10n.s_hide_pin,
                           ),
                         ),
                       ),
@@ -266,20 +257,15 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                         icon: const Icon(Symbols.pin),
                         suffixIcon: ExcludeFocusTraversal(
                           excluding: !confirmPinEnabled,
-                          child: IconButton(
-                            icon: Icon(
-                              _isObscureConfirm
-                                  ? Symbols.visibility
-                                  : Symbols.visibility_off,
-                            ),
-                            onPressed: () {
+                          child: VisibilityToggleButton(
+                            isObscured: _isObscureConfirm,
+                            onToggle: () {
                               setState(() {
                                 _isObscureConfirm = !_isObscureConfirm;
                               });
                             },
-                            tooltip: _isObscureConfirm
-                                ? l10n.s_show_pin
-                                : l10n.s_hide_pin,
+                            showLabel: l10n.s_show_pin,
+                            hideLabel: l10n.s_hide_pin,
                           ),
                         ),
                         enabled: confirmPinEnabled,

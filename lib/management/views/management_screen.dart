@@ -28,6 +28,7 @@ import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/delayed_visibility.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../../widgets/visibility_toggle_button.dart';
 import '../models.dart';
 import '../state.dart';
 import 'keys.dart' as management_keys;
@@ -231,20 +232,15 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
                     errorText: _lockCodeIsWrong ? _lockCodeError : null,
                     errorMaxLines: 3,
                     icon: const Icon(Symbols.pin),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _isObscure
-                            ? Symbols.visibility
-                            : Symbols.visibility_off,
-                      ),
-                      onPressed: () {
+                    suffixIcon: VisibilityToggleButton(
+                      isObscured: _isObscure,
+                      onToggle: () {
                         setState(() {
                           _isObscure = !_isObscure;
                         });
                       },
-                      tooltip: _isObscure
-                          ? l10n.s_show_lock_code
-                          : l10n.s_hide_lock_code,
+                      showLabel: l10n.s_show_lock_code,
+                      hideLabel: l10n.s_hide_lock_code,
                     ),
                   ),
                   textInputAction: .next,

@@ -31,6 +31,7 @@ import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../../widgets/visibility_toggle_button.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
@@ -171,20 +172,15 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
                             ? l10n.s_invalid_length
                             : null,
                         icon: const Icon(Symbols.key),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _isObscure
-                                ? Symbols.visibility
-                                : Symbols.visibility_off,
-                          ),
-                          onPressed: () {
+                        suffixIcon: VisibilityToggleButton(
+                          isObscured: _isObscure,
+                          onToggle: () {
                             setState(() {
                               _isObscure = !_isObscure;
                             });
                           },
-                          tooltip: _isObscure
-                              ? l10n.s_show_secret_key
-                              : l10n.s_hide_secret_key,
+                          showLabel: l10n.s_show_secret_key,
+                          hideLabel: l10n.s_hide_secret_key,
                         ),
                       ),
                       textInputAction: .next,

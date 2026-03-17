@@ -855,6 +855,7 @@ class _AppPageState extends ConsumerState<AppPage> {
                       Symbols.dock_to_left,
                       fill: showExpandedSideMenuBar ? 1 : 0,
                       weight: 600.0,
+                      semanticLabel: l10n.s_toggle_menu_bar,
                     ),
                     iconSize: 24,
                     tooltip: l10n.s_toggle_menu_bar,

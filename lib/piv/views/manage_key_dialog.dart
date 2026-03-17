@@ -33,6 +33,7 @@ import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/info_popup_button.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../../widgets/utf8_utils.dart';
+import '../../widgets/visibility_toggle_button.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
@@ -257,20 +258,15 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                               : null,
                           errorMaxLines: 3,
                           icon: const Icon(Symbols.pin),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _isObscure
-                                  ? Symbols.visibility
-                                  : Symbols.visibility_off,
-                            ),
-                            onPressed: () {
+                          suffixIcon: VisibilityToggleButton(
+                            isObscured: _isObscure,
+                            onToggle: () {
                               setState(() {
                                 _isObscure = !_isObscure;
                               });
                             },
-                            tooltip: _isObscure
-                                ? l10n.s_show_pin
-                                : l10n.s_hide_pin,
+                            showLabel: l10n.s_show_pin,
+                            hideLabel: l10n.s_hide_pin,
                           ),
                         ),
                         textInputAction: .next,
