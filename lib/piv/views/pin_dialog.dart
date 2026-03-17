@@ -24,6 +24,7 @@ import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../../widgets/visibility_toggle_button.dart';
 import '../../widgets/utf8_utils.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
@@ -149,21 +150,15 @@ class _PinDialogState extends ConsumerState<PinDialog> {
                             : null,
                         errorMaxLines: 3,
                         icon: const Icon(Symbols.pin),
-                        suffixIcon: IconButton(
-                          isSelected: !_isObscure,
-                          icon: Icon(
-                            _isObscure
-                                ? Symbols.visibility
-                                : Symbols.visibility_off,
-                          ),
-                          onPressed: () {
+                        suffixIcon: VisibilityToggleButton(
+                          isObscured: _isObscure,
+                          onToggle: () {
                             setState(() {
                               _isObscure = !_isObscure;
                             });
                           },
-                          tooltip: _isObscure
-                              ? l10n.s_show_pin
-                              : l10n.s_hide_pin,
+                          showLabel: l10n.s_show_pin,
+                          hideLabel: l10n.s_hide_pin,
                         ),
                       ),
                       textInputAction: .next,

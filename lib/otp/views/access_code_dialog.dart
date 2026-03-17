@@ -24,6 +24,7 @@ import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../../widgets/visibility_toggle_button.dart';
 import '../models.dart';
 
 class AccessCodeDialog extends ConsumerStatefulWidget {
@@ -127,21 +128,15 @@ class _AccessCodeDialogState extends ConsumerState<AccessCodeDialog> {
                         errorText: _accessCodeIsWrong ? _accessCodeError : null,
                         errorMaxLines: 3,
                         icon: const Icon(Symbols.pin),
-                        suffixIcon: IconButton(
-                          isSelected: !_isObscure,
-                          icon: Icon(
-                            _isObscure
-                                ? Symbols.visibility
-                                : Symbols.visibility_off,
-                          ),
-                          onPressed: () {
+                        suffixIcon: VisibilityToggleButton(
+                          isObscured: _isObscure,
+                          onToggle: () {
                             setState(() {
                               _isObscure = !_isObscure;
                             });
                           },
-                          tooltip: _isObscure
-                              ? l10n.s_show_access_code
-                              : l10n.s_hide_access_code,
+                          showLabel: l10n.s_show_access_code,
+                          hideLabel: l10n.s_hide_access_code,
                         ),
                       ),
                       textInputAction: .next,
