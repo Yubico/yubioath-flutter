@@ -58,6 +58,8 @@
     "s_collapse_navigation": "Navigationsleiste minimieren",
     "s_expand_collapse_navigation": "Navigationsleiste erweitern/minimieren",
     "s_show_menu": "Menü anzeigen",
+    "s_expand_menu_bar": null,
+    "s_collapse_menu_bar": null,
     "s_toggle_menu_bar": "Menüleiste anzeigen/ausblenden",
     "s_more_info": "Weitere Infos",
     "l_bullet": "• {item}",

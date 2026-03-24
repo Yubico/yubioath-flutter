@@ -58,6 +58,8 @@
     "s_collapse_navigation": "Replier la barre de navigation",
     "s_expand_collapse_navigation": "Développer/réduire la barre de navigation",
     "s_show_menu": "Afficher le menu",
+    "s_expand_menu_bar": null,
+    "s_collapse_menu_bar": null,
     "s_toggle_menu_bar": "Basculer la barre de menu",
     "s_more_info": "Plus d'infos",
     "l_bullet": "• {item}",

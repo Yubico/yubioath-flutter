@@ -58,6 +58,8 @@
     "s_collapse_navigation": "Minimera navigationsfältet",
     "s_expand_collapse_navigation": "Expandera/minimera navigeringsfältet",
     "s_show_menu": "Visa meny",
+    "s_expand_menu_bar": null,
+    "s_collapse_menu_bar": null,
     "s_toggle_menu_bar": "Växla menyfältet",
     "s_more_info": "Mer info",
     "l_bullet": "• {item}",

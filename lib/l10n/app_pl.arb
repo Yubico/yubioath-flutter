@@ -58,6 +58,8 @@
     "s_collapse_navigation": "Zwiń pasek nawigacji",
     "s_expand_collapse_navigation": "Przełącz pasek nawigacji",
     "s_show_menu": "Pokaż menu",
+    "s_expand_menu_bar": null,
+    "s_collapse_menu_bar": null,
     "s_toggle_menu_bar": "Przełącz pasek menu",
     "s_more_info": "Więcej informacji",
     "l_bullet": "• {item}",

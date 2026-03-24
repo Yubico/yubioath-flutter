@@ -58,6 +58,8 @@
     "s_collapse_navigation": "Navigatiebalk inklappen",
     "s_expand_collapse_navigation": "Navigatiebalk uit-/inklappen",
     "s_show_menu": "Menu weergeven",
+    "s_expand_menu_bar": null,
+    "s_collapse_menu_bar": null,
     "s_toggle_menu_bar": "Menubalk wisselen",
     "s_more_info": "Meer info",
     "l_bullet": "• {item}",
