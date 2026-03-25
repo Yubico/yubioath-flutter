@@ -60,9 +60,25 @@ class AppListItem<T> extends ConsumerStatefulWidget {
 class _AppListItemState<T> extends ConsumerState<AppListItem> {
   final FocusNode _focusNode = FocusNode();
   int _lastTap = 0;
+  bool _isFocused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(_handleFocusChange);
+  }
+
+  void _handleFocusChange() {
+    if (mounted && _isFocused != _focusNode.hasFocus) {
+      setState(() {
+        _isFocused = _focusNode.hasFocus;
+      });
+    }
+  }
 
   @override
   void dispose() {
+    _focusNode.removeListener(_handleFocusChange);
     _focusNode.dispose();
     super.dispose();
   }
@@ -81,105 +97,116 @@ class _AppListItemState<T> extends ConsumerState<AppListItem> {
       label: widget.semanticTitle ?? widget.title,
       child: ItemShortcuts<T>(
         item: widget.item,
-        child: InkWell(
-          focusNode: _focusNode,
-          borderRadius: BorderRadius.circular(16),
-          onSecondaryTapDown: buildPopupActions == null
-              ? null
-              : (details) {
-                  final menuItems = buildPopupActions(context)
-                      .where(
-                        (action) =>
-                            action.feature == null ||
-                            hasFeature(action.feature!),
-                      )
-                      .toList();
-                  if (menuItems.isNotEmpty) {
-                    showPopupMenu(context, details.globalPosition, menuItems);
-                  }
-                },
-          onTap: () {
-            _focusNode.requestFocus();
-            if (tapIntent != null) {
-              Actions.invoke(context, tapIntent);
-            }
-            if (isDesktop && doubleTapIntent != null) {
-              final now = DateTime.now().millisecondsSinceEpoch;
-              if (now - _lastTap < 500) {
-                setState(() {
-                  _lastTap = 0;
-                });
-                Actions.invoke(context, doubleTapIntent);
-              } else {
-                setState(() {
-                  _lastTap = now;
-                });
+        child: DecoratedBox(
+          position: DecorationPosition.foreground,
+          decoration: BoxDecoration(
+            border: _isFocused
+                ? Border.all(color: colorScheme.primary, width: 2)
+                : null,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: InkWell(
+            focusNode: _focusNode,
+            borderRadius: BorderRadius.circular(16),
+            onSecondaryTapDown: buildPopupActions == null
+                ? null
+                : (details) {
+                    final menuItems = buildPopupActions(context)
+                        .where(
+                          (action) =>
+                              action.feature == null ||
+                              hasFeature(action.feature!),
+                        )
+                        .toList();
+                    if (menuItems.isNotEmpty) {
+                      showPopupMenu(context, details.globalPosition, menuItems);
+                    }
+                  },
+            onTap: () {
+              _focusNode.requestFocus();
+              if (tapIntent != null) {
+                Actions.invoke(context, tapIntent);
               }
-            }
-          },
-          onLongPress: doubleTapIntent == null
-              ? null
-              : () {
+              if (isDesktop && doubleTapIntent != null) {
+                final now = DateTime.now().millisecondsSinceEpoch;
+                if (now - _lastTap < 500) {
+                  setState(() {
+                    _lastTap = 0;
+                  });
                   Actions.invoke(context, doubleTapIntent);
-                },
-          child: widget.itemBuilder != null
-              ? widget.itemBuilder!.call(context)
-              : Stack(
-                  alignment: AlignmentDirectional.center,
-                  children: [
-                    const SizedBox(height: 64),
-                    ListTile(
-                      mouseCursor: widget.tapIntent != null
-                          ? SystemMouseCursors.click
-                          : null,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      selectedTileColor: colorScheme.secondaryContainer,
-                      selectedColor: colorScheme.onSecondaryContainer,
-                      tileColor: widget.tileColor,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-                      selected: widget.selected,
-                      leading: widget.leading,
-                      title: subtitle == null
-                          // We use SizedBox to fill entire space
-                          ? SizedBox(
-                              height: 48,
-                              child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text(
-                                  widget.title,
-                                  overflow: .fade,
-                                  maxLines: 1,
-                                  softWrap: false,
+                } else {
+                  setState(() {
+                    _lastTap = now;
+                  });
+                }
+              }
+            },
+            onLongPress: doubleTapIntent == null
+                ? null
+                : () {
+                    Actions.invoke(context, doubleTapIntent);
+                  },
+            child: widget.itemBuilder != null
+                ? widget.itemBuilder!.call(context)
+                : Stack(
+                    alignment: AlignmentDirectional.center,
+                    children: [
+                      const SizedBox(height: 64),
+                      ListTile(
+                        mouseCursor: widget.tapIntent != null
+                            ? SystemMouseCursors.click
+                            : null,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        selectedTileColor: colorScheme.secondaryContainer,
+                        selectedColor: colorScheme.onSecondaryContainer,
+                        tileColor: widget.tileColor,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                        ),
+                        selected: widget.selected,
+                        leading: widget.leading,
+                        title: subtitle == null
+                            // We use SizedBox to fill entire space
+                            ? SizedBox(
+                                height: 48,
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    widget.title,
+                                    overflow: .fade,
+                                    maxLines: 1,
+                                    softWrap: false,
+                                  ),
                                 ),
+                              )
+                            : Text(
+                                widget.title,
+                                overflow: .fade,
+                                maxLines: 1,
+                                softWrap: false,
                               ),
-                            )
-                          : Text(
-                              widget.title,
-                              overflow: .fade,
-                              maxLines: 1,
-                              softWrap: false,
-                            ),
-                      subtitle: subtitle != null
-                          ? Text(
-                              subtitle,
-                              overflow: .fade,
-                              maxLines: 1,
-                              softWrap: false,
-                            )
-                          : null,
-                      trailing: trailing == null
-                          ? null
-                          : Focus(
-                              key: keys.appListItemActionKey,
-                              skipTraversal: true,
-                              descendantsAreTraversable: false,
-                              child: trailing,
-                            ),
-                    ),
-                  ],
-                ),
+                        subtitle: subtitle != null
+                            ? Text(
+                                subtitle,
+                                overflow: .fade,
+                                maxLines: 1,
+                                softWrap: false,
+                              )
+                            : null,
+                        trailing: trailing == null
+                            ? null
+                            : Focus(
+                                key: keys.appListItemActionKey,
+                                skipTraversal: true,
+                                descendantsAreTraversable: false,
+                                child: trailing,
+                              ),
+                      ),
+                    ],
+                  ),
+          ),
         ),
       ),
     );

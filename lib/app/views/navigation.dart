@@ -51,9 +51,25 @@ class NavigationItem extends StatefulWidget {
 
 class _NavigationItemState extends State<NavigationItem> {
   final FocusNode _focusNode = FocusNode();
+  bool _isFocused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(_handleFocusChange);
+  }
+
+  void _handleFocusChange() {
+    if (mounted && _isFocused != _focusNode.hasFocus) {
+      setState(() {
+        _isFocused = _focusNode.hasFocus;
+      });
+    }
+  }
 
   @override
   void dispose() {
+    _focusNode.removeListener(_handleFocusChange);
     _focusNode.dispose();
     super.dispose();
   }
@@ -92,19 +108,28 @@ class _NavigationItemState extends State<NavigationItem> {
               ),
       );
     } else {
-      return ListTile(
-        enabled: widget.onTap != null,
-        shape: RoundedRectangleBorder(
-          borderRadius: widget.borderRadius ?? BorderRadius.circular(48),
+      final borderRadius = widget.borderRadius ?? BorderRadius.circular(48);
+      return DecoratedBox(
+        position: DecorationPosition.foreground,
+        decoration: BoxDecoration(
+          border: _isFocused
+              ? Border.all(color: colorScheme.primary, width: 2)
+              : null,
+          borderRadius: borderRadius,
         ),
-        leading: widget.leading,
-        title: Text(widget.title),
-        minVerticalPadding: 14.5,
-        onTap: widget.onTap,
-        selected: widget.selected,
-        selectedTileColor: colorScheme.secondaryContainer,
-        selectedColor: colorScheme.onSecondaryContainer,
-        contentPadding: const EdgeInsets.only(left: 16.0),
+        child: ListTile(
+          focusNode: _focusNode,
+          enabled: widget.onTap != null,
+          shape: RoundedRectangleBorder(borderRadius: borderRadius),
+          leading: widget.leading,
+          title: Text(widget.title),
+          minVerticalPadding: 14.5,
+          onTap: widget.onTap,
+          selected: widget.selected,
+          selectedTileColor: colorScheme.secondaryContainer,
+          selectedColor: colorScheme.onSecondaryContainer,
+          contentPadding: const EdgeInsets.only(left: 16.0),
+        ),
       );
     }
   }
