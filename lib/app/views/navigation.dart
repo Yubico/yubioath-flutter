@@ -76,6 +76,7 @@ class _NavigationItemState extends State<NavigationItem> {
                 ),
                 child: IconButton.filled(
                   focusNode: _focusNode,
+                  isSelected: true,
                   icon: widget.leading,
                   tooltip: widget.title,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -100,9 +101,9 @@ class _NavigationItemState extends State<NavigationItem> {
         title: Text(widget.title),
         minVerticalPadding: 14.5,
         onTap: widget.onTap,
-        tileColor: widget.selected ? colorScheme.secondaryContainer : null,
-        textColor: widget.selected ? colorScheme.onSecondaryContainer : null,
-        iconColor: widget.selected ? colorScheme.onSecondaryContainer : null,
+        selected: widget.selected,
+        selectedTileColor: colorScheme.secondaryContainer,
+        selectedColor: colorScheme.onSecondaryContainer,
         contentPadding: const EdgeInsets.only(left: 16.0),
       );
     }
