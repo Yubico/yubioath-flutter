@@ -271,12 +271,11 @@ class _DeviceRowState extends ConsumerState<DeviceRow> {
         ? themeData.copyWith(
             colorScheme: colorScheme,
             listTileTheme: themeData.listTileTheme.copyWith(
-              textColor: widget.background != null
+              tileColor: widget.background != null
                   ? colorScheme.primary
                   : themeData.colorScheme.primary,
-              iconColor: widget.background != null
-                  ? colorScheme.primary
-                  : themeData.colorScheme.primary,
+              textColor: widget.selected ? colorScheme.onPrimary : null,
+              iconColor: widget.selected ? colorScheme.onPrimary : null,
             ),
           )
         : themeData;
