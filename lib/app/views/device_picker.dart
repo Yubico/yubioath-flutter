@@ -230,7 +230,14 @@ class DeviceRow extends ConsumerStatefulWidget {
 }
 
 class _DeviceRowState extends ConsumerState<DeviceRow> {
+  final FocusNode _focusNode = FocusNode();
   bool _showContextMenu = false;
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -257,6 +264,7 @@ class _DeviceRowState extends ConsumerState<DeviceRow> {
           )
         : themeData;
     if (widget.extended) {
+      final borderRadius = widget.borderRadius ?? BorderRadius.circular(48);
       return Tooltip(
         message: '', // no tooltip for drawer
         child: Theme(
@@ -272,30 +280,51 @@ class _DeviceRowState extends ConsumerState<DeviceRow> {
                 _showContextMenu = false;
               });
             },
-            child: ListTile(
-              shape: RoundedRectangleBorder(
-                borderRadius: widget.borderRadius ?? BorderRadius.circular(48),
+            child: ListenableBuilder(
+              listenable: _focusNode,
+              builder: (context, child) => DecoratedBox(
+                position: DecorationPosition.foreground,
+                decoration: BoxDecoration(
+                  border: _focusNode.hasFocus
+                      ? Border.all(
+                          color: widget.selected
+                              ? colorScheme.onPrimary
+                              : themeData.colorScheme.primary,
+                          width: 1,
+                        )
+                      : null,
+                  borderRadius: borderRadius,
+                ),
+                child: child!,
               ),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 8,
-                vertical: 0,
+              child: ListTile(
+                focusNode: _focusNode,
+                shape: RoundedRectangleBorder(borderRadius: borderRadius),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 0,
+                ),
+                horizontalTitleGap: 8,
+                leading: widget.leading,
+                trailing: menuItems.isNotEmpty
+                    ? _DeviceMenuButton(
+                        menuItems: menuItems,
+                        opacity: widget.selected
+                            ? 1.0
+                            : _showContextMenu
+                            ? 0.3
+                            : 0.0,
+                      )
+                    : null,
+                title: Text(widget.title, overflow: .fade, softWrap: false),
+                subtitle: Text(
+                  widget.subtitle,
+                  overflow: .fade,
+                  softWrap: false,
+                ),
+                dense: true,
+                onTap: widget.onTap,
               ),
-              horizontalTitleGap: 8,
-              leading: widget.leading,
-              trailing: menuItems.isNotEmpty
-                  ? _DeviceMenuButton(
-                      menuItems: menuItems,
-                      opacity: widget.selected
-                          ? 1.0
-                          : _showContextMenu
-                          ? 0.3
-                          : 0.0,
-                    )
-                  : null,
-              title: Text(widget.title, overflow: .fade, softWrap: false),
-              subtitle: Text(widget.subtitle, overflow: .fade, softWrap: false),
-              dense: true,
-              onTap: widget.onTap,
             ),
           ),
         ),
