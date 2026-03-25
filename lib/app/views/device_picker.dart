@@ -300,12 +300,7 @@ class _DeviceRowState extends ConsumerState<DeviceRow> {
               position: DecorationPosition.foreground,
               decoration: BoxDecoration(
                 border: _isFocused
-                    ? Border.all(
-                        color: widget.selected
-                            ? colorScheme.onPrimary
-                            : themeData.colorScheme.primary,
-                        width: 2,
-                      )
+                    ? Border.all(color: themeData.colorScheme.primary, width: 2)
                     : null,
                 borderRadius: borderRadius,
               ),
