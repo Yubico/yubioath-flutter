@@ -635,12 +635,12 @@ class _AppPageState extends ConsumerState<AppPage> {
         widget.detailViewBuilder != null || widget.keyActionsBuilder != null;
     var body = _buildMainContent(context, hasManage);
 
-    var navigationText = fullyExpanded
+    final navigationText = fullyExpanded
         ? (showExpandedNavigationBar
               ? l10n.s_collapse_navigation
               : l10n.s_expand_navigation)
         : l10n.s_show_navigation;
-    var sideMenuBarText = showExpandedSideMenuBar
+    final sideMenuBarText = showExpandedSideMenuBar
         ? l10n.s_collapse_menu_bar
         : l10n.s_expand_menu_bar;
 
