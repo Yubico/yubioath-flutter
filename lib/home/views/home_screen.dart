@@ -249,33 +249,13 @@ class _DeviceContent extends ConsumerWidget {
                                     ),
 
                                     // "use default color" button
-                                    RawMaterialButton(
+                                    _DefaultColorButton(
+                                      fillColor: defaultColor,
+                                      isDefault: customColor == null,
                                       onPressed: () {
                                         _updateColor(null, ref, serial);
                                         Navigator.of(context).pop();
                                       },
-                                      constraints: const BoxConstraints(
-                                        minWidth: 26.0,
-                                        minHeight: 26.0,
-                                      ),
-                                      fillColor: defaultColor,
-                                      hoverColor: Colors.black12,
-                                      shape: const CircleBorder(),
-                                      child: Icon(
-                                        customColor == null
-                                            ? Symbols.circle
-                                            : Symbols.clear,
-                                        fill: 1,
-                                        size: 16,
-                                        weight: 700,
-                                        opticalSize: 20,
-                                        color:
-                                            defaultColor.computeLuminance() >
-                                                0.7
-                                            ? Colors
-                                                  .grey // for bright colors
-                                            : Colors.white,
-                                      ),
                                     ),
                                   ],
                                 ),
@@ -388,19 +368,127 @@ class _ColorButton extends StatefulWidget {
 }
 
 class _ColorButtonState extends State<_ColorButton> {
+  final FocusNode _focusNode = FocusNode();
+  bool _isFocused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(_handleFocusChange);
+  }
+
+  void _handleFocusChange() {
+    if (mounted && _isFocused != _focusNode.hasFocus) {
+      setState(() {
+        _isFocused = _focusNode.hasFocus;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _focusNode.removeListener(_handleFocusChange);
+    _focusNode.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return RawMaterialButton(
-      onPressed: widget.onPressed,
-      constraints: const BoxConstraints(minWidth: 26.0, minHeight: 26.0),
-      fillColor: widget.color,
-      hoverColor: Colors.black12,
-      shape: const CircleBorder(),
-      child: Icon(
-        Symbols.circle,
-        fill: 1,
-        size: 16,
-        color: widget.isSelected ? Colors.white : Colors.transparent,
+    final colorScheme = Theme.of(context).colorScheme;
+    return DecoratedBox(
+      position: DecorationPosition.foreground,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: _isFocused
+            ? Border.all(color: colorScheme.primary, width: 2)
+            : null,
+      ),
+      child: RawMaterialButton(
+        focusNode: _focusNode,
+        onPressed: widget.onPressed,
+        constraints: const BoxConstraints(minWidth: 26.0, minHeight: 26.0),
+        fillColor: widget.color,
+        hoverColor: Colors.black12,
+        shape: const CircleBorder(),
+        child: Icon(
+          Symbols.circle,
+          fill: 1,
+          size: 16,
+          color: widget.isSelected ? Colors.white : Colors.transparent,
+        ),
+      ),
+    );
+  }
+}
+
+class _DefaultColorButton extends StatefulWidget {
+  final Color fillColor;
+  final bool isDefault;
+  final VoidCallback onPressed;
+
+  const _DefaultColorButton({
+    required this.fillColor,
+    required this.isDefault,
+    required this.onPressed,
+  });
+
+  @override
+  State<_DefaultColorButton> createState() => _DefaultColorButtonState();
+}
+
+class _DefaultColorButtonState extends State<_DefaultColorButton> {
+  final FocusNode _focusNode = FocusNode();
+  bool _isFocused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(_handleFocusChange);
+  }
+
+  void _handleFocusChange() {
+    if (mounted && _isFocused != _focusNode.hasFocus) {
+      setState(() {
+        _isFocused = _focusNode.hasFocus;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _focusNode.removeListener(_handleFocusChange);
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return DecoratedBox(
+      position: DecorationPosition.foreground,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: _isFocused
+            ? Border.all(color: colorScheme.primary, width: 2)
+            : null,
+      ),
+      child: RawMaterialButton(
+        focusNode: _focusNode,
+        onPressed: widget.onPressed,
+        constraints: const BoxConstraints(minWidth: 26.0, minHeight: 26.0),
+        fillColor: widget.fillColor,
+        hoverColor: Colors.black12,
+        shape: const CircleBorder(),
+        child: Icon(
+          widget.isDefault ? Symbols.circle : Symbols.clear,
+          fill: 1,
+          size: 16,
+          weight: 700,
+          opticalSize: 20,
+          color: widget.fillColor.computeLuminance() > 0.7
+              ? Colors.grey
+              : Colors.white,
+        ),
       ),
     );
   }
