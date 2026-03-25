@@ -58,6 +58,8 @@
     "s_collapse_navigation": "Navigációs sáv összecsukása",
     "s_expand_collapse_navigation": "Navigációs sáv kibontása/összecsukása",
     "s_show_menu": "Menü megjelenítése",
+    "s_expand_menu_bar": null,
+    "s_collapse_menu_bar": null,
     "s_toggle_menu_bar": "Menüsor ki/bekapcsolása",
     "s_more_info": "Több infó",
     "l_bullet": "• {item}",

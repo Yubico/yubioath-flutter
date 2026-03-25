@@ -635,11 +635,14 @@ class _AppPageState extends ConsumerState<AppPage> {
         widget.detailViewBuilder != null || widget.keyActionsBuilder != null;
     var body = _buildMainContent(context, hasManage);
 
-    var navigationText = fullyExpanded
+    final navigationText = fullyExpanded
         ? (showExpandedNavigationBar
               ? l10n.s_collapse_navigation
               : l10n.s_expand_navigation)
         : l10n.s_show_navigation;
+    final sideMenuBarText = showExpandedSideMenuBar
+        ? l10n.s_collapse_menu_bar
+        : l10n.s_expand_menu_bar;
 
     if (widget.onFileDropped != null) {
       body = FileDropTarget(
@@ -855,9 +858,10 @@ class _AppPageState extends ConsumerState<AppPage> {
                       Symbols.dock_to_left,
                       fill: showExpandedSideMenuBar ? 1 : 0,
                       weight: 600.0,
+                      semanticLabel: sideMenuBarText,
                     ),
                     iconSize: 24,
-                    tooltip: l10n.s_toggle_menu_bar,
+                    tooltip: sideMenuBarText,
                     padding: const EdgeInsets.all(12),
                   ),
                 ),

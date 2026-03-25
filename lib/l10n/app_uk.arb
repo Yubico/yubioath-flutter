@@ -58,6 +58,8 @@
     "s_collapse_navigation": "Згорнути панель навігації",
     "s_expand_collapse_navigation": "Розгорнути/згорнути панель навігації",
     "s_show_menu": "Показати меню",
+    "s_expand_menu_bar": null,
+    "s_collapse_menu_bar": null,
     "s_toggle_menu_bar": "Перемикання рядка меню",
     "s_more_info": "Більше інформації",
     "l_bullet": "• {item}",

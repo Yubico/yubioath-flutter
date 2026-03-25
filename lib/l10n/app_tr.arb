@@ -58,6 +58,8 @@
     "s_collapse_navigation": "Gezinme çubuğunu daralt",
     "s_expand_collapse_navigation": "Gezinme çubuğunu genişlet/daralt",
     "s_show_menu": "Menüyü göster",
+    "s_expand_menu_bar": null,
+    "s_collapse_menu_bar": null,
     "s_toggle_menu_bar": "Menü çubuğunu aç/kapat",
     "s_more_info": "Daha fazla bilgi",
     "l_bullet": "• {item}",

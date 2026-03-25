@@ -58,6 +58,8 @@
     "s_collapse_navigation": "Zbaliť navigačný panel",
     "s_expand_collapse_navigation": "Rozbaliť/zbaliť navigačný panel",
     "s_show_menu": "Zobraziť ponuku",
+    "s_expand_menu_bar": null,
+    "s_collapse_menu_bar": null,
     "s_toggle_menu_bar": "Prepnúť panel ponuky",
     "s_more_info": "Viac informácií",
     "l_bullet": "• {item}",

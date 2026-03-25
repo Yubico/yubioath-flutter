@@ -58,6 +58,8 @@
     "s_collapse_navigation": null,
     "s_expand_collapse_navigation": null,
     "s_show_menu": "Hiển thị thực đơn",
+    "s_expand_menu_bar": null,
+    "s_collapse_menu_bar": null,
     "s_toggle_menu_bar": null,
     "s_more_info": null,
     "l_bullet": "• {item}",

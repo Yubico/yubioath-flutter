@@ -58,6 +58,8 @@
     "s_collapse_navigation": "Contraer barra de navegación",
     "s_expand_collapse_navigation": "Ampliar/contraer barra de navegación",
     "s_show_menu": "Mostrar menú",
+    "s_expand_menu_bar": null,
+    "s_collapse_menu_bar": null,
     "s_toggle_menu_bar": "Cambiar barra de menú",
     "s_more_info": "Más información",
     "l_bullet": "· {item}",
