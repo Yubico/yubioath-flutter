@@ -177,6 +177,9 @@ class _FidoPinConfirmationDialog
                             _isObscure
                                 ? Symbols.visibility
                                 : Symbols.visibility_off,
+                            semanticLabel: _isObscure
+                                ? l10n.s_show_pin
+                                : l10n.s_hide_pin,
                           ),
                           onPressed: () {
                             setState(() {

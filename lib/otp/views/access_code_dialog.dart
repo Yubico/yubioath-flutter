@@ -132,6 +132,9 @@ class _AccessCodeDialogState extends ConsumerState<AccessCodeDialog> {
                             _isObscure
                                 ? Symbols.visibility
                                 : Symbols.visibility_off,
+                            semanticLabel: _isObscure
+                                ? l10n.s_show_access_code
+                                : l10n.s_hide_access_code,
                           ),
                           onPressed: () {
                             setState(() {

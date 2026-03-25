@@ -262,6 +262,13 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                             _isObscureCurrent
                                 ? Symbols.visibility
                                 : Symbols.visibility_off,
+                            semanticLabel: widget.target == ManageTarget.pin
+                                ? (_isObscureCurrent
+                                      ? l10n.s_show_pin
+                                      : l10n.s_hide_pin)
+                                : (_isObscureCurrent
+                                      ? l10n.s_show_puk
+                                      : l10n.s_hide_puk),
                           ),
                           onPressed: () {
                             setState(() {
@@ -331,6 +338,13 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                             _isObscureNew
                                 ? Symbols.visibility
                                 : Symbols.visibility_off,
+                            semanticLabel: widget.target == ManageTarget.pin
+                                ? (_isObscureNew
+                                      ? l10n.s_show_pin
+                                      : l10n.s_hide_pin)
+                                : (_isObscureNew
+                                      ? l10n.s_show_puk
+                                      : l10n.s_hide_puk),
                           ),
                           onPressed: () {
                             setState(() {
@@ -382,6 +396,13 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                             _isObscureConfirm
                                 ? Symbols.visibility
                                 : Symbols.visibility_off,
+                            semanticLabel: widget.target == ManageTarget.pin
+                                ? (_isObscureConfirm
+                                      ? l10n.s_show_pin
+                                      : l10n.s_hide_pin)
+                                : (_isObscureConfirm
+                                      ? l10n.s_show_puk
+                                      : l10n.s_hide_puk),
                           ),
                           onPressed: () {
                             setState(() {

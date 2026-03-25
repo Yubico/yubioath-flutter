@@ -180,6 +180,9 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
                 suffixIcon: IconButton(
                   icon: Icon(
                     _isObscure ? Symbols.visibility : Symbols.visibility_off,
+                    semanticLabel: _isObscure
+                        ? l10n.s_show_pin
+                        : l10n.s_hide_pin,
                   ),
                   onPressed: () {
                     setState(() {

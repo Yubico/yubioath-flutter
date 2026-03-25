@@ -236,6 +236,9 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
                         _isObscure
                             ? Symbols.visibility
                             : Symbols.visibility_off,
+                        semanticLabel: _isObscure
+                            ? l10n.s_show_lock_code
+                            : l10n.s_hide_lock_code,
                       ),
                       onPressed: () {
                         setState(() {

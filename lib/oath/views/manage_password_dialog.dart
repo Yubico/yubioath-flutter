@@ -159,6 +159,9 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                               _isObscureCurrent
                                   ? Symbols.visibility
                                   : Symbols.visibility_off,
+                              semanticLabel: _isObscureCurrent
+                                  ? l10n.s_show_password
+                                  : l10n.s_hide_password,
                             ),
                             onPressed: () {
                               setState(() {
@@ -286,6 +289,9 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                               _isObscureNew
                                   ? Symbols.visibility
                                   : Symbols.visibility_off,
+                              semanticLabel: _isObscureNew
+                                  ? l10n.s_show_password
+                                  : l10n.s_hide_password,
                             ),
                             onPressed: () {
                               setState(() {
@@ -329,6 +335,9 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                               _isObscureConfirm
                                   ? Symbols.visibility
                                   : Symbols.visibility_off,
+                              semanticLabel: _isObscureConfirm
+                                  ? l10n.s_show_password
+                                  : l10n.s_hide_password,
                             ),
                             onPressed: () {
                               setState(() {

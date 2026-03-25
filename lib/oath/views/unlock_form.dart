@@ -116,6 +116,9 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
                         _isObscure
                             ? Symbols.visibility
                             : Symbols.visibility_off,
+                        semanticLabel: _isObscure
+                            ? l10n.s_show_password
+                            : l10n.s_hide_password,
                       ),
                       onPressed: () {
                         setState(() {

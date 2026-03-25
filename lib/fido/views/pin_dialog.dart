@@ -158,6 +158,9 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                               _isObscureCurrent
                                   ? Symbols.visibility
                                   : Symbols.visibility_off,
+                              semanticLabel: _isObscureCurrent
+                                  ? l10n.s_show_pin
+                                  : l10n.s_hide_pin,
                             ),
                             onPressed: () {
                               setState(() {
@@ -223,6 +226,9 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                               _isObscureNew
                                   ? Symbols.visibility
                                   : Symbols.visibility_off,
+                              semanticLabel: _isObscureNew
+                                  ? l10n.s_show_pin
+                                  : l10n.s_hide_pin,
                             ),
                             onPressed: () {
                               setState(() {
@@ -271,6 +277,9 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                               _isObscureConfirm
                                   ? Symbols.visibility
                                   : Symbols.visibility_off,
+                              semanticLabel: _isObscureConfirm
+                                  ? l10n.s_show_pin
+                                  : l10n.s_hide_pin,
                             ),
                             onPressed: () {
                               setState(() {
