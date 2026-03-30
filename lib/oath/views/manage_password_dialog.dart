@@ -155,6 +155,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                           errorMaxLines: 3,
                           icon: const Icon(Symbols.password),
                           suffixIcon: IconButton(
+                            isSelected: !_isObscureCurrent,
                             icon: Icon(
                               _isObscureCurrent
                                   ? Symbols.visibility
@@ -282,6 +283,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                         suffixIcon: ExcludeFocusTraversal(
                           excluding: !newPasswordEnabled,
                           child: IconButton(
+                            isSelected: !_isObscureNew,
                             icon: Icon(
                               _isObscureNew
                                   ? Symbols.visibility
@@ -325,6 +327,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                         suffixIcon: ExcludeFocusTraversal(
                           excluding: !confirmPasswordEnabled,
                           child: IconButton(
+                            isSelected: !_isObscureConfirm,
                             icon: Icon(
                               _isObscureConfirm
                                   ? Symbols.visibility

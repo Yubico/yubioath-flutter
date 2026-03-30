@@ -179,6 +179,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
                             errorMaxLines: 3,
                             icon: const Icon(Symbols.password),
                             suffixIcon: IconButton(
+                              isSelected: !_isObscure,
                               icon: Icon(
                                 _isObscure
                                     ? Symbols.visibility

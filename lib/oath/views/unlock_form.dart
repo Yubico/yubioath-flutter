@@ -112,6 +112,7 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
                     helperText: '', // Prevents resizing when errorText shown
                     icon: const Icon(Symbols.password),
                     suffixIcon: IconButton(
+                      isSelected: !_isObscure,
                       icon: Icon(
                         _isObscure
                             ? Symbols.visibility
