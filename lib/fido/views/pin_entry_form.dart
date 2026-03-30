@@ -52,7 +52,6 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
   @override
   void initState() {
     super.initState();
-    _pinFocus.requestFocus();
   }
 
   @override
@@ -158,7 +157,6 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
             padding: const EdgeInsets.only(top: 16.0, bottom: 4.0),
             child: AppTextField(
               key: pinEntry,
-              autofocus: true,
               obscureText: _isObscure,
               autofillHints: const [AutofillHints.password],
               controller: _pinController,
