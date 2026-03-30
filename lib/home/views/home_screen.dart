@@ -156,25 +156,32 @@ class _FipsLegend extends StatelessWidget {
   }
 }
 
-class _DeviceContent extends ConsumerWidget {
+class _DeviceContent extends ConsumerStatefulWidget {
   final YubiKeyData deviceData;
   final KeyCustomization? initialCustomization;
 
   const _DeviceContent(this.deviceData, this.initialCustomization);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_DeviceContent> createState() => _DeviceContentState();
+}
+
+class _DeviceContentState extends ConsumerState<_DeviceContent> {
+  bool _isColorPickerOpen = false;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
 
-    final name = deviceData.name;
-    final serial = deviceData.info.serial;
-    final version = deviceData.info.version;
+    final name = widget.deviceData.name;
+    final serial = widget.deviceData.info.serial;
+    final version = widget.deviceData.info.version;
 
-    final label = initialCustomization?.name;
+    final label = widget.initialCustomization?.name;
     String displayName = label != null ? '$label ($name)' : name;
 
     final defaultColor = ref.watch(defaultColorProvider);
-    final customColor = initialCustomization?.color;
+    final customColor = widget.initialCustomization?.color;
 
     return Column(
       crossAxisAlignment: .start,
@@ -199,7 +206,7 @@ class _DeviceContent extends ConsumerWidget {
                     onPressed: () async {
                       await ref.read(withContextProvider)((context) async {
                         await _showManageLabelDialog(
-                          initialCustomization ??
+                          widget.initialCustomization ??
                               KeyCustomization(serial: serial),
                           context,
                         );
@@ -208,84 +215,107 @@ class _DeviceContent extends ConsumerWidget {
                   ),
                   Column(
                     children: [
-                      PopupMenuButton(
-                        popUpAnimationStyle: AnimationStyle(
-                          duration: Duration.zero,
-                        ),
-                        menuPadding: EdgeInsets.zero,
-                        tooltip: l10n.s_set_color,
-                        itemBuilder: (context) {
-                          return [
-                            PopupMenuItem(
-                              enabled: false,
-                              child: Center(
-                                child: Wrap(
-                                  runSpacing: 8,
-                                  spacing: 16,
-                                  children: [
-                                    ...[
-                                      Colors.teal,
-                                      Colors.cyan,
-                                      Colors.blueAccent,
-                                      Colors.deepPurple,
-                                      Colors.red,
-                                      Colors.orange,
-                                      Colors.yellow,
-                                      // add nice color to devices with dynamic color
-                                      if (isAndroid &&
-                                          ref.read(androidSdkVersionProvider) >=
-                                              31)
-                                        Colors.lightGreen,
-                                    ].map(
-                                      (e) => _ColorButton(
-                                        color: e,
-                                        isSelected:
-                                            customColor?.toInt32 == e.toInt32,
-                                        onPressed: () {
-                                          _updateColor(e, ref, serial);
-                                          Navigator.of(context).pop();
-                                        },
+                      Semantics(
+                        expanded: _isColorPickerOpen,
+                        child: PopupMenuButton(
+                          popUpAnimationStyle: AnimationStyle(
+                            duration: Duration.zero,
+                          ),
+                          menuPadding: EdgeInsets.zero,
+                          tooltip: l10n.s_set_color,
+                          onOpened: () {
+                            setState(() {
+                              _isColorPickerOpen = true;
+                            });
+                          },
+                          onCanceled: () {
+                            setState(() {
+                              _isColorPickerOpen = false;
+                            });
+                          },
+                          itemBuilder: (context) {
+                            return [
+                              PopupMenuItem(
+                                enabled: false,
+                                child: Center(
+                                  child: Wrap(
+                                    runSpacing: 8,
+                                    spacing: 16,
+                                    children: [
+                                      ...[
+                                        Colors.teal,
+                                        Colors.cyan,
+                                        Colors.blueAccent,
+                                        Colors.deepPurple,
+                                        Colors.red,
+                                        Colors.orange,
+                                        Colors.yellow,
+                                        // add nice color to devices with dynamic color
+                                        if (isAndroid &&
+                                            ref.read(
+                                                  androidSdkVersionProvider,
+                                                ) >=
+                                                31)
+                                          Colors.lightGreen,
+                                      ].map(
+                                        (e) => _ColorButton(
+                                          color: e,
+                                          isSelected:
+                                              customColor?.toInt32 == e.toInt32,
+                                          onPressed: () {
+                                            _updateColor(e, ref, serial);
+                                            Navigator.of(context).pop();
+                                            setState(() {
+                                              _isColorPickerOpen = false;
+                                            });
+                                          },
+                                        ),
                                       ),
-                                    ),
 
-                                    // "use default color" button
-                                    RawMaterialButton(
-                                      onPressed: () {
-                                        _updateColor(null, ref, serial);
-                                        Navigator.of(context).pop();
-                                      },
-                                      constraints: const BoxConstraints(
-                                        minWidth: 26.0,
-                                        minHeight: 26.0,
+                                      // "use default color" button
+                                      RawMaterialButton(
+                                        onPressed: () {
+                                          _updateColor(null, ref, serial);
+                                          Navigator.of(context).pop();
+                                          setState(() {
+                                            _isColorPickerOpen = false;
+                                          });
+                                        },
+                                        constraints: const BoxConstraints(
+                                          minWidth: 26.0,
+                                          minHeight: 26.0,
+                                        ),
+                                        fillColor: defaultColor,
+                                        hoverColor: Colors.black12,
+                                        shape: const CircleBorder(),
+                                        child: Icon(
+                                          customColor == null
+                                              ? Symbols.circle
+                                              : Symbols.clear,
+                                          fill: 1,
+                                          size: 16,
+                                          weight: 700,
+                                          opticalSize: 20,
+                                          color:
+                                              defaultColor.computeLuminance() >
+                                                  0.7
+                                              ? Colors
+                                                    .grey // for bright colors
+                                              : Colors.white,
+                                        ),
                                       ),
-                                      fillColor: defaultColor,
-                                      hoverColor: Colors.black12,
-                                      shape: const CircleBorder(),
-                                      child: Icon(
-                                        customColor == null
-                                            ? Symbols.circle
-                                            : Symbols.clear,
-                                        fill: 1,
-                                        size: 16,
-                                        weight: 700,
-                                        opticalSize: 20,
-                                        color:
-                                            defaultColor.computeLuminance() >
-                                                0.7
-                                            ? Colors
-                                                  .grey // for bright colors
-                                            : Colors.white,
-                                      ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                          ];
-                        },
-                        icon: Icon(
-                          Symbols.palette,
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            ];
+                          },
+                          icon: Icon(
+                            Symbols.palette,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
+                          ),
                         ),
                       ),
                       Container(
@@ -315,12 +345,12 @@ class _DeviceContent extends ConsumerWidget {
           ),
         if (version != const Version(0, 0, 0))
           Text(
-            l10n.l_firmware_version(deviceData.info.getVersionName()),
+            l10n.l_firmware_version(widget.deviceData.info.getVersionName()),
             style: Theme.of(context).textTheme.titleSmall?.apply(
               color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
-        if (deviceData.info.pinComplexity)
+        if (widget.deviceData.info.pinComplexity)
           Padding(
             padding: const EdgeInsets.only(top: 12),
             child: RichText(
@@ -355,7 +385,7 @@ class _DeviceContent extends ConsumerWidget {
     final manager = ref.read(keyCustomizationManagerProvider.notifier);
     await manager.set(
       serial: serial,
-      name: initialCustomization?.name,
+      name: widget.initialCustomization?.name,
       color: color,
     );
   }
