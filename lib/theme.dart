@@ -43,8 +43,9 @@ class AppTheme {
     };
   }
 
-  /// Returns a [WidgetStateProperty] that provides a 2px border in
-  /// [ColorScheme.primary] when focused, ensuring WCAG 2.2 AA 3:1+ contrast.
+  /// Returns a [WidgetStateProperty] that provides a 1px border in
+  /// [ColorScheme.primary] when focused, aiming to improve visibility
+  /// and contrast.
   static WidgetStateProperty<BorderSide?> _focusBorderSide(
     ColorScheme colorScheme,
   ) => WidgetStateProperty.resolveWith<BorderSide?>((states) {
