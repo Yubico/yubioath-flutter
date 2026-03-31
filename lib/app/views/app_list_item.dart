@@ -79,6 +79,7 @@ class _AppListItemState<T> extends ConsumerState<AppListItem> {
 
     return Semantics(
       label: widget.semanticTitle ?? widget.title,
+      button: widget.tapIntent != null,
       child: ItemShortcuts<T>(
         item: widget.item,
         child: InkWell(
