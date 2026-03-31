@@ -50,15 +50,15 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/window_manager/macos
 
 SPEC CHECKSUMS:
-  desktop_drop: 10a3e6a7fa9dbe350541f2574092fecfa345a07b
-  file_picker: 7584aae6fa07a041af2b36a2655122d42f578c1a
+  desktop_drop: 1eeeb9484299585770b6461e4f3d60950e99efa2
+  file_picker: e716a70a9fe5fd9e09ebc922d7541464289443af
   FlutterMacOS: d0db08ddef1a9af05a5ec4b724367152bb0500b1
-  local_notifier: ebf072651e35ae5e47280ad52e2707375cb2ae4e
-  screen_retriever_macos: 452e51764a9e1cdb74b3c541238795849f21557f
-  shared_preferences_foundation: 7036424c3d8ec98dfe75ff1667cb0cd531ec82bb
-  tray_manager: a104b5c81b578d83f3c3d0f40a997c8b10810166
-  url_launcher_macos: f87a979182d112f911de6820aefddaf56ee9fbfd
-  window_manager: 1d01fa7ac65a6e6f83b965471b1a7fdd3f06166c
+  local_notifier: e9506bc66fc70311e8bc7291fb70f743c081e4ff
+  screen_retriever_macos: 776e0fa5d42c6163d2bf772d22478df4b302b161
+  shared_preferences_foundation: 5086985c1d43c5ba4d5e69a4e8083a389e2909e6
+  tray_manager: 9064e219c56d75c476e46b9a21182087930baf90
+  url_launcher_macos: 175a54c831f4375a6cf895875f716ee5af3888ce
+  window_manager: 3a1844359a6295ab1e47659b1a777e36773cd6e8
 
 PODFILE CHECKSUM: 0d3963a09fc94f580682bd88480486da345dc3f0
 

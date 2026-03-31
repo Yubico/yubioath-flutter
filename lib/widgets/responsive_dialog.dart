@@ -70,7 +70,6 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
       enabled: true,
       onTap: () {},
       child: title,
-      label: 'Header',
     );
   }
 

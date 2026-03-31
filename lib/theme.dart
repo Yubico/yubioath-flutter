@@ -45,50 +45,14 @@ class AppTheme {
 
   static ThemeData _themeData(Brightness brightness, Color primaryColor) {
     final colorScheme = _colorScheme(brightness, primaryColor);
-    final hoverColor = _getHoverColor(colorScheme.onSurface);
-    final focusColor = _getFocusColor(colorScheme.onSurface);
-    
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
       fontFamily: 'Roboto',
-      hoverColor: hoverColor,
-      focusColor: focusColor,
-      listTileTheme: ListTileThemeData(
+      listTileTheme: const ListTileThemeData(
         // For alignment under menu button
-        contentPadding: const EdgeInsets.symmetric(horizontal: 18.0),
+        contentPadding: EdgeInsets.symmetric(horizontal: 18.0),
         visualDensity: VisualDensity.compact,
-        selectedColor: hoverColor,
-      ),
-      iconButtonTheme: IconButtonThemeData(
-        style: ButtonStyle(
-          overlayColor: WidgetStateProperty.resolveWith((states) {
-            if (states.contains(WidgetState.focused)) {
-              return focusColor;
-            }
-            if (states.contains(WidgetState.hovered)) {
-              return hoverColor;
-            }
-            return null;
-          }),
-        ),
-      ),
-      popupMenuTheme: PopupMenuThemeData(
-        color: colorScheme.surfaceContainer,
-        menuPadding: EdgeInsets.zero,
-      ),
-      menuButtonTheme: MenuButtonThemeData(
-        style: ButtonStyle(
-          overlayColor: WidgetStateProperty.resolveWith((states) {
-            if (states.contains(WidgetState.focused)) {
-              return focusColor;
-            }
-            if (states.contains(WidgetState.hovered)) {
-              return hoverColor;
-            }
-            return null;
-          }),
-        ),
       ),
       chipTheme: ChipThemeData(
         labelStyle: TextStyle(
@@ -98,15 +62,5 @@ class AppTheme {
       ),
       progressIndicatorTheme: _progressIndicatorThemeData(),
     );
-  }
-
-  static Color _getHoverColor(Color onSurfaceColor) {
-    // Material Design default: onSurface.withOpacity(0.08)
-    // Adjusted to achieve 1.4:1 contrast ratio with 1.0 opacity for more visibility
-    return onSurfaceColor.withValues(alpha: 0.14);
-  }
-  static Color _getFocusColor(Color onSurfaceColor) {
-
-    return onSurfaceColor.withValues(alpha: 0.70);
   }
 }
