@@ -178,6 +178,7 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
                 errorMaxLines: 3,
                 icon: const Icon(Symbols.pin),
                 suffixIcon: IconButton(
+                  isSelected: !_isObscure,
                   icon: Icon(
                     _isObscure ? Symbols.visibility : Symbols.visibility_off,
                   ),

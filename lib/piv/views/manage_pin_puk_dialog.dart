@@ -258,6 +258,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                         errorMaxLines: 3,
                         icon: const Icon(Symbols.pin),
                         suffixIcon: IconButton(
+                          isSelected: !_isObscureCurrent,
                           icon: Icon(
                             _isObscureCurrent
                                 ? Symbols.visibility
@@ -327,6 +328,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                         errorText: _newIsWrong ? _newPinError : null,
                         icon: const Icon(Symbols.pin),
                         suffixIcon: IconButton(
+                          isSelected: !_isObscureNew,
                           icon: Icon(
                             _isObscureNew
                                 ? Symbols.visibility
@@ -378,6 +380,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                             : l10n.s_confirm_pin,
                         icon: const Icon(Symbols.pin),
                         suffixIcon: IconButton(
+                          isSelected: !_isObscureConfirm,
                           icon: Icon(
                             _isObscureConfirm
                                 ? Symbols.visibility
