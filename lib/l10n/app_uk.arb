@@ -346,6 +346,7 @@
             }
         }
     },
+    "s_persist_read_only_access": null,
     "s_ep_attestation": "Атестація підприємства",
     "s_ep_attestation_enabled": "Атестацію підприємства ввімкнено",
     "q_enable_ep_attestation": "Увімкнути корпоративну атестацію?",

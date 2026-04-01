@@ -346,6 +346,7 @@
             }
         }
     },
+    "s_persist_read_only_access": null,
     "s_ep_attestation": "Ověření podniku",
     "s_ep_attestation_enabled": "Ověření podniku je povoleno",
     "q_enable_ep_attestation": "Povolit ověření podniku?",

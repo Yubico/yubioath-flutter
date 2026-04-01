@@ -346,6 +346,7 @@
             }
         }
     },
+    "s_persist_read_only_access": null,
     "s_ep_attestation": "Kurumsal Doğrulama",
     "s_ep_attestation_enabled": "Kurumsal Doğrulama etkinleştirildi",
     "q_enable_ep_attestation": "Kurumsal Doğrulama etkinleştirilsin mi?",

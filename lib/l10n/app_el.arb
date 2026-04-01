@@ -346,6 +346,7 @@
             }
         }
     },
+    "s_persist_read_only_access": null,
     "s_ep_attestation": "Εταιρική Πιστοποίηση (Enterprise Attestation)",
     "s_ep_attestation_enabled": "Η Εταιρική Πιστοποίηση είναι ενεργοποιημένη",
     "q_enable_ep_attestation": "Ενεργοποίηση Εταιρικής Πιστοποίησης;",

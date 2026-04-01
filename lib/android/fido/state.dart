@@ -141,8 +141,9 @@ class AndroidFidoStateNotifier extends FidoStateNotifier {
     }
   }
 
+  // TODO: implement remember on Android
   @override
-  Future<PinResult> unlock(String pin) async {
+  Future<PinResult> unlock(String pin, {bool remember = false}) async {
     try {
       final response = jsonDecode(await fido.invoke('unlock', {'pin': pin}));
 

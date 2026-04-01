@@ -346,6 +346,7 @@
             }
         }
     },
+    "s_persist_read_only_access": null,
     "s_ep_attestation": "Atestado Corporativo",
     "s_ep_attestation_enabled": "Atestação Empresarial habilitado",
     "q_enable_ep_attestation": "Habilitar Certificação Empresarial?",

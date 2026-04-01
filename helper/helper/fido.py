@@ -72,7 +72,7 @@ class Ctap2Node(RpcNode):
 
     @classmethod
     def _get_ppuats(cls):
-        if not cls._ppuats:
+        if cls._ppuats is None:
             cls._ppuats = AppData("ppuats")
         return cls._ppuats
 
@@ -92,6 +92,7 @@ class Ctap2Node(RpcNode):
     def _get_ppuat(self) -> bytes | None:
         if (
             CredentialManagement.is_readonly_supported(self._info)
+            and len(self._get_ppuats()) > 0
             and self._unlock_ppuat_store()
         ):
             ppuats = self._get_ppuats()
@@ -199,7 +200,7 @@ class Ctap2Node(RpcNode):
         return RpcResponse(dict(), ["device_info", "device_closed"])
 
     @action(condition=lambda self: self._info.options["clientPin"])
-    def unlock(self, pin: str):
+    def unlock(self, pin: str, remember: bool = False):
         permissions = ClientPin.PERMISSION(0)
         if CredentialManagement.is_supported(self._info):
             permissions |= ClientPin.PERMISSION.CREDENTIAL_MGMT
@@ -208,8 +209,10 @@ class Ctap2Node(RpcNode):
         if Config.is_supported(self._info):
             permissions |= ClientPin.PERMISSION.AUTHENTICATOR_CFG
         try:
-            if not self._ppuat and CredentialManagement.is_readonly_supported(
-                self._info
+            if (
+                remember
+                and not self._ppuat
+                and CredentialManagement.is_readonly_supported(self._info)
             ):
                 self._ppuat = self.client_pin.get_pin_token(
                     pin, ClientPin.PERMISSION.PERSISTENT_CREDENTIAL_MGMT
@@ -240,6 +243,7 @@ class Ctap2Node(RpcNode):
             else:
                 self.client_pin.set_pin(new_pin)
             self._info = self.ctap.get_info()
+            self._delete_ppuat()
             return RpcResponse(dict(), ["device_info"])
         except CtapError as e:
             self._token = None
