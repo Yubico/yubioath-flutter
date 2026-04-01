@@ -66,11 +66,7 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
 
   Widget _wrapTitleWithSemantics(Widget? title) {
     if (title == null) return const SizedBox.shrink();
-    return Semantics(
-      enabled: true,
-      onTap: () {},
-      child: title,
-    );
+    return Semantics(enabled: true, onTap: () {}, child: title);
   }
 
   Widget _buildFullscreen(BuildContext context) => Scaffold(
