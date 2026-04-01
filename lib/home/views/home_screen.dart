@@ -193,10 +193,7 @@ class _DeviceContent extends ConsumerWidget {
                 crossAxisAlignment: .start,
                 children: [
                   IconButton(
-                    icon: Icon(
-                      Symbols.edit,
-                      semanticLabel: l10n.s_set_label,
-                    ),
+                    icon: Icon(Symbols.edit, semanticLabel: l10n.s_set_label),
                     tooltip: l10n.s_set_label,
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                     onPressed: () async {

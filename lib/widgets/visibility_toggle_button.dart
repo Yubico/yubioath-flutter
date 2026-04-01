@@ -20,7 +20,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../generated/l10n/app_localizations.dart';
 
 /// A visibility toggle button with proper accessibility support for VoiceOver.
-/// 
+///
 /// Use this widget as a suffixIcon in text fields that need a show/hide toggle.
 class VisibilityToggleButton extends StatelessWidget {
   final bool isObscured;
@@ -49,9 +49,7 @@ class VisibilityToggleButton extends StatelessWidget {
       label: label,
       onTap: onToggle,
       child: IconButton(
-        icon: Icon(
-          isObscured ? Symbols.visibility : Symbols.visibility_off,
-        ),
+        icon: Icon(isObscured ? Symbols.visibility : Symbols.visibility_off),
         onPressed: onToggle,
         tooltip: label,
       ),
