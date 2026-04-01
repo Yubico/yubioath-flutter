@@ -214,25 +214,26 @@ class _DeviceContent extends ConsumerWidget {
                             tooltip: l10n.s_set_color,
                             icon: Icon(
                               Symbols.palette,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSurfaceVariant,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
                             ),
                             onPressed: () {
                               final button =
                                   context.findRenderObject() as RenderBox;
-                              final overlay = Overlay.of(context)
-                                  .context
-                                  .findRenderObject() as RenderBox;
+                              final overlay =
+                                  Overlay.of(context).context.findRenderObject()
+                                      as RenderBox;
                               final position = RelativeRect.fromRect(
                                 Rect.fromPoints(
                                   button.localToGlobal(
-                                      Offset.zero,
-                                      ancestor: overlay),
+                                    Offset.zero,
+                                    ancestor: overlay,
+                                  ),
                                   button.localToGlobal(
-                                      button.size
-                                          .bottomRight(Offset.zero),
-                                      ancestor: overlay),
+                                    button.size.bottomRight(Offset.zero),
+                                    ancestor: overlay,
+                                  ),
                                 ),
                                 Offset.zero & overlay.size,
                               );
@@ -245,9 +246,7 @@ class _DeviceContent extends ConsumerWidget {
                                 Colors.orange: 'Orange',
                                 Colors.yellow: 'Yellow',
                                 if (isAndroid &&
-                                    ref.read(
-                                            androidSdkVersionProvider) >=
-                                        31)
+                                    ref.read(androidSdkVersionProvider) >= 31)
                                   Colors.lightGreen: 'Green',
                               };
                               showDialog(
@@ -260,10 +259,8 @@ class _DeviceContent extends ConsumerWidget {
                                       child: GestureDetector(
                                         onTap: () =>
                                             Navigator.of(context).pop(),
-                                        behavior:
-                                            HitTestBehavior.opaque,
-                                        child:
-                                            const SizedBox.expand(),
+                                        behavior: HitTestBehavior.opaque,
+                                        child: const SizedBox.expand(),
                                       ),
                                     ),
                                     Positioned(
@@ -271,14 +268,12 @@ class _DeviceContent extends ConsumerWidget {
                                       left: position.left,
                                       child: Material(
                                         elevation: 8,
-                                        borderRadius:
-                                            BorderRadius.circular(12),
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .surfaceContainer,
+                                        borderRadius: BorderRadius.circular(12),
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.surfaceContainer,
                                         child: Padding(
-                                          padding:
-                                              const EdgeInsets.all(16),
+                                          padding: const EdgeInsets.all(16),
                                           child: SizedBox(
                                             width: 240,
                                             child: Wrap(
@@ -290,34 +285,33 @@ class _DeviceContent extends ConsumerWidget {
                                                     color: e.key,
                                                     colorName: e.value,
                                                     isSelected:
-                                                        customColor
-                                                                ?.toInt32 ==
-                                                            e.key
-                                                                .toInt32,
+                                                        customColor?.toInt32 ==
+                                                        e.key.toInt32,
                                                     onPressed: () {
                                                       _updateColor(
-                                                          e.key,
-                                                          ref,
-                                                          serial);
+                                                        e.key,
+                                                        ref,
+                                                        serial,
+                                                      );
                                                       Navigator.of(
-                                                              context)
-                                                          .pop();
+                                                        context,
+                                                      ).pop();
                                                     },
                                                   ),
                                                 ),
                                                 _ColorButton(
                                                   color: defaultColor,
-                                                  colorName: l10n
-                                                      .s_system_default,
+                                                  colorName:
+                                                      l10n.s_system_default,
                                                   isSelected:
-                                                      customColor ==
-                                                          null,
+                                                      customColor == null,
                                                   onPressed: () {
-                                                    _updateColor(null,
-                                                        ref, serial);
-                                                    Navigator.of(
-                                                            context)
-                                                        .pop();
+                                                    _updateColor(
+                                                      null,
+                                                      ref,
+                                                      serial,
+                                                    );
+                                                    Navigator.of(context).pop();
                                                   },
                                                   child: Icon(
                                                     customColor == null
@@ -327,7 +321,8 @@ class _DeviceContent extends ConsumerWidget {
                                                     size: 16,
                                                     weight: 700,
                                                     opticalSize: 20,
-                                                    color: defaultColor
+                                                    color:
+                                                        defaultColor
                                                                 .computeLuminance() >
                                                             0.7
                                                         ? Colors.grey
