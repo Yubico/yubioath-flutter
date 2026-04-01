@@ -346,6 +346,7 @@
             }
         }
     },
+    "s_persist_read_only_access": null,
     "s_ep_attestation": "Enterprise Attestation",
     "s_ep_attestation_enabled": "Enterprise Attestation が有効です",
     "q_enable_ep_attestation": "Enterprise Attestation を有効にしますか？",

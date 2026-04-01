@@ -346,6 +346,7 @@
             }
         }
     },
+    "s_persist_read_only_access": null,
     "s_ep_attestation": "Atest przedsiębiorstwa",
     "s_ep_attestation_enabled": "Atest przedsiębiorstwa został włączony",
     "q_enable_ep_attestation": "Włączyć atest przedsiębiorstwa?",

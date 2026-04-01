@@ -346,6 +346,7 @@
             }
         }
     },
+    "s_persist_read_only_access": null,
     "s_ep_attestation": "Attestation d'entreprise",
     "s_ep_attestation_enabled": "Attestation d'entreprise activée",
     "q_enable_ep_attestation": "Activer l'Attestation d'Entreprise ?",

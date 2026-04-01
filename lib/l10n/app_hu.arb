@@ -346,6 +346,7 @@
             }
         }
     },
+    "s_persist_read_only_access": null,
     "s_ep_attestation": "Vállalati tanúsítás",
     "s_ep_attestation_enabled": "Vállalati tanúsítás engedélyezve",
     "q_enable_ep_attestation": "Engedélyezze a vállalati tanúsítást?",
