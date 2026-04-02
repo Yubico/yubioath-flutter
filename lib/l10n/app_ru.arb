@@ -519,6 +519,7 @@
     "p_warning_disable_credential": "Отключите эту учётную запись в сервисе, иначе вы можете потерять к нему доступ.",
     "s_account_name": "Имя учётной записи",
     "s_search_accounts": "Поиск учётных записей",
+    "s_clear_search": null,
     "l_accounts_used": "Используется {used} из {capacity} учётных записей",
     "@l_accounts_used": {
         "placeholders": {

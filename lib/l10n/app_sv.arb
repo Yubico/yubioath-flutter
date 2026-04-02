@@ -519,6 +519,7 @@
     "p_warning_disable_credential": "Se till att inaktivera det här kontot från den tjänst det är registrerat med för att undvika att bli utelåst.",
     "s_account_name": "Kontonamn",
     "s_search_accounts": "Sök konton",
+    "s_clear_search": null,
     "l_accounts_used": "{used} av {capacity} konton som används",
     "@l_accounts_used": {
         "placeholders": {

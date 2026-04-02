@@ -519,6 +519,7 @@
     "p_warning_disable_credential": "Asegúrate de deshabilitar esta cuenta del servicio en el que está registrada para evitar que se bloquee.",
     "s_account_name": "Nombre de la cuenta",
     "s_search_accounts": "Buscar cuentas",
+    "s_clear_search": null,
     "l_accounts_used": "{used} de {capacity} cuentas usadas",
     "@l_accounts_used": {
         "placeholders": {
