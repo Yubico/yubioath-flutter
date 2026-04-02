@@ -519,6 +519,7 @@
     "p_warning_disable_credential": "Assicurati di disabilitare questo account dal servizio presso cui è registrato per evitare di rimanere bloccato fuori dall’accesso.",
     "s_account_name": "Nome account",
     "s_search_accounts": "Cerca account",
+    "s_clear_search": null,
     "l_accounts_used": "{used} account utilizzati su {capacity}",
     "@l_accounts_used": {
         "placeholders": {

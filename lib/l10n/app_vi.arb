@@ -519,6 +519,7 @@
     "p_warning_disable_credential": null,
     "s_account_name": "Tên tài khoản",
     "s_search_accounts": "Tìm kiếm tài khoản",
+    "s_clear_search": null,
     "l_accounts_used": "{used} trong {capacity} tài khoản đã sử dụng",
     "@l_accounts_used": {
         "placeholders": {
