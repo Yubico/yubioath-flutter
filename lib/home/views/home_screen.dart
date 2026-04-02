@@ -238,16 +238,16 @@ class _DeviceContent extends ConsumerWidget {
                                 Offset.zero & overlay.size,
                               );
                               final colors = {
-                                Colors.teal: 'Teal',
-                                Colors.cyan: 'Cyan',
-                                Colors.blueAccent: 'Blue',
-                                Colors.deepPurple: 'Purple',
-                                Colors.red: 'Red',
-                                Colors.orange: 'Orange',
-                                Colors.yellow: 'Yellow',
+                                Colors.teal: l10n.s_color_teal,
+                                Colors.cyan: l10n.s_color_cyan,
+                                Colors.blueAccent: l10n.s_color_blue,
+                                Colors.deepPurple: l10n.s_color_purple,
+                                Colors.red: l10n.s_color_red,
+                                Colors.orange: l10n.s_color_orange,
+                                Colors.yellow: l10n.s_color_yellow,
                                 if (isAndroid &&
                                     ref.read(androidSdkVersionProvider) >= 31)
-                                  Colors.lightGreen: 'Green',
+                                  Colors.lightGreen: l10n.s_color_green,
                               };
                               showDialog(
                                 context: context,
@@ -313,7 +313,7 @@ class _DeviceContent extends ConsumerWidget {
                                                     );
                                                     Navigator.of(context).pop();
                                                   },
-                                                  child: Icon(
+                                                  icon: Icon(
                                                     customColor == null
                                                         ? Symbols.circle
                                                         : Symbols.clear,
@@ -432,14 +432,14 @@ class _ColorButton extends StatefulWidget {
   final bool isSelected;
   final bool isDefault;
   final Function()? onPressed;
-  final Widget? child;
+  final Widget? icon;
 
   const _ColorButton({
     required this.color,
     required this.colorName,
     required this.isSelected,
     required this.onPressed,
-    this.child,
+    this.icon,
     this.isDefault = false,
   });
 
