@@ -528,6 +528,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                           suffixIcons: [
                             if (searchController.text.isNotEmpty)
                               IconButton(
+                                tooltip: l10n.s_clear_search,
                                 icon: const Icon(Icons.clear),
                                 iconSize: 16,
                                 onPressed: () {
