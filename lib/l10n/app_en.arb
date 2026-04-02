@@ -61,6 +61,8 @@
     "s_expand_menu_bar": "Expand menu bar",
     "s_collapse_menu_bar": "Collapse menu bar",
     "s_toggle_menu_bar": "Toggle menu bar",
+    "s_expanded": "Expanded",
+    "s_collapsed": "Collapsed",
     "s_more_info": "More info",
     "l_bullet": "• {item}",
     "@l_bullet": {
