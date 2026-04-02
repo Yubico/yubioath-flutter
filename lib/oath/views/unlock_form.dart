@@ -25,6 +25,7 @@ import '../../exception/cancellation_exception.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
+import '../../widgets/visibility_toggle_button.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
@@ -111,21 +112,13 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
                     errorText: _passwordIsWrong ? l10n.s_wrong_password : null,
                     helperText: '', // Prevents resizing when errorText shown
                     icon: const Icon(Symbols.password),
-                    suffixIcon: IconButton(
-                      isSelected: !_isObscure,
-                      icon: Icon(
-                        _isObscure
-                            ? Symbols.visibility
-                            : Symbols.visibility_off,
-                      ),
-                      onPressed: () {
+                    suffixIcon: VisibilityToggleButton(
+                      isObscured: _isObscure,
+                      onToggle: () {
                         setState(() {
                           _isObscure = !_isObscure;
                         });
                       },
-                      tooltip: _isObscure
-                          ? l10n.s_show_password
-                          : l10n.s_hide_password,
                     ),
                   ),
                   onChanged: (_) => setState(() {
