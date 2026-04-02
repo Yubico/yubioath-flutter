@@ -17,6 +17,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -214,7 +215,21 @@ class _DeviceContent extends ConsumerWidget {
                         ),
                         menuPadding: EdgeInsets.zero,
                         tooltip: l10n.s_set_color,
-                        itemBuilder: (context) {
+                        onOpened: () {
+                          SemanticsService.sendAnnouncement(
+                            View.of(context),
+                            l10n.s_expanded,
+                            TextDirection.ltr,
+                          );
+                        },
+                        onCanceled: () {
+                          SemanticsService.sendAnnouncement(
+                            View.of(context),
+                            l10n.s_collapsed,
+                            TextDirection.ltr,
+                          );
+                        },
+                        itemBuilder: (popupContext) {
                           return [
                             PopupMenuItem(
                               enabled: false,
@@ -243,7 +258,12 @@ class _DeviceContent extends ConsumerWidget {
                                             customColor?.toInt32 == e.toInt32,
                                         onPressed: () {
                                           _updateColor(e, ref, serial);
-                                          Navigator.of(context).pop();
+                                          SemanticsService.sendAnnouncement(
+                                            View.of(popupContext),
+                                            l10n.s_collapsed,
+                                            TextDirection.ltr,
+                                          );
+                                          Navigator.of(popupContext).pop();
                                         },
                                       ),
                                     ),
@@ -255,7 +275,12 @@ class _DeviceContent extends ConsumerWidget {
                                       isDefault: true,
                                       onPressed: () {
                                         _updateColor(null, ref, serial);
-                                        Navigator.of(context).pop();
+                                        SemanticsService.sendAnnouncement(
+                                          View.of(popupContext),
+                                          l10n.s_collapsed,
+                                          TextDirection.ltr,
+                                        );
+                                        Navigator.of(popupContext).pop();
                                       },
                                     ),
                                   ],

@@ -61,6 +61,8 @@
     "s_expand_menu_bar": null,
     "s_collapse_menu_bar": null,
     "s_toggle_menu_bar": "Menüsor ki/bekapcsolása",
+    "s_expanded": null,
+    "s_collapsed": null,
     "s_more_info": "Több infó",
     "l_bullet": "• {item}",
     "@l_bullet": {
