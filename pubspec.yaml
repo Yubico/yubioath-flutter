@@ -64,7 +64,7 @@ dependencies:
   vector_graphics_compiler: ^1.1.20
   path: ^1.9.1
   file_picker: ^10.3.10
-  archive: ^4.0.7
+  archive: ^4.0.9
   crypto: ^3.0.7
   tray_manager: ^0.5.2
   local_notifier: ^0.1.6
