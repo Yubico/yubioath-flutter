@@ -459,8 +459,13 @@ class _ColorButtonState extends State<_ColorButton> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    return ListenableBuilder(
-      listenable: _focusNode,
+    return Semantics(
+      button: true,
+      label: widget.colorName,
+      excludeSemantics: true,
+      onTap: widget.onPressed,
+      child: ListenableBuilder(
+        listenable: _focusNode,
       builder: (context, child) => DecoratedBox(
         position: DecorationPosition.foreground,
         decoration: BoxDecoration(
@@ -496,6 +501,7 @@ class _ColorButtonState extends State<_ColorButton> {
                 color: widget.isSelected ? Colors.white : Colors.transparent,
               ),
       ),
+    ),
     );
   }
 }
