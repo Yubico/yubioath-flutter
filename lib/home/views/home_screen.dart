@@ -300,6 +300,7 @@ class _DeviceContent extends ConsumerWidget {
                                                   ),
                                                 ),
                                                 _ColorButton(
+                                                  isDefault: true,
                                                   color: defaultColor,
                                                   colorName:
                                                       l10n.s_system_default,
@@ -466,42 +467,42 @@ class _ColorButtonState extends State<_ColorButton> {
       onTap: widget.onPressed,
       child: ListenableBuilder(
         listenable: _focusNode,
-      builder: (context, child) => DecoratedBox(
-        position: DecorationPosition.foreground,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: _focusNode.hasFocus
-              ? Border.all(color: colorScheme.primary, width: 1)
-              : null,
+        builder: (context, child) => DecoratedBox(
+          position: DecorationPosition.foreground,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: _focusNode.hasFocus
+                ? Border.all(color: colorScheme.primary, width: 1)
+                : null,
+          ),
+          child: child!,
         ),
-        child: child!,
+        child: RawMaterialButton(
+          focusNode: _focusNode,
+          onPressed: widget.onPressed,
+          constraints: const BoxConstraints(minWidth: 26.0, minHeight: 26.0),
+          fillColor: widget.color,
+          hoverColor: Colors.black12,
+          shape: const CircleBorder(),
+          child: widget.isDefault
+              ? Icon(
+                  widget.isSelected ? Symbols.circle : Symbols.clear,
+                  fill: 1,
+                  size: 16,
+                  weight: 700,
+                  opticalSize: 20,
+                  color: widget.color.computeLuminance() > 0.7
+                      ? Colors.grey
+                      : Colors.white,
+                )
+              : Icon(
+                  Symbols.circle,
+                  fill: 1,
+                  size: 16,
+                  color: widget.isSelected ? Colors.white : Colors.transparent,
+                ),
+        ),
       ),
-      child: RawMaterialButton(
-        focusNode: _focusNode,
-        onPressed: widget.onPressed,
-        constraints: const BoxConstraints(minWidth: 26.0, minHeight: 26.0),
-        fillColor: widget.color,
-        hoverColor: Colors.black12,
-        shape: const CircleBorder(),
-        child: widget.isDefault
-            ? Icon(
-                widget.isSelected ? Symbols.circle : Symbols.clear,
-                fill: 1,
-                size: 16,
-                weight: 700,
-                opticalSize: 20,
-                color: widget.color.computeLuminance() > 0.7
-                    ? Colors.grey
-                    : Colors.white,
-              )
-            : Icon(
-                Symbols.circle,
-                fill: 1,
-                size: 16,
-                color: widget.isSelected ? Colors.white : Colors.transparent,
-              ),
-      ),
-    ),
     );
   }
 }
