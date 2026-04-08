@@ -17,7 +17,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -209,153 +208,11 @@ class _DeviceContent extends ConsumerWidget {
                   ),
                   Column(
                     children: [
-                      Builder(
-                        builder: (context) {
-                          return IconButton(
-                            tooltip: l10n.s_set_color,
-                            icon: Icon(
-                              Symbols.palette,
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.onSurfaceVariant,
-                            ),
-                            onPressed: () {
-                              final button =
-                                  context.findRenderObject() as RenderBox;
-                              final overlay =
-                                  Overlay.of(context).context.findRenderObject()
-                                      as RenderBox;
-                              final position = RelativeRect.fromRect(
-                                Rect.fromPoints(
-                                  button.localToGlobal(
-                                    Offset.zero,
-                                    ancestor: overlay,
-                                  ),
-                                  button.localToGlobal(
-                                    button.size.bottomRight(Offset.zero),
-                                    ancestor: overlay,
-                                  ),
-                                ),
-                                Offset.zero & overlay.size,
-                              );
-                              final colors = {
-                                Colors.teal: l10n.s_color_teal,
-                                Colors.cyan: l10n.s_color_cyan,
-                                Colors.blueAccent: l10n.s_color_blue,
-                                Colors.deepPurple: l10n.s_color_purple,
-                                Colors.red: l10n.s_color_red,
-                                Colors.orange: l10n.s_color_orange,
-                                Colors.yellow: l10n.s_color_yellow,
-                                if (isAndroid &&
-                                    ref.read(androidSdkVersionProvider) >= 31)
-                                  Colors.lightGreen: l10n.s_color_green,
-                              };
-                              final collapsedMessage = l10n.s_collapsed;
-                              final view = View.of(context);
-                              SemanticsService.sendAnnouncement(
-                                view,
-                                l10n.s_expanded,
-                                TextDirection.ltr,
-                              );
-                              showDialog(
-                                context: context,
-                                barrierColor: Colors.transparent,
-                                builder: (context) => Stack(
-                                  children: [
-                                    // Dismiss on tap outside
-                                    Positioned.fill(
-                                      child: GestureDetector(
-                                        onTap: () =>
-                                            Navigator.of(context).pop(),
-                                        behavior: HitTestBehavior.opaque,
-                                        child: const SizedBox.expand(),
-                                      ),
-                                    ),
-                                    Positioned(
-                                      top: position.top,
-                                      left: position.left,
-                                      child: Material(
-                                        elevation: 8,
-                                        borderRadius: BorderRadius.circular(12),
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.surfaceContainer,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(16),
-                                          child: SizedBox(
-                                            width: 240,
-                                            child: Wrap(
-                                              runSpacing: 8,
-                                              spacing: 16,
-                                              children: [
-                                                ...colors.entries.map(
-                                                  (e) => _ColorButton(
-                                                    color: e.key,
-                                                    colorName: e.value,
-                                                    isSelected:
-                                                        customColor?.toInt32 ==
-                                                        e.key.toInt32,
-                                                    onPressed: () {
-                                                      _updateColor(
-                                                        e.key,
-                                                        ref,
-                                                        serial,
-                                                      );
-                                                      Navigator.of(
-                                                        context,
-                                                      ).pop();
-                                                    },
-                                                  ),
-                                                ),
-                                                _ColorButton(
-                                                  isDefault: true,
-                                                  color: defaultColor,
-                                                  colorName:
-                                                      l10n.s_system_default,
-                                                  isSelected:
-                                                      customColor == null,
-                                                  onPressed: () {
-                                                    _updateColor(
-                                                      null,
-                                                      ref,
-                                                      serial,
-                                                    );
-                                                    Navigator.of(context).pop();
-                                                  },
-                                                  icon: Icon(
-                                                    customColor == null
-                                                        ? Symbols.circle
-                                                        : Symbols.clear,
-                                                    fill: 1,
-                                                    size: 16,
-                                                    weight: 700,
-                                                    opticalSize: 20,
-                                                    color:
-                                                        defaultColor
-                                                                .computeLuminance() >
-                                                            0.7
-                                                        ? Colors.grey
-                                                        : Colors.white,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ).then((_) {
-                                SemanticsService.sendAnnouncement(
-                                  view,
-                                  collapsedMessage,
-                                  TextDirection.ltr,
-                                );
-                              });
-                            },
-                          );
-                        },
+                      _ColorPickerButton(
+                        l10n: l10n,
+                        serial: serial,
+                        customColor: customColor,
+                        defaultColor: defaultColor,
                       ),
                       Container(
                         height: 3.0,
@@ -420,15 +277,6 @@ class _DeviceContent extends ConsumerWidget {
     );
   }
 
-  void _updateColor(Color? color, WidgetRef ref, int serial) async {
-    final manager = ref.read(keyCustomizationManagerProvider.notifier);
-    await manager.set(
-      serial: serial,
-      name: initialCustomization?.name,
-      color: color,
-    );
-  }
-
   Future<void> _showManageLabelDialog(
     KeyCustomization keyCustomization,
     BuildContext context,
@@ -438,6 +286,157 @@ class _DeviceContent extends ConsumerWidget {
       builder: (context) =>
           ManageLabelDialog(initialCustomization: keyCustomization),
     );
+  }
+}
+
+class _ColorPickerButton extends ConsumerStatefulWidget {
+  final AppLocalizations l10n;
+  final int serial;
+  final Color? customColor;
+  final Color defaultColor;
+
+  const _ColorPickerButton({
+    required this.l10n,
+    required this.serial,
+    required this.customColor,
+    required this.defaultColor,
+  });
+
+  @override
+  ConsumerState<_ColorPickerButton> createState() => _ColorPickerButtonState();
+}
+
+class _ColorPickerButtonState extends ConsumerState<_ColorPickerButton> {
+  bool _announceCollapsed = false;
+
+  void _updateColor(Color? color) async {
+    final manager = ref.read(keyCustomizationManagerProvider.notifier);
+    await manager.set(
+      serial: widget.serial,
+      name: ref.read(keyCustomizationManagerProvider)[widget.serial]?.name,
+      color: color,
+    );
+  }
+
+  void _announceCollapsedState() {
+    if (mounted) {
+      setState(() {
+        _announceCollapsed = true;
+      });
+      // Reset after a short delay to allow the announcement
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (mounted) {
+          setState(() {
+            _announceCollapsed = false;
+          });
+        }
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = widget.l10n;
+    final customColor = widget.customColor;
+    final defaultColor = widget.defaultColor;
+
+    final colors = {
+      Colors.teal: l10n.s_color_teal,
+      Colors.cyan: l10n.s_color_cyan,
+      Colors.blueAccent: l10n.s_color_blue,
+      Colors.deepPurple: l10n.s_color_purple,
+      Colors.red: l10n.s_color_red,
+      Colors.orange: l10n.s_color_orange,
+      Colors.yellow: l10n.s_color_yellow,
+      if (isAndroid && ref.read(androidSdkVersionProvider) >= 31)
+        Colors.lightGreen: l10n.s_color_green,
+    };
+
+    return Semantics(
+      liveRegion: _announceCollapsed,
+      label: _announceCollapsed ? l10n.s_collapsed : null,
+      child: PopupMenuButton(
+        tooltip: l10n.s_set_color,
+        onCanceled: _announceCollapsedState,
+        itemBuilder: (context) {
+          return [
+            _ColorPickerMenuEntry(
+              child: Semantics(
+                liveRegion: true,
+                label: l10n.s_expanded,
+                child: Center(
+                  child: Wrap(
+                    runSpacing: 8,
+                    spacing: 16,
+                    children: [
+                      ...colors.entries.map(
+                        (e) => _ColorButton(
+                          color: e.key,
+                          colorName: e.value,
+                          isSelected: customColor?.toInt32 == e.key.toInt32,
+                          onPressed: () {
+                            _updateColor(e.key);
+                            Navigator.of(context).pop();
+                            _announceCollapsedState();
+                          },
+                        ),
+                      ),
+                      _ColorButton(
+                        isDefault: true,
+                        color: defaultColor,
+                        colorName: l10n.s_system_default,
+                        isSelected: customColor == null,
+                        onPressed: () {
+                          _updateColor(null);
+                          Navigator.of(context).pop();
+                          _announceCollapsedState();
+                        },
+                        icon: Icon(
+                          customColor == null ? Symbols.circle : Symbols.clear,
+                          fill: 1,
+                          size: 16,
+                          weight: 700,
+                          opticalSize: 20,
+                          color: defaultColor.computeLuminance() > 0.7
+                              ? Colors.grey
+                              : Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ];
+        },
+        icon: Icon(
+          Symbols.palette,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
+      ),
+    );
+  }
+}
+
+class _ColorPickerMenuEntry extends PopupMenuEntry<void> {
+  final Widget child;
+
+  const _ColorPickerMenuEntry({required this.child});
+
+  @override
+  double get height => kMinInteractiveDimension;
+
+  @override
+  bool represents(void value) => false;
+
+  @override
+  State<_ColorPickerMenuEntry> createState() => _ColorPickerMenuEntryState();
+}
+
+class _ColorPickerMenuEntryState extends State<_ColorPickerMenuEntry> {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(padding: const EdgeInsets.all(16), child: widget.child);
   }
 }
 
@@ -478,42 +477,46 @@ class _ColorButtonState extends State<_ColorButton> {
       button: true,
       label: widget.colorName,
       onTap: widget.onPressed,
-      child: ListenableBuilder(
-        listenable: _focusNode,
-        builder: (context, child) => DecoratedBox(
-          position: DecorationPosition.foreground,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: _focusNode.hasFocus
-                ? Border.all(color: colorScheme.primary, width: 1)
-                : null,
+      child: ExcludeSemantics(
+        child: ListenableBuilder(
+          listenable: _focusNode,
+          builder: (context, child) => DecoratedBox(
+            position: DecorationPosition.foreground,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: _focusNode.hasFocus
+                  ? Border.all(color: colorScheme.primary, width: 1)
+                  : null,
+            ),
+            child: child!,
           ),
-          child: child!,
-        ),
-        child: RawMaterialButton(
-          focusNode: _focusNode,
-          onPressed: widget.onPressed,
-          constraints: const BoxConstraints(minWidth: 26.0, minHeight: 26.0),
-          fillColor: widget.color,
-          hoverColor: Colors.black12,
-          shape: const CircleBorder(),
-          child: widget.isDefault
-              ? Icon(
-                  widget.isSelected ? Symbols.circle : Symbols.clear,
-                  fill: 1,
-                  size: 16,
-                  weight: 700,
-                  opticalSize: 20,
-                  color: widget.color.computeLuminance() > 0.7
-                      ? Colors.grey
-                      : Colors.white,
-                )
-              : Icon(
-                  Symbols.circle,
-                  fill: 1,
-                  size: 16,
-                  color: widget.isSelected ? Colors.white : Colors.transparent,
-                ),
+          child: RawMaterialButton(
+            focusNode: _focusNode,
+            onPressed: widget.onPressed,
+            constraints: const BoxConstraints(minWidth: 26.0, minHeight: 26.0),
+            fillColor: widget.color,
+            hoverColor: Colors.black12,
+            shape: const CircleBorder(),
+            child: widget.isDefault
+                ? Icon(
+                    widget.isSelected ? Symbols.circle : Symbols.clear,
+                    fill: 1,
+                    size: 16,
+                    weight: 700,
+                    opticalSize: 20,
+                    color: widget.color.computeLuminance() > 0.7
+                        ? Colors.grey
+                        : Colors.white,
+                  )
+                : Icon(
+                    Symbols.circle,
+                    fill: 1,
+                    size: 16,
+                    color: widget.isSelected
+                        ? Colors.white
+                        : Colors.transparent,
+                  ),
+          ),
         ),
       ),
     );
