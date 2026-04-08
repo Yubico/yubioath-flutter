@@ -477,7 +477,6 @@ class _ColorButtonState extends State<_ColorButton> {
     return Semantics(
       button: true,
       label: widget.colorName,
-      excludeSemantics: true,
       onTap: widget.onPressed,
       child: ListenableBuilder(
         listenable: _focusNode,
