@@ -57,6 +57,8 @@
     "s_expand_navigation": "Gezinme çubuğunu genişlet",
     "s_collapse_navigation": "Gezinme çubuğunu daralt",
     "s_expand_collapse_navigation": "Gezinme çubuğunu genişlet/daralt",
+    "s_expanded": null,
+    "s_collapsed": null,
     "s_show_menu": "Menüyü göster",
     "s_expand_menu_bar": null,
     "s_collapse_menu_bar": null,

@@ -57,6 +57,8 @@
     "s_expand_navigation": "ナビゲーションバーを展開します",
     "s_collapse_navigation": "ナビゲーションバーを折りたたみます",
     "s_expand_collapse_navigation": "ナビゲーションバーの展開/折りたたみ",
+    "s_expanded": null,
+    "s_collapsed": null,
     "s_show_menu": "メニューを表示します",
     "s_expand_menu_bar": null,
     "s_collapse_menu_bar": null,
