@@ -57,6 +57,8 @@
     "s_expand_navigation": "Expand navigation bar",
     "s_collapse_navigation": "Collapse navigation bar",
     "s_expand_collapse_navigation": "Expand/collapse navigation bar",
+    "s_expanded": "Expanded",
+    "s_collapsed": "Collapsed",
     "s_show_menu": "Show menu",
     "s_expand_menu_bar": "Expand menu bar",
     "s_collapse_menu_bar": "Collapse menu bar",

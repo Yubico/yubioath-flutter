@@ -17,6 +17,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -249,6 +250,13 @@ class _DeviceContent extends ConsumerWidget {
                                     ref.read(androidSdkVersionProvider) >= 31)
                                   Colors.lightGreen: l10n.s_color_green,
                               };
+                              final collapsedMessage = l10n.s_collapsed;
+                              final view = View.of(context);
+                              SemanticsService.sendAnnouncement(
+                                view,
+                                l10n.s_expanded,
+                                TextDirection.ltr,
+                              );
                               showDialog(
                                 context: context,
                                 barrierColor: Colors.transparent,
@@ -338,7 +346,13 @@ class _DeviceContent extends ConsumerWidget {
                                     ),
                                   ],
                                 ),
-                              );
+                              ).then((_) {
+                                SemanticsService.sendAnnouncement(
+                                  view,
+                                  collapsedMessage,
+                                  TextDirection.ltr,
+                                );
+                              });
                             },
                           );
                         },
