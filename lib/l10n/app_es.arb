@@ -57,6 +57,8 @@
     "s_expand_navigation": "Ampliar la barra navegación",
     "s_collapse_navigation": "Contraer barra de navegación",
     "s_expand_collapse_navigation": "Ampliar/contraer barra de navegación",
+    "s_expanded": null,
+    "s_collapsed": null,
     "s_show_menu": "Mostrar menú",
     "s_expand_menu_bar": null,
     "s_collapse_menu_bar": null,

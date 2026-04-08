@@ -57,6 +57,8 @@
     "s_expand_navigation": "Επέκταση γραμμής πλοήγησης",
     "s_collapse_navigation": "Σύμπτυξη γραμμής πλοήγησης",
     "s_expand_collapse_navigation": "Επέκταση/σύμπτυξη γραμμής πλοήγησης",
+    "s_expanded": null,
+    "s_collapsed": null,
     "s_show_menu": "Εμφάνιση μενού",
     "s_expand_menu_bar": null,
     "s_collapse_menu_bar": null,

@@ -57,6 +57,8 @@
     "s_expand_navigation": "Expandera navigeringsfältet",
     "s_collapse_navigation": "Minimera navigationsfältet",
     "s_expand_collapse_navigation": "Expandera/minimera navigeringsfältet",
+    "s_expanded": null,
+    "s_collapsed": null,
     "s_show_menu": "Visa meny",
     "s_expand_menu_bar": null,
     "s_collapse_menu_bar": null,

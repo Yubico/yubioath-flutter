@@ -57,6 +57,8 @@
     "s_expand_navigation": "Rozwiń pasek nawigacji",
     "s_collapse_navigation": "Zwiń pasek nawigacji",
     "s_expand_collapse_navigation": "Przełącz pasek nawigacji",
+    "s_expanded": null,
+    "s_collapsed": null,
     "s_show_menu": "Pokaż menu",
     "s_expand_menu_bar": null,
     "s_collapse_menu_bar": null,

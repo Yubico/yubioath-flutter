@@ -57,6 +57,8 @@
     "s_expand_navigation": "Розгорнути панель навігації",
     "s_collapse_navigation": "Згорнути панель навігації",
     "s_expand_collapse_navigation": "Розгорнути/згорнути панель навігації",
+    "s_expanded": null,
+    "s_collapsed": null,
     "s_show_menu": "Показати меню",
     "s_expand_menu_bar": null,
     "s_collapse_menu_bar": null,

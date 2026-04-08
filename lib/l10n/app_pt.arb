@@ -57,6 +57,8 @@
     "s_expand_navigation": "Expandir barra de navegação",
     "s_collapse_navigation": "Recolher barra de navegação",
     "s_expand_collapse_navigation": "Expandir/recolher barra de navegação",
+    "s_expanded": null,
+    "s_collapsed": null,
     "s_show_menu": "Mostrar Menu",
     "s_expand_menu_bar": null,
     "s_collapse_menu_bar": null,

@@ -57,6 +57,8 @@
     "s_expand_navigation": "展開導覽列",
     "s_collapse_navigation": "折疊導覽列",
     "s_expand_collapse_navigation": "展開/折疊導覽列",
+    "s_expanded": null,
+    "s_collapsed": null,
     "s_show_menu": "顯示選單",
     "s_expand_menu_bar": null,
     "s_collapse_menu_bar": null,

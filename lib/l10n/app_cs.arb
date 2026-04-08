@@ -57,6 +57,8 @@
     "s_expand_navigation": "Rozbalit navigační panel",
     "s_collapse_navigation": "Skrýt navigační panel",
     "s_expand_collapse_navigation": "Rozbalit/skrýt navigační panel",
+    "s_expanded": null,
+    "s_collapsed": null,
     "s_show_menu": "Zobrazit nabídku",
     "s_expand_menu_bar": null,
     "s_collapse_menu_bar": null,

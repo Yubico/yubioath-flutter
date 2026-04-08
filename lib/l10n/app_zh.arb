@@ -57,6 +57,8 @@
     "s_expand_navigation": "展开导航栏",
     "s_collapse_navigation": "折叠导航栏",
     "s_expand_collapse_navigation": "展开/折叠导航栏",
+    "s_expanded": null,
+    "s_collapsed": null,
     "s_show_menu": "显示菜单",
     "s_expand_menu_bar": null,
     "s_collapse_menu_bar": null,
