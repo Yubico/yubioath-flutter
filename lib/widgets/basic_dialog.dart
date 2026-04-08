@@ -72,6 +72,9 @@ class _BasicDialogState extends State<BasicDialog> {
       child: PopScope(
         canPop: widget.allowCancel,
         child: AlertDialog(
+          semanticLabel: widget.title is Text
+              ? (widget.title! as Text).data
+              : null,
           title: widget.title,
           titlePadding: EdgeInsets.only(
             left: 18.0,
