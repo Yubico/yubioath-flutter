@@ -56,7 +56,7 @@ Future<T?> showBlurDialog<T>({
   barrierColor: barrierColor,
   barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
   pageBuilder: (ctx, anim1, anim2) =>
-      Semantics(scopesRoute: true, namesRoute: true, child: builder(ctx)),
+      Semantics(scopesRoute: true, explicitChildNodes: true, namesRoute: true, child: builder(ctx)),
   transitionDuration: const Duration(milliseconds: 150),
   transitionBuilder: (ctx, anim1, anim2, child) => BackdropFilter(
     filter: ImageFilter.blur(
