@@ -591,7 +591,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                             AppTextField(
                               key: keys.issuerField,
                               controller: _issuerController,
-                              //autofocus: widget.credentialData == null,
+                              autofocus: widget.credentialData == null,
                               enabled: issuerRemaining > 0,
                               maxLength: issuerMaxLength,
                               inputFormatters: [
