@@ -64,9 +64,14 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
         : l10n.s_cancel;
   }
 
+  Widget _wrapTitleWithSemantics(Widget? title) {
+    if (title == null) return const SizedBox.shrink();
+    return Semantics(enabled: true, onTap: () {}, child: title);
+  }
+
   Widget _buildFullscreen(BuildContext context) => Scaffold(
     appBar: AppBar(
-      title: widget.title,
+      title: _wrapTitleWithSemantics(widget.title),
       actions: widget.actions,
       leading: IconButton(
         key: closeButton,
@@ -99,7 +104,7 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
           ),
         ),
         child: AlertDialog(
-          title: widget.title,
+          title: _wrapTitleWithSemantics(widget.title),
           titlePadding: const EdgeInsets.only(top: 24, left: 18, right: 18),
           contentPadding: const EdgeInsets.symmetric(vertical: 8),
           content: SizedBox(
