@@ -17,7 +17,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:local_notifier/local_notifier.dart';
 
 import '../message.dart';
@@ -78,36 +77,39 @@ class _UserInteractionDialogState extends State<_UserInteractionDialog> {
     Widget? icon = widget.controller.icon;
     final theme = Theme.of(context);
 
-    return AlertDialog(
-      scrollable: true,
-      content: SizedBox(
-        width: 100,
-        child: Column(
-          mainAxisSize: .min,
-          mainAxisAlignment: .center,
-          children: [
-            if (icon != null)
-              Padding(
-                padding: const EdgeInsets.all(24),
-                child: IconTheme(
-                  data: IconTheme.of(context).copyWith(size: 36),
-                  child: icon,
+    return Semantics(
+      liveRegion: true,
+      child: AlertDialog(
+        scrollable: true,
+        content: SizedBox(
+          width: 100,
+          child: Column(
+            mainAxisSize: .min,
+            mainAxisAlignment: .center,
+            children: [
+              if (icon != null)
+                Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: IconTheme(
+                    data: IconTheme.of(context).copyWith(size: 36),
+                    child: icon,
+                  ),
                 ),
+              Text(
+                widget.controller.title,
+                style: theme.textTheme.titleLarge,
+                textAlign: .center,
               ),
-            Text(
-              widget.controller.title,
-              style: theme.textTheme.titleLarge,
-              textAlign: .center,
-            ),
-            Text(
-              widget.controller.description,
-              textAlign: .center,
-              style: theme.textTheme.bodyMedium!.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
+              Text(
+                widget.controller.description,
+                textAlign: .center,
+                style: theme.textTheme.bodyMedium!.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                softWrap: true,
               ),
-              softWrap: true,
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -165,8 +167,6 @@ UserInteractionController _dialogUserInteraction(
   Widget? icon,
   void Function()? onCancel,
 }) {
-  String a11yLabel = '$title $description';
-  SemanticsService.sendAnnouncement(View.of(context), a11yLabel, .ltr);
   var completed = false;
   var wasPopped = false;
   final controller = _UserInteractionController(

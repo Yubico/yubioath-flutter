@@ -17,7 +17,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
 class Toast extends StatefulWidget {
   final String message;
@@ -90,7 +89,10 @@ class _ToastState extends State<Toast> with SingleTickerProviderStateMixin {
         child: Center(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Text(widget.message, style: widget.textStyle),
+            child: Semantics(
+              liveRegion: true,
+              child: Text(widget.message, style: widget.textStyle),
+            ),
           ),
         ),
       ),
@@ -153,8 +155,6 @@ void Function() showToast(
   Timer.run(() {
     Overlay.of(context).insert(entry!);
   });
-
-  SemanticsService.sendAnnouncement(View.of(context), message, .ltr);
 
   return close;
 }
