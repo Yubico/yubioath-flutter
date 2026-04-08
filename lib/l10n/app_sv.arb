@@ -551,6 +551,8 @@
     "s_time_based": "Tidsbaserad",
     "l_copy_code_desc": "Klistra in koden i ett annat program",
     "l_calculate_code_desc": "Få en ny kod från din YubiKey",
+    "s_refresh_code": null,
+    "s_time_remaining": null,
     "@_fido_credentials": {},
 
     "s_rp_id": "RP-ID",

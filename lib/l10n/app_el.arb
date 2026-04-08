@@ -551,6 +551,8 @@
     "s_time_based": "Βάσει χρόνου",
     "l_copy_code_desc": "Επικολλήστε τον κωδικό σε άλλη εφαρμογή",
     "l_calculate_code_desc": "Λάβετε νέο κωδικό από το YubiKey σας",
+    "s_refresh_code": null,
+    "s_time_remaining": null,
     "@_fido_credentials": {},
 
     "s_rp_id": "Αναγνωριστικό RP",

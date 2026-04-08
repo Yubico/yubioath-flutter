@@ -551,6 +551,8 @@
     "s_time_based": "時間ベース",
     "l_copy_code_desc": "別のアプリケーションにコードを貼り付けてください",
     "l_calculate_code_desc": "YubiKey から新しいコードを取得します",
+    "s_refresh_code": null,
+    "s_time_remaining": null,
     "@_fido_credentials": {},
 
     "s_rp_id": "RP ID",

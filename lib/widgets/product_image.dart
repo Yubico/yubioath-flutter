@@ -16,6 +16,7 @@
 
 import 'package:flutter/material.dart';
 
+import '../generated/l10n/app_localizations.dart';
 import '../management/models.dart';
 
 const _imagesForName = {
@@ -60,15 +61,19 @@ class ProductImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final image =
         _imagesForName[name] ??
         (isNfc ? _imagesForFormFactorNfc : _imagesForFormFactor)[formFactor];
+
+    final label = name.isNotEmpty ? name : l10n.s_unknown_device;
 
     if (image == null) {
       return Image.asset(
         'assets/product-images/generic.png',
         filterQuality: .medium,
         color: Theme.of(context).colorScheme.onPrimary,
+        semanticLabel: label,
       );
     }
 
@@ -76,6 +81,7 @@ class ProductImage extends StatelessWidget {
       'assets/product-images/$image.png',
       // Medium provides the best results when scaling down
       filterQuality: .medium,
+      semanticLabel: label,
     );
   }
 }

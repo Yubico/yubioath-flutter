@@ -127,32 +127,47 @@ class AccountHelper {
         orElse: () => [],
       );
 
-  Widget buildCodeIcon() => AnimatedSize(
-    alignment: Alignment.centerRight,
-    duration: const Duration(milliseconds: 100),
-    child: Opacity(
-      opacity: 0.4,
-      child:
-          (credential.oathType == OathType.hotp
-              ? (expired ? const Icon(Symbols.refresh) : null)
-              : (expired || code == null
-                    ? (credential.touchRequired
-                          ? const Icon(Symbols.touch_app)
-                          : null)
-                    : Builder(
-                        builder: (context) {
-                          return SizedBox.square(
-                            dimension: (IconTheme.of(context).size ?? 18) * 0.8,
-                            child: CircleTimer(
-                              code!.validFrom * 1000,
-                              code!.validTo * 1000,
-                            ),
-                          );
-                        },
-                      ))) ??
-          const SizedBox(),
-    ),
-  );
+  Widget buildCodeIcon() {
+    final l10n = AppLocalizations.of(_context);
+    return AnimatedSize(
+      alignment: Alignment.centerRight,
+      duration: const Duration(milliseconds: 100),
+      child: Opacity(
+        opacity: 0.4,
+        child:
+            (credential.oathType == OathType.hotp
+                ? (expired
+                      ? Icon(
+                          Symbols.refresh,
+                          semanticLabel: l10n.s_refresh_code,
+                        )
+                      : null)
+                : (expired || code == null
+                      ? (credential.touchRequired
+                            ? Icon(
+                                Symbols.touch_app,
+                                semanticLabel: l10n.s_touch_required,
+                              )
+                            : null)
+                      : Builder(
+                          builder: (context) {
+                            return Semantics(
+                              label: l10n.s_time_remaining,
+                              child: SizedBox.square(
+                                dimension:
+                                    (IconTheme.of(context).size ?? 18) * 0.8,
+                                child: CircleTimer(
+                                  code!.validFrom * 1000,
+                                  code!.validTo * 1000,
+                                ),
+                              ),
+                            );
+                          },
+                        ))) ??
+            const SizedBox(),
+      ),
+    );
+  }
 
   Widget buildCodeLabel() => _CodeLabel(code, expired);
 }

@@ -551,6 +551,8 @@
     "s_time_based": "Zamana dayalı",
     "l_copy_code_desc": "Kodu başka bir uygulamaya yapıştırın",
     "l_calculate_code_desc": "YubiKey'inizden yeni bir kod alın",
+    "s_refresh_code": null,
+    "s_time_remaining": null,
     "@_fido_credentials": {},
 
     "s_rp_id": "RP kimliği",

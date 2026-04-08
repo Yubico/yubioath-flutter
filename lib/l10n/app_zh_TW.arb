@@ -551,6 +551,8 @@
     "s_time_based": "基於時間",
     "l_copy_code_desc": "將驗證碼複製貼上到其他應用程式",
     "l_calculate_code_desc": "從您的 YubiKey 取得新密碼",
+    "s_refresh_code": null,
+    "s_time_remaining": null,
     "@_fido_credentials": {},
 
     "s_rp_id": "RP ID",

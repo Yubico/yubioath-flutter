@@ -103,6 +103,7 @@ class _AccountViewState extends ConsumerState<AccountView> {
       selected: widget.selected,
       leading: AccountIcon(
         issuer: credential.issuer,
+        label: credential.issuer ?? credential.name,
         defaultWidget: circleAvatar,
       ),
       title: helper.title,
@@ -157,6 +158,7 @@ class _AccountViewState extends ConsumerState<AccountView> {
                       children: [
                         AccountIcon(
                           issuer: credential.issuer,
+                          label: credential.issuer ?? credential.name,
                           defaultWidget: circleAvatar,
                         ),
                         const SizedBox(width: 12),

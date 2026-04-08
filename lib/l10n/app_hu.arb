@@ -551,6 +551,8 @@
     "s_time_based": "Időalapú",
     "l_copy_code_desc": "Kód beillesztése másik alkalmazásba",
     "l_calculate_code_desc": "Új kód kérése a YubiKey-től",
+    "s_refresh_code": null,
+    "s_time_remaining": null,
     "@_fido_credentials": {},
 
     "s_rp_id": "RP ID",

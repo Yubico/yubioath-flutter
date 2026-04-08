@@ -551,6 +551,8 @@
     "s_time_based": "Basato sul tempo",
     "l_copy_code_desc": "Incolla il codice in un'altra applicazione",
     "l_calculate_code_desc": "Ottieni un nuovo codice dalla tua YubiKey",
+    "s_refresh_code": null,
+    "s_time_remaining": null,
     "@_fido_credentials": {},
 
     "s_rp_id": "ID RP",

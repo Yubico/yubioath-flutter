@@ -551,6 +551,8 @@
     "s_time_based": "Založeno na čase",
     "l_copy_code_desc": "Vložte kód do jiné aplikace",
     "l_calculate_code_desc": "Získejte nový kód z vašeho YubiKey",
+    "s_refresh_code": null,
+    "s_time_remaining": null,
     "@_fido_credentials": {},
 
     "s_rp_id": "RP ID",

@@ -23,11 +23,13 @@ import '../../app/icon_provider/icon_pack_icon.dart';
 
 class AccountIcon extends StatelessWidget {
   final String? issuer;
+  final String label;
   final Widget defaultWidget;
 
   const AccountIcon({
     super.key,
     required this.issuer,
+    required this.label,
     required this.defaultWidget,
   });
 
@@ -46,9 +48,12 @@ class AccountIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IconPackIcon(
-      defaultWidget: defaultWidget,
-      matchFunction: (iconPack) => _getFileForIssuer(iconPack),
+    return Semantics(
+      label: label,
+      child: IconPackIcon(
+        defaultWidget: defaultWidget,
+        matchFunction: (iconPack) => _getFileForIssuer(iconPack),
+      ),
     );
   }
 }
