@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022,2024 Yubico.
+ * Copyright (C) 2022-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,14 +23,11 @@ import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
 import java.io.Closeable
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.encodeToString
 
 interface JsonSerializable {
     fun toJson(): String
@@ -136,7 +133,7 @@ fun MethodChannel.setHandler(scope: CoroutineScope, handler: MethodHandler) {
             try {
                 val response = handler.invoke(call.method, args)
                 result.success(response)
-            } catch (notImplemented: NotImplementedError) {
+            } catch (_: NotImplementedError) {
                 result.notImplemented()
             } catch (error: Throwable) {
                 result.error(
@@ -156,24 +153,24 @@ fun MethodChannel.setHandler(scope: CoroutineScope, handler: MethodHandler) {
  * Coroutine-based method invocation to call a Flutter method and get a result.
  */
 suspend fun MethodChannel.invoke(method: String, args: Any?): Any? = withContext(Dispatchers.Main) {
-    suspendCoroutine { continuation ->
+    suspendCancellableCoroutine { continuation ->
         invokeMethod(
             method,
             args,
             object : MethodChannel.Result {
                 override fun success(result: Any?) {
-                    continuation.resume(result)
+                    continuation.resumeWith(Result.success(result))
                 }
 
                 override fun error(errorCode: String, errorMessage: String?, errorDetails: Any?) {
-                    continuation.resumeWithException(
-                        Exception("$errorCode: $errorMessage - $errorDetails")
+                    continuation.resumeWith(
+                        Result.failure(Exception("$errorCode: $errorMessage - $errorDetails"))
                     )
                 }
 
                 override fun notImplemented() {
-                    continuation.resumeWithException(
-                        NotImplementedError("Method not implemented: $method")
+                    continuation.resumeWith(
+                        Result.failure(NotImplementedError("Method not implemented: $method"))
                     )
                 }
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2025 Yubico.
+ * Copyright (C) 2022-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,11 +63,11 @@ import java.net.URI
 import java.util.concurrent.CancellationException
 import java.util.concurrent.RejectedExecutionException
 import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import org.slf4j.LoggerFactory
 
 typealias OathAction = (Result<YubiKitOathSession, Exception>) -> Unit
@@ -799,7 +799,7 @@ class OathManager(
         block: (YubiKitOathSession) -> T
     ): Result<T, Throwable> {
         try {
-            val result = suspendCoroutine { outer ->
+            val result = suspendCancellableCoroutine { outer ->
                 pendingAction = {
                     outer.resumeWith(
                         runCatching {
