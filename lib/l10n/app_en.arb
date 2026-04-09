@@ -129,6 +129,17 @@
         }
     },
     "s_character_count": "Character count",
+    "l_characters_used": "{used} of {max} characters used",
+    "@l_characters_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "max": {
+                "type": "int"
+            }
+        }
+    },
     "@_language": {},
 
     "s_language": "Language",
