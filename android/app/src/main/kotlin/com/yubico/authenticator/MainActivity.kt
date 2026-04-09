@@ -583,6 +583,7 @@ class MainActivity : FlutterFragmentActivity() {
         )
 
         contextManager = contextManagers[appPreferences.appContext]
+        contextManager?.activate()
     }
 
     private fun switchContextManager(appContext: OperationContext): Boolean {
