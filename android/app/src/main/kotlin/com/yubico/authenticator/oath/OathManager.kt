@@ -64,6 +64,7 @@ import java.util.concurrent.CancellationException
 import java.util.concurrent.RejectedExecutionException
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.suspendCoroutine
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -206,12 +207,18 @@ class OathManager(
 
     override fun activate() {
         super.activate()
-        oathViewModel.credentials.observe(lifecycleOwner, credentialObserver)
+        // LiveData.observe() must be called on the main thread
+        coroutineScope.launch(Dispatchers.Main) {
+            oathViewModel.credentials.observe(lifecycleOwner, credentialObserver)
+        }
         logger.debug("OathManager activated")
     }
 
     override fun deactivate() {
-        oathViewModel.credentials.removeObserver(credentialObserver)
+        // LiveData.removeObserver() must be called on the main thread
+        coroutineScope.launch(Dispatchers.Main) {
+            oathViewModel.credentials.removeObserver(credentialObserver)
+        }
         oathViewModel.clearSession()
         oathViewModel.updateCredentials(mapOf())
         pendingAction?.invoke(Result.failure(CancellationException()))
