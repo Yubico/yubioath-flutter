@@ -187,12 +187,23 @@ class MainActivity : FlutterFragmentActivity() {
     private fun startUsbDiscovery() {
         logger.debug("Starting usb discovery")
         val usbConfiguration = UsbConfiguration().handlePermissions(true)
-        yubikit.startUsbDiscovery(usbConfiguration) { device ->
-            viewModel.setConnectedYubiKey(device) {
-                logger.debug("YubiKey was disconnected, stopping usb discovery")
-                stopUsbDiscovery()
+        try {
+            yubikit.startUsbDiscovery(usbConfiguration) { device ->
+                viewModel.setConnectedYubiKey(device) {
+                    logger.debug("YubiKey was disconnected, stopping usb discovery")
+                    stopUsbDiscovery()
+                }
+                launchProcessYubiKey(device)
             }
-            launchProcessYubiKey(device)
+        } catch (t: Throwable) {
+            logger.error("Error during startUsbDiscovery")
+            // startUsbDiscovery registers an internal broadcast receiver before
+            // iterating existing USB devices. If an exception is thrown (e.g. when
+            // a YubiHSM with an unrecognized product ID is connected), the receiver
+            // remains active and will crash again on the next USB attach event.
+            // Calling stopUsbDiscovery cleans up the internal listener and
+            // unregisters the broadcast receiver.
+            stopUsbDiscovery()
         }
     }
 
@@ -304,7 +315,7 @@ class MainActivity : FlutterFragmentActivity() {
                     val device = deviceIterator.next()
                     if (device.vendorId == YUBICO_VENDOR_ID) {
                         // the device might not have a USB permission
-                        // it will be requested during during the UsbDiscovery
+                        // it will be requested during the UsbDiscovery
                         startUsbDiscovery()
                         break
                     }
