@@ -222,7 +222,9 @@ class _DeviceContent extends ConsumerWidget {
                             onPressed: () {
                               final button =
                                   context.findRenderObject() as RenderBox;
-                              final buttonRect = button.localToGlobal(Offset.zero) & button.size;
+                              final buttonRect =
+                                  button.localToGlobal(Offset.zero) &
+                                  button.size;
                               final colors = {
                                 Colors.teal: l10n.s_color_teal,
                                 Colors.cyan: l10n.s_color_cyan,
