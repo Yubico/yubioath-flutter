@@ -61,6 +61,7 @@ import io.flutter.plugin.common.MethodChannel
 import java.io.IOException
 import java.net.URI
 import java.util.concurrent.CancellationException
+import java.util.concurrent.RejectedExecutionException
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.Job
@@ -107,6 +108,7 @@ class OathManager(
     override fun hasPending(): Boolean = pendingAction != null
 
     override fun onPause() {
+        refreshJob?.cancel()
         // cancel any pending actions, except for addToAny
         if (!addToAny) {
             pendingAction?.let {
@@ -608,6 +610,9 @@ class OathManager(
                     "IllegalStateException when accessing USB device: ",
                     illegalStateException
                 )
+                clearCodes()
+            } catch (_: RejectedExecutionException) {
+                logger.debug("USB device closed during credential refresh")
                 clearCodes()
             }
         }
