@@ -15,6 +15,7 @@
  */
 
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
@@ -520,13 +521,14 @@ class _ColorPickerLayoutDelegate extends SingleChildLayoutDelegate {
 
   @override
   Offset getPositionForChild(Size size, Size childSize) {
-    // Position below the button, aligned to the right edge
     double x = buttonRect.right - childSize.width;
     double y = buttonRect.bottom;
 
-    // Clamp to screen bounds
-    x = x.clamp(8.0, size.width - childSize.width - 8.0);
-    y = y.clamp(8.0, size.height - childSize.height - 8.0);
+    double maxX = math.max(8.0, size.width - childSize.width - 8.0);
+    double maxY = math.max(8.0, size.height - childSize.height - 8.0);
+
+    x = x.clamp(8.0, maxX);
+    y = y.clamp(8.0, maxY);
 
     return Offset(x, y);
   }
