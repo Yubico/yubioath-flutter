@@ -192,7 +192,11 @@ class MainActivity : FlutterFragmentActivity() {
             yubikit.startUsbDiscovery(usbConfiguration) { device ->
                 viewModel.setConnectedYubiKey(device) {
                     logger.debug("YubiKey was disconnected, stopping usb discovery")
-                    stopUsbDiscovery()
+                    // Defer to avoid re-entering UsbDeviceManager while its
+                    // broadcast receiver is still handling the detach event.
+                    lifecycleScope.launch(Dispatchers.Main) {
+                        stopUsbDiscovery()
+                    }
                 }
                 launchProcessYubiKey(device)
             }
