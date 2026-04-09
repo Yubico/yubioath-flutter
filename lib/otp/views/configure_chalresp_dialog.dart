@@ -31,6 +31,7 @@ import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../../widgets/utf8_utils.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
@@ -160,6 +161,8 @@ class _ConfigureChalrespDialogState
                           ? []
                           : const [AutofillHints.password],
                       maxLength: secretMaxLength,
+                      buildCounter: buildByteCounterFor(_secretController.text),
+                      inputFormatters: [limitBytesLength(secretMaxLength)],
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_secret_key,
