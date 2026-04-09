@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2025 Yubico.
+ * Copyright (C) 2022-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,6 +86,7 @@ import java.util.concurrent.Executors
 import javax.crypto.Mac
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
@@ -195,7 +196,7 @@ class MainActivity : FlutterFragmentActivity() {
                 }
                 launchProcessYubiKey(device)
             }
-        } catch (t: Throwable) {
+        } catch (_: Throwable) {
             logger.error("Error during startUsbDiscovery")
             // startUsbDiscovery registers an internal broadcast receiver before
             // iterating existing USB devices. If an exception is thrown (e.g. when
@@ -284,7 +285,7 @@ class MainActivity : FlutterFragmentActivity() {
 
                 val executor = Executors.newSingleThreadExecutor()
                 val device = NfcYubiKeyDevice(tag, nfcConfiguration.timeout, executor)
-                lifecycleScope.launch {
+                lifecycleScope.launch(Dispatchers.IO) {
                     try {
                         processYubiKey(device)
                         device.remove {
@@ -351,8 +352,10 @@ class MainActivity : FlutterFragmentActivity() {
             if (device is NfcYubiKeyDevice) {
                 appMethodChannel.nfcStateChanged(NfcState.ONGOING)
             }
-            getDeviceInfo(device).also {
-                deviceManager.scpKeyParams = readScpKeyParams(device, it.fipsCapable)
+            withContext(Dispatchers.IO) {
+                getDeviceInfo(device).also {
+                    deviceManager.scpKeyParams = readScpKeyParams(device, it.fipsCapable)
+                }
             }
         } catch (e: Exception) {
             logger.debug("Exception while getting device info and scp keys: ", e)
@@ -481,7 +484,7 @@ class MainActivity : FlutterFragmentActivity() {
     }
 
     private fun launchProcessYubiKey(device: YubiKeyDevice) {
-        lifecycleScope.launch {
+        lifecycleScope.launch(Dispatchers.IO) {
             processYubiKey(device)
         }
     }
@@ -534,7 +537,7 @@ class MainActivity : FlutterFragmentActivity() {
                 logger.debug("A YubiKey is connected, using it with the context {}", it.appContext)
                 viewModel.connectedYubiKey.value?.let(::launchProcessYubiKey)
             }
-            if (it.notify == true) {
+            if (it.notify) {
                 appMethodChannel.appContextChanged(it.appContext)
             }
         }
@@ -769,6 +772,8 @@ class MainActivity : FlutterFragmentActivity() {
             }
         }
 
+        // Called directly (without dispatching) because this is only invoked from
+        // NfcAdapterStateChangedBR.onReceive, which already runs on the main thread.
         fun nfcAdapterStateChanged(value: Boolean) {
             methodChannel.invokeMethod(
                 "nfcAdapterStateChanged",
