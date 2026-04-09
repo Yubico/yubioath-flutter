@@ -222,22 +222,7 @@ class _DeviceContent extends ConsumerWidget {
                             onPressed: () {
                               final button =
                                   context.findRenderObject() as RenderBox;
-                              final overlay =
-                                  Overlay.of(context).context.findRenderObject()
-                                      as RenderBox;
-                              final position = RelativeRect.fromRect(
-                                Rect.fromPoints(
-                                  button.localToGlobal(
-                                    Offset.zero,
-                                    ancestor: overlay,
-                                  ),
-                                  button.localToGlobal(
-                                    button.size.bottomRight(Offset.zero),
-                                    ancestor: overlay,
-                                  ),
-                                ),
-                                Offset.zero & overlay.size,
-                              );
+                              final buttonRect = button.localToGlobal(Offset.zero) & button.size;
                               final colors = {
                                 Colors.teal: l10n.s_color_teal,
                                 Colors.cyan: l10n.s_color_cyan,
@@ -271,9 +256,10 @@ class _DeviceContent extends ConsumerWidget {
                                         child: const SizedBox.expand(),
                                       ),
                                     ),
-                                    Positioned(
-                                      top: position.top,
-                                      left: position.left,
+                                    CustomSingleChildLayout(
+                                      delegate: _ColorPickerLayoutDelegate(
+                                        buttonRect: buttonRect,
+                                      ),
                                       child: Material(
                                         elevation: 8,
                                         borderRadius: BorderRadius.circular(12),
@@ -517,5 +503,34 @@ class _ColorButtonState extends State<_ColorButton> {
         ),
       ),
     );
+  }
+}
+
+class _ColorPickerLayoutDelegate extends SingleChildLayoutDelegate {
+  final Rect buttonRect;
+
+  _ColorPickerLayoutDelegate({required this.buttonRect});
+
+  @override
+  BoxConstraints getConstraintsForChild(BoxConstraints constraints) {
+    return BoxConstraints.loose(constraints.biggest);
+  }
+
+  @override
+  Offset getPositionForChild(Size size, Size childSize) {
+    // Position below the button, aligned to the right edge
+    double x = buttonRect.right - childSize.width;
+    double y = buttonRect.bottom;
+
+    // Clamp to screen bounds
+    x = x.clamp(8.0, size.width - childSize.width - 8.0);
+    y = y.clamp(8.0, size.height - childSize.height - 8.0);
+
+    return Offset(x, y);
+  }
+
+  @override
+  bool shouldRelayout(_ColorPickerLayoutDelegate oldDelegate) {
+    return buttonRect != oldDelegate.buttonRect;
   }
 }
