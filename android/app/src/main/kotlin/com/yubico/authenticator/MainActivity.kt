@@ -200,8 +200,8 @@ class MainActivity : FlutterFragmentActivity() {
                 }
                 launchProcessYubiKey(device)
             }
-        } catch (_: Throwable) {
-            logger.error("Error during startUsbDiscovery")
+        } catch (e: Exception) {
+            logger.error("Error during startUsbDiscovery: {}", e.message)
             // startUsbDiscovery registers an internal broadcast receiver before
             // iterating existing USB devices. If an exception is thrown (e.g. when
             // a YubiHSM with an unrecognized product ID is connected), the receiver
