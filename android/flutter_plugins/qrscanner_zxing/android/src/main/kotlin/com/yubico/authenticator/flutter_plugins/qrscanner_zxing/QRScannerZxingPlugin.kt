@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022,2024 Yubico.
+ * Copyright (C) 2022-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,6 +52,8 @@ class QRScannerZxingPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
 
     private val registrar = PermissionsResultRegistrar()
     private lateinit var channel: MethodChannel
+    private var activityBinding: ActivityPluginBinding? = null
+
 
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(binding.binaryMessenger, "qrscanner_zxing")
@@ -91,17 +93,23 @@ class QRScannerZxingPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
+        activityBinding = binding
         binding.addRequestPermissionsResultListener(this)
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
+        activityBinding?.removeRequestPermissionsResultListener(this)
+        activityBinding = null
     }
 
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
-
+        activityBinding = binding
+        binding.addRequestPermissionsResultListener(this)
     }
 
     override fun onDetachedFromActivity() {
+        activityBinding?.removeRequestPermissionsResultListener(this)
+        activityBinding = null
     }
 
     override fun onRequestPermissionsResult(

@@ -95,10 +95,7 @@ internal class QRScannerView(
 
         // permission related
         const val PERMISSION_REQUEST_CODE = 1
-        private val PERMISSIONS_TO_REQUEST =
-            mutableListOf(
-                Manifest.permission.CAMERA,
-            ).toTypedArray()
+        private val PERMISSIONS_TO_REQUEST = arrayOf(Manifest.permission.CAMERA)
 
         // communication channel
         private const val CHANNEL_NAME =
@@ -155,6 +152,7 @@ internal class QRScannerView(
     }
 
     override fun dispose() {
+        permissionsResultRegistrar.setListener(null)
         cameraController?.unbind()
         cameraController = null
         cameraExecutor.shutdown()
@@ -297,7 +295,9 @@ internal class QRScannerView(
         private val marginPct: Double?, private val listener: BarcodeAnalyzerListener
     ) : ImageAnalysis.Analyzer {
 
+        @Volatile
         var analysisPaused = false
+        @Volatile
         var analyzedImagesCount = 0
 
         private fun ByteBuffer.toByteArray(lastRowPadding: Int): ByteArray {
@@ -433,7 +433,7 @@ internal class QRScannerView(
                 Log.v(TAG, "Camera closed")
                 val stateChangedIntent =
                     Intent("com.yubico.authenticator.QRScannerView.CameraClosed").apply {
-                        setPackage("com.yubico.yubioath")
+                        setPackage(context.packageName)
                     }
                 context.sendBroadcast(stateChangedIntent)
                 cameraOpened = false
