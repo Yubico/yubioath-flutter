@@ -19,6 +19,7 @@ package com.yubico.authenticator.oath
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import com.yubico.authenticator.AppContextManager
 import com.yubico.authenticator.AppPreferences
 import com.yubico.authenticator.NULL
@@ -207,16 +208,18 @@ class OathManager(
 
     override fun activate() {
         super.activate()
-        // LiveData.observe() must be called on the main thread
-        coroutineScope.launch(Dispatchers.Main) {
+        // LiveData.observe() must be called on the main thread.
+        // Use lifecycleOwner's scope so the observer outlives this manager's coroutineScope.
+        lifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
             oathViewModel.credentials.observe(lifecycleOwner, credentialObserver)
         }
         logger.debug("OathManager activated")
     }
 
     override fun deactivate() {
-        // LiveData.removeObserver() must be called on the main thread
-        coroutineScope.launch(Dispatchers.Main) {
+        // LiveData.removeObserver() must be called on the main thread.
+        // Use lifecycleOwner's scope so removal isn't cancelled by dispose().
+        lifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
             oathViewModel.credentials.removeObserver(credentialObserver)
         }
         oathViewModel.clearSession()
