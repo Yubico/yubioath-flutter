@@ -80,6 +80,7 @@ class FidoConnectionHelper(private val deviceManager: DeviceManager) {
     suspend fun <T : Any> useSessionNfc(block: (YubiKitFidoSession) -> T): Result<T, Throwable> {
         try {
             val result = suspendCancellableCoroutine { outer ->
+                outer.invokeOnCancellation { pendingAction = null }
                 pendingAction = {
                     outer.resumeWith(
                         runCatching {

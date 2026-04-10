@@ -63,6 +63,7 @@ class ManagementConnectionHelper(private val deviceManager: DeviceManager) {
     private suspend fun <T : Any> useNfcDevice(block: (YubiKeyDevice) -> T): Result<T, Throwable> {
         try {
             val result = suspendCancellableCoroutine<T> { outer ->
+                outer.invokeOnCancellation { pendingAction = null }
                 pendingAction = {
                     outer.resumeWith(
                         runCatching {

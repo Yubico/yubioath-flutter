@@ -100,6 +100,7 @@ class PivConnectionHelper(private val deviceManager: DeviceManager) {
     ): Result<T, Throwable> {
         try {
             val result = suspendCancellableCoroutine { outer ->
+                outer.invokeOnCancellation { pendingAction = null }
                 pendingAction = {
                     outer.resumeWith(
                         runCatching {

@@ -800,6 +800,7 @@ class OathManager(
     ): Result<T, Throwable> {
         try {
             val result = suspendCancellableCoroutine { outer ->
+                outer.invokeOnCancellation { pendingAction = null }
                 pendingAction = {
                     outer.resumeWith(
                         runCatching {

@@ -127,7 +127,7 @@ class FidoResetHelper(
     }
 
     private suspend fun waitForUsbDisconnect() = suspendCancellableCoroutine { continuation ->
-        coroutineScope.launch {
+        val job = coroutineScope.launch {
             cancelReset = false
             while (deviceManager.isUsbKeyConnected()) {
                 if (cancelReset) {
@@ -140,10 +140,11 @@ class FidoResetHelper(
             }
             continuation.resumeWith(Result.success(Unit))
         }
+        continuation.invokeOnCancellation { job.cancel() }
     }
 
     private suspend fun waitForConnection() = suspendCancellableCoroutine { continuation ->
-        coroutineScope.launch {
+        val job = coroutineScope.launch {
             fidoViewModel.updateResetState(FidoResetState.Insert)
             while (!deviceManager.isUsbKeyConnected()) {
                 if (cancelReset) {
@@ -157,10 +158,11 @@ class FidoResetHelper(
             }
             continuation.resumeWith(Result.success(Unit))
         }
+        continuation.invokeOnCancellation { job.cancel() }
     }
 
     private suspend fun resetAfterTouch() = suspendCancellableCoroutine { continuation ->
-        coroutineScope.launch(Dispatchers.Main) {
+        val job = coroutineScope.launch(Dispatchers.Main) {
             fidoViewModel.updateResetState(FidoResetState.Touch)
             logger.debug("Waiting for touch")
             deviceManager.withKey { usbYubiKeyDevice ->
@@ -203,6 +205,7 @@ class FidoResetHelper(
                 }
             }
         }
+        continuation.invokeOnCancellation { job.cancel() }
     }
 
     private suspend fun resetOverUSB() {
@@ -212,7 +215,7 @@ class FidoResetHelper(
     }
 
     private suspend fun resetOverNfc() = suspendCancellableCoroutine { continuation ->
-        coroutineScope.launch {
+        val job = coroutineScope.launch {
             nfcOverlayManager.show {
                 connectionHelper.cancelPending()
             }
@@ -235,6 +238,7 @@ class FidoResetHelper(
                 continuation.resumeWith(Result.failure(e))
             }
         }
+        continuation.invokeOnCancellation { job.cancel() }
     }
 
     private fun doReset(fidoSession: YubiKitFidoSession) {
