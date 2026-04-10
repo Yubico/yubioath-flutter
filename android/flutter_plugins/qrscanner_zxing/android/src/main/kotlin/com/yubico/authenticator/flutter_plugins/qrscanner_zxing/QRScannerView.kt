@@ -153,15 +153,19 @@ internal class QRScannerView(
 
     override fun dispose() {
         permissionsResultRegistrar.setListener(null)
+        releaseCamera()
+        cameraExecutor.shutdown()
+        methodChannel.setMethodCallHandler(null)
+        Log.v(TAG, "dispose()")
+    }
+
+    private fun releaseCamera() {
         lifecycleOwner?.let { owner ->
             cameraController?.cameraInfo?.cameraState?.removeObservers(owner)
         }
         previewView.controller = null
         cameraController?.unbind()
         cameraController = null
-        cameraExecutor.shutdown()
-        methodChannel.setMethodCallHandler(null)
-        Log.v(TAG, "dispose()")
     }
 
     private val methodChannel: MethodChannel = MethodChannel(binaryMessenger, CHANNEL_NAME)
@@ -258,12 +262,7 @@ internal class QRScannerView(
         }
 
         // Clean up any previously bound controller
-        cameraController?.let {
-            it.cameraInfo?.cameraState?.removeObservers(owner)
-            previewView.controller = null
-            it.unbind()
-            cameraController = null
-        }
+        releaseCamera()
 
         try {
             previewView.visibility = View.VISIBLE
