@@ -153,6 +153,10 @@ internal class QRScannerView(
 
     override fun dispose() {
         permissionsResultRegistrar.setListener(null)
+        lifecycleOwner?.let { owner ->
+            cameraController?.cameraInfo?.cameraState?.removeObservers(owner)
+        }
+        previewView.controller = null
         cameraController?.unbind()
         cameraController = null
         cameraExecutor.shutdown()
