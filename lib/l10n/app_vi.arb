@@ -129,6 +129,17 @@
         }
     },
     "s_character_count": "Số lượng ký tự",
+    "l_characters_used": null,
+    "@l_characters_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "max": {
+                "type": "int"
+            }
+        }
+    },
     "@_language": {},
 
     "s_language": "Ngôn ngữ",
@@ -519,6 +530,7 @@
     "p_warning_disable_credential": null,
     "s_account_name": "Tên tài khoản",
     "s_search_accounts": "Tìm kiếm tài khoản",
+    "s_clear_search": null,
     "l_accounts_used": "{used} trong {capacity} tài khoản đã sử dụng",
     "@l_accounts_used": {
         "placeholders": {

@@ -25,6 +25,7 @@ import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../../widgets/visibility_toggle_button.dart';
+import '../../widgets/utf8_utils.dart';
 import '../models.dart';
 
 class AccessCodeDialog extends ConsumerStatefulWidget {
@@ -119,6 +120,10 @@ class _AccessCodeDialogState extends ConsumerState<AccessCodeDialog> {
                       autofocus: true,
                       obscureText: _isObscure,
                       maxLength: accessCodeLength,
+                      buildCounter: buildByteCounterFor(
+                        _accessCodeController.text,
+                      ),
+                      inputFormatters: [limitBytesLength(accessCodeLength)],
                       autofillHints: const [AutofillHints.password],
                       controller: _accessCodeController,
                       focusNode: _accessCodeFocus,

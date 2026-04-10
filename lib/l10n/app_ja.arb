@@ -129,6 +129,17 @@
         }
     },
     "s_character_count": "文字数",
+    "l_characters_used": null,
+    "@l_characters_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "max": {
+                "type": "int"
+            }
+        }
+    },
     "@_language": {},
 
     "s_language": "言語",
@@ -519,6 +530,7 @@
     "p_warning_disable_credential": "ログインできなくならないように、まず登録しているサービスからこの資格情報を無効にしてください。",
     "s_account_name": "アカウント名",
     "s_search_accounts": "アカウントを検索",
+    "s_clear_search": null,
     "l_accounts_used": "アカウント {used} / {capacity} 個を使用中",
     "@l_accounts_used": {
         "placeholders": {

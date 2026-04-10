@@ -129,6 +129,17 @@
         }
     },
     "s_character_count": "Aantal tekens",
+    "l_characters_used": null,
+    "@l_characters_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "max": {
+                "type": "int"
+            }
+        }
+    },
     "@_language": {},
 
     "s_language": "Taal",
@@ -519,6 +530,7 @@
     "p_warning_disable_credential": "Zorg ervoor dat u dit account uitschakelt bij de service waarbij het is geregistreerd om te voorkomen dat u wordt buitengesloten.",
     "s_account_name": "Accountnaam",
     "s_search_accounts": "Accounts zoeken",
+    "s_clear_search": null,
     "l_accounts_used": "{used} van {capacity} accounts gebruikt",
     "@l_accounts_used": {
         "placeholders": {

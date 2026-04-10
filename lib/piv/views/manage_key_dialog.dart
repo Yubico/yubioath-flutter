@@ -295,6 +295,12 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                         maxLength: !_defaultKeyUsed
                             ? currentType.keyLength * 2
                             : null,
+                        buildCounter: buildByteCounterFor(
+                          _currentController.text,
+                        ),
+                        inputFormatters: [
+                          limitBytesLength(currentType.keyLength * 2),
+                        ],
                         decoration: AppInputDecoration(
                           border: const OutlineInputBorder(),
                           labelText: l10n.s_current_management_key,
@@ -350,6 +356,8 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                       autofocus: _defaultKeyUsed,
                       autofillHints: const [AutofillHints.newPassword],
                       maxLength: hexLength,
+                      buildCounter: buildByteCounterFor(_keyController.text),
+                      inputFormatters: [limitBytesLength(hexLength)],
                       controller: _keyController,
                       focusNode: _newFocus,
                       decoration: AppInputDecoration(

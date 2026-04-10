@@ -129,6 +129,17 @@
         }
     },
     "s_character_count": "Počet znakov",
+    "l_characters_used": null,
+    "@l_characters_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "max": {
+                "type": "int"
+            }
+        }
+    },
     "@_language": {},
 
     "s_language": "Jazyk",
@@ -519,6 +530,7 @@
     "p_warning_disable_credential": "Aby ste sa vyhli zablokovaniu tohto konta, nezabudnite ho deaktivovať v službe, v ktorej je zaregistrovaný.",
     "s_account_name": "Názov účtu",
     "s_search_accounts": "Hľadať účty",
+    "s_clear_search": null,
     "l_accounts_used": "{used} z {capacity} účtov je využitých",
     "@l_accounts_used": {
         "placeholders": {

@@ -129,6 +129,17 @@
         }
     },
     "s_character_count": "字符数",
+    "l_characters_used": null,
+    "@l_characters_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "max": {
+                "type": "int"
+            }
+        }
+    },
     "@_language": {},
 
     "s_language": "语言",
@@ -519,6 +530,7 @@
     "p_warning_disable_credential": "请确保已从注册的服务中禁用此账户，以避免无法登录。",
     "s_account_name": "账户名",
     "s_search_accounts": "搜索账户",
+    "s_clear_search": null,
     "l_accounts_used": "已使用{used} 个账户 ，总共{capacity} 账户可用",
     "@l_accounts_used": {
         "placeholders": {

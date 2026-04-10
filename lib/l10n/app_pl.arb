@@ -129,6 +129,17 @@
         }
     },
     "s_character_count": "Liczba znaków",
+    "l_characters_used": null,
+    "@l_characters_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "max": {
+                "type": "int"
+            }
+        }
+    },
     "@_language": {},
 
     "s_language": "Język",
@@ -519,6 +530,7 @@
     "p_warning_disable_credential": "Upewnij się, że poświadczenie zostało wyłączone, aby uniknąć zablokowania konta.",
     "s_account_name": "Nazwa konta",
     "s_search_accounts": "Szukaj kont",
+    "s_clear_search": null,
     "l_accounts_used": "Użyto {used} z {capacity} kont",
     "@l_accounts_used": {
         "placeholders": {

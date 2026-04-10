@@ -129,6 +129,17 @@
         }
     },
     "s_character_count": "Contagem de caracteres",
+    "l_characters_used": null,
+    "@l_characters_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "max": {
+                "type": "int"
+            }
+        }
+    },
     "@_language": {},
 
     "s_language": "Idioma",
@@ -519,6 +530,7 @@
     "p_warning_disable_credential": "Certifique-se de desativar essa conta no serviço em que está registrado para evitar ser bloqueado.",
     "s_account_name": "Nome da conta",
     "s_search_accounts": "Pesquisar contas",
+    "s_clear_search": null,
     "l_accounts_used": "{used} de contas {capacity} usadas",
     "@l_accounts_used": {
         "placeholders": {

@@ -129,6 +129,17 @@
         }
     },
     "s_character_count": "Character count",
+    "l_characters_used": "{used} of {max} characters used",
+    "@l_characters_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "max": {
+                "type": "int"
+            }
+        }
+    },
     "@_language": {},
 
     "s_language": "Language",
@@ -519,6 +530,7 @@
     "p_warning_disable_credential": "Make sure to disable this account from the service it is registered with to avoid being locked out.",
     "s_account_name": "Account name",
     "s_search_accounts": "Search accounts",
+    "s_clear_search": "Clear search",
     "l_accounts_used": "{used} of {capacity} accounts used",
     "@l_accounts_used": {
         "placeholders": {

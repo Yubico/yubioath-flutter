@@ -129,6 +129,17 @@
         }
     },
     "s_character_count": "字元計數",
+    "l_characters_used": null,
+    "@l_characters_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "max": {
+                "type": "int"
+            }
+        }
+    },
     "@_language": {},
 
     "s_language": "語言",
@@ -519,6 +530,7 @@
     "p_warning_disable_credential": "請確保從註冊的服務中停用此登入資訊，以避免發生無法登入的狀況。",
     "s_account_name": "帳號名稱",
     "s_search_accounts": "搜尋帳號",
+    "s_clear_search": null,
     "l_accounts_used": "{used} / {capacity} 個帳號已使用",
     "@l_accounts_used": {
         "placeholders": {

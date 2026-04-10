@@ -64,25 +64,42 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
         : l10n.s_cancel;
   }
 
-  Widget _buildFullscreen(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: widget.title,
-      actions: widget.actions,
-      leading: IconButton(
-        key: closeButton,
-        tooltip: _getCancelText(context),
-        icon: const Icon(Symbols.close),
-        onPressed: widget.allowCancel
-            ? () {
-                widget.onCancel?.call();
-                Navigator.of(context).pop();
-              }
-            : null,
+  String? _extractTitleText() {
+    final title = widget.title;
+    if (title is Text) {
+      return title.data;
+    }
+    return null;
+  }
+
+  Widget _buildFullscreen(BuildContext context) => Semantics(
+    scopesRoute: true,
+    namesRoute: true,
+    explicitChildNodes: true,
+    label: _extractTitleText(),
+    child: Scaffold(
+      appBar: AppBar(
+        title: widget.title,
+        actions: widget.actions,
+        leading: IconButton(
+          key: closeButton,
+          tooltip: _getCancelText(context),
+          icon: const Icon(Symbols.close),
+          onPressed: widget.allowCancel
+              ? () {
+                  widget.onCancel?.call();
+                  Navigator.of(context).pop();
+                }
+              : null,
+        ),
       ),
-    ),
-    body: SingleChildScrollView(
-      child: SafeArea(
-        child: Container(key: _childKey, child: widget.builder(context, true)),
+      body: SingleChildScrollView(
+        child: SafeArea(
+          child: Container(
+            key: _childKey,
+            child: widget.builder(context, true),
+          ),
+        ),
       ),
     ),
   );
@@ -99,6 +116,7 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
           ),
         ),
         child: AlertDialog(
+          semanticLabel: _extractTitleText(),
           title: widget.title,
           titlePadding: const EdgeInsets.only(top: 24, left: 18, right: 18),
           contentPadding: const EdgeInsets.symmetric(vertical: 8),

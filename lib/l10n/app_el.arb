@@ -129,6 +129,17 @@
         }
     },
     "s_character_count": "Αριθμός χαρακτήρων",
+    "l_characters_used": null,
+    "@l_characters_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "max": {
+                "type": "int"
+            }
+        }
+    },
     "@_language": {},
 
     "s_language": "Γλώσσα",
@@ -519,6 +530,7 @@
     "p_warning_disable_credential": "Βεβαιωθείτε ότι έχετε απενεργοποιήσει αυτόν τον λογαριασμό από την υπηρεσία με την οποία είναι καταχωρημένος για να αποφύγετε τον αποκλεισμό.",
     "s_account_name": "Όνομα λογαριασμού",
     "s_search_accounts": "Αναζήτηση λογαριασμών",
+    "s_clear_search": null,
     "l_accounts_used": "{used} από {capacity} λογαριασμοί σε χρήση",
     "@l_accounts_used": {
         "placeholders": {
