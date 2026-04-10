@@ -16,6 +16,7 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -529,7 +530,10 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                             if (searchController.text.isNotEmpty)
                               IconButton(
                                 tooltip: l10n.s_clear_search,
-                                icon: const Icon(Icons.clear),
+                                icon: Icon(
+                                  Icons.clear,
+                                  semanticLabel: l10n.s_clear_search,
+                                ),
                                 iconSize: 16,
                                 onPressed: () {
                                   searchController.clear();
