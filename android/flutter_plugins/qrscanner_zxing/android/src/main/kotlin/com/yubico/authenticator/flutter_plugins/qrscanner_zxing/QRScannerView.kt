@@ -257,6 +257,14 @@ internal class QRScannerView(
             return
         }
 
+        // Clean up any previously bound controller
+        cameraController?.let {
+            it.cameraInfo?.cameraState?.removeObservers(owner)
+            previewView.controller = null
+            it.unbind()
+            cameraController = null
+        }
+
         try {
             previewView.visibility = View.VISIBLE
 
