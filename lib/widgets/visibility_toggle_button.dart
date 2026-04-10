@@ -45,7 +45,6 @@ class VisibilityToggleButton extends StatelessWidget {
 
     return Semantics(
       button: true,
-      excludeSemantics: true,
       label: label,
       onTap: onToggle,
       child: IconButton(
