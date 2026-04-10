@@ -530,6 +530,7 @@
     "p_warning_disable_credential": "Обов’язково вимкніть цей обліковий запис у сервісі, в якому він зареєстрований, щоб уникнути блокування.",
     "s_account_name": "Ім'я облікового запису",
     "s_search_accounts": "Пошук облікових записів",
+    "s_clear_search": null,
     "l_accounts_used": "Використано {used} з {capacity} облікових записів",
     "@l_accounts_used": {
         "placeholders": {

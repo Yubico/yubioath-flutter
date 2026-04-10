@@ -530,6 +530,7 @@
     "p_warning_disable_credential": "Zorg ervoor dat u dit account uitschakelt bij de service waarbij het is geregistreerd om te voorkomen dat u wordt buitengesloten.",
     "s_account_name": "Accountnaam",
     "s_search_accounts": "Accounts zoeken",
+    "s_clear_search": null,
     "l_accounts_used": "{used} van {capacity} accounts gebruikt",
     "@l_accounts_used": {
         "placeholders": {

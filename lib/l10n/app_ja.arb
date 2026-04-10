@@ -530,6 +530,7 @@
     "p_warning_disable_credential": "ログインできなくならないように、まず登録しているサービスからこの資格情報を無効にしてください。",
     "s_account_name": "アカウント名",
     "s_search_accounts": "アカウントを検索",
+    "s_clear_search": null,
     "l_accounts_used": "アカウント {used} / {capacity} 個を使用中",
     "@l_accounts_used": {
         "placeholders": {

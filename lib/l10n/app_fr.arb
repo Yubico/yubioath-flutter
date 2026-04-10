@@ -530,6 +530,7 @@
     "p_warning_disable_credential": "Assurez-vous de désactiver ce compte du service avec lequel il est enregistré pour éviter d'être bloqué.",
     "s_account_name": "Nom du compte",
     "s_search_accounts": "Rechercher comptes",
+    "s_clear_search": null,
     "l_accounts_used": "{used} comptes sur {capacity} utilisés",
     "@l_accounts_used": {
         "placeholders": {

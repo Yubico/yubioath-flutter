@@ -530,6 +530,7 @@
     "p_warning_disable_credential": "Kilitlenmeyi önlemek için bu hesabın kayıtlı olduğu hizmetten devre dışı bıraktığınızdan emin olun.",
     "s_account_name": "Hesap adı",
     "s_search_accounts": "Hesap ara",
+    "s_clear_search": null,
     "l_accounts_used": "Toplam {capacity} hesap kapasitesinin, {used} tanesi kullanılıyor",
     "@l_accounts_used": {
         "placeholders": {

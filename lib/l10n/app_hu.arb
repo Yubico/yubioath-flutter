@@ -530,6 +530,7 @@
     "p_warning_disable_credential": "Győződjön meg róla, hogy letiltotta ezt a fiókot a szolgáltatásból, amelyhez regisztrálták, hogy elkerülje a hozzáférés elvesztését.",
     "s_account_name": "Fiók neve",
     "s_search_accounts": "Fiók keresése",
+    "s_clear_search": null,
     "l_accounts_used": "{capacity}/{used} fiók használatban",
     "@l_accounts_used": {
         "placeholders": {

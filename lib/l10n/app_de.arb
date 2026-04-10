@@ -530,6 +530,7 @@
     "p_warning_disable_credential": "Achte darauf, dass dieses Anmeldedaten von keinem Dienst verwendet werden um nicht ausgesperrt zu werden.",
     "s_account_name": "Kontoname",
     "s_search_accounts": "Konten durchsuchen",
+    "s_clear_search": null,
     "l_accounts_used": "{used} von {capacity} Konten verwendet",
     "@l_accounts_used": {
         "placeholders": {
