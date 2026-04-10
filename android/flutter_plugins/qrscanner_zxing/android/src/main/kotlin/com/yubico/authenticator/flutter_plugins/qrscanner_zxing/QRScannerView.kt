@@ -245,6 +245,14 @@ internal class QRScannerView(
     }
 
     private fun bindUseCases(context: Context) {
+        val owner = lifecycleOwner
+        if (owner == null) {
+            Log.e(TAG, "Context is not a LifecycleOwner, cannot bind camera")
+            previewView.visibility = View.GONE
+            reportViewInitialized(false)
+            return
+        }
+
         try {
             previewView.visibility = View.VISIBLE
 
@@ -269,14 +277,14 @@ internal class QRScannerView(
             }
 
             previewView.controller = controller
-            controller.bindToLifecycle(context as LifecycleOwner)
+            controller.bindToLifecycle(owner)
 
             cameraController = controller
 
             // Observe camera state
             controller.cameraInfo?.cameraState?.let {
-                it.removeObservers(context as LifecycleOwner)
-                it.observe(context as LifecycleOwner, stateChangeObserver)
+                it.removeObservers(owner)
+                it.observe(owner, stateChangeObserver)
             }
 
             reportViewInitialized(true)
