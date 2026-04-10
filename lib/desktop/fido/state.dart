@@ -216,9 +216,12 @@ class DesktopFidoStateNotifier extends FidoStateNotifier {
   }
 
   @override
-  Future<PinResult> unlock(String pin) async {
+  Future<PinResult> unlock(String pin, {bool remember = false}) async {
     try {
-      await _session.command('unlock', params: {'pin': pin});
+      await _session.command(
+        'unlock',
+        params: {'pin': pin, 'remember': remember},
+      );
       _pinController.state = pin;
 
       return PinResult.success();

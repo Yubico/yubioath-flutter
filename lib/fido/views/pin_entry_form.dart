@@ -47,6 +47,7 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
   int? _retries;
   bool _pinIsWrong = false;
   bool _isObscure = true;
+  bool _remember = false;
 
   @override
   void initState() {
@@ -71,7 +72,7 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
     try {
       final result = await ref
           .read(fidoStateProvider(widget._deviceData.node.path).notifier)
-          .unlock(_pinController.text);
+          .unlock(_pinController.text, remember: _remember);
       switch (result) {
         case PinResultFailure(:final reason):
           {
@@ -120,6 +121,7 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
     final noFingerprints = widget._state.bioEnroll == false;
     final authBlocked = widget._state.pinBlocked;
     final pinRetries = widget._state.pinRetries;
+    final readOnlySupported = widget._state.readOnlySupported;
     return Padding(
       padding: const EdgeInsets.only(left: 18.0, right: 18, top: 8),
       child: Column(
@@ -205,32 +207,85 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
               },
             ).init(),
           ),
-          ListTile(
-            leading: noFingerprints
-                ? Icon(
-                    Symbols.warning_amber,
-                    color: Theme.of(context).colorScheme.tertiary,
-                  )
-                : null,
-            title: noFingerprints
-                ? Text(l10n.l_no_fps_added, overflow: .fade)
-                : null,
-            dense: true,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 0),
-            minLeadingWidth: 0,
-            trailing: FilledButton.icon(
-              key: unlockFido2WithPin,
-              icon: const Icon(Symbols.lock_open),
-              label: Text(l10n.s_unlock),
-              onPressed:
-                  !_pinIsWrong &&
-                      _pinController.text.length >=
-                          widget._state.minPinLength &&
-                      !_blocked
-                  ? _submit
-                  : null,
-            ),
-          ),
+          readOnlySupported
+              ? Column(
+                  crossAxisAlignment: .stretch,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 40),
+                      child: Wrap(
+                        alignment: .spaceBetween,
+                        crossAxisAlignment: .center,
+                        spacing: 4.0,
+                        runSpacing: 8.0,
+                        children: [
+                          FilterChip(
+                            label: Text(l10n.s_persist_read_only_access),
+                            selected: _remember,
+                            onSelected: (value) {
+                              setState(() {
+                                _remember = value;
+                              });
+                            },
+                          ),
+                          FilledButton.icon(
+                            key: unlockFido2WithPin,
+                            icon: const Icon(Symbols.lock_open),
+                            label: Text(l10n.s_unlock),
+                            onPressed:
+                                !_pinIsWrong &&
+                                    _pinController.text.length >=
+                                        widget._state.minPinLength &&
+                                    !_blocked
+                                ? _submit
+                                : null,
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (noFingerprints) ...[
+                      const SizedBox(height: 8.0),
+                      ListTile(
+                        leading: Icon(
+                          Symbols.warning_amber,
+                          color: Theme.of(context).colorScheme.tertiary,
+                        ),
+                        title: Text(l10n.l_no_fps_added, overflow: .fade),
+                        dense: true,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 0,
+                        ),
+                        minLeadingWidth: 0,
+                      ),
+                    ],
+                  ],
+                )
+              : ListTile(
+                  leading: noFingerprints
+                      ? Icon(
+                          Symbols.warning_amber,
+                          color: Theme.of(context).colorScheme.tertiary,
+                        )
+                      : null,
+                  title: noFingerprints
+                      ? Text(l10n.l_no_fps_added, overflow: .fade)
+                      : null,
+                  dense: true,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 0),
+                  minLeadingWidth: 0,
+                  trailing: FilledButton.icon(
+                    key: unlockFido2WithPin,
+                    icon: const Icon(Symbols.lock_open),
+                    label: Text(l10n.s_unlock),
+                    onPressed:
+                        !_pinIsWrong &&
+                            _pinController.text.length >=
+                                widget._state.minPinLength &&
+                            !_blocked
+                        ? _submit
+                        : null,
+                  ),
+                ),
         ],
       ),
     );

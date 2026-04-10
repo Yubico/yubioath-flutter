@@ -58,7 +58,7 @@ abstract class FidoStateNotifier extends ApplicationStateNotifier<FidoState> {
 
   Stream<InteractionEvent> reset();
   Future<PinResult> setPin(String newPin, {String? oldPin});
-  Future<PinResult> unlock(String pin);
+  Future<PinResult> unlock(String pin, {bool remember = false});
   Future<void> enableEnterpriseAttestation();
 }
 

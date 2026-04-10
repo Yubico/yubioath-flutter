@@ -47,7 +47,7 @@ class OathNode(RpcNode):
 
     @classmethod
     def _get_keys(cls):
-        if not cls._oath_keys:
+        if cls._oath_keys is None:
             cls._oath_keys = AppData("oath_keys")
         return cls._oath_keys
 

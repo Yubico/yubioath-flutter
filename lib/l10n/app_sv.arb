@@ -346,6 +346,7 @@
             }
         }
     },
+    "s_persist_read_only_access": null,
     "s_ep_attestation": "Företagsintyg",
     "s_ep_attestation_enabled": "Företagsattestering aktiverad",
     "q_enable_ep_attestation": "Aktivera Enterprise Attestation?",

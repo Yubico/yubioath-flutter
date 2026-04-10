@@ -346,6 +346,7 @@
             }
         }
     },
+    "s_persist_read_only_access": null,
     "s_ep_attestation": "企業驗證",
     "s_ep_attestation_enabled": "企業驗證已啟用",
     "q_enable_ep_attestation": "啟用企業驗證？",
