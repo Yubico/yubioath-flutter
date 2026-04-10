@@ -26,6 +26,7 @@ import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../../widgets/utf8_utils.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
@@ -137,6 +138,8 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
                       focusNode: _keyFocus,
                       readOnly: _defaultKeyUsed,
                       maxLength: !_defaultKeyUsed ? keyLen : null,
+                      buildCounter: buildByteCounterFor(_keyController.text),
+                      inputFormatters: [limitBytesLength(keyLen)],
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_management_key,

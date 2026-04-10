@@ -129,6 +129,17 @@
         }
     },
     "s_character_count": "Αριθμός χαρακτήρων",
+    "l_characters_used": null,
+    "@l_characters_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "max": {
+                "type": "int"
+            }
+        }
+    },
     "@_language": {},
 
     "s_language": "Γλώσσα",

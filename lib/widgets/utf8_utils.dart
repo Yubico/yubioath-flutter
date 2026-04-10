@@ -17,6 +17,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
 import '../generated/l10n/app_localizations.dart';
@@ -33,13 +34,25 @@ InputCounterWidgetBuilder buildByteCounterFor(String currentValue) =>
     (context, {required currentLength, required isFocused, maxLength}) {
       final theme = Theme.of(context);
       final caption = theme.textTheme.bodySmall;
-      final style = (byteLength(currentValue) <= (maxLength ?? 0))
+      final used = byteLength(currentValue);
+      final style = (used <= (maxLength ?? 0))
           ? caption
           : caption?.copyWith(color: theme.colorScheme.error);
+      if (maxLength != null && isFocused) {
+        final view = View.of(context);
+        final announcement = AppLocalizations.of(
+          context,
+        ).l_characters_used(used, maxLength);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          SemanticsService.sendAnnouncement(view, announcement, .ltr);
+        });
+      }
       return Text(
-        maxLength != null ? '${byteLength(currentValue)}/$maxLength' : '',
+        maxLength != null ? '$used/$maxLength' : '',
         style: style,
-        semanticsLabel: AppLocalizations.of(context).s_character_count,
+        semanticsLabel: maxLength != null
+            ? AppLocalizations.of(context).l_characters_used(used, maxLength)
+            : null,
       );
     };
 

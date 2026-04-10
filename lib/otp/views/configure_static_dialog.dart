@@ -29,6 +29,7 @@ import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../../widgets/utf8_utils.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
@@ -184,6 +185,10 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
                           ? []
                           : const [AutofillHints.password],
                       maxLength: passwordMaxLength,
+                      buildCounter: buildByteCounterFor(
+                        _passwordController.text,
+                      ),
+                      inputFormatters: [limitBytesLength(passwordMaxLength)],
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_password,
