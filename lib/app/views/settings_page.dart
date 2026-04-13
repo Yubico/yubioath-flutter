@@ -515,13 +515,13 @@ class _LanguageView extends ConsumerWidget {
       label: l10n.s_more_info,
       button: true,
       child: InfoPopupButton(
-      size: 30,
-      iconSize: 20,
-      iconColor: (translated == 100 && proofread != 100)
-          ? theme.disabledColor
-          : theme.colorScheme.tertiary,
-      icon: Symbols.info,
-      infoText: Text.rich(
+        size: 30,
+        iconSize: 20,
+        iconColor: (translated == 100 && proofread != 100)
+            ? theme.disabledColor
+            : theme.colorScheme.tertiary,
+        icon: Symbols.info,
+        infoText: Text.rich(
           WidgetSpan(
             child: Column(
               crossAxisAlignment: .start,
@@ -537,19 +537,13 @@ class _LanguageView extends ConsumerWidget {
                   l10n.s_translated(translated),
                   style: theme.textTheme.labelSmall,
                 ),
-                LinearProgressIndicator(
-                  value: translated / 100,
-                  trackGap: 0,
-                ),
+                LinearProgressIndicator(value: translated / 100, trackGap: 0),
                 const SizedBox(height: 8.0),
                 Text(
                   l10n.s_proofread(proofread),
                   style: theme.textTheme.labelSmall,
                 ),
-                LinearProgressIndicator(
-                  value: proofread / 100,
-                  trackGap: 0,
-                ),
+                LinearProgressIndicator(value: proofread / 100, trackGap: 0),
                 const SizedBox(height: 8.0),
                 Text(
                   l10n.p_translation_progress_desc,
