@@ -28,6 +28,7 @@ import '../../management/models.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../../widgets/visibility_toggle_button.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
@@ -154,21 +155,13 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                               : null,
                           errorMaxLines: 3,
                           icon: const Icon(Symbols.password),
-                          suffixIcon: IconButton(
-                            isSelected: !_isObscureCurrent,
-                            icon: Icon(
-                              _isObscureCurrent
-                                  ? Symbols.visibility
-                                  : Symbols.visibility_off,
-                            ),
-                            onPressed: () {
+                          suffixIcon: VisibilityToggleButton(
+                            isObscured: _isObscureCurrent,
+                            onToggle: () {
                               setState(() {
                                 _isObscureCurrent = !_isObscureCurrent;
                               });
                             },
-                            tooltip: _isObscureCurrent
-                                ? l10n.s_show_password
-                                : l10n.s_hide_password,
                           ),
                         ),
                         textInputAction: .next,
@@ -282,21 +275,13 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                         icon: const Icon(Symbols.password),
                         suffixIcon: ExcludeFocusTraversal(
                           excluding: !newPasswordEnabled,
-                          child: IconButton(
-                            isSelected: !_isObscureNew,
-                            icon: Icon(
-                              _isObscureNew
-                                  ? Symbols.visibility
-                                  : Symbols.visibility_off,
-                            ),
-                            onPressed: () {
+                          child: VisibilityToggleButton(
+                            isObscured: _isObscureNew,
+                            onToggle: () {
                               setState(() {
                                 _isObscureNew = !_isObscureNew;
                               });
                             },
-                            tooltip: _isObscureNew
-                                ? l10n.s_show_password
-                                : l10n.s_hide_password,
                           ),
                         ),
                         enabled: newPasswordEnabled,
@@ -326,21 +311,13 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                         icon: const Icon(Symbols.password),
                         suffixIcon: ExcludeFocusTraversal(
                           excluding: !confirmPasswordEnabled,
-                          child: IconButton(
-                            isSelected: !_isObscureConfirm,
-                            icon: Icon(
-                              _isObscureConfirm
-                                  ? Symbols.visibility
-                                  : Symbols.visibility_off,
-                            ),
-                            onPressed: () {
+                          child: VisibilityToggleButton(
+                            isObscured: _isObscureConfirm,
+                            onToggle: () {
                               setState(() {
                                 _isObscureConfirm = !_isObscureConfirm;
                               });
                             },
-                            tooltip: _isObscureConfirm
-                                ? l10n.s_show_password
-                                : l10n.s_hide_password,
                           ),
                         ),
                         enabled: confirmPasswordEnabled,
