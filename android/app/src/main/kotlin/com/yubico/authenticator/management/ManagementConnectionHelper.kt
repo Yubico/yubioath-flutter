@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2025 Yubico.
+ * Copyright (C) 2024-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.YubiKeyDevice
 import com.yubico.yubikit.core.util.Result
 import kotlin.coroutines.cancellation.CancellationException
-import kotlin.coroutines.suspendCoroutine
+import kotlinx.coroutines.suspendCancellableCoroutine
 
 typealias Action = (Result<YubiKeyDevice, Exception>) -> Unit
 
@@ -62,7 +62,8 @@ class ManagementConnectionHelper(private val deviceManager: DeviceManager) {
 
     private suspend fun <T : Any> useNfcDevice(block: (YubiKeyDevice) -> T): Result<T, Throwable> {
         try {
-            val result = suspendCoroutine<T> { outer ->
+            val result = suspendCancellableCoroutine<T> { outer ->
+                outer.invokeOnCancellation { pendingAction = null }
                 pendingAction = {
                     outer.resumeWith(
                         runCatching {
