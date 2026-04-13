@@ -280,6 +280,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
                                 decoration: AppInputDecoration(
                                   border: const OutlineInputBorder(),
                                   labelText: l10n.s_name,
+                                  isRequired: true,
                                   icon: const Icon(Symbols.fingerprint),
                                 ),
                                 onChanged: (value) {

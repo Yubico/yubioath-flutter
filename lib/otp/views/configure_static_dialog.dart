@@ -192,6 +192,7 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_password,
+                        isRequired: true,
                         errorText: _validatePassword && !passwordLengthValid
                             ? l10n.s_invalid_length
                             : _validatePassword && !passwordFormatValid

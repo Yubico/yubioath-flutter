@@ -143,6 +143,7 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_management_key,
+                        isRequired: true,
                         helperText: _defaultKeyUsed
                             ? l10n.l_default_key_used
                             : null,

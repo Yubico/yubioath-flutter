@@ -51,6 +51,7 @@
     "s_nfc": "NFC",
     "s_options": "選項",
     "s_details": "詳細資訊",
+    "s_required": null,
     "s_show_window": "顯示視窗",
     "s_hide_window": "隱藏視窗",
     "s_show_navigation": "顯示導覽列",

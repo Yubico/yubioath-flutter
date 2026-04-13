@@ -51,6 +51,7 @@
     "s_nfc": "NFC",
     "s_options": "Επιλογές",
     "s_details": "Λεπτομέρειες",
+    "s_required": null,
     "s_show_window": "Εμφάνιση παραθύρου",
     "s_hide_window": "Απόκρυψη παραθύρου",
     "s_show_navigation": "Εμφάνιση πλοήγησης",

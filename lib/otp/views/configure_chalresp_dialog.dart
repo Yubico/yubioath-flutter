@@ -166,6 +166,7 @@ class _ConfigureChalrespDialogState
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_secret_key,
+                        isRequired: true,
                         errorText: _validateSecret && !secretFormatValid
                             ? l10n.l_invalid_format_allowed_chars(
                                 Format.hex.allowedCharacters,

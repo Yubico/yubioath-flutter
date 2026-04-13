@@ -149,6 +149,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                         decoration: AppInputDecoration(
                           border: const OutlineInputBorder(),
                           labelText: l10n.s_current_password,
+                          isRequired: true,
                           errorText: _currentIsWrong
                               ? l10n.p_wrong_password
                               : null,
@@ -277,6 +278,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_new_password,
+                        isRequired: true,
                         helperText: l10n.p_new_password_requirements,
                         helperMaxLines: 3,
                         icon: const Icon(Symbols.password),
@@ -323,6 +325,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_confirm_password,
+                        isRequired: true,
                         icon: const Icon(Symbols.password),
                         suffixIcon: ExcludeFocusTraversal(
                           excluding: !confirmPasswordEnabled,

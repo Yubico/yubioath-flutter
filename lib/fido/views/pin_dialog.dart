@@ -146,6 +146,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                           enabled: !_isBlocked,
                           border: const OutlineInputBorder(),
                           labelText: l10n.s_current_pin,
+                          isRequired: true,
                           helperText: pinRetries != null && pinRetries <= 3
                               ? l10n.l_attempts_remaining(pinRetries)
                               : '',
@@ -201,6 +202,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_new_pin,
+                        isRequired: true,
                         enabled: newPinEnabled,
                         helperText: hasPinComplexity
                             ? l10n.p_new_fido2_pin_complexity_active_requirements(
@@ -265,6 +267,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_confirm_pin,
+                        isRequired: true,
                         icon: const Icon(Symbols.pin),
                         suffixIcon: ExcludeFocusTraversal(
                           excluding: !confirmPinEnabled,

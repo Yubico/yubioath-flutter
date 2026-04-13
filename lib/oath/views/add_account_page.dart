@@ -629,6 +629,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                               decoration: AppInputDecoration(
                                 border: const OutlineInputBorder(),
                                 labelText: l10n.s_account_name,
+                                isRequired: true,
                                 helperText:
                                     '', // Prevents dialog resizing when disabled
                                 errorText: _submitting
@@ -660,6 +661,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                               decoration: AppInputDecoration(
                                 border: const OutlineInputBorder(),
                                 labelText: l10n.s_secret_key,
+                                isRequired: true,
                                 errorText: _validateSecret && !secretLengthValid
                                     ? l10n.s_invalid_length
                                     : _validateSecret && !secretFormatValid

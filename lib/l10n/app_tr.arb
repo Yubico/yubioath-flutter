@@ -51,6 +51,7 @@
     "s_nfc": "NFC",
     "s_options": "Seçenekler",
     "s_details": "Ayrıntılar",
+    "s_required": null,
     "s_show_window": "Pencereyi göster",
     "s_hide_window": "Pencereyi gizle",
     "s_show_navigation": "Navigasyonu göster",

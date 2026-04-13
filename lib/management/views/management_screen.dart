@@ -228,6 +228,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
                   decoration: AppInputDecoration(
                     border: const OutlineInputBorder(),
                     labelText: l10n.s_lock_code,
+                    isRequired: true,
                     errorText: _lockCodeIsWrong ? _lockCodeError : null,
                     errorMaxLines: 3,
                     icon: const Icon(Symbols.pin),

@@ -260,6 +260,7 @@ class _ConfigureYubiOtpDialogState
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_public_id,
+                        isRequired: true,
                         errorText:
                             _validatePublicIdFormat && !publicIdFormatValid
                             ? l10n.l_invalid_format_allowed_chars(
@@ -316,6 +317,7 @@ class _ConfigureYubiOtpDialogState
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_private_id,
+                        isRequired: true,
                         errorText:
                             _validatePrivateIdFormat && !privateIdFormatValid
                             ? l10n.l_invalid_format_allowed_chars(
@@ -369,6 +371,7 @@ class _ConfigureYubiOtpDialogState
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_secret_key,
+                        isRequired: true,
                         errorText: _validateSecretFormat && !secretFormatValid
                             ? l10n.l_invalid_format_allowed_chars(
                                 Format.hex.allowedCharacters,

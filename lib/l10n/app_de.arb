@@ -51,6 +51,7 @@
     "s_nfc": "NFC",
     "s_options": "Optionen",
     "s_details": "Details",
+    "s_required": null,
     "s_show_window": "Fenster anzeigen",
     "s_hide_window": "Fenster verstecken",
     "s_show_navigation": "Navigation anzeigen",

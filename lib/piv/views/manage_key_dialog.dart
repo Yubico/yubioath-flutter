@@ -247,6 +247,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                         decoration: AppInputDecoration(
                           border: const OutlineInputBorder(),
                           labelText: l10n.s_pin,
+                          isRequired: true,
                           helperText: _defaultPinUsed
                               ? l10n.l_default_pin_used
                               : null,
@@ -309,6 +310,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                         decoration: AppInputDecoration(
                           border: const OutlineInputBorder(),
                           labelText: l10n.s_current_management_key,
+                          isRequired: true,
                           helperText: _defaultKeyUsed
                               ? l10n.l_default_key_used
                               : null,
@@ -368,6 +370,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_new_management_key,
+                        isRequired: true,
                         errorText: _newInvalidFormat
                             ? l10n.l_invalid_format_allowed_chars(
                                 Format.hex.allowedCharacters,

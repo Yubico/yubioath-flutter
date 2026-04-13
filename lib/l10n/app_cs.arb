@@ -51,6 +51,7 @@
     "s_nfc": "NFC",
     "s_options": "Možnosti",
     "s_details": "Detaily",
+    "s_required": null,
     "s_show_window": "Zobrazit okno",
     "s_hide_window": "Skrýt okno",
     "s_show_navigation": "Zobrazit navigaci",

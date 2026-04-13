@@ -161,6 +161,7 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_secret_key,
+                        isRequired: true,
                         helperText: '',
                         // Prevents resizing when errorText shown
                         errorText: _validateSecret && !secretFormatValid
