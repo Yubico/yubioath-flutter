@@ -248,92 +248,71 @@ class _DeviceContent extends ConsumerWidget {
                               showDialog(
                                 context: context,
                                 barrierColor: Colors.transparent,
-                                builder: (context) => Stack(
-                                  children: [
-                                    // Dismiss on tap outside
-                                    Positioned.fill(
-                                      child: GestureDetector(
-                                        onTap: () =>
-                                            Navigator.of(context).pop(),
-                                        behavior: HitTestBehavior.opaque,
-                                        child: const SizedBox.expand(),
-                                      ),
-                                    ),
-                                    CustomSingleChildLayout(
-                                      delegate: _ColorPickerLayoutDelegate(
-                                        buttonRect: buttonRect,
-                                      ),
-                                      child: Material(
-                                        elevation: 8,
-                                        borderRadius: BorderRadius.circular(12),
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.surfaceContainer,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(16),
-                                          child: SizedBox(
-                                            width: 240,
-                                            child: Wrap(
-                                              runSpacing: 8,
-                                              spacing: 16,
-                                              children: [
-                                                ...colors.entries.map(
-                                                  (e) => _ColorButton(
-                                                    color: e.key,
-                                                    colorName: e.value,
-                                                    isSelected:
-                                                        customColor?.toInt32 ==
-                                                        e.key.toInt32,
-                                                    onPressed: () {
-                                                      _updateColor(
-                                                        e.key,
-                                                        ref,
-                                                        serial,
-                                                      );
-                                                      Navigator.of(
-                                                        context,
-                                                      ).pop();
-                                                    },
-                                                  ),
-                                                ),
-                                                _ColorButton(
-                                                  isDefault: true,
-                                                  color: defaultColor,
-                                                  colorName:
-                                                      l10n.s_system_default,
-                                                  isSelected:
-                                                      customColor == null,
-                                                  onPressed: () {
-                                                    _updateColor(
-                                                      null,
-                                                      ref,
-                                                      serial,
-                                                    );
-                                                    Navigator.of(context).pop();
-                                                  },
-                                                  icon: Icon(
-                                                    customColor == null
-                                                        ? Symbols.circle
-                                                        : Symbols.clear,
-                                                    fill: 1,
-                                                    size: 16,
-                                                    weight: 700,
-                                                    opticalSize: 20,
-                                                    color:
-                                                        defaultColor
-                                                                .computeLuminance() >
-                                                            0.7
-                                                        ? Colors.grey
-                                                        : Colors.white,
-                                                  ),
-                                                ),
-                                              ],
+                                builder: (context) => CustomSingleChildLayout(
+                                  delegate: _ColorPickerLayoutDelegate(
+                                    buttonRect: buttonRect,
+                                  ),
+                                  child: Material(
+                                    elevation: 8,
+                                    borderRadius: BorderRadius.circular(12),
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.surfaceContainer,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(16),
+                                      child: SizedBox(
+                                        width: 240,
+                                        child: Wrap(
+                                          runSpacing: 8,
+                                          spacing: 16,
+                                          children: [
+                                            ...colors.entries.map(
+                                              (e) => _ColorButton(
+                                                color: e.key,
+                                                colorName: e.value,
+                                                isSelected:
+                                                    customColor?.toInt32 ==
+                                                    e.key.toInt32,
+                                                onPressed: () {
+                                                  _updateColor(
+                                                    e.key,
+                                                    ref,
+                                                    serial,
+                                                  );
+                                                  Navigator.of(context).pop();
+                                                },
+                                              ),
                                             ),
-                                          ),
+                                            _ColorButton(
+                                              isDefault: true,
+                                              color: defaultColor,
+                                              colorName: l10n.s_system_default,
+                                              isSelected: customColor == null,
+                                              onPressed: () {
+                                                _updateColor(null, ref, serial);
+                                                Navigator.of(context).pop();
+                                              },
+                                              icon: Icon(
+                                                customColor == null
+                                                    ? Symbols.circle
+                                                    : Symbols.clear,
+                                                fill: 1,
+                                                size: 16,
+                                                weight: 700,
+                                                opticalSize: 20,
+                                                color:
+                                                    defaultColor
+                                                            .computeLuminance() >
+                                                        0.7
+                                                    ? Colors.grey
+                                                    : Colors.white,
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ),
-                                  ],
+                                  ),
                                 ),
                               ).then((_) {
                                 SemanticsService.sendAnnouncement(
