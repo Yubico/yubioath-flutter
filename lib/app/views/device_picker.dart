@@ -24,6 +24,7 @@ import '../../android/state.dart';
 import '../../core/state.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
+import '../../widgets/focus_border.dart';
 import '../models.dart';
 import '../state.dart';
 import 'device_avatar.dart';
@@ -280,23 +281,12 @@ class _DeviceRowState extends ConsumerState<DeviceRow> {
                 _showContextMenu = false;
               });
             },
-            child: ListenableBuilder(
-              listenable: _focusNode,
-              builder: (context, child) => DecoratedBox(
-                position: DecorationPosition.foreground,
-                decoration: BoxDecoration(
-                  border: _focusNode.hasFocus
-                      ? Border.all(
-                          color: widget.selected
-                              ? colorScheme.onPrimary
-                              : themeData.colorScheme.primary,
-                          width: 1,
-                        )
-                      : null,
-                  borderRadius: borderRadius,
-                ),
-                child: child!,
-              ),
+            child: FocusBorder(
+              focusNode: _focusNode,
+              borderRadius: borderRadius,
+              color: widget.selected
+                  ? colorScheme.onPrimary
+                  : themeData.colorScheme.primary,
               child: ListTile(
                 focusNode: _focusNode,
                 shape: RoundedRectangleBorder(borderRadius: borderRadius),
