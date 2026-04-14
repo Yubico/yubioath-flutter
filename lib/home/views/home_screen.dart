@@ -219,6 +219,7 @@ class _DeviceContent extends ConsumerWidget {
                               color: Theme.of(
                                 context,
                               ).colorScheme.onSurfaceVariant,
+                              semanticLabel: l10n.s_set_color,
                             ),
                             onPressed: () {
                               final button =
