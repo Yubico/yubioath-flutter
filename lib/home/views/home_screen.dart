@@ -459,30 +459,35 @@ class _ColorButtonState extends State<_ColorButton> {
           ),
           child: child!,
         ),
-        child: RawMaterialButton(
-          focusNode: _focusNode,
-          onPressed: widget.onPressed,
-          constraints: const BoxConstraints(minWidth: 26.0, minHeight: 26.0),
-          fillColor: widget.color,
-          hoverColor: Colors.black12,
-          shape: const CircleBorder(),
-          child: widget.isDefault
-              ? Icon(
-                  widget.isSelected ? Symbols.circle : Symbols.clear,
-                  fill: 1,
-                  size: 16,
-                  weight: 700,
-                  opticalSize: 20,
-                  color: widget.color.computeLuminance() > 0.7
-                      ? Colors.grey
-                      : Colors.white,
-                )
-              : Icon(
-                  Symbols.circle,
-                  fill: 1,
-                  size: 16,
-                  color: widget.isSelected ? Colors.white : Colors.transparent,
-                ),
+        child: ExcludeSemantics(
+          excluding: isAndroid,
+          child: RawMaterialButton(
+            focusNode: _focusNode,
+            onPressed: widget.onPressed,
+            constraints: const BoxConstraints(minWidth: 26.0, minHeight: 26.0),
+            fillColor: widget.color,
+            hoverColor: Colors.black12,
+            shape: const CircleBorder(),
+            child: widget.isDefault
+                ? Icon(
+                    widget.isSelected ? Symbols.circle : Symbols.clear,
+                    fill: 1,
+                    size: 16,
+                    weight: 700,
+                    opticalSize: 20,
+                    color: widget.color.computeLuminance() > 0.7
+                        ? Colors.grey
+                        : Colors.white,
+                  )
+                : Icon(
+                    Symbols.circle,
+                    fill: 1,
+                    size: 16,
+                    color: widget.isSelected
+                        ? Colors.white
+                        : Colors.transparent,
+                  ),
+          ),
         ),
       ),
     );
