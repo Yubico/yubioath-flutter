@@ -189,6 +189,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_subject,
+                        isRequired: true,
                         helperText:
                             '${l10n.p_subject_desc}\n\n${l10n.rfc4514_examples}',
                         helperMaxLines: 10,
