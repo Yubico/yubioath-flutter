@@ -120,58 +120,106 @@ class _SettingsSectionItem extends StatelessWidget {
   }
 }
 
-class _ThemeModeView extends ConsumerWidget {
+class _ThemeModeView extends ConsumerStatefulWidget {
   final bool isDialog;
 
   const _ThemeModeView({required this.isDialog});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_ThemeModeView> createState() => _ThemeModeViewState();
+}
+
+class _ThemeModeViewState extends ConsumerState<_ThemeModeView> {
+  ThemeMode? _pendingTheme;
+  final _saveFocusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _saveFocusNode.dispose();
+    super.dispose();
+  }
+
+  void _apply() {
+    if (_pendingTheme != null) {
+      ref.read(themeModeProvider.notifier).setThemeMode(_pendingTheme!);
+    }
+    if (widget.isDialog) {
+      Navigator.pop(context, _pendingTheme);
+    }
+    setState(() {
+      _pendingTheme = null;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final themeMode = ref.watch(themeModeProvider);
     final supportedThemes = ref.read(supportedThemesProvider);
+    final selectedTheme = _pendingTheme ?? themeMode;
 
-    final content = RadioGroup(
-      groupValue: themeMode,
-      onChanged: (mode) {
-        if (mode != null) {
-          ref.read(themeModeProvider.notifier).setThemeMode(mode);
-          if (isDialog) {
-            Navigator.pop(context, mode);
-          }
-        }
-      },
-      child: Column(
-        children: [
-          ListTitle(l10n.s_options),
-          ...supportedThemes.map(
-            (e) => RadioListTile(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(isDialog ? 0 : 48.0),
-              ),
-              contentPadding: isDesktop
-                  ? EdgeInsets.symmetric(horizontal: 22)
-                  : null,
-              title: Transform.translate(
-                offset: Offset(isDesktop ? 4 : 0, 0),
-                child: Text(e.getDisplayName(l10n)),
-              ),
-              value: e,
-              key: keys.themeModeOption(e),
-              toggleable: true,
+    final content = Column(
+      children: [
+        ListTitle(l10n.s_options),
+        ...supportedThemes.map(
+          (e) => ListTile(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(widget.isDialog ? 0 : 48.0),
             ),
+            contentPadding: isDesktop
+                ? EdgeInsets.symmetric(horizontal: 22)
+                : null,
+            leading: Radio<ThemeMode>(
+              value: e,
+              groupValue: selectedTheme,
+              onChanged: null,
+            ),
+            title: Transform.translate(
+              offset: Offset(isDesktop ? 4 : 0, 0),
+              child: Text(e.getDisplayName(l10n)),
+            ),
+            key: keys.themeModeOption(e),
+            onTap: () {
+              setState(() {
+                _pendingTheme = e == themeMode ? null : e;
+              });
+              _saveFocusNode.requestFocus();
+            },
           ),
-        ],
-      ),
+        ),
+      ],
     );
-    if (isDialog) {
+    if (widget.isDialog) {
       return ResponsiveDialog(
         title: Text(l10n.s_app_theme),
         dialogMaxWidth: 400,
+        actions: [
+          TextButton(
+            focusNode: _saveFocusNode,
+            onPressed: _pendingTheme != null ? _apply : null,
+            child: Text(l10n.s_save),
+          ),
+        ],
         builder: (context, fullScreen) => content,
       );
     } else {
-      return content;
+      return Column(
+        children: [
+          content,
+          if (_pendingTheme != null)
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: ElevatedButton(
+                  focusNode: _saveFocusNode,
+                  onPressed: _apply,
+                  child: Text(l10n.s_save),
+                ),
+              ),
+            ),
+        ],
+      );
     }
   }
 }
@@ -488,10 +536,16 @@ class _IconsItem extends ConsumerWidget {
   }
 }
 
-class _LanguageView extends ConsumerWidget {
+class _LanguageView extends ConsumerStatefulWidget {
   final bool isDialog;
 
   const _LanguageView({required this.isDialog});
+
+  @override
+  ConsumerState<_LanguageView> createState() => _LanguageViewState();
+}
+
+class _LanguageViewState extends ConsumerState<_LanguageView> {
 
   Widget _buildLocaleTitle(
     BuildContext context,
@@ -566,70 +620,113 @@ class _LanguageView extends ConsumerWidget {
     );
   }
 
+  Locale? _pendingLocale;
+  final _saveFocusNode = FocusNode();
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  void dispose() {
+    _saveFocusNode.dispose();
+    super.dispose();
+  }
+
+  void _apply() {
+    if (_pendingLocale != null) {
+      ref.read(currentLocaleProvider.notifier).setLocale(_pendingLocale!);
+    }
+    if (widget.isDialog) {
+      Navigator.pop(context, _pendingLocale);
+    }
+    setState(() {
+      _pendingLocale = null;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final currentLocale = ref.watch(currentLocaleProvider);
     final supportedLocales = ref.read(supportedLocalesProvider);
     final status = ref.read(localeStatusProvider);
+    final selectedLocale = _pendingLocale ?? currentLocale;
     // Sort locales alphabetically
     supportedLocales.sort(
       (a, b) => a.getNativeDisplayName().compareTo(b.getNativeDisplayName()),
     );
 
-    final itemRadius = isDialog ? 0.0 : null;
-    final content = RadioGroup(
-      groupValue: currentLocale,
-      onChanged: (value) {
-        if (value != null) {
-          ref.read(currentLocaleProvider.notifier).setLocale(value);
-          if (isDialog) {
-            Navigator.pop(context, value);
-          }
-        }
-      },
-      child: Column(
-        children: [
-          ListTitle(l10n.s_options),
-          ...supportedLocales.map(
-            (e) => RadioListTile(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(isDialog ? 0 : 48.0),
-              ),
-              contentPadding: isDesktop
-                  ? EdgeInsets.symmetric(horizontal: 22)
-                  : null,
-              title: Transform.translate(
-                offset: Offset(isDesktop ? 4 : 0, 0),
-                child: _buildLocaleTitle(context, e, status),
-              ),
-              value: e,
-              toggleable: true,
+    final itemRadius = widget.isDialog ? 0.0 : null;
+    final content = Column(
+      children: [
+        ListTitle(l10n.s_options),
+        ...supportedLocales.map(
+          (e) => ListTile(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(widget.isDialog ? 0 : 48.0),
             ),
+            contentPadding: isDesktop
+                ? EdgeInsets.symmetric(horizontal: 22)
+                : null,
+            leading: Radio<Locale>(
+              value: e,
+              groupValue: selectedLocale,
+              onChanged: null,
+            ),
+            title: Transform.translate(
+              offset: Offset(isDesktop ? 4 : 0, 0),
+              child: _buildLocaleTitle(context, e, status),
+            ),
+            onTap: () {
+              setState(() {
+                _pendingLocale = e == currentLocale ? null : e;
+              });
+              _saveFocusNode.requestFocus();
+            },
           ),
-          ActionListSection(
-            l10n.s_community,
-            fullWidth: isDialog,
-            children: [
-              ActionListItem(
-                borderRadius: itemRadius,
-                icon: Icon(Symbols.open_in_new),
-                title: l10n.l_localization_project,
-                onTap: (_) => launchCrowdinUrl(),
-              ),
-            ],
-          ),
-        ],
-      ),
+        ),
+        ActionListSection(
+          l10n.s_community,
+          fullWidth: widget.isDialog,
+          children: [
+            ActionListItem(
+              borderRadius: itemRadius,
+              icon: Icon(Symbols.open_in_new),
+              title: l10n.l_localization_project,
+              onTap: (_) => launchCrowdinUrl(),
+            ),
+          ],
+        ),
+      ],
     );
-    if (isDialog) {
+    if (widget.isDialog) {
       return ResponsiveDialog(
         title: Text(l10n.s_language),
         dialogMaxWidth: 400,
+        actions: [
+          TextButton(
+            focusNode: _saveFocusNode,
+            onPressed: _pendingLocale != null ? _apply : null,
+            child: Text(l10n.s_save),
+          ),
+        ],
         builder: (context, fullScreen) => content,
       );
     } else {
-      return content;
+      return Column(
+        children: [
+          content,
+          if (_pendingLocale != null)
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: ElevatedButton(
+                  focusNode: _saveFocusNode,
+                  onPressed: _apply,
+                  child: Text(l10n.s_save),
+                ),
+              ),
+            ),
+        ],
+      );
     }
   }
 }
@@ -739,42 +836,58 @@ class _LogsView extends ConsumerStatefulWidget {
 
 class _LogsViewState extends ConsumerState<_LogsView> {
   bool _diagnosing = false;
+  Level? _pendingLogLevel;
+  final _saveFocusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _saveFocusNode.dispose();
+    super.dispose();
+  }
+
+  void _applyLogLevel() {
+    if (_pendingLogLevel != null) {
+      ref.read(logLevelProvider.notifier).setLogLevel(_pendingLogLevel!);
+    }
+    setState(() {
+      _pendingLogLevel = null;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final logLevel = ref.watch(logLevelProvider);
-    final logLevelRadioGroup = RadioGroup(
-      groupValue: logLevel,
-      onChanged: (value) {
-        if (value != null) {
-          ref.read(logLevelProvider.notifier).setLogLevel(value);
-          if (widget.isDialog) {
-            Navigator.pop(context, value);
-          }
-        }
-      },
-      child: Column(
-        children: [
-          ListTitle(l10n.s_logging_level),
-          ...Levels.LEVELS.map(
-            (e) => RadioListTile<Level>(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(widget.isDialog ? 0 : 48.0),
-              ),
-              contentPadding: isDesktop
-                  ? EdgeInsets.symmetric(horizontal: 22)
-                  : null,
-              title: Transform.translate(
-                offset: Offset(isDesktop ? 4 : 0, 0),
-                child: Text('${e.name[0]}${e.name.substring(1).toLowerCase()}'),
-              ),
-              value: e,
-              toggleable: true,
+    final selectedLogLevel = _pendingLogLevel ?? logLevel;
+    final logLevelRadioGroup = Column(
+      children: [
+        ListTitle(l10n.s_logging_level),
+        ...Levels.LEVELS.map(
+          (e) => ListTile(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(widget.isDialog ? 0 : 48.0),
             ),
+            contentPadding: isDesktop
+                ? EdgeInsets.symmetric(horizontal: 22)
+                : null,
+            leading: Radio<Level>(
+              value: e,
+              groupValue: selectedLogLevel,
+              onChanged: null,
+            ),
+            title: Transform.translate(
+              offset: Offset(isDesktop ? 4 : 0, 0),
+              child: Text('${e.name[0]}${e.name.substring(1).toLowerCase()}'),
+            ),
+            onTap: () {
+              setState(() {
+                _pendingLogLevel = e == logLevel ? null : e;
+              });
+              _saveFocusNode.requestFocus();
+            },
           ),
-        ],
-      ),
+        ),
+      ],
     );
 
     final allowScreenshots = ref.watch(androidAllowScreenshotsProvider);
@@ -877,9 +990,33 @@ class _LogsViewState extends ConsumerState<_LogsView> {
         ? ResponsiveDialog(
             title: Text(l10n.s_debugging_tools),
             dialogMaxWidth: 400,
+            actions: [
+              TextButton(
+                onPressed: _pendingLogLevel != null ? () {
+                  _applyLogLevel();
+                  Navigator.pop(context, _pendingLogLevel);
+                } : null,
+                child: Text(l10n.s_save),
+              ),
+            ],
             builder: (context, fullScreen) => content,
           )
-        : content;
+        : Column(
+            children: [
+              content,
+              if (_pendingLogLevel != null)
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: ElevatedButton(
+                      onPressed: _applyLogLevel,
+                      child: Text(l10n.s_save),
+                    ),
+                  ),
+                ),
+            ],
+          );
   }
 }
 
