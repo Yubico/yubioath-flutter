@@ -446,6 +446,7 @@ class _ColorButtonState extends State<_ColorButton> {
       button: true,
       label: widget.colorName,
       onTap: widget.onPressed,
+      selected: widget.isSelected,
       child: ListenableBuilder(
         listenable: _focusNode,
         builder: (context, child) => DecoratedBox(
