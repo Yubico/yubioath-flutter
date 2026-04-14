@@ -283,6 +283,8 @@ class _DeviceContent extends ConsumerWidget {
                                                 },
                                               ),
                                             ),
+
+                                            // "System default color" button
                                             _ColorButton(
                                               isDefault: true,
                                               color: defaultColor,
@@ -292,21 +294,6 @@ class _DeviceContent extends ConsumerWidget {
                                                 _updateColor(null, ref, serial);
                                                 Navigator.of(context).pop();
                                               },
-                                              icon: Icon(
-                                                customColor == null
-                                                    ? Symbols.circle
-                                                    : Symbols.clear,
-                                                fill: 1,
-                                                size: 16,
-                                                weight: 700,
-                                                opticalSize: 20,
-                                                color:
-                                                    defaultColor
-                                                            .computeLuminance() >
-                                                        0.7
-                                                    ? Colors.grey
-                                                    : Colors.white,
-                                              ),
                                             ),
                                           ],
                                         ),
@@ -415,14 +402,12 @@ class _ColorButton extends StatefulWidget {
   final bool isSelected;
   final bool isDefault;
   final Function()? onPressed;
-  final Widget? icon;
 
   const _ColorButton({
     required this.color,
     required this.colorName,
     required this.isSelected,
     required this.onPressed,
-    this.icon,
     this.isDefault = false,
   });
 
@@ -442,6 +427,10 @@ class _ColorButtonState extends State<_ColorButton> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final iconColor =
+        ThemeData.estimateBrightnessForColor(widget.color) == Brightness.light
+        ? Colors.black.withValues(alpha: 0.6)
+        : Colors.white.withValues(alpha: 0.9);
     return Semantics(
       button: true,
       label: widget.colorName,
@@ -468,25 +457,18 @@ class _ColorButtonState extends State<_ColorButton> {
             fillColor: widget.color,
             hoverColor: Colors.black12,
             shape: const CircleBorder(),
-            child: widget.isDefault
-                ? Icon(
-                    widget.isSelected ? Symbols.circle : Symbols.clear,
-                    fill: 1,
-                    size: 16,
-                    weight: 700,
-                    opticalSize: 20,
-                    color: widget.color.computeLuminance() > 0.7
-                        ? Colors.grey
-                        : Colors.white,
-                  )
-                : Icon(
-                    Symbols.circle,
-                    fill: 1,
-                    size: 16,
-                    color: widget.isSelected
-                        ? Colors.white
-                        : Colors.transparent,
-                  ),
+            child: Icon(
+              widget.isDefault && !widget.isSelected
+                  ? Symbols.clear
+                  : Symbols.circle,
+              fill: 1,
+              size: 16,
+              weight: widget.isDefault ? 700 : null,
+              opticalSize: widget.isDefault ? 20 : null,
+              color: !widget.isDefault && !widget.isSelected
+                  ? Colors.transparent
+                  : iconColor,
+            ),
           ),
         ),
       ),
