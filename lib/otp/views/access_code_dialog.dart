@@ -129,7 +129,6 @@ class _AccessCodeDialogState extends ConsumerState<AccessCodeDialog> {
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_access_code,
-                        isRequired: true,
                         errorText: _accessCodeIsWrong ? _accessCodeError : null,
                         errorMaxLines: 3,
                         icon: const Icon(Symbols.pin),

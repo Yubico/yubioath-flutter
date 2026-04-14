@@ -160,7 +160,6 @@ class _FidoPinConfirmationDialog
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_pin,
-                        isRequired: true,
                         helperText:
                             pinRetries != null &&
                                 pinRetries <= 3 &&

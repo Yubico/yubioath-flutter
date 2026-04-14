@@ -140,7 +140,6 @@ class _PinDialogState extends ConsumerState<PinDialog> {
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_pin,
-                        isRequired: true,
                         errorText: _pinIsBlocked
                             ? l10n.l_piv_pin_blocked
                             : _pinIsWrong

@@ -108,7 +108,6 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
                   decoration: AppInputDecoration(
                     border: const OutlineInputBorder(),
                     labelText: l10n.s_password,
-                    isRequired: true,
                     errorText: _passwordIsWrong ? l10n.s_wrong_password : null,
                     helperText: '', // Prevents resizing when errorText shown
                     icon: const Icon(Symbols.password),

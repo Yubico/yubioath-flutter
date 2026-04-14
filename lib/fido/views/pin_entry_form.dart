@@ -166,7 +166,6 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
               decoration: AppInputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: l10n.s_pin,
-                isRequired: true,
                 helperText: pinRetries != null && pinRetries <= 3
                     ? l10n.l_attempts_remaining(pinRetries)
                     : '',
