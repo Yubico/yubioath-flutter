@@ -1,4 +1,4 @@
-* Version 7.3.3 (unreleased) Desktop-only release
+* Version 7.3.3 (2026-04-15) Desktop-only release
  ** FIDO: Optionally remember read-only access for Passkeys.
  ** Fix(linux): use persisted app window size.
  ** Binaries compiled with Flutter 3.41.6, and Python 3.14.4 (desktop).
