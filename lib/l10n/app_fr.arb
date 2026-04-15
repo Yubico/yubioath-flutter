@@ -60,8 +60,8 @@
     "s_expanded": null,
     "s_collapsed": null,
     "s_show_menu": "Afficher le menu",
-    "s_expand_menu_bar": null,
-    "s_collapse_menu_bar": null,
+    "s_expand_menu_bar": "Développer la barre de menu",
+    "s_collapse_menu_bar": "Réduire la barre de menu",
     "s_toggle_menu_bar": "Basculer la barre de menu",
     "s_more_info": "Plus d'infos",
     "l_bullet": "• {item}",
@@ -359,6 +359,7 @@
             }
         }
     },
+    "s_persist_read_only_access": "Accès en lecture seule persistant",
     "s_ep_attestation": "Attestation d'entreprise",
     "s_ep_attestation_enabled": "Attestation d'entreprise activée",
     "q_enable_ep_attestation": "Activer l'Attestation d'Entreprise ?",

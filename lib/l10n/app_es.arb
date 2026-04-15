@@ -359,6 +359,7 @@
             }
         }
     },
+    "s_persist_read_only_access": null,
     "s_ep_attestation": "Atestación empresarial",
     "s_ep_attestation_enabled": "Atestación empresarial habilitada",
     "q_enable_ep_attestation": "¿Habilitar atestación empresarial?",

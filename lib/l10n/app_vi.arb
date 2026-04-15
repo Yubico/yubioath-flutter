@@ -359,6 +359,7 @@
             }
         }
     },
+    "s_persist_read_only_access": null,
     "s_ep_attestation": "Xác thực Doanh Nghiệp",
     "s_ep_attestation_enabled": "Xác thực Doanh Nghiệp đã được kích hoạt",
     "q_enable_ep_attestation": "Bật tính năng Chứng thực cấp tổ chức?",

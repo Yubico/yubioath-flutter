@@ -60,8 +60,8 @@
     "s_expanded": null,
     "s_collapsed": null,
     "s_show_menu": "Visa meny",
-    "s_expand_menu_bar": null,
-    "s_collapse_menu_bar": null,
+    "s_expand_menu_bar": "Expandera menyfältet",
+    "s_collapse_menu_bar": "Dölj menyfältet",
     "s_toggle_menu_bar": "Växla menyfältet",
     "s_more_info": "Mer info",
     "l_bullet": "• {item}",
@@ -161,9 +161,9 @@
 
     "s_select_to_scan": "Välj att skanna",
     "s_hide_reader": "Göm läsare",
-    "s_show_hidden_readers": "Visa gömda läsare",
+    "s_show_hidden_readers": "Visa dolda läsare",
     "s_toggle_readers": "Växla läsare",
-    "l_toggle_readers_desc": "Visa eller göm läsare",
+    "l_toggle_readers_desc": "Visa eller dölj läsare",
     "s_sn_serial": "S/N: {serial}",
     "@s_sn_serial": {
         "placeholders": {
@@ -359,6 +359,7 @@
             }
         }
     },
+    "s_persist_read_only_access": "Behåll skrivskyddad åtkomst",
     "s_ep_attestation": "Företagsintyg",
     "s_ep_attestation_enabled": "Företagsattestering aktiverad",
     "q_enable_ep_attestation": "Aktivera Enterprise Attestation?",
@@ -577,7 +578,7 @@
     "l_ready_to_use": "Klar att använda",
     "l_register_sk_on_websites": "Registrera som säkerhetsnyckel på webbplatser",
     "l_no_discoverable_accounts": "Inga passkeys lagrade",
-    "p_non_passkeys_note": "Icke-passkey autentiseringsuppgifter kan finnas, men kan inte listas.",
+    "p_non_passkeys_note": "Autentiseringsuppgifter som inte är passkeys kan finnas, men kan inte visas.",
     "s_delete_passkey": "Radera passkey",
     "q_delete_passkey": "Radera passkey?",
     "l_delete_passkey_desc": "Ta bort passkey från YubiKey",
@@ -840,7 +841,7 @@
     "l_otp_slot_configured": "Kortplatsen är konfigurerad",
     "@_otp_slot_configurations": {},
 
-    "l_yubiotp_desc": "Programmera en Yubico OTP-legitimation",
+    "l_yubiotp_desc": "Programmera en Yubico OTP-autentiseringsuppgift",
     "s_challenge_response": "Utmaning-svar",
     "l_challenge_response_desc": "Programmera en referens för utmaning/svar",
     "s_static_password": "Statiskt lösenord",
@@ -911,7 +912,7 @@
         }
     },
     "s_append_enter": "Tillägg ⏎",
-    "l_append_enter_desc": "Lägg till en Enter-tangenttryckning efter att OTP:n har skickats ut",
+    "l_append_enter_desc": "Lägg till ett Enter-tangenttryck efter att OTP:n har skickats",
     "@_otp_errors": {},
 
     "p_otp_swap_error": "Misslyckades med att byta kortplatser! Kontrollera att YubiKey inte har begränsad åtkomst.",
@@ -976,10 +977,10 @@
 
     "s_reset": "Återställ",
     "s_factory_reset": "Fabriksåterställning",
-    "l_factory_reset_desc": "Återställ YubiKey-standardvärden",
+    "l_factory_reset_desc": "Återställ YubiKey till standardinställningar",
     "l_factory_reset_required": "Fabriksåterställning krävs",
-    "l_oath_application_reset": "Återställning av OATH-ansökan",
-    "l_fido_app_reset": "Återställning av FIDO-applikation",
+    "l_oath_application_reset": "Återställning av OATH-applikationen",
+    "l_fido_app_reset": "Återställning av FIDO-applikationen",
     "l_reset_failed": "Fel vid återställning: {message}",
     "@l_reset_failed": {
         "placeholders": {
@@ -988,7 +989,7 @@
             }
         }
     },
-    "l_piv_app_reset": "Återställning av PIV-ansökan",
+    "l_piv_app_reset": "Återställning av PIV-applikationen",
     "p_factory_reset_an_app": "Fabriksåterställ en applikation på din YubiKey.",
     "p_factory_reset_desc": "Data lagras i flera applikationer på YubiKey, varav vissa kan fabriksåterställas oberoende av varandra.\n\nVälj en applikation ovan för att återställa.",
     "p_warning_factory_reset": "Varning för detta! Detta kommer oåterkalleligen att radera alla OATH TOTP / HOTP-konton från din YubiKey.",

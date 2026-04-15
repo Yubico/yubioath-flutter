@@ -54,6 +54,8 @@ abstract class FidoState with _$FidoState {
   bool get pinBlocked => pinRetries == 0;
 
   bool? get enterpriseAttestation => info['options']['ep'];
+
+  bool get readOnlySupported => info['options']['perCredMgmtRO'] == true;
 }
 
 @freezed

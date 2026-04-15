@@ -359,6 +359,7 @@
             }
         }
     },
+    "s_persist_read_only_access": null,
     "s_ep_attestation": "企业认证",
     "s_ep_attestation_enabled": "企业认证已启用",
     "q_enable_ep_attestation": "启用企业认证？",

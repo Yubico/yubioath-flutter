@@ -49,7 +49,7 @@ if [ "$OS" = "macos" ]; then
 		pip download -r $HELPER/cryptography.txt --platform macosx_10_12_universal2 --only-binary :all: --no-deps --dest $HELPER
 		uv pip install -r $HELPER/cryptography.txt --no-cache-dir --no-index --find-links $HELPER
 		# Combine wheels of pillow to get universal build
-		pip download -r $HELPER/pillow.txt --platform macosx_10_13_x86_64 --only-binary :all: --no-deps --dest $HELPER
+		pip download -r $HELPER/pillow.txt --platform macosx_10_15_x86_64 --only-binary :all: --no-deps --dest $HELPER
 		pip download -r $HELPER/pillow.txt --platform macosx_11_0_arm64 --only-binary :all: --no-deps --dest $HELPER
 		uv run delocate-merge $HELPER/pillow*.whl
 		UNIVERSAL_WHL=$(ls $HELPER/pillow*universal2.whl)

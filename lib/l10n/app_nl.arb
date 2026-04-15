@@ -60,8 +60,8 @@
     "s_expanded": null,
     "s_collapsed": null,
     "s_show_menu": "Menu weergeven",
-    "s_expand_menu_bar": null,
-    "s_collapse_menu_bar": null,
+    "s_expand_menu_bar": "Menubalk uitklappen",
+    "s_collapse_menu_bar": "Menubalk inklappen",
     "s_toggle_menu_bar": "Menubalk wisselen",
     "s_more_info": "Meer info",
     "l_bullet": "• {item}",
@@ -359,6 +359,7 @@
             }
         }
     },
+    "s_persist_read_only_access": "Doorgaan met alleen-lezen toegang",
     "s_ep_attestation": "Bedrijf herkenning",
     "s_ep_attestation_enabled": "Bedrijfsherkenning ingeschakeld",
     "q_enable_ep_attestation": "Bedrijfsherkenning inschakelen?",

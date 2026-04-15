@@ -60,8 +60,8 @@
     "s_expanded": null,
     "s_collapsed": null,
     "s_show_menu": "Pokaż menu",
-    "s_expand_menu_bar": null,
-    "s_collapse_menu_bar": null,
+    "s_expand_menu_bar": "Rozwiń pasek menu",
+    "s_collapse_menu_bar": "Zwiń pasek menu",
     "s_toggle_menu_bar": "Przełącz pasek menu",
     "s_more_info": "Więcej informacji",
     "l_bullet": "• {item}",
@@ -359,6 +359,7 @@
             }
         }
     },
+    "s_persist_read_only_access": "Zachowaj dostęp tylko do odczytu",
     "s_ep_attestation": "Atest przedsiębiorstwa",
     "s_ep_attestation_enabled": "Atest przedsiębiorstwa został włączony",
     "q_enable_ep_attestation": "Włączyć atest przedsiębiorstwa?",

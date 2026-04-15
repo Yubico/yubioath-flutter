@@ -359,6 +359,7 @@
             }
         }
     },
+    "s_persist_read_only_access": "Persist read-only access",
     "s_ep_attestation": "Enterprise Attestation",
     "s_ep_attestation_enabled": "Enterprise Attestation enabled",
     "q_enable_ep_attestation": "Enable Enterprise Attestation?",
