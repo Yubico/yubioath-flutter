@@ -36,6 +36,7 @@ import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../../widgets/utf8_utils.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
@@ -252,6 +253,10 @@ class _ConfigureYubiOtpDialogState
                           : const [AutofillHints.password],
                       focusNode: _publicIdFocus,
                       maxLength: publicIdLength,
+                      buildCounter: buildByteCounterFor(
+                        _publicIdController.text,
+                      ),
+                      inputFormatters: [limitBytesLength(publicIdLength)],
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_public_id,
@@ -303,6 +308,10 @@ class _ConfigureYubiOtpDialogState
                           ? []
                           : const [AutofillHints.password],
                       maxLength: privateIdLength,
+                      buildCounter: buildByteCounterFor(
+                        _privateIdController.text,
+                      ),
+                      inputFormatters: [limitBytesLength(privateIdLength)],
                       focusNode: _privateIdFocus,
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
@@ -354,6 +363,8 @@ class _ConfigureYubiOtpDialogState
                           ? []
                           : const [AutofillHints.password],
                       maxLength: secretLength,
+                      buildCounter: buildByteCounterFor(_secretController.text),
+                      inputFormatters: [limitBytesLength(secretLength)],
                       focusNode: _secretFocus,
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),

@@ -57,6 +57,8 @@
     "s_expand_navigation": "Développer la barre de navigation",
     "s_collapse_navigation": "Replier la barre de navigation",
     "s_expand_collapse_navigation": "Développer/réduire la barre de navigation",
+    "s_expanded": null,
+    "s_collapsed": null,
     "s_show_menu": "Afficher le menu",
     "s_expand_menu_bar": "Développer la barre de menu",
     "s_collapse_menu_bar": "Réduire la barre de menu",
@@ -129,6 +131,17 @@
         }
     },
     "s_character_count": "Nombre caractères",
+    "l_characters_used": null,
+    "@l_characters_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "max": {
+                "type": "int"
+            }
+        }
+    },
     "@_language": {},
 
     "s_language": "Langue",
@@ -520,6 +533,7 @@
     "p_warning_disable_credential": "Assurez-vous de désactiver ce compte du service avec lequel il est enregistré pour éviter d'être bloqué.",
     "s_account_name": "Nom du compte",
     "s_search_accounts": "Rechercher comptes",
+    "s_clear_search": null,
     "l_accounts_used": "{used} comptes sur {capacity} utilisés",
     "@l_accounts_used": {
         "placeholders": {
@@ -1088,6 +1102,14 @@
 
     "s_set_label": "Définir l'étiquette",
     "s_set_color": "Définir la couleur",
+    "s_color_teal": null,
+    "s_color_cyan": null,
+    "s_color_blue": null,
+    "s_color_purple": null,
+    "s_color_red": null,
+    "s_color_orange": null,
+    "s_color_yellow": null,
+    "s_color_green": null,
     "s_change_label": "Modifier l'étiquette",
     "p_set_will_add_custom_name": "Cela donnera un nom personnalisé à votre YubiKey.",
     "p_rename_will_change_custom_name": "Cela changera l'étiquette de votre YubiKey.",

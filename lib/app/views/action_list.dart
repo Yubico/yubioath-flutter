@@ -22,7 +22,7 @@ import '../../widgets/list_title.dart';
 import '../../widgets/tooltip_if_truncated.dart';
 import '../models.dart';
 
-class ActionListItem extends StatelessWidget {
+class ActionListItem extends StatefulWidget {
   final Widget icon;
   final String title;
   final String? subtitle;
@@ -45,53 +45,74 @@ class ActionListItem extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    // final theme =
-    //     ButtonTheme.of(context).colorScheme ?? Theme.of(context).colorScheme;
+  State<ActionListItem> createState() => _ActionListItemState();
+}
 
-    // final (foreground, background) = switch (actionStyle) {
-    //   ActionStyle.normal => (theme.onSecondary, theme.secondary),
-    //   ActionStyle.primary => (theme.onPrimary, theme.primary),
-    //   ActionStyle.error => (theme.onError, theme.error),
-    // };
+class _ActionListItemState extends State<ActionListItem> {
+  final FocusNode _focusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final borderRadius = BorderRadius.circular(widget.borderRadius ?? 48);
 
     return GestureDetector(
-      onTap: onTap == null
+      onTap: widget.onTap == null
           ? () {
               // Needed to avoid triggering escape intent when tapping
               // on a disabled item
             }
           : null,
-      child: ListTile(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(borderRadius ?? 48),
-        ),
-        title: TooltipIfTruncated(
-          text: title,
-          style: TextStyle(fontSize: theme.textTheme.bodyLarge!.fontSize),
-        ),
-        subtitle: subtitle != null
-            ? TooltipIfTruncated(
-                text: subtitle!,
-                style: TextStyle(
-                  fontSize: theme.textTheme.bodyMedium!.fontSize,
-                ),
-                maxLines: 2,
-                overflow: .ellipsis,
-              )
-            : null,
-        leading: Opacity(
-          opacity: onTap != null ? 1.0 : 0.4,
-          child: CircleAvatar(
-            foregroundColor: theme.colorScheme.onSurfaceVariant,
-            backgroundColor: Colors.transparent,
-            child: icon,
+      child: ListenableBuilder(
+        listenable: _focusNode,
+        builder: (context, child) => DecoratedBox(
+          position: DecorationPosition.foreground,
+          decoration: BoxDecoration(
+            border: _focusNode.hasFocus
+                ? Border.all(color: colorScheme.primary, width: 1)
+                : null,
+            borderRadius: borderRadius,
           ),
+          child: child!,
         ),
-        trailing: trailing,
-        onTap: onTap != null ? () => onTap?.call(context) : null,
-        enabled: onTap != null,
+        child: ListTile(
+          focusNode: _focusNode,
+          shape: RoundedRectangleBorder(borderRadius: borderRadius),
+          title: TooltipIfTruncated(
+            text: widget.title,
+            style: TextStyle(fontSize: theme.textTheme.bodyLarge!.fontSize),
+          ),
+          subtitle: widget.subtitle != null
+              ? TooltipIfTruncated(
+                  text: widget.subtitle!,
+                  style: TextStyle(
+                    fontSize: theme.textTheme.bodyMedium!.fontSize,
+                  ),
+                  maxLines: 2,
+                  overflow: .ellipsis,
+                )
+              : null,
+          leading: Opacity(
+            opacity: widget.onTap != null ? 1.0 : 0.4,
+            child: CircleAvatar(
+              foregroundColor: colorScheme.onSurfaceVariant,
+              backgroundColor: Colors.transparent,
+              child: widget.icon,
+            ),
+          ),
+          trailing: widget.trailing,
+          onTap: widget.onTap != null
+              ? () => widget.onTap?.call(context)
+              : null,
+          enabled: widget.onTap != null,
+        ),
       ),
     );
   }

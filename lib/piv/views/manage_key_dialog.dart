@@ -33,6 +33,7 @@ import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/info_popup_button.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../../widgets/utf8_utils.dart';
+import '../../widgets/visibility_toggle_button.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
@@ -257,21 +258,15 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                               : null,
                           errorMaxLines: 3,
                           icon: const Icon(Symbols.pin),
-                          suffixIcon: IconButton(
-                            isSelected: !_isObscure,
-                            icon: Icon(
-                              _isObscure
-                                  ? Symbols.visibility
-                                  : Symbols.visibility_off,
-                            ),
-                            onPressed: () {
+                          suffixIcon: VisibilityToggleButton(
+                            isObscured: _isObscure,
+                            onToggle: () {
                               setState(() {
                                 _isObscure = !_isObscure;
                               });
                             },
-                            tooltip: _isObscure
-                                ? l10n.s_show_pin
-                                : l10n.s_hide_pin,
+                            showLabel: l10n.s_show_pin,
+                            hideLabel: l10n.s_hide_pin,
                           ),
                         ),
                         textInputAction: .next,
@@ -300,6 +295,12 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                         maxLength: !_defaultKeyUsed
                             ? currentType.keyLength * 2
                             : null,
+                        buildCounter: buildByteCounterFor(
+                          _currentController.text,
+                        ),
+                        inputFormatters: [
+                          limitBytesLength(currentType.keyLength * 2),
+                        ],
                         decoration: AppInputDecoration(
                           border: const OutlineInputBorder(),
                           labelText: l10n.s_current_management_key,
@@ -355,6 +356,8 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                       autofocus: _defaultKeyUsed,
                       autofillHints: const [AutofillHints.newPassword],
                       maxLength: hexLength,
+                      buildCounter: buildByteCounterFor(_keyController.text),
+                      inputFormatters: [limitBytesLength(hexLength)],
                       controller: _keyController,
                       focusNode: _newFocus,
                       decoration: AppInputDecoration(

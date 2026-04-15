@@ -484,6 +484,7 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                           suffixIcons: [
                             if (searchController.text.isNotEmpty)
                               IconButton(
+                                tooltip: l10n.s_clear_search,
                                 icon: const Icon(Icons.clear),
                                 iconSize: 16,
                                 onPressed: () {

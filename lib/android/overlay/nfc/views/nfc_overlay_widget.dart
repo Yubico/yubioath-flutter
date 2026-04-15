@@ -18,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
+import '../../../../generated/l10n/app_localizations.dart';
 import '../models.dart';
 
 final nfcOverlayWidgetProperties =
@@ -62,6 +63,7 @@ class NfcOverlayWidget extends ConsumerWidget {
                 top: 10,
                 right: 10,
                 child: IconButton(
+                  tooltip: AppLocalizations.of(context).s_close,
                   onPressed: () => Navigator.of(context).pop(),
                   icon: const Icon(Symbols.close, fill: 1, size: 24),
                 ),

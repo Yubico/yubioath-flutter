@@ -15,8 +15,10 @@
  */
 
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -193,7 +195,7 @@ class _DeviceContent extends ConsumerWidget {
                 crossAxisAlignment: .start,
                 children: [
                   IconButton(
-                    icon: const Icon(Symbols.edit),
+                    icon: Icon(Symbols.edit, semanticLabel: l10n.s_set_label),
                     tooltip: l10n.s_set_label,
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                     onPressed: () async {
@@ -208,85 +210,108 @@ class _DeviceContent extends ConsumerWidget {
                   ),
                   Column(
                     children: [
-                      PopupMenuButton(
-                        popUpAnimationStyle: AnimationStyle(
-                          duration: Duration.zero,
-                        ),
-                        menuPadding: EdgeInsets.zero,
-                        tooltip: l10n.s_set_color,
-                        itemBuilder: (context) {
-                          return [
-                            PopupMenuItem(
-                              enabled: false,
-                              child: Center(
-                                child: Wrap(
-                                  runSpacing: 8,
-                                  spacing: 16,
-                                  children: [
-                                    ...[
-                                      Colors.teal,
-                                      Colors.cyan,
-                                      Colors.blueAccent,
-                                      Colors.deepPurple,
-                                      Colors.red,
-                                      Colors.orange,
-                                      Colors.yellow,
-                                      // add nice color to devices with dynamic color
-                                      if (isAndroid &&
-                                          ref.read(androidSdkVersionProvider) >=
-                                              31)
-                                        Colors.lightGreen,
-                                    ].map(
-                                      (e) => _ColorButton(
-                                        color: e,
-                                        isSelected:
-                                            customColor?.toInt32 == e.toInt32,
-                                        onPressed: () {
-                                          _updateColor(e, ref, serial);
-                                          Navigator.of(context).pop();
-                                        },
-                                      ),
-                                    ),
-
-                                    // "use default color" button
-                                    RawMaterialButton(
-                                      onPressed: () {
-                                        _updateColor(null, ref, serial);
-                                        Navigator.of(context).pop();
-                                      },
-                                      constraints: const BoxConstraints(
-                                        minWidth: 26.0,
-                                        minHeight: 26.0,
-                                      ),
-                                      fillColor: defaultColor,
-                                      hoverColor: Colors.black12,
-                                      shape: const CircleBorder(),
-                                      child: Icon(
-                                        customColor == null
-                                            ? Symbols.circle
-                                            : Symbols.clear,
-                                        fill: 1,
-                                        size: 16,
-                                        weight: 700,
-                                        opticalSize: 20,
-                                        color:
-                                            defaultColor.computeLuminance() >
-                                                0.7
-                                            ? Colors
-                                                  .grey // for bright colors
-                                            : Colors.white,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
+                      Builder(
+                        builder: (context) {
+                          return IconButton(
+                            tooltip: l10n.s_set_color,
+                            icon: Icon(
+                              Symbols.palette,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
+                              semanticLabel: l10n.s_set_color,
                             ),
-                          ];
+                            onPressed: () {
+                              final button =
+                                  context.findRenderObject() as RenderBox;
+                              final buttonRect =
+                                  button.localToGlobal(Offset.zero) &
+                                  button.size;
+                              final colors = {
+                                Colors.teal: l10n.s_color_teal,
+                                Colors.cyan: l10n.s_color_cyan,
+                                Colors.blueAccent: l10n.s_color_blue,
+                                Colors.deepPurple: l10n.s_color_purple,
+                                Colors.red: l10n.s_color_red,
+                                Colors.orange: l10n.s_color_orange,
+                                Colors.yellow: l10n.s_color_yellow,
+                                if (isAndroid &&
+                                    ref.read(androidSdkVersionProvider) >= 31)
+                                  Colors.lightGreen: l10n.s_color_green,
+                              };
+                              final collapsedMessage = l10n.s_collapsed;
+                              final view = View.of(context);
+                              SemanticsService.sendAnnouncement(
+                                view,
+                                l10n.s_expanded,
+                                TextDirection.ltr,
+                              );
+                              showDialog(
+                                context: context,
+                                barrierColor: Colors.transparent,
+                                builder: (context) => CustomSingleChildLayout(
+                                  delegate: _ColorPickerLayoutDelegate(
+                                    buttonRect: buttonRect,
+                                  ),
+                                  child: Material(
+                                    elevation: 8,
+                                    borderRadius: BorderRadius.circular(12),
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.surfaceContainer,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(16),
+                                      child: SizedBox(
+                                        width: 240,
+                                        child: Wrap(
+                                          runSpacing: 8,
+                                          spacing: 16,
+                                          children: [
+                                            ...colors.entries.map(
+                                              (e) => _ColorButton(
+                                                color: e.key,
+                                                colorName: e.value,
+                                                isSelected:
+                                                    customColor?.toInt32 ==
+                                                    e.key.toInt32,
+                                                onPressed: () {
+                                                  _updateColor(
+                                                    e.key,
+                                                    ref,
+                                                    serial,
+                                                  );
+                                                  Navigator.of(context).pop();
+                                                },
+                                              ),
+                                            ),
+
+                                            // "System default color" button
+                                            _ColorButton(
+                                              isDefault: true,
+                                              color: defaultColor,
+                                              colorName: l10n.s_system_default,
+                                              isSelected: customColor == null,
+                                              onPressed: () {
+                                                _updateColor(null, ref, serial);
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ).then((_) {
+                                SemanticsService.sendAnnouncement(
+                                  view,
+                                  collapsedMessage,
+                                  TextDirection.ltr,
+                                );
+                              });
+                            },
+                          );
                         },
-                        icon: Icon(
-                          Symbols.palette,
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
                       ),
                       Container(
                         height: 3.0,
@@ -373,14 +398,18 @@ class _DeviceContent extends ConsumerWidget {
 }
 
 class _ColorButton extends StatefulWidget {
-  final Color? color;
+  final Color color;
+  final String colorName;
   final bool isSelected;
+  final bool isDefault;
   final Function()? onPressed;
 
   const _ColorButton({
     required this.color,
+    required this.colorName,
     required this.isSelected,
     required this.onPressed,
+    this.isDefault = false,
   });
 
   @override
@@ -388,20 +417,92 @@ class _ColorButton extends StatefulWidget {
 }
 
 class _ColorButtonState extends State<_ColorButton> {
+  final FocusNode _focusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return RawMaterialButton(
-      onPressed: widget.onPressed,
-      constraints: const BoxConstraints(minWidth: 26.0, minHeight: 26.0),
-      fillColor: widget.color,
-      hoverColor: Colors.black12,
-      shape: const CircleBorder(),
-      child: Icon(
-        Symbols.circle,
-        fill: 1,
-        size: 16,
-        color: widget.isSelected ? Colors.white : Colors.transparent,
+    final colorScheme = Theme.of(context).colorScheme;
+    final iconColor =
+        ThemeData.estimateBrightnessForColor(widget.color) == Brightness.light
+        ? Colors.black.withValues(alpha: 0.6)
+        : Colors.white.withValues(alpha: 0.9);
+    return Semantics(
+      button: true,
+      label: widget.colorName,
+      onTap: widget.onPressed,
+      selected: widget.isSelected,
+      child: ListenableBuilder(
+        listenable: _focusNode,
+        builder: (context, child) => DecoratedBox(
+          position: DecorationPosition.foreground,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: _focusNode.hasFocus
+                ? Border.all(color: colorScheme.primary, width: 1)
+                : null,
+          ),
+          child: child!,
+        ),
+        child: ExcludeSemantics(
+          excluding: isAndroid,
+          child: RawMaterialButton(
+            focusNode: _focusNode,
+            onPressed: widget.onPressed,
+            constraints: const BoxConstraints(minWidth: 26.0, minHeight: 26.0),
+            fillColor: widget.color,
+            hoverColor: Colors.black12,
+            shape: const CircleBorder(),
+            child: Icon(
+              widget.isDefault && !widget.isSelected
+                  ? Symbols.clear
+                  : Symbols.circle,
+              fill: 1,
+              size: 16,
+              weight: widget.isDefault ? 700 : null,
+              opticalSize: widget.isDefault ? 20 : null,
+              color: !widget.isDefault && !widget.isSelected
+                  ? Colors.transparent
+                  : iconColor,
+            ),
+          ),
+        ),
       ),
     );
+  }
+}
+
+class _ColorPickerLayoutDelegate extends SingleChildLayoutDelegate {
+  final Rect buttonRect;
+
+  _ColorPickerLayoutDelegate({required this.buttonRect});
+
+  @override
+  BoxConstraints getConstraintsForChild(BoxConstraints constraints) {
+    return BoxConstraints.loose(constraints.biggest);
+  }
+
+  @override
+  Offset getPositionForChild(Size size, Size childSize) {
+    double x = buttonRect.right - childSize.width;
+    double y = buttonRect.bottom;
+
+    double maxX = math.max(8.0, size.width - childSize.width - 8.0);
+    double maxY = math.max(8.0, size.height - childSize.height - 8.0);
+
+    x = x.clamp(8.0, maxX);
+    y = y.clamp(8.0, maxY);
+
+    return Offset(x, y);
+  }
+
+  @override
+  bool shouldRelayout(_ColorPickerLayoutDelegate oldDelegate) {
+    return buttonRect != oldDelegate.buttonRect;
   }
 }

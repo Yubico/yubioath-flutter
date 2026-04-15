@@ -57,6 +57,8 @@
     "s_expand_navigation": "Развернуть панель навигации",
     "s_collapse_navigation": "Свернуть панель навигации",
     "s_expand_collapse_navigation": "Развернуть/свернуть панель навигации",
+    "s_expanded": null,
+    "s_collapsed": null,
     "s_show_menu": "Показать меню",
     "s_expand_menu_bar": "Развернуть строку меню",
     "s_collapse_menu_bar": "Свернуть строку меню",
@@ -129,6 +131,17 @@
         }
     },
     "s_character_count": "Количество символов",
+    "l_characters_used": null,
+    "@l_characters_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "max": {
+                "type": "int"
+            }
+        }
+    },
     "@_language": {},
 
     "s_language": "Язык",
@@ -520,6 +533,7 @@
     "p_warning_disable_credential": "Отключите эту учётную запись в сервисе, иначе вы можете потерять к нему доступ.",
     "s_account_name": "Имя учётной записи",
     "s_search_accounts": "Поиск учётных записей",
+    "s_clear_search": null,
     "l_accounts_used": "Используется {used} из {capacity} учётных записей",
     "@l_accounts_used": {
         "placeholders": {
@@ -1088,6 +1102,14 @@
 
     "s_set_label": "Установить метку",
     "s_set_color": "Установить цвет",
+    "s_color_teal": null,
+    "s_color_cyan": null,
+    "s_color_blue": null,
+    "s_color_purple": null,
+    "s_color_red": null,
+    "s_color_orange": null,
+    "s_color_yellow": null,
+    "s_color_green": null,
     "s_change_label": "Изменить метку",
     "p_set_will_add_custom_name": "Это даст вашему YubiKey пользовательское имя.",
     "p_rename_will_change_custom_name": "Это изменит метку YubiKey.",

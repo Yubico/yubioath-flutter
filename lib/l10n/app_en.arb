@@ -57,6 +57,8 @@
     "s_expand_navigation": "Expand navigation bar",
     "s_collapse_navigation": "Collapse navigation bar",
     "s_expand_collapse_navigation": "Expand/collapse navigation bar",
+    "s_expanded": "Expanded",
+    "s_collapsed": "Collapsed",
     "s_show_menu": "Show menu",
     "s_expand_menu_bar": "Expand menu bar",
     "s_collapse_menu_bar": "Collapse menu bar",
@@ -129,6 +131,17 @@
         }
     },
     "s_character_count": "Character count",
+    "l_characters_used": "{used} of {max} characters used",
+    "@l_characters_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "max": {
+                "type": "int"
+            }
+        }
+    },
     "@_language": {},
 
     "s_language": "Language",
@@ -520,6 +533,7 @@
     "p_warning_disable_credential": "Make sure to disable this account from the service it is registered with to avoid being locked out.",
     "s_account_name": "Account name",
     "s_search_accounts": "Search accounts",
+    "s_clear_search": "Clear search",
     "l_accounts_used": "{used} of {capacity} accounts used",
     "@l_accounts_used": {
         "placeholders": {
@@ -1088,6 +1102,14 @@
 
     "s_set_label": "Set label",
     "s_set_color": "Set color",
+    "s_color_teal": "Teal",
+    "s_color_cyan": "Cyan",
+    "s_color_blue": "Blue",
+    "s_color_purple": "Purple",
+    "s_color_red": "Red",
+    "s_color_orange": "Orange",
+    "s_color_yellow": "Yellow",
+    "s_color_green": "Green",
     "s_change_label": "Change label",
     "p_set_will_add_custom_name": "This will give your YubiKey a custom name.",
     "p_rename_will_change_custom_name": "This will change the label of your YubiKey.",

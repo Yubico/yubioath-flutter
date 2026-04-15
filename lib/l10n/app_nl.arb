@@ -57,6 +57,8 @@
     "s_expand_navigation": "Navigatiebalk uitklappen",
     "s_collapse_navigation": "Navigatiebalk inklappen",
     "s_expand_collapse_navigation": "Navigatiebalk uit-/inklappen",
+    "s_expanded": null,
+    "s_collapsed": null,
     "s_show_menu": "Menu weergeven",
     "s_expand_menu_bar": "Menubalk uitklappen",
     "s_collapse_menu_bar": "Menubalk inklappen",
@@ -129,6 +131,17 @@
         }
     },
     "s_character_count": "Aantal tekens",
+    "l_characters_used": null,
+    "@l_characters_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "max": {
+                "type": "int"
+            }
+        }
+    },
     "@_language": {},
 
     "s_language": "Taal",
@@ -520,6 +533,7 @@
     "p_warning_disable_credential": "Zorg ervoor dat u dit account uitschakelt bij de service waarbij het is geregistreerd om te voorkomen dat u wordt buitengesloten.",
     "s_account_name": "Accountnaam",
     "s_search_accounts": "Accounts zoeken",
+    "s_clear_search": null,
     "l_accounts_used": "{used} van {capacity} accounts gebruikt",
     "@l_accounts_used": {
         "placeholders": {
@@ -1088,6 +1102,14 @@
 
     "s_set_label": "Label instellen",
     "s_set_color": "Kleur instellen",
+    "s_color_teal": null,
+    "s_color_cyan": null,
+    "s_color_blue": null,
+    "s_color_purple": null,
+    "s_color_red": null,
+    "s_color_orange": null,
+    "s_color_yellow": null,
+    "s_color_green": null,
     "s_change_label": "Label wijzigen",
     "p_set_will_add_custom_name": "Dit geeft uw YubiKey een aangepaste naam.",
     "p_rename_will_change_custom_name": "Dit verandert het label van uw YubiKey.",

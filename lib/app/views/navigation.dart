@@ -92,19 +92,32 @@ class _NavigationItemState extends State<NavigationItem> {
               ),
       );
     } else {
-      return ListTile(
-        enabled: widget.onTap != null,
-        shape: RoundedRectangleBorder(
-          borderRadius: widget.borderRadius ?? BorderRadius.circular(48),
+      final borderRadius = widget.borderRadius ?? BorderRadius.circular(48);
+      return ListenableBuilder(
+        listenable: _focusNode,
+        builder: (context, child) => DecoratedBox(
+          position: DecorationPosition.foreground,
+          decoration: BoxDecoration(
+            border: _focusNode.hasFocus
+                ? Border.all(color: colorScheme.primary, width: 1)
+                : null,
+            borderRadius: borderRadius,
+          ),
+          child: child!,
         ),
-        leading: widget.leading,
-        title: Text(widget.title),
-        minVerticalPadding: 14.5,
-        onTap: widget.onTap,
-        selected: widget.selected,
-        selectedTileColor: colorScheme.secondaryContainer,
-        selectedColor: colorScheme.onSecondaryContainer,
-        contentPadding: const EdgeInsets.only(left: 16.0),
+        child: ListTile(
+          focusNode: _focusNode,
+          enabled: widget.onTap != null,
+          shape: RoundedRectangleBorder(borderRadius: borderRadius),
+          leading: widget.leading,
+          title: Text(widget.title),
+          minVerticalPadding: 14.5,
+          onTap: widget.onTap,
+          selected: widget.selected,
+          selectedTileColor: colorScheme.secondaryContainer,
+          selectedColor: colorScheme.onSecondaryContainer,
+          contentPadding: const EdgeInsets.only(left: 16.0),
+        ),
       );
     }
   }
