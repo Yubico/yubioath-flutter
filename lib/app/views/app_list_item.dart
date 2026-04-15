@@ -18,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/state.dart';
+import '../../widgets/focus_border.dart';
 import '../models.dart';
 import '../shortcuts.dart';
 import 'action_popup_menu.dart';
@@ -83,18 +84,9 @@ class _AppListItemState<T> extends ConsumerState<AppListItem> {
       selected: widget.selected,
       child: ItemShortcuts<T>(
         item: widget.item,
-        child: ListenableBuilder(
-          listenable: _focusNode,
-          builder: (context, child) => DecoratedBox(
-            position: DecorationPosition.foreground,
-            decoration: BoxDecoration(
-              border: _focusNode.hasFocus
-                  ? Border.all(color: colorScheme.primary, width: 1)
-                  : null,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: child!,
-          ),
+        child: FocusBorder(
+          focusNode: _focusNode,
+          borderRadius: BorderRadius.circular(16),
           child: InkWell(
             focusNode: _focusNode,
             borderRadius: BorderRadius.circular(16),
