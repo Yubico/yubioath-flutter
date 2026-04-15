@@ -158,36 +158,46 @@ class _ThemeModeViewState extends ConsumerState<_ThemeModeView> {
     final supportedThemes = ref.read(supportedThemesProvider);
     final selectedTheme = _pendingTheme ?? themeMode;
 
-    final content = Column(
-      children: [
-        ListTitle(l10n.s_options),
-        ...supportedThemes.map(
-          (e) => ListTile(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(widget.isDialog ? 0 : 48.0),
+    final content = RadioGroup<ThemeMode>(
+      groupValue: selectedTheme,
+      onChanged: (value) {
+        if (value != null) {
+          setState(() {
+            _pendingTheme = value == themeMode ? null : value;
+          });
+          _saveFocusNode.requestFocus();
+        }
+      },
+      child: Column(
+        children: [
+          ListTitle(l10n.s_options),
+          ...supportedThemes.map(
+            (e) => ListTile(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(widget.isDialog ? 0 : 48.0),
+              ),
+              contentPadding: isDesktop
+                  ? const EdgeInsets.symmetric(horizontal: 22)
+                  : null,
+              leading: Radio<ThemeMode>(
+                value: e,
+                toggleable: true,
+              ),
+              title: Transform.translate(
+                offset: Offset(isDesktop ? 4 : 0, 0),
+                child: Text(e.getDisplayName(l10n)),
+              ),
+              key: keys.themeModeOption(e),
+              onTap: () {
+                setState(() {
+                  _pendingTheme = e == themeMode ? null : e;
+                });
+                _saveFocusNode.requestFocus();
+              },
             ),
-            contentPadding: isDesktop
-                ? EdgeInsets.symmetric(horizontal: 22)
-                : null,
-            leading: Radio<ThemeMode>(
-              value: e,
-              groupValue: selectedTheme,
-              onChanged: null,
-            ),
-            title: Transform.translate(
-              offset: Offset(isDesktop ? 4 : 0, 0),
-              child: Text(e.getDisplayName(l10n)),
-            ),
-            key: keys.themeModeOption(e),
-            onTap: () {
-              setState(() {
-                _pendingTheme = e == themeMode ? null : e;
-              });
-              _saveFocusNode.requestFocus();
-            },
           ),
-        ),
-      ],
+        ],
+      ),
     );
     if (widget.isDialog) {
       return ResponsiveDialog(
@@ -654,47 +664,55 @@ class _LanguageViewState extends ConsumerState<_LanguageView> {
     );
 
     final itemRadius = widget.isDialog ? 0.0 : null;
-    final content = Column(
-      children: [
-        ListTitle(l10n.s_options),
-        ...supportedLocales.map(
-          (e) => ListTile(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(widget.isDialog ? 0 : 48.0),
+    final content = RadioGroup<Locale>(
+      groupValue: selectedLocale,
+      onChanged: (value) {
+        if (value != null) {
+          setState(() {
+            _pendingLocale = value == currentLocale ? null : value;
+          });
+          _saveFocusNode.requestFocus();
+        }
+      },
+      child: Column(
+        children: [
+          ListTitle(l10n.s_options),
+          ...supportedLocales.map(
+            (e) => ListTile(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(widget.isDialog ? 0 : 48.0),
+              ),
+              contentPadding: isDesktop ? const EdgeInsets.symmetric(horizontal: 22) : null,
+              leading: Radio<Locale>(
+                value: e,
+                toggleable: true,
+              ),
+              title: Transform.translate(
+                offset: Offset(isDesktop ? 4 : 0, 0),
+                child: _buildLocaleTitle(context, e, status),
+              ),
+              onTap: () {
+                setState(() {
+                  _pendingLocale = e == currentLocale ? null : e;
+                });
+                _saveFocusNode.requestFocus();
+              },
             ),
-            contentPadding: isDesktop
-                ? EdgeInsets.symmetric(horizontal: 22)
-                : null,
-            leading: Radio<Locale>(
-              value: e,
-              groupValue: selectedLocale,
-              onChanged: null,
-            ),
-            title: Transform.translate(
-              offset: Offset(isDesktop ? 4 : 0, 0),
-              child: _buildLocaleTitle(context, e, status),
-            ),
-            onTap: () {
-              setState(() {
-                _pendingLocale = e == currentLocale ? null : e;
-              });
-              _saveFocusNode.requestFocus();
-            },
           ),
-        ),
-        ActionListSection(
-          l10n.s_community,
-          fullWidth: widget.isDialog,
-          children: [
-            ActionListItem(
-              borderRadius: itemRadius,
-              icon: Icon(Symbols.open_in_new),
-              title: l10n.l_localization_project,
-              onTap: (_) => launchCrowdinUrl(),
-            ),
-          ],
-        ),
-      ],
+          ActionListSection(
+            l10n.s_community,
+            fullWidth: widget.isDialog,
+            children: [
+              ActionListItem(
+                borderRadius: itemRadius,
+                icon: const Icon(Symbols.open_in_new),
+                title: l10n.l_localization_project,
+                onTap: (_) => launchCrowdinUrl(),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
     if (widget.isDialog) {
       return ResponsiveDialog(
@@ -859,40 +877,51 @@ class _LogsViewState extends ConsumerState<_LogsView> {
     final l10n = AppLocalizations.of(context);
     final logLevel = ref.watch(logLevelProvider);
     final selectedLogLevel = _pendingLogLevel ?? logLevel;
-    final logLevelRadioGroup = Column(
-      children: [
-        ListTitle(l10n.s_logging_level),
-        ...Levels.LEVELS.map(
-          (e) => ListTile(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(widget.isDialog ? 0 : 48.0),
+
+    final logLevelRadioGroup = RadioGroup<Level>(
+      groupValue: selectedLogLevel,
+      onChanged: (value) {
+        if (value != null) {
+          setState(() {
+            _pendingLogLevel = value == logLevel ? null : value;
+          });
+          _saveFocusNode.requestFocus();
+        }
+      },
+      child: Column(
+        children: [
+          ListTitle(l10n.s_logging_level),
+          ...Levels.LEVELS.map(
+            (e) => ListTile(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(widget.isDialog ? 0 : 48.0),
+              ),
+              contentPadding: isDesktop
+                  ? const EdgeInsets.symmetric(horizontal: 22)
+                  : null,
+              leading: Radio<Level>(
+                value: e,
+                toggleable: true,
+              ),
+              title: Transform.translate(
+                offset: Offset(isDesktop ? 4 : 0, 0),
+                child: Text('${e.name[0]}${e.name.substring(1).toLowerCase()}'),
+              ),
+              onTap: () {
+                setState(() {
+                  _pendingLogLevel = e == logLevel ? null : e;
+                });
+                _saveFocusNode.requestFocus();
+              },
             ),
-            contentPadding: isDesktop
-                ? EdgeInsets.symmetric(horizontal: 22)
-                : null,
-            leading: Radio<Level>(
-              value: e,
-              groupValue: selectedLogLevel,
-              onChanged: null,
-            ),
-            title: Transform.translate(
-              offset: Offset(isDesktop ? 4 : 0, 0),
-              child: Text('${e.name[0]}${e.name.substring(1).toLowerCase()}'),
-            ),
-            onTap: () {
-              setState(() {
-                _pendingLogLevel = e == logLevel ? null : e;
-              });
-              _saveFocusNode.requestFocus();
-            },
           ),
-        ),
-      ],
+        ],
+      ),
     );
 
     final allowScreenshots = ref.watch(androidAllowScreenshotsProvider);
     final content = Column(
-      crossAxisAlignment: .start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         logLevelRadioGroup,
         ActionListSection(
@@ -922,7 +951,7 @@ class _LogsViewState extends ConsumerState<_LogsView> {
               ActionListItem(
                 borderRadius: widget.isDialog ? 0 : null,
                 icon: _diagnosing
-                    ? SizedBox(
+                    ? const SizedBox(
                         height: 16,
                         width: 16,
                         child: CircularProgressIndicator(
@@ -964,7 +993,7 @@ class _LogsViewState extends ConsumerState<_LogsView> {
               ActionListItem(
                 key: keys.allowScreenshotsSetting,
                 borderRadius: widget.isDialog ? 0 : null,
-                icon: Icon(Symbols.screenshot),
+                icon: const Icon(Symbols.screenshot),
                 title: l10n.s_allow_screenshots,
                 subtitle: l10n.l_allow_screenshots_desc,
                 trailing: Switch(
@@ -986,37 +1015,43 @@ class _LogsViewState extends ConsumerState<_LogsView> {
       ],
     );
 
-    return widget.isDialog
-        ? ResponsiveDialog(
-            title: Text(l10n.s_debugging_tools),
-            dialogMaxWidth: 400,
-            actions: [
-              TextButton(
-                onPressed: _pendingLogLevel != null ? () {
-                  _applyLogLevel();
-                  Navigator.pop(context, _pendingLogLevel);
-                } : null,
-                child: Text(l10n.s_save),
-              ),
-            ],
-            builder: (context, fullScreen) => content,
-          )
-        : Column(
-            children: [
-              content,
-              if (_pendingLogLevel != null)
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: ElevatedButton(
-                      onPressed: _applyLogLevel,
-                      child: Text(l10n.s_save),
-                    ),
-                  ),
+    if (widget.isDialog) {
+      return ResponsiveDialog(
+        title: Text(l10n.s_debugging_tools),
+        dialogMaxWidth: 400,
+        actions: [
+          TextButton(
+            focusNode: _saveFocusNode,
+            onPressed: _pendingLogLevel != null
+                ? () {
+                    _applyLogLevel();
+                    Navigator.pop(context, _pendingLogLevel);
+                  }
+                : null,
+            child: Text(l10n.s_save),
+          ),
+        ],
+        builder: (context, fullScreen) => content,
+      );
+    } else {
+      return Column(
+        children: [
+          content,
+          if (_pendingLogLevel != null)
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: ElevatedButton(
+                  focusNode: _saveFocusNode,
+                  onPressed: _applyLogLevel,
+                  child: Text(l10n.s_save),
                 ),
-            ],
-          );
+              ),
+            ),
+        ],
+      );
+    }
   }
 }
 
