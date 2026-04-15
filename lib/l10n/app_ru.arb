@@ -58,8 +58,8 @@
     "s_collapse_navigation": "Свернуть панель навигации",
     "s_expand_collapse_navigation": "Развернуть/свернуть панель навигации",
     "s_show_menu": "Показать меню",
-    "s_expand_menu_bar": null,
-    "s_collapse_menu_bar": null,
+    "s_expand_menu_bar": "Развернуть строку меню",
+    "s_collapse_menu_bar": "Свернуть строку меню",
     "s_toggle_menu_bar": "Показать/скрыть строку меню",
     "s_more_info": "Дополнительная информация",
     "l_bullet": "• {item}",
@@ -346,7 +346,7 @@
             }
         }
     },
-    "s_persist_read_only_access": null,
+    "s_persist_read_only_access": "Установить доступ только для чтения",
     "s_ep_attestation": "Корпоративная Аттестация",
     "s_ep_attestation_enabled": "Включена Корпоративная Аттестация",
     "q_enable_ep_attestation": "Включить Корпоративную Аттестацию?",

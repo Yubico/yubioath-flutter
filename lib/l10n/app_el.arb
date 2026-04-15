@@ -58,8 +58,8 @@
     "s_collapse_navigation": "Σύμπτυξη γραμμής πλοήγησης",
     "s_expand_collapse_navigation": "Επέκταση/σύμπτυξη γραμμής πλοήγησης",
     "s_show_menu": "Εμφάνιση μενού",
-    "s_expand_menu_bar": null,
-    "s_collapse_menu_bar": null,
+    "s_expand_menu_bar": "Ανάπτυξη γραμμής μενού",
+    "s_collapse_menu_bar": "Σύμπτυξη γραμμής μενού",
     "s_toggle_menu_bar": "Εναλλαγή γραμμής μενού",
     "s_more_info": "Περισσότερες πληροφορίες",
     "l_bullet": "• {item}",
@@ -346,7 +346,7 @@
             }
         }
     },
-    "s_persist_read_only_access": null,
+    "s_persist_read_only_access": "Διατήρηση πρόσβασης μόνο για ανάγνωση",
     "s_ep_attestation": "Εταιρική Πιστοποίηση (Enterprise Attestation)",
     "s_ep_attestation_enabled": "Η Εταιρική Πιστοποίηση είναι ενεργοποιημένη",
     "q_enable_ep_attestation": "Ενεργοποίηση Εταιρικής Πιστοποίησης;",

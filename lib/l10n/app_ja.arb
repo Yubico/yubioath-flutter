@@ -58,8 +58,8 @@
     "s_collapse_navigation": "ナビゲーションバーを折りたたみます",
     "s_expand_collapse_navigation": "ナビゲーションバーの展開/折りたたみ",
     "s_show_menu": "メニューを表示します",
-    "s_expand_menu_bar": null,
-    "s_collapse_menu_bar": null,
+    "s_expand_menu_bar": "メニューバーを展開",
+    "s_collapse_menu_bar": "メニューバーを折りたたむ",
     "s_toggle_menu_bar": "メニューバーを切り替える",
     "s_more_info": "詳細情報",
     "l_bullet": "• {item}",
@@ -346,7 +346,7 @@
             }
         }
     },
-    "s_persist_read_only_access": null,
+    "s_persist_read_only_access": "読み取り専用アクセスを永続化",
     "s_ep_attestation": "Enterprise Attestation",
     "s_ep_attestation_enabled": "Enterprise Attestation が有効です",
     "q_enable_ep_attestation": "Enterprise Attestation を有効にしますか？",

@@ -58,8 +58,8 @@
     "s_collapse_navigation": "Zbaliť navigačný panel",
     "s_expand_collapse_navigation": "Rozbaliť/zbaliť navigačný panel",
     "s_show_menu": "Zobraziť ponuku",
-    "s_expand_menu_bar": null,
-    "s_collapse_menu_bar": null,
+    "s_expand_menu_bar": "Rozbaliť panel ponuky",
+    "s_collapse_menu_bar": "Zbaliť panel ponuky",
     "s_toggle_menu_bar": "Prepnúť panel ponuky",
     "s_more_info": "Viac informácií",
     "l_bullet": "• {item}",
@@ -346,7 +346,7 @@
             }
         }
     },
-    "s_persist_read_only_access": null,
+    "s_persist_read_only_access": "Udržať prístup len na čítanie",
     "s_ep_attestation": "Podniková atestácia",
     "s_ep_attestation_enabled": "Podniková atestácia povolená",
     "q_enable_ep_attestation": "Povoliť podnikovú atestáciu?",

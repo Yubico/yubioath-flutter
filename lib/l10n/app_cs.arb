@@ -58,8 +58,8 @@
     "s_collapse_navigation": "Skrýt navigační panel",
     "s_expand_collapse_navigation": "Rozbalit/skrýt navigační panel",
     "s_show_menu": "Zobrazit nabídku",
-    "s_expand_menu_bar": null,
-    "s_collapse_menu_bar": null,
+    "s_expand_menu_bar": "Rozbalit panel nabídky",
+    "s_collapse_menu_bar": "Skrýt panel nabídky",
     "s_toggle_menu_bar": "Přepnout panel nabídky",
     "s_more_info": "Více informací",
     "l_bullet": "• {item}",
@@ -346,7 +346,7 @@
             }
         }
     },
-    "s_persist_read_only_access": null,
+    "s_persist_read_only_access": "Zachovat čtecí přístup",
     "s_ep_attestation": "Ověření podniku",
     "s_ep_attestation_enabled": "Ověření podniku je povoleno",
     "q_enable_ep_attestation": "Povolit ověření podniku?",

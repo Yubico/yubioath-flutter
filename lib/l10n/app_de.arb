@@ -58,8 +58,8 @@
     "s_collapse_navigation": "Navigationsleiste minimieren",
     "s_expand_collapse_navigation": "Navigationsleiste erweitern/minimieren",
     "s_show_menu": "Menü anzeigen",
-    "s_expand_menu_bar": null,
-    "s_collapse_menu_bar": null,
+    "s_expand_menu_bar": "Menüleiste einblenden",
+    "s_collapse_menu_bar": "Menüleiste ausblenden",
     "s_toggle_menu_bar": "Menüleiste anzeigen/ausblenden",
     "s_more_info": "Weitere Infos",
     "l_bullet": "• {item}",
@@ -346,7 +346,7 @@
             }
         }
     },
-    "s_persist_read_only_access": null,
+    "s_persist_read_only_access": "Lesezugriff beibehalten",
     "s_ep_attestation": "Enterprise Attestation",
     "s_ep_attestation_enabled": "Enterprise Attestation aktiviert",
     "q_enable_ep_attestation": "Enterprise Attestation aktivieren?",

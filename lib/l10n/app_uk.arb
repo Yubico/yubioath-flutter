@@ -58,8 +58,8 @@
     "s_collapse_navigation": "Згорнути панель навігації",
     "s_expand_collapse_navigation": "Розгорнути/згорнути панель навігації",
     "s_show_menu": "Показати меню",
-    "s_expand_menu_bar": null,
-    "s_collapse_menu_bar": null,
+    "s_expand_menu_bar": "Розгорнути панель меню",
+    "s_collapse_menu_bar": "Згорнути рядок меню",
     "s_toggle_menu_bar": "Перемикання рядка меню",
     "s_more_info": "Більше інформації",
     "l_bullet": "• {item}",
@@ -346,7 +346,7 @@
             }
         }
     },
-    "s_persist_read_only_access": null,
+    "s_persist_read_only_access": "Зберігати доступ лише для читання",
     "s_ep_attestation": "Атестація підприємства",
     "s_ep_attestation_enabled": "Атестацію підприємства ввімкнено",
     "q_enable_ep_attestation": "Увімкнути корпоративну атестацію?",

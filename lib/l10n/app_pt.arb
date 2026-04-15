@@ -58,8 +58,8 @@
     "s_collapse_navigation": "Recolher barra de navegação",
     "s_expand_collapse_navigation": "Expandir/recolher barra de navegação",
     "s_show_menu": "Mostrar Menu",
-    "s_expand_menu_bar": null,
-    "s_collapse_menu_bar": null,
+    "s_expand_menu_bar": "Expandir barra de menu",
+    "s_collapse_menu_bar": "Recolher barra de menu",
     "s_toggle_menu_bar": "Alternar barra de menu",
     "s_more_info": "Mais informações",
     "l_bullet": "• {item}",
@@ -346,7 +346,7 @@
             }
         }
     },
-    "s_persist_read_only_access": null,
+    "s_persist_read_only_access": "Manter acesso somente leitura",
     "s_ep_attestation": "Atestado Corporativo",
     "s_ep_attestation_enabled": "Atestação Empresarial habilitado",
     "q_enable_ep_attestation": "Habilitar Certificação Empresarial?",

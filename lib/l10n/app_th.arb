@@ -1,0 +1,1126 @@
+{
+    "@@locale": "th",
+
+    "app_name": "Yubico Authenticator",
+    "native_language_name": "แบบไทย",
+    "@native_language_name": {
+        "description": "IMPORTANT: This is the name of YOUR language written in YOUR language. For example: 'Deutsch' for German, 'Français' for French. DO NOT translate the word 'English'."
+    },
+    "s_translated": "เเปลเเล้ว: {percentage}%",
+    "@s_translated": {
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "s_proofread": "ตรวจทานเเล้ว: {percentage}%",
+    "@s_proofread": {
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "l_incomplete_translation": "การแปลไม่สมบูรณ์",
+    "p_translation_progress_desc": "ตัวบ่งชี้ความคืบหน้าสะท้อนถึงระดับความสมบูรณ์ของการแปล",
+    "s_community": "ชุมชน",
+    "l_localization_project": "โครงการการแปลภาษา",
+
+    "s_save": "บันทึก",
+    "s_cancel": "ยก​เลิก",
+    "s_close": "ปิด",
+    "s_delete": "ลบ",
+    "s_move": "ย้าย",
+    "s_quit": "ออก",
+    "s_enable": "เปิดใช้งาน",
+    "s_enabled": "เปิดใช้งานแล้ว",
+    "s_disabled": "ปิดใช้งานแล้ว",
+    "s_status": "สถานะ",
+    "s_unlock": "ปลดล็อก",
+    "s_calculate": "คำนวน",
+    "s_import": "นำเข้า",
+    "s_overwrite": "เขียนทับ",
+    "s_done": "เรียบร้อย",
+    "s_success": "เสร็จสมบูรณ์",
+    "s_loading": "กำลังโหลด\u2026",
+    "s_more": "เพิ่มเติม",
+    "s_label": "ป้ายกำกับ",
+    "s_name": "ชื่อ",
+    "s_usb": "ยูเอสบี",
+    "s_nfc": "เอ็นอฟซี",
+    "s_options": "ตัวเลือก",
+    "s_details": "ราย​ละเอียด",
+    "s_show_window": "แสดงหน้าต่าง",
+    "s_hide_window": "ซ่อนหน้าต่าง",
+    "s_show_navigation": "แสดงการนำทาง",
+    "s_expand_navigation": "ขยายแถบนำทาง",
+    "s_collapse_navigation": "ยุบแถบนำทาง",
+    "s_expand_collapse_navigation": "ขยาย/ยุบแถบนำทาง",
+    "s_show_menu": "แสดงเมนู",
+    "s_expand_menu_bar": null,
+    "s_collapse_menu_bar": null,
+    "s_toggle_menu_bar": "สลับแถบเมนู",
+    "s_more_info": "รายละเอียดเพิ่มเติม",
+    "l_bullet": "• {item}",
+    "@l_bullet": {
+        "placeholders": {
+            "item": {
+                "type": "String"
+            }
+        }
+    },
+    "s_none": "<ไม่มี>",
+
+    "s_about": "เกี่ยว​กับ",
+    "s_algorithm": "อัลกอริทึม",
+    "s_appearance": "ลักษณะ",
+    "s_actions": "การดำเนินการ",
+    "s_manage": "การจัดการ",
+    "s_setup": "การปรับตั้งค่า",
+    "s_device": "อุปกรณ์",
+    "s_application": "แอพลิเคชัน",
+    "s_settings": "การตั้งค่า",
+    "s_reset_settings": "รีเซตการตั้งค่า",
+    "l_reset_settings_desc": "คืนค่าการตั้งค่าเป็นค่าเริ่มต้น",
+    "q_reset_settings": "รีเซตการตั้งค่า?",
+    "p_reset_settings_confirmation_desc": "การกระทำนี่จะเป็นการคืนค่าทั้งหมดกลับไปเป็นค่าเริ่มต้น",
+    "s_support": "ช่วยเหลือ",
+    "s_certificates": "ใบรับรอง",
+    "s_security_key": "คีย์ความปลอดภัย",
+    "s_slots": "ช่อง",
+    "s_help_and_about": "ช่วยเหลือ & เกี่ยวกับ",
+    "s_help": "ช่วยเหลือ",
+    "s_app_information": "ข้อมูลเเอปพลิเคชั่น",
+    "s_home": "หน้าแรก",
+    "s_user_guide": "คู่มือ",
+    "s_i_need_help": "ฉันต้องการความช่วยเหลือ",
+    "s_terms_of_use": "เงื่อนไขการใช้งาน",
+    "s_privacy_policy": "นโยบายความเป็นส่วนตัว",
+    "s_open_src_licenses": "สัญญาอนุญาตโอเพนซอร์ส",
+    "s_please_wait": "โปรดรอสักครู่",
+    "s_secret_key": "คีย์ความลับ",
+    "s_show_secret_key": "แสดง คีย์ความลับ",
+    "s_hide_secret_key": "ซ่อน คีย์ความลับ",
+    "s_private_key": "กุญเเจส่วนตัว",
+    "s_public_key": "กุญเเจสาธารณะ",
+    "s_invalid_length": "ความยาวที่กรอกไม่ถูกต้อง",
+    "l_invalid_format_allowed_chars": "รูปแบบไม่ถูกต้อง ตัวอักษรที่อนุญาต: {characters}",
+    "@l_invalid_format_allowed_chars": {
+        "placeholders": {
+            "characters": {
+                "type": "String"
+            }
+        }
+    },
+    "l_invalid_keyboard_character": "ตัวอักขระไม่ถูกต้องสำหรับแป้นพิมพ์ที่เลือก",
+    "s_require_touch": "โปรดแตะที่อุปกรณ์",
+    "q_have_account_info": "มีข้อมูลบัญชีหรือไม่?",
+    "s_debugging_tools": "เครื่องมือเเก้ไขข้อบกพร่อง",
+    "s_run_diagnostics": "ตรวจสอบข้อบกพร่อง",
+    "l_run_diagnostics_desc": "เรียกใช้การวินิจฉัยเพื่อแก้ไขปัญหา",
+    "s_logging_level": "ระดับปูมบันทึก",
+    "s_current_log_level": "ระดับปูมบันทึก: {level}",
+    "@s_current_log_level": {
+        "placeholders": {
+            "level": {
+                "type": "String"
+            }
+        }
+    },
+    "s_character_count": "จำนวนอักขระ",
+    "@_language": {},
+
+    "s_language": "ภาษา",
+    "@_theme": {},
+
+    "s_app_theme": "ลักษณะเเอปพลิเคชั่น",
+    "s_system_default": "ใช้ค่าเริ่มต้นระบบ",
+    "s_light_mode": "โหมดสว่าง",
+    "s_dark_mode": "โหมดมืด",
+    "@_layout": {},
+
+    "s_list_layout": "รูปเเบบรายการ",
+    "s_grid_layout": "เค้าโครงเเบบ",
+    "s_mixed_layout": "รูปเเบบผสม",
+    "s_select_layout": "เลือกเค้าโครง",
+    "@_yubikey_selection": {},
+
+    "s_select_to_scan": "เลือกเพื่อสเเกน",
+    "s_hide_reader": "ซ่อนเครื่องอ่าน",
+    "s_show_hidden_readers": "เเสดงเครื่องอ่านที่ซ่อน",
+    "s_toggle_readers": "สลับเครื่องอ่าน",
+    "l_toggle_readers_desc": "เเสดงหรือซ่อนเครื่องอ่าน",
+    "s_sn_serial": "หมายเลขประจำตัวอุปกรณ์: {serial}",
+    "@s_sn_serial": {
+        "placeholders": {
+            "serial": {
+                "type": "int"
+            }
+        }
+    },
+    "s_fw_version": "เฟิร์มแวร์: {version}",
+    "@s_fw_version": {
+        "placeholders": {
+            "version": {
+                "type": "Object"
+            }
+        }
+    },
+    "l_serial_number": "หมายเลขซีเรียล: {serial}",
+    "@l_serial_number": {
+        "placeholders": {
+            "serial": {
+                "type": "int"
+            }
+        }
+    },
+    "l_firmware_version": "เวอร์ชันเฟิร์มแวร์: {version}",
+    "@l_firmware_version": {
+        "placeholders": {
+            "version": {
+                "type": "Object"
+            }
+        }
+    },
+    "l_fips_capable": "ความเข้ากันได้ FIPS",
+    "l_fips_approved": "ผ่านรับการรับรอง FIPS",
+    "@_yubikey_interactions": {},
+
+    "l_insert_yk": "ใส่ ยูบิคีย์ ของคุณ",
+    "l_insert_or_tap_yk": "ใส่หรือแตะ ยูบิคีย์",
+    "l_unplug_yk": "ถอด ยูบิคีย์ ของคุณ",
+    "l_reinsert_yk": "ใส่ ยูบิคีย์ กลับเข้าไปอีกครั้ง",
+    "l_place_on_nfc_reader": "วาง ยูบิคีย์ ของคุณบนเครื่องอ่าน เอ็นเอฟซี",
+    "l_replace_yk_on_reader": "วาง ยูบิคีย์ ของคุณกลับไปที่เครื่องอ่าน เอ็นเอฟซี อีกครั้ง",
+    "l_remove_yk_from_reader": "นำ ยูบิคีย์ ของคุณออกจากเครื่องอ่าน เอ็นเอฟซี",
+    "p_try_reinsert_yk": "ลองถอดและเสียบ ยูบิคีย์ ของคุณใหม่อีกครั้ง",
+    "s_touch_required": "ต้องสัมผัส ยูบิคีย์",
+    "l_touch_button_now": "แตะปุ่มบน ยูบิคีย์ ของคุณตอนนี้",
+    "l_long_touch_button_now": "กดปุ่มบน ยูบิคีย์ ของคุณค้างไว้เป็นเวลา 5 วินาที",
+    "l_keep_touching_yk": "แตะ ยูบิคีย์ ของคุณค้างไว้\u2026",
+    "@_capabilities": {},
+
+    "s_capability_otp": "ยูบิโค่ OTP",
+    "s_capability_u2f": "FIDO U2F",
+    "s_capability_fido2": "FIDO2",
+    "s_capability_oath": "OATH",
+    "s_capability_piv": "PIV",
+    "s_capability_openpgp": "OpenPGP",
+    "s_capability_hsmauth": "YubiHSM Auth",
+    "@_app_configuration": {},
+
+    "s_toggle_applications": "สลับเเอปพลิเคชั่น",
+    "s_toggle_interfaces": "สลับการเเสดงผล",
+    "p_toggle_applications_desc": "เปิดหรือปิดใช้งานแอปพลิเคชันผ่านการส่งข้อมูลที่ใช้ได้",
+    "p_toggle_interfaces_desc": "เปิดใช้งานหรือปิดใช้งานการเเสดงผล ยูเอสบี",
+    "l_toggle_applications_desc": "เปิดใช้งาน/ปิดใช้งานแอปพลิเคชัน",
+    "l_toggle_interfaces_desc": "เปิดใช้งาน/ปิดใช้งานการเเสดงผล",
+    "s_reconfiguring_yk": "กำลังกำหนดค่า ยูบิคีย์ ใหม่\u2026",
+    "s_config_updated": "อัพเดทการกำหนดค่าแล้ว",
+    "l_config_updated_reinsert": "อัปเดตการตั้งค่าแล้ว, โปรดถอดและเสียบยูบิคีย์ของคุณใหม่อีกครั้ง",
+    "s_fido_disabled": "FIDO2 ถูกปิดใช้งาน",
+    "l_webauthn_req_fido2": "WebAuthn จำเป็นต้องเปิดใช้งานแอปพลิเคชัน FIDO2 บน ยูบิคีย์ ของคุณ",
+    "s_lock_code": "รหัสล็อก",
+    "l_wrong_lock_code": "รหัสล็อกไม่ถูกต้อง",
+    "s_show_lock_code": "แสดงรหัสล็อค",
+    "s_hide_lock_code": "ซ่อนรหัสล็อก",
+    "p_lock_code_required_desc": "การดำเนินการที่คุณกำลังจะทำนั้นจำเป็นต้องป้อนรหัสล็อกการกำหนดค่า",
+    "@_connectivity_issues": {},
+
+    "l_helper_not_responding": "กระบวนการช่วยเหลือไม่ตอบสนอง",
+    "l_yk_no_access": "ไม่สามารถเข้าถึง ยูบิคีย์ นี้ได้",
+    "s_yk_inaccessible": "ไม่สามารถเข้าถึงอุปกรณ์ได้",
+    "l_open_connection_failed": "การเชื่อมต่อล้มเหลว",
+    "l_ccid_connection_failed": "ไม่สามารถเปิดการเชื่อมต่อบัตรสมาร์ทการ์ดได้",
+    "p_ccid_service_unavailable": "ตรวจสอบให้แน่ใจว่าบริการบัตรสมาร์ทการ์ดของคุณทำงานอยู่",
+    "p_pcscd_unavailable": "ตรวจสอบให้แน่ใจว่า pcscd ได้ติดตั้งและทำงานอยู่",
+    "l_no_yk_present": "ไม่พบ ยูบิคีย์ ",
+    "s_unknown_type": "ชนิดที่ไม่รู้จัก",
+    "s_unknown_device": "ไม่ทราบอุปกรณ์",
+    "s_restricted_nfc": "การเปิดใช้งาน เอนเอฟซี",
+    "l_deactivate_restricted_nfc": "วิธีเปิดใช้งาน เอนเอฟซี",
+    "p_deactivate_restricted_nfc_desc": "เชื่อมต่อยูบิคีย์ ของคุณเข้ากับแหล่งจ่ายไฟ ยูเอสบี ใดก็ได้ เช่น คอมพิวเตอร์ เป็นเวลาอย่างน้อย 3 วินาที\n\nเมื่อได้รับพลังงานแล้ว เอ็นเอฟซี จะถูกเปิดใช้งานและพร้อมใช้งาน",
+    "p_deactivate_restricted_nfc_footer": "ยูบิคีย์ของคุณมาพร้อมกับการจำกัด เอ็นเอฟซี ซึ่งเป็นคุณสมบัติที่ออกแบบมาเพื่อป้องกันการดัดแปลงแบบไร้สายระหว่างการจัดส่ง ซึ่งหมายความว่าการทำงานของ เอ็นเอฟซี จะถูกปิดใช้งานชั่วคราวจนกว่าคุณจะเปิดใช้งาน",
+    "s_unsupported_yk": "ไม่สนับสนุนยูบิคีย์",
+    "p_operation_failed_try_again": "การดำเนินการล้มเหลว โปรดลองอีกครั้ง",
+    "l_configuration_unsupported": "การกำหนดค่าไม่รับการสนับสนุน",
+    "p_scp_unsupported": "ในการสื่อสารผ่าน เอ็นเอฟซี, ยูบิคีย์ ต้องใช้เทคโนโลยีที่โทรศัพท์เครื่องนี้ไม่รองรับ โปรดเสียบ ยูบิคีย์ เข้ากับพอร์ต ยูเอสบี ของโทรศัพท์",
+    "@_general_errors": {},
+
+    "l_error_occurred": "เกิดข้อผิดพลาด",
+    "s_application_error": "แอปพลิเคชันเกิดข้อผิดพลาด",
+    "l_import_error": "การนำเข้าเกิดข้อผิดพลาด",
+    "l_file_not_found": "ไม่พบไฟล์",
+    "l_file_too_big": "ขนาดไฟล์ใหญ่เกินไป",
+    "l_filesystem_error": "ข้อผิดพลาดในการดำเนินการระบบไฟล์",
+    "@_pins": {},
+
+    "s_pin": "รหัส PIN",
+    "s_puk": "รหัส PUK",
+    "s_set_pin": "ตั้งรหัส PIN",
+    "s_change_pin": "เปลี่ยนรหัส PIN",
+    "s_change_puk": "เปลี่ยนรหัส PUK",
+    "s_show_pin": "แสดงรหัส PIN",
+    "s_hide_pin": "ซ่อนรหัส PIN",
+    "s_show_puk": "แสดงรหัส PUK",
+    "s_hide_puk": "ซ่อนรหัส PUK",
+    "s_current_pin": "รหัส PIN ปัจจุบัน",
+    "s_current_puk": "รหัส PUK ปัจจุบัน",
+    "s_new_pin": "รหัส PIN ใหม่",
+    "s_new_puk": "รหัส PUK ใหม่",
+    "s_confirm_pin": "ยืนยันรหัส PIN",
+    "s_confirm_puk": "ยืนยันรหัส PUK",
+    "s_unblock_pin": "รีเซ็ตรหัส PIN",
+    "l_pin_mismatch": "ยืนยันรหัส PIN ไม่ตรงกัน",
+    "l_puk_mismatch": "ยืนยันรหัส PUK ไม่ตรงกัน",
+    "s_pin_set": "ตั้งค่ารหัส PIN แล้ว",
+    "s_puk_set": "ตั้งค่ารหัส PUK เเล้ว",
+    "l_set_pin_failed": "ตั้งค่ารหัส PIN ล้มเหลว: {message}",
+    "@l_set_pin_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_attempts_remaining": "{retries, plural, =1{{retries} ความพยายามคงเหลือ}other{{retries} ความพยายามคงเหลือ}}",
+    "@l_attempts_remaining": {
+        "placeholders": {
+            "retries": {
+                "type": "int"
+            }
+        }
+    },
+    "l_wrong_pin_attempts_remaining": "รหัส PIN ไม่ถูกต้อง, {retries, plural, =1{{retries} ความพยายามคงเหลือ}other{{retries} ความพยายามคงเหลือ}}",
+    "@l_wrong_pin_attempts_remaining": {
+        "placeholders": {
+            "retries": {
+                "type": "int"
+            }
+        }
+    },
+    "l_wrong_puk_attempts_remaining": "รหัส PUK ไม่ถูกต้อง, {retries, plural, =1{{retries} ความพยายามคงเหลือ}other{{retries} ความพยายามคงเหลือ}}",
+    "@l_wrong_puk_attempts_remaining": {
+        "placeholders": {
+            "retries": {
+                "type": "int"
+            }
+        }
+    },
+    "s_fido_pin_protection": "การป้องกัน FIDO PIN",
+    "s_pin_change_required": "จำเป็นต้องเปลี่ยนรหัส PIN",
+    "l_enter_fido2_pin": "ป้อนรหัส PIN FIDO2 สำหรับ ยูบิคีย์ ของคุณ",
+    "p_fido2_pin_required": "การดำเนินการที่คุณกำลังจะทำต้องป้อนรหัสผ่าน FIDO2 PIN",
+    "l_pin_blocked_reset": "รหัส PIN ถูกบล็อก; คืนค่าโรงงาน เเอปพลิเคชั่น FIDO",
+    "l_pin_blocked": "รหัส PIN ถูกบล็อก",
+    "l_set_pin_first": "จำเป็นต้องระบุรหัส PIN",
+    "l_unlock_pin_first": "ปลดล็อคด้วยรหัส PIN",
+    "l_pin_soft_locked": "รหัส PIN ถูกบล็อกจนกว่าจะถอด ยูบิคีย์ ออกและเสียบกลับเข้าไปใหม่",
+    "l_pin_change_required_desc": "ต้องตั้งรหัส PIN ใหม่ก่อนจึงจะสามารถใช้แอปพลิเคชันนี้ได้",
+    "p_new_fido2_pin_requirements": "รหัส PIN ต้องมีความยาว {min_length}-{max_length} ตัวอักษร และอาจมีตัวอักษร ตัวเลข และอักขระพิเศษ",
+    "@p_new_fido2_pin_requirements": {
+        "placeholders": {
+            "min_length": {
+                "type": "int"
+            },
+            "max_length": {
+                "type": "int"
+            }
+        }
+    },
+    "p_new_fido2_pin_complexity_active_requirements": "รหัส PIN ต้องมีความยาว {min_length}-{max_length} ตัวอักษร, มีตัวอักษรที่ไม่ซ้ำกันอย่างน้อย {unique_characters} ตัว, และไม่ใช่รหัส PIN ที่ใช้กันทั่วไป เช่น \"{common_pin}\" ต้องประกอบด้วยตัวอักษร, ตัวเลข, และตัวอักษรพิเศษได้",
+    "@p_new_fido2_pin_complexity_active_requirements": {
+        "placeholders": {
+            "min_length": {
+                "type": "int"
+            },
+            "max_length": {
+                "type": "int"
+            },
+            "unique_characters": {
+                "type": "int"
+            },
+            "common_pin": {
+                "type": "String"
+            }
+        }
+    },
+    "s_persist_read_only_access": null,
+    "s_ep_attestation": "การรับรององค์กร",
+    "s_ep_attestation_enabled": "การรับรององค์กรเปิดใช้งานแล้ว",
+    "q_enable_ep_attestation": "เปิดใช้งานการรับรององค์กรหรือไม่?",
+    "p_enable_ep_attestation_desc": "นี่จะช่วยให้การรับรององค์กรเป็นไปได้ ทำให้โดเมนที่ได้รับอนุญาตสามารถระบุ ยูบิคีย์ ของคุณได้อย่างเฉพาะเจาะจง",
+    "p_enable_ep_attestation_disable_with_factory_reset": "เมื่อเปิดใช้งานแล้ว การรับรองสำหรับองค์กรสามารถปิดใช้งานได้โดยการทำการคืนค่าโรงงาน FIDO เท่านั้น",
+    "s_pin_required": "จำเป็นต้องระบุรหัส PIN",
+    "p_pin_required_desc": "การดำเนินการที่คุณกำลังจะทำต้องป้อนรหัสผ่าน PIV PIN",
+    "l_piv_pin_blocked": "ถูกบล็อก, ใส่รหัส PUK เพื่อรีเซ็ท",
+    "p_piv_pin_blocked_desc": "รหัส PIN ถูกบล็อกแล้ว ใช้รหัส PUK เพื่อรีเซ็ต",
+    "p_piv_pin_blocked_bio_desc": "รหัส PIN ถูกบล็อก จำเป็นต้องคืนค่าเริ่มต้นจากโรงงาน",
+    "l_piv_pin_puk_blocked": "ถูกบล็อก, ต้องคืนค่าเริ่มต้นจากโรงงาน",
+    "p_piv_pin_puk_blocked_desc": "ทั้งรหัส PIN และรหัส PUK ถูกบล็อก แอปพลิเคชัน PIV จำเป็นต้องคืนค่าเริ่มต้นจากโรงงาน",
+    "p_new_piv_pin_puk_requirements": "{name} ต้องมีความยาวอย่างน้อย {length} ตัวอักษร",
+    "@p_new_piv_pin_puk_requirements": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "length": {
+                "type": "int"
+            }
+        }
+    },
+    "p_new_piv_pin_puk_complexity_active_requirements": "{name} ต้องมีความยาวอย่างน้อย {length} ตัวอักษร, มีอักขระที่ไม่ซ้ำกันอย่างน้อย 2 ตัว และต้องไม่เป็น {name} ที่ใช้กันทั่วไป เช่น \"{common}\"\"",
+    "@p_new_piv_pin_puk_complexity_active_requirements": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "length": {
+                "type": "int"
+            },
+            "common": {
+                "type": "String"
+            }
+        }
+    },
+    "p_pin_puk_complexity_failure": "ใหม่ {name} ไม่ตรงตามข้อกำหนดความซับซ้อน",
+    "@p_pin_puk_complexity_failure": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "s_dismiss": "ปฎิเสธ",
+    "p_default_pin_puk_key_desc": "แนะนำให้เปลี่ยนรหัส PIN, รหัส PUK และรหัสการจัดการเริ่มต้น",
+    "p_default_pin_puk_key_fips_desc": "เพื่อให้สอดคล้องกับข้อกำหนด FIPS จำเป็นต้องเปลี่ยนรหัส PIN, รหัส PUK และรหัสการจัดการเริ่มต้น",
+    "l_warning_default_pin": "คำเตือน: มีการใช้งานรหัส PIN เริ่มต้น",
+    "l_warning_default_puk": "คำเตือน: มีการใช้งานรหัส PUK เริ่มต้น",
+    "l_default_pin_used": "ใช้รหัส PIN เริ่มต้น",
+    "l_default_puk_used": "ใช้รหัส PUK เริ่มต้น",
+    "l_pin_complexity": "บังคับใช้ความซับซ้อนของรหัส PIN",
+    "@_passwords": {},
+
+    "s_password": "รหัสผ่าน",
+    "s_manage_password": "จัดการรหัสผ่าน",
+    "s_set_password": "ตั้งรหัสผ่าน",
+    "s_password_set": "ตั้งรหัสผ่านแล้ว",
+    "s_show_password": "แสดงรหัสผ่าน",
+    "s_hide_password": "ซ่อนรหัสผ่าน",
+    "l_password_protection": "การป้องกันบัญชีด้วยรหัสผ่าน",
+    "s_new_password": "รหัสผ่านใหม่",
+    "s_current_password": "รหัสผ่านเดิม",
+    "s_confirm_password": "ยืนยันรหัสผ่าน",
+    "l_password_mismatch": "รหัสผ่านไม่ตรงกัน",
+    "s_wrong_password": "รหัสผ่านไม่ถูกต้อง",
+    "p_wrong_password": "รหัสผ่านไม่ถูกต้อง หากคุณไม่ทราบรหัสผ่านของคุณ คุณจะต้องรีเซ็ต YubiKey",
+    "s_remove_password": "ลบรหัสผ่านออก",
+    "s_password_removed": "ลบรหัสผ่านแล้ว",
+    "s_remember_password": "จดจำรหัสผ่าน",
+    "s_clear_saved_password": "ล้างรหัสผ่านที่บันทึกไว้",
+    "s_password_forgotten": "ลืมรหัสผ่าน",
+    "l_keystore_unavailable": "โอเอสคีย์สโตร ไม่พร้อมใช้งาน",
+    "l_remember_pw_failed": "ไม่สามารถจดจำรหัสผ่านได้",
+    "l_unlock_first": "ปลดล็อกด้วยรหัสผ่าน",
+    "l_set_password_first": "ตั้งรหัสผ่าน",
+    "l_enter_oath_pw": "ป้อนรหัสผ่าน OATH สำหรับ ยูบิคีย์ ของคุณ",
+    "p_new_password_requirements": "รหัสผ่านอาจมีตัวอักษร ตัวเลข และอักขระพิเศษ",
+    "@_management_key": {},
+
+    "s_management_key": "รหัสการจัดการ",
+    "s_current_management_key": "รหัสการจัดการปัจจุบัน",
+    "s_new_management_key": "รหัสการจัดการใหม่",
+    "l_change_management_key": "เปลี่ยนรหัสการจัดการ",
+    "l_management_key_changed": "รหัสการจัดการถูกเปลี่ยนเเล้ว",
+    "l_default_key_used": "ใช้รหัสการจัดการเริ่มต้น",
+    "s_generate_random": "สร้างเเบบสุ่ม",
+    "s_use_default": "ใช้ค่าเริ่มต้น",
+    "l_warning_default_key": "คำเตือน: มีการใช้งานรหัสเริ่มต้น",
+    "s_protect_key": "ป้องกันด้วยรหัส PIN",
+    "p_protect_key_desc": "ใช้รหัส PIN แทนรหัสการจัดการในระหว่างการดำเนินการที่ต้องมีการตรวจสอบสิทธิ์ด้วยรหัสการจัดการ",
+    "s_management_key_algorithm": "อัลกอริทึมรหัสการจัดการ",
+    "p_management_key_algorithm_desc": "อัลกอริทึมที่จะเลือกใช้สำหรับรหัสการจัดการ",
+    "l_pin_protected_key": "สามารถใช้รหัส PIN แทนได้",
+    "l_wrong_key": "คีย์ไม่ถูกต้อง",
+    "l_unlock_piv_management": "ปลดล็อกการจัดการ PIV",
+    "p_unlock_piv_management_desc": "การดำเนินการที่คุณกำลังจะทำต้องใช้รหัสการจัดการ PIV",
+    "@_oath_accounts": {},
+
+    "l_account": "บัญชี: {label}",
+    "@l_account": {
+        "placeholders": {
+            "label": {
+                "type": "String"
+            }
+        }
+    },
+    "s_accounts": "บัญชี",
+    "s_no_accounts": "ไม่มีบัญชี",
+    "l_results_for": "ผลลัพธ์สำหรับ \"{query}\" ",
+    "@l_results_for": {
+        "placeholders": {
+            "query": {
+                "type": "String"
+            }
+        }
+    },
+    "l_authenticator_get_started": "เริ่มต้นใช้งานบัญชี OTP",
+    "l_no_accounts_desc": "เพิ่มบัญชีของคุณลงใน YubiKey จากผู้ให้บริการใดๆที่รองรับ OATH TOTP/HOTP",
+    "s_add_account": "เพิ่มบัญชี",
+    "p_add_account_desc": "สแกนคิวอาร์โค้ด หรือป้อนรายละเอียดข้อมูลประจำตัวด้วยตนเอง",
+    "s_add_accounts": "เพิ่มบัญชี",
+    "l_drop_qr_description": "วาง QR code เพื่อเพิ่มบัญชี",
+    "p_add_account_three_ways": "มีสามวิธีในการเพิ่มบัญชี",
+    "s_scanning": "การสแกน (แนะนำ)",
+    "p_scanning_desc": "ก่อนสแกนคิวอาร์โค้ด ตรวจสอบให้แน่ใจว่าโค้ดทั้งหมดสามารถมองเห็นได้บนหน้าจอ",
+    "s_drag_and_drop": "ลากแล้ววาง",
+    "p_drag_and_drop_desc": "รูปภาพที่มีรหัส QR สามารถวางได้ที่ใดก็ได้ในมุมมองบัญชี",
+    "s_manually": "ด้วยตนเอง",
+    "p_manually_desc": "สามารถป้อนรายละเอียดบัญชีข้อมูลประจำตัวได้ด้วยตนเองในแบบฟอร์ม",
+    "s_account_added": "เพิ่มบัญชีแล้ว",
+    "l_account_add_failed": "ล้มเหลวในการเพิ่มบัญชี: {message}",
+    "@l_account_add_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_add_account_password_required": "กรุณาใส่รหัสผ่าน",
+    "l_add_account_unlock_required": "จำเป็นต้องปลดล็อก",
+    "l_add_account_func_missing": "ฟังก์ชันการทำงานขาดหายไปหรือถูกปิดใช้งาน",
+    "l_account_name_required": "บัญชีของคุณต้องมีชื่อ",
+    "l_name_already_exists": "ชื่อนี้มีอยู่แล้วสำหรับผู้ออก",
+    "l_account_already_exists": "บัญชีนี้มีอยู่แล้วบน ยูบิคีย์",
+    "l_invalid_character_issuer": "อักขระไม่ถูกต้อง: ไม่อนุญาตให้ใช้อักขระ ':' ในผู้ออก",
+    "l_select_accounts": "เลือกบัญชีเพื่อเพิ่มไปยัง ยูบิคีย์",
+    "s_pin_account": "ปักหมุดบัญชี",
+    "s_unpin_account": "เลิกปักหมุดบัญชี",
+    "s_no_pinned_accounts": "ไม่มีบัญชีที่ปักหมุด",
+    "s_pinned": "ปักหมุดเเล้ว",
+    "l_pin_account_desc": "เก็บรวมบัญชีสำคัญของคุณไว้ด้วยกัน",
+    "s_rename_account": "เปลี่ยนชื่อบัญชี",
+    "l_rename_account_desc": "แก้ไขผู้ออก/ชื่อบัญชี",
+    "s_account_renamed": "บัญชีถูกเปลี่ยนชื่อแล้ว",
+    "l_rename_account_failed": "ล้มเหลวในการเปลี่ยนชื่อบัญชี: {message}",
+    "@l_rename_account_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "p_rename_will_change_account_displayed": "นี่จะเป็นวิธีเปลี่ยนการแสดงชื่อบัญชีในรายการ",
+    "s_delete_account": "ลบบัญชี",
+    "q_delete_account": "ลบบัญชีนี้หรือไม่?",
+    "l_delete_account_desc": "ลบบัญชีออกจาก ยูบิคีย์",
+    "s_account_deleted": "บัญชีถูกลบแล้ว",
+    "p_warning_delete_account": "คำเตือน! การดำเนินการนี้จะลบบัญชีออกจาก ยูบิคีย์ ของคุณ",
+    "p_warning_disable_credential": "โปรดตรวจสอบให้แน่ใจว่าได้ปิดการใช้งานบัญชีนี้จากบริการที่ลงทะเบียนไว้ เพื่อหลีกเลี่ยงการถูกระงับการใช้งาน",
+    "s_account_name": "ชื่อบัญชี",
+    "s_search_accounts": "ค้นหาบัญชี",
+    "l_accounts_used": "ใช้บัญชีไปแล้ว {used} จากทั้งหมด {capacity}",
+    "@l_accounts_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "capacity": {
+                "type": "int"
+            }
+        }
+    },
+    "s_num_digits": "{num} หลัก",
+    "@s_num_digits": {
+        "placeholders": {
+            "num": {
+                "type": "int"
+            }
+        }
+    },
+    "s_num_sec": "{num} วินาที",
+    "@s_num_sec": {
+        "placeholders": {
+            "num": {
+                "type": "int"
+            }
+        }
+    },
+    "s_issuer_optional": "ผู้ออก (ทางเลือก)",
+    "s_counter_based": "อิงตัวนับ",
+    "s_time_based": "อิงเวลา",
+    "l_copy_code_desc": "วางรหัสไปที่อื่น",
+    "l_calculate_code_desc": "รับรหัสใหม่จาก ยูบิคีย์ ของคุณ",
+    "@_fido_credentials": {},
+
+    "s_rp_id": "รหัสประจำตัว RP",
+    "s_user_id": "ชื่อผู้ใช้งาน",
+    "s_credential_id": "รหัสข้อมูลประจำตัว",
+    "s_display_name": "ชื่อที่แสดง",
+    "s_user_name": "ชื่อผู้ใช้",
+    "s_passkeys": "พาสคีย์",
+    "s_no_passkeys": "ไม่มีพาสคีย์",
+    "l_ready_to_use": "พร้อมใช้งานแล้ว",
+    "l_register_sk_on_websites": "ลงทะเบียนเป็นคีย์ความปลอดภัยบนเว็บไซต์",
+    "l_no_discoverable_accounts": "ไม่มีพาสคีย์ที่ถูกจัดเก็บไว้",
+    "p_non_passkeys_note": "ข้อมูลประจำตัวที่ไม่ใช่รหัสผ่านอาจจะมีอยู่ แต่ไม่สามารถแสดงรายการได้",
+    "s_delete_passkey": "ลบพาสคีย์",
+    "q_delete_passkey": "ลบพาสคีย์หรือไม่?",
+    "l_delete_passkey_desc": "ลบพาสคีย์จาก ยูบิคีย์",
+    "s_passkey_deleted": "พาสคีย์ถูกลบแล้ว",
+    "p_warning_delete_passkey": "คำเตือน! การดำเนินการนี้จะลบพาสคีย์ออกจาก ยูบิคีย์ ของคุณ",
+    "p_warning_delete_passkey_desc": "คุณไม่สามารถใช้พาสคีย์นี้สำหรับบริการที่ลงทะเบียนไว้ได้อีกต่อไป",
+    "l_do_not_remove_yk_delete": "ระหว่างการลบห้ามถอด ยูบิคีย์ ออก",
+    "s_search_passkeys": "ค้นหาพาสคีย์",
+    "p_passkeys_used": "พาสคีย์ใช้ไปแล้ว {used} จาก {max}",
+    "@p_passkeys_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "max": {
+                "type": "int"
+            }
+        }
+    },
+    "@_fingerprints": {},
+    "s_biometrics": "ข้อมูลชีวมาตร",
+    "l_fingerprint": "ลายนิ้วมือ: {label}",
+    "@l_fingerprint": {
+        "placeholders": {
+            "label": {
+                "type": "String"
+            }
+        }
+    },
+    "s_fingerprints": "ลายนิ้วมือ",
+    "l_fingerprint_captured": "เก็บลายนิ้วมือเรียบร้อย!",
+    "s_fingerprint_added": "เพิ่มลายนิ้วมือแล้ว",
+    "l_adding_fingerprint_failed": "เกิดข้อผิดพลาดในการเพิ่มลายนิ้วมือ: {message}",
+    "@l_adding_fingerprint_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_setting_name_failed": "เกิดข้อผิดพลาดในการตั้งชื่อ: {message}",
+    "@l_setting_name_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "s_setup_fingerprints": "ตั้งค่าลายนิ้วมือ",
+    "p_setup_fingerprints_desc": "ต้องตั้งค่าลายนิ้วมือก่อนจึงจะสามารถใช้กุญแจได้",
+    "s_add_fingerprint": "เพิ่มลายนิ้วมือ",
+    "s_delete_fingerprint": "ลบลายนิ้วมือ",
+    "q_delete_fingerprint": "ลบลายนิ้วมือหรือไม่?",
+    "l_delete_fingerprint_desc": "ลบลายนิ้วมือออกจาก ยูบิคีย์",
+    "s_fingerprint_deleted": "ลายนิ้วมือถูกลบแล้ว",
+    "p_warning_delete_fingerprint": "สิ่งนี้จะลบลายนิ้วมือออกจาก ยูบิคีย์ ของคุณ",
+    "s_fingerprints_get_started": "เริ่มต้นไปด้วยลายนิ้วมือ",
+    "p_set_fingerprints_desc": "ก่อนที่จะลงทะเบียนลายนิ้วมือ จำเป็นต้องตั้งรหัส PIN ก่อน",
+    "l_no_fps_added": "ไม่มีลายนิ้วมือที่ถูกเพิ่ม",
+    "s_rename_fp": "เปลี่ยนชื่อลายนิ้วมือ",
+    "l_rename_fp_desc": "เปลี่ยนชื่อ",
+    "s_fingerprint_renamed": "เปลี่ยนชื่อลายนิ้วมือแล้ว",
+    "l_rename_fp_failed": "เกิดข้อผิดพลาดในการเปลี่ยนชื่อ: {message}",
+    "@l_rename_fp_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_add_one_or_more_fps": "เพิ่มลายนิ้วมือหนึ่งหรือมากกว่า (ไม่เกินห้า)",
+    "l_fingerprints_used": "{used}/5 ลงทะเบียนลายนิ้วมือแล้ว",
+    "@l_fingerprints_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            }
+        }
+    },
+    "p_press_fingerprint_begin": "กดนิ้วของคุณลงบน ยูบิคีย์ เพื่อเริ่มต้น",
+    "l_name_fingerprint": "ชื่อลายนิ้วมือนี้",
+    "@_fido_errors": {},
+
+    "l_user_action_timeout_error": "ล้มเหลวเนื่องจากผู้ใช้ไม่มีความเคลื่อนไหว",
+    "l_wrong_inserted_yk_error": "ยูบิคีย์ ที่เสียบใหม่ไม่ตรงกับอุปกรณ์ที่เริ่มต้น",
+    "l_failed_connecting_to_fido": "ไม่สามารถเชื่อมต่อกับการเเสดงผล FIDO ได้",
+    "@_certificates": {},
+
+    "l_self_signed_certificate": "ใบรับรองที่ลงนามโดยตนเอง",
+    "l_certificate_signing_request": "คำขอลงนามใบรับรอง (CSR)",
+    "s_certificate": "ใบรับรอง",
+    "s_subject": "ชื่อเรื่อง",
+    "l_export_csr_file": "บันทึก CSR ไปเป็นไฟล์",
+    "l_export_public_key": "ส่งออกกุญเเจสาธารณะ",
+    "l_export_public_key_file": "บันทึกกุญเเจสาธารณะไปเป็นไฟล์",
+    "l_export_public_key_desc": "ส่งออกกุญเเจสาธารณะไปเป็นไฟล์",
+    "l_public_key_exported": "กุญเเจสาธารณะ ถูกส่งออกแล้ว",
+    "l_export_certificate": "ส่งออกใบรับรอง",
+    "l_export_certificate_file": "ส่งออกใบรับรองไปเป็นไฟล์",
+    "l_export_certificate_desc": "ส่งออกใบรับรองไปเป็นไฟล์",
+    "l_certificate_exported": "ใบรับรองถูกส่งออกแล้ว",
+    "l_select_import_file": "เลือกไฟล์ที่จะนำเข้า",
+    "l_import_file": "นำเข้าไฟล์",
+    "l_import_desc": "นำเข้าคีย์และ/หรือใบรับรอง",
+    "l_import_nothing": "ไม่ได้นำเข้าอะไรเลย",
+    "l_importing_file": "กำลังนำเข้าไฟล์...",
+    "s_file_imported": "นำเข้าไฟล์แล้ว",
+    "l_unsupported_key_type": "ประเภทรหัสไม่รองรับ",
+    "l_delete_certificate": "ลบใบรับรอง",
+    "q_delete_certificate": "ลบใบรับรองหรือไม่?",
+    "l_delete_certificate_desc": "ลบใบรับรองจาก ยูบิคีย์ ของคุณ",
+    "l_delete_key": "ลบคีย์",
+    "q_delete_key": "ลบคีย์หรือไม่?",
+    "l_delete_key_desc": "ลบคีย์ออกจาก ยูบิคีย์",
+    "l_delete_certificate_or_key": "ลบใบรับรอง/คีย์",
+    "q_delete_certificate_or_key": "ลบใบรับรอง/คีย์หรือไม่?",
+    "l_delete_certificate_or_key_desc": "นำใบรับรองหรือคีย์ออกจาก ยูบิคีย์ ของคุณ",
+    "l_move_key": "ย้ายคีย์",
+    "l_move_key_desc": "ย้ายคีย์จากช่อง PIV หนึ่งไปยังอีกช่องหนึ่ง",
+    "l_change_defaults": "เปลี่ยนรหัสการเข้าถึงเริ่มต้น",
+    "s_issuer": "ออกโดย",
+    "s_serial": "หมายเลขซีเรียล",
+    "s_certificate_fingerprint": "ลายนิ้วมือ",
+    "s_valid_from": "มีผลตั้งแต่",
+    "s_valid_to": "ใช้ได้ถึง",
+    "l_no_certificate": "ไม่พบใบรับรองที่ถูกโหลด",
+    "l_key_no_certificate": "โหลดกุญแจปราศจากใบรับรองเเล้ว",
+    "s_generate_key": "สร้างคีย์",
+    "l_generate_desc": "สร้างใบรับรองใหม่หรือ CSR",
+    "p_generate_desc": "สิ่งนี่จะสร้างกุญแจใหม่บน ยูบิคีย์ ในสล็อต PIV {slot}.",
+    "@p_generate_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "s_private_key_generated": "กุญเเจส่วนตัว ถูกสร้างแล้ว",
+    "p_select_what_to_delete": "เลือกสิ่งที่จะลบจากช่อง",
+    "p_warning_delete_certificate": "คำเตือน! การดำเนินการนี้จะลบใบรับรองออกจาก ยูบิคีย์ ของคุณ",
+    "p_warning_delete_key": "คำเตือน! การดำเนินการนี้จะลบกุญเเจส่วนตัวออกจาก ยูบิคีย์ ของคุณ",
+    "p_warning_delete_certificate_and_key": "คำเตือน! การดำเนินการนี้จะลบกุญเเจส่วนตัวออกจาก ยูบิคีย์ ของคุณ",
+    "p_warning_usb_preferred": "แนะนำควรให้ใช้ ยูเอสบี สำหรับกุญเจ อาร์เอสเอ การใช้ เอ็นเอฟซี อาจทำให้เกิดข้อผิดพลาดได้",
+    "p_delete_certificate_desc": "นี่จะลบใบรับรองในช่อง PIV {slot}.",
+    "@p_delete_certificate_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "p_delete_key_desc": "นี่จะลบกุญเเจส่วนตัวในช่อง PIV {slot}.",
+    "@p_delete_key_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "p_delete_certificate_and_key_desc": "นี่จะลบใบรับรองและกุญเเจส่วนตัวในช่อง PIV {slot}",
+    "@p_delete_certificate_and_key_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "l_certificate_deleted": "ใบรับรองถูกลบแล้ว",
+    "l_key_deleted": "ลบคีย์แล้ว",
+    "l_certificate_and_key_deleted": "ใบรับรองและคีย์ถูกลบแล้ว",
+    "l_include_certificate": "รวมใบรับรอง",
+    "l_select_destination_slot": "เลือกสล็อตปลายทาง",
+    "q_move_key_confirm": "ย้ายกุญเเจส่วนตัวในช่อง PIV {from_slot}?",
+    "@q_move_key_confirm": {
+        "placeholders": {
+            "from_slot": {
+                "type": "String"
+            }
+        }
+    },
+    "q_move_key_to_slot_confirm": "ย้ายกุญเเจส่วนตัวในช่อง PIV {from_slot} ไปยังช่อง {to_slot}?",
+    "@q_move_key_to_slot_confirm": {
+        "placeholders": {
+            "from_slot": {
+                "type": "String"
+            },
+            "to_slot": {
+                "type": "String"
+            }
+        }
+    },
+    "q_move_key_and_certificate_to_slot_confirm": "ย้ายกุญเเจส่วนตัวและใบรับรองในช่อง PIV {from_slot} ไปยังช่อง {to_slot}?",
+    "@q_move_key_and_certificate_to_slot_confirm": {
+        "placeholders": {
+            "from_slot": {
+                "type": "String"
+            },
+            "to_slot": {
+                "type": "String"
+            }
+        }
+    },
+    "p_password_protected_file": "ไฟล์ที่เลือกมีการป้องกันด้วยรหัสผ่าน",
+    "p_import_items_desc": "รายการต่อไปนี้จะถูกนำเข้าในช่อง PIV {slot}.",
+    "@p_import_items_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "l_warning_public_key_mismatch": "กุญเเจสาธารณะของใบรับรองไม่ตรงกับกุญเเจส่วนตัวในช่อง",
+    "l_key_moved": "ย้ายคีย์แล้ว",
+    "l_key_and_certificate_moved": "ย้ายกุญแจและใบรับรองแล้ว",
+    "p_subject_desc": "ชื่อระบุเฉพาะ (DN) ที่จัดรูปแบบตามข้อกำหนด RFC 4514",
+    "l_rfc4514_invalid": "รูปแบบ RFC 4514 ไม่ถูกต้อง",
+    "rfc4514_examples": "ตัวอย่าง:\nCN=Example Name\nCN=jsmith,DC=example,DC=net",
+    "s_allow_fingerprint": "อนุญาตให้ใช้ลายนิ้วมือ",
+    "s_pin_policy": "นโยบายรหัส PIN",
+    "s_output_format": "รูปแบบผลลัพธ์",
+    "s_expiration_date": "วันหมดอายุ",
+    "p_algorithm_desc": "คีย์อัลกอริทึมที่ใช้",
+    "p_expiration_date_desc": "วันที่ในใบรับรองหมดอายุ, ค่าเริ่มต้น 1 ปี (สำหรับใบรับรองเท่านั้น)",
+    "p_key_options_bio_desc": "อนุญาตให้ใช้ข้อมูลชีวภาพแทนการใช้รหัส PIN",
+    "q_overwrite_slot": "เขียนทับช่องนี้?",
+    "p_overwrite_slot_desc": "สิ่งนี้จะเขียนทับเนื้อหาที่มีอยู่ในช่อง {slot} ถาวร",
+    "@p_overwrite_slot_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "l_overwrite_cert": "ใบรับรองจะถูกเขียนทับ",
+    "l_overwrite_key": "กุญเเจส่วนตัวจะถูกเขียนทับ",
+    "l_overwrite_key_maybe": "กุญเเจส่วนตัวใด ๆ ที่มีอยู่ในช่องจะถูกเขียนทับ",
+    "@_piv_slots": {},
+
+    "s_slot_display_name": "{name} ({hexid})",
+    "@s_slot_display_name": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "hexid": {
+                "type": "String"
+            }
+        }
+    },
+    "s_slot_9a": "Authentication",
+    "s_slot_9c": "ลายเซ็นดิจิทัล",
+    "s_slot_9d": "การจัดการรหัส",
+    "s_slot_9e": "การยืนยันตัวตนด้วยบัตร",
+    "s_retired_slot": "การจัดการรหัสที่เลิกใช้งานแล้ว",
+    "@_otp_slots": {},
+
+    "s_otp_slot_one": "แตะสั้น",
+    "s_otp_slot_two": "แตะยาว",
+    "l_otp_slot_empty": "ช่องว่างเปล่า",
+    "l_otp_slot_configured": "ช่องถูกกำหนดค่าแล้ว",
+    "@_otp_slot_configurations": {},
+
+    "l_yubiotp_desc": "โปรแกรมข้อมูลรับรอง ยูบิโค่ OTP",
+    "s_challenge_response": "การท้าทาย-การตอบสนอง",
+    "l_challenge_response_desc": "โปรเเกรมข้อมูลประจำตัวแบบ การท้าทาย-การตอบสนอง",
+    "s_static_password": "รหัสผ่านเเบบคงที่",
+    "l_static_password_desc": "กำหนดรหัสผ่านแบบคงที่",
+    "s_hotp": "OATH-HOTP",
+    "l_hotp_desc": "โปรแกรมข้อมูลประจำตัวที่ใช้ HMAC-SHA1",
+    "s_public_id": "ID สาธารณะ",
+    "s_private_id": "ID ส่วนตัว",
+    "s_use_serial": "ใช้ ซีเรียล",
+    "l_select_file": "เลือกไฟล์",
+    "l_no_export_file": "ไม่มีไฟล์ส่งออก",
+    "s_no_export": "ไม่มีการส่งออก",
+    "s_export": "ส่งออก",
+    "l_export_configuration_file": "ส่งออกการกำหนดค่าไปยังไฟล์",
+    "l_exported_can_be_uploaded_at": "สามารถอัปโหลดข้อมูลประจำตัวที่ส่งออกได้ที่ {url}",
+    "@l_exported_can_be_uploaded_at": {
+        "placeholders": {
+            "url": {
+                "type": "String"
+            }
+        }
+    },
+    "l_keyboard_layout": "คีย์บอร์ด {layout}",
+    "@l_keyboard_layout": {
+        "placeholders": {
+            "layout": {
+                "type": "Object"
+            }
+        }
+    },
+    "@_otp_slot_actions": {},
+
+    "s_delete_slot": "ลบข้อมูลประจำตัว",
+    "q_delete_slot": "ลบข้อมูลประจำตัว?",
+    "l_delete_slot_desc": "ลบข้อมูลประจำตัวในช่อง",
+    "p_warning_delete_slot_configuration": "คำเตือน! การดำเนินการนี้จะลบข้อมูลประจำตัวออกจากช่อง {slot_id} อย่างถาวร",
+    "@p_warning_delete_slot_configuration": {
+        "placeholders": {
+            "slot_id": {
+                "type": "int"
+            }
+        }
+    },
+    "l_slot_deleted": "ลบข้อมูลประจำตัวแล้ว",
+    "s_swap": "สลับ",
+    "s_swap_slots": "สลับช่อง",
+    "q_swap_slots": "สลับช่อง?",
+    "l_swap_slots_desc": "สลับการแตะแบบสั้น/ยาว",
+    "p_swap_slots_desc": "นี่จะเป็นการสลับการตั้งค่าของสองช่อง",
+    "l_slots_swapped": "การตั้งค่าการสลับช่องสำเร็จ",
+    "l_slot_credential_configured": "กำหนดค่าข้อมูลประจำตัว {type} แล้ว",
+    "@l_slot_credential_configured": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "l_slot_credential_configured_and_exported": "ตั้งค่าข้อมูลประจำตัว {type} และส่งออกไปยัง {file}",
+    "@l_slot_credential_configured_and_exported": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            },
+            "file": {
+                "type": "String"
+            }
+        }
+    },
+    "s_append_enter": "ต่อท้ายด้วย ⏎",
+    "l_append_enter_desc": "เพิ่มการกดปุ่ม Enter หลังจากสร้าง OTP",
+    "@_otp_errors": {},
+
+    "p_otp_swap_error": "ไม่สามารถสลับช่องได้! ตรวจสอบให้แน่ใจว่า ยูบิคีย์ ไม่มีข้อจำกัดในการเข้าถึง",
+    "l_wrong_access_code": "รหัสเข้าใช้งานไม่ถูกต้อง",
+    "@_otp_access_code": {},
+
+    "s_access_code": "รหัสเข้าใช้งาน",
+    "s_show_access_code": "แสดงรหัสการเข้าถึง",
+    "s_hide_access_code": "ซ่อนรหัสการเข้าถึง",
+    "p_enter_access_code": "กรุณากรอกรหัสเข้าใช้งานสำหรับช่อง {slot}",
+    "@p_enter_access_code": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "@_permissions": {},
+
+
+    "s_enable_nfc": "เปิดใช้งาน เอ็นเอฟซี",
+    "s_request_access": "ขอสิทธิ์การเข้าถึง",
+    "s_permission_denied": "สิทธิ์ถูกปฏิเสธ",
+    "l_elevating_permissions": "การยกระดับสิทธิ์\u2026",
+    "s_review_permissions": "ตรวจดูการใช้สิทธิ์",
+    "s_open_windows_settings": "เปิดการตั้งค่า วินโดวส์",
+    "l_admin_privileges_required": "ต้องการสิทธิ์ผู้ดูแลระบบ",
+    "p_elevated_permissions_required": "การจัดการอุปกรณ์นี้ต้องใช้สิทธิ์ที่สูงขึ้น หรือคุณสามารถใช้การตั้งค่า วินโดวส์ เพื่อจัดการการกำหนดค่า FIDO",
+    "p_webauthn_elevated_permissions_required": "การจัดการ WebAuthn ต้องใช้สิทธิ์ที่สูงขึ้น หรือคุณสามารถใช้การตั้งค่า วินโดวส์ เพื่อจัดการการกำหนดค่า FIDO",
+    "p_ms_store_permission_note": "แอปเวอร์ชัน ไมโครซอพท์สโตร โดยทั่วไปไม่สามารถยกระดับสิทธิ์ได้เนื่องจากข้อจำกัดด้านการทดสอบของ วินโดวส์ เราขอแนะนำให้ติดตั้ง เครื่องยืนยันตัวตนยูบิโค่ จากตัวติดตั้ง .msi อย่างเป็นทางการของเรา",
+    "p_need_camera_permission": "เครื่องยืนยันตัวตนยูบิโค่ ต้องการสิทธิ์การเข้าถึงกล้องเพื่อสแกนรหัส QR",
+    "@_qr_codes": {},
+
+    "s_qr_scan": "สแกน QR โค้ด",
+    "l_invalid_qr": "รหัส QR ไม่ถูกต้อง",
+    "l_qr_not_found": "ไม่พบรหัส QR",
+    "l_qr_scanned": "สแกนคิวอาร์โค้ดแล้ว",
+    "l_qr_file_too_large": "ไฟล์มีขนาดใหญ่เกินไป (สูงสุด {max})",
+    "@l_qr_file_too_large": {
+        "placeholders": {
+            "max": {
+                "type": "String"
+            }
+        }
+    },
+    "l_qr_invalid_image_file": "ไฟล์ภาพไม่ถูกต้อง",
+    "l_qr_select_file": "เลือกไฟล์ที่มีรหัส QR",
+    "l_qr_not_read": "ไม่สามารถอ่านรหัส QR ได้: {message}",
+    "@l_qr_not_read": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_point_camera_scan": "นำกล้องของคุณไปที่ QR code เพื่อสแกน",
+    "q_want_to_scan": "ต้องการสแกนไหม?",
+    "q_no_qr": "ไม่มีคิวอาร์โค้ดหรือ?",
+    "s_enter_manually": "ป้อนด้วยตนเอง",
+    "s_read_from_file": "อ่านจากไฟล์",
+    "@_factory_reset": {},
+
+    "s_reset": "รีเซ็ต",
+    "s_factory_reset": "คืนค่าโรงงาน",
+    "l_factory_reset_desc": "คืนค่าการตั้งค่าเริ่มต้นของ ยูบิคีย์",
+    "l_factory_reset_required": "จำเป็นต้องรีเซ็ตเป็นค่าโรงงาน",
+    "l_oath_application_reset": "การรีเซ็ตการสมัคร OATH",
+    "l_fido_app_reset": "การรีเซ็ตแอปพลิเคชัน FIDO",
+    "l_reset_failed": "เกิดข้อผิดพลาดในการดำเนินการรีเซ็ต: {message}",
+    "@l_reset_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_piv_app_reset": "การรีเซ็ตแอปพลิเคชัน PIV",
+    "p_factory_reset_an_app": "รีเซ็ตค่าโรงงานแอปพลิเคชันบน ยูบิคีย์ ของคุณ",
+    "p_factory_reset_desc": "ข้อมูลถูกจัดเก็บไว้ในแอปพลิเคชันหลายตัวบน ยูบิคีย์ ซึ่งบางตัวสามารถทำการรีเซ็ตค่าโรงงานได้อย่างอิสระต่อกัน\n\nเลือกแอปพลิเคชันจากด้านบนที่คุณต้องการรีเซ็ต",
+    "p_warning_factory_reset": "คำเตือน! การดำเนินการนี้จะลบข้อมูลบัญชี OATH TOTP/HOTP ทั้งหมดออกจาก ยูบิคีย์ ของคุณอย่างถาวรและไม่สามารถกู้คืนได้",
+    "p_warning_disable_credentials": "ข้อมูลประจำตัว OATH ของคุณ รวมถึงรหัสผ่านใด ๆ ที่คุณได้ตั้งค่าไว้ จะถูกลบออกจาก ยูบิคีย์ นี้ ตรวจสอบให้แน่ใจก่อนปิดการใช้งานข้อมูลเหล่านี้จากเว็บไซต์ที่เกี่ยวข้องของแต่ละบริการเพื่อหลีกเลี่ยงการถูกระงับบัญชีของคุณ",
+    "p_warning_deletes_accounts": "คำเตือน! การดำเนินการนี้จะลบข้อมูลบัญชี U2F และ FIDO2 ทั้งหมด รวมถึงพาสคีย์ ออกจาก ยูบิคีย์ ของคุณอย่างถาวรและไม่สามารถกู้คืนได้",
+    "p_warning_disable_accounts": "ข้อมูลประจำตัวของคุณ รวมถึงรหัส PIN ใดๆ ที่ตั้งค่าไว้ จะถูกลบออกจาก ยูบิคีย์ นี้ โปรดตรวจสอบให้แน่ใจว่าได้ปิดใช้งานข้อมูลเหล่านี้จากเว็บไซต์ที่เกี่ยวข้อง เพื่อหลีกเลี่ยงการถูกล็อกไม่ให้เข้าถึงบัญชีของคุณ",
+    "l_reset_not_allowed_over": "การรีเซ็ต FIDO ถูกปิดใช้งานผ่าน {transport}",
+    "@l_reset_not_allowed_over": {
+        "placeholders": {
+            "transport": {
+                "type": "String"
+            }
+        }
+    },
+    "p_warning_piv_reset": "คำเตือน! ข้อมูลทั้งหมดที่จัดเก็บไว้สำหรับ PIV จะถูกลบออกจาก ยูบิคีย์ ของคุณอย่างถาวร",
+    "p_warning_piv_reset_desc": "นี้จะรวมถึงกุญเเจส่วนตัวและใบรับรองต่างๆ รหัส PIN, รหัส PUK และรหัสการจัดการของคุณจะถูกตั้งค่ากลับเป็นค่าเริ่มต้นจากโรงงาน",
+    "p_warning_global_reset": "คำเตือน! การดำเนินการนี้จะลบข้อมูลที่บันทึกไว้ทั้งหมด รวมถึงข้อมูลประจำตัว ออกจาก ยูบิคีย์ ของคุณอย่างถาวรและไม่สามารถกู้คืนได้",
+    "p_warning_global_reset_desc": "การคืนค่าโรงงานแอปพลิเคชันบน ยูบิคีย์ ของคุณเป็นค่าเริ่มต้นจากโรงงาน รหัส PIN จะถูกรีเซ็ตกลับเป็นค่าเริ่มต้นจากโรงงาน และลายนิ้วมือที่ลงทะเบียนไว้จะถูกลบออก รหัส, ใบรับรอง หรือข้อมูลประจำตัวอื่น ๆ ทั้งหมดจะถูกลบออกอย่างถาวร",
+    "@_copy_to_clipboard": {},
+
+    "l_copy_to_clipboard": "คัดลอกไปยังคลิปบอร์ด",
+    "s_code_copied": "คัดลอกรหัสแล้ว",
+    "l_code_copied_clipboard": "คัดลอกรหัสไปยังคลิปบอร์ดแล้ว",
+    "s_copy_log": "คัดลอกปูมบันทึก",
+    "l_copy_log_clipboard": "คัดลอกปูมบันทึกลงคลิปบอร์ด",
+    "l_log_copied": "ปูมบันทึกถูกคัดลอกลงคลิปบอร์ดเเล้ว",
+    "l_diagnostics_copied": "ข้อมูลการวินิจฉัยถูกคัดลอกไปยังคลิปบอร์ด",
+    "p_target_copied_clipboard": "{label} คัดลอกไปยังคลิปบอร์ดแล้ว",
+    "@p_target_copied_clipboard": {
+        "placeholders": {
+            "label": {
+                "type": "String"
+            }
+        }
+    },
+    "@_custom_icons": {},
+
+    "s_custom_icons": "ไอคอนที่กำหนดเอง",
+    "l_set_icons_for_accounts": "ตั้งไอคอนสำหรับบัญชี",
+    "p_custom_icons_description": "ชุดไอคอนสามารถทำให้บัญชีของคุณแยกแยะได้ง่ายขึ้นด้วยโลโก้และสีที่คุ้นเคย",
+    "p_custom_icons_format_desc": "ชุดไอคอนใช้รูปแบบ {aegis_icon_pack} คุณสามารถดาวน์โหลดชุดไอคอนสำเร็จรูป หรือสร้างขึ้นเองได้",
+    "@p_custom_icons_format_desc": {
+        "placeholders": {
+            "aegis_icon_pack": {
+                "type": "String"
+            }
+        }
+    },
+    "s_replace_icon_pack": "วางทับชุดไอคอน",
+    "l_loading_icon_pack": "กำลังโหลดชุดไอคอน...",
+    "s_load_icon_pack": "โหลดชุดไอคอน",
+    "l_load_icon_pack_desc": "โหลดชุดไอคอนจากไฟล์",
+    "s_remove_icon_pack": "นำชุดไอคอนออก",
+    "l_remove_icon_pack_desc": "ลบชุดไอคอนที่ใช้งานอยู่",
+    "l_icon_pack_removed": "ชุดไอคอนถูกลบออก",
+    "l_remove_icon_pack_failed": "เกิดข้อผิดพลาดในการลบชุดไอคอน",
+    "s_choose_icon_pack": "เลือกชุดไอคอน",
+    "l_icon_pack_imported": "นำเข้าชุดไอคอนเเล้ว",
+    "l_import_icon_pack_failed": "เกิดข้อผิดพลาดในการนำเข้าชุดไอคอน: {message}",
+    "@l_import_icon_pack_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_invalid_icon_pack": "ชุดไอคอนไม่ถูกต้อง",
+    "l_icon_pack_copy_failed": "ไม่สามารถคัดลอกไฟล์ชุดไอคอนได้",
+    "@_android_settings": {},
+
+    "s_nfc_and_usb_options": "ตัวเลือก เอ็นเอฟซี และ ยูเอสบี",
+    "l_nfc_and_usb_options_desc": "กำหนดการดำเนินการสำหรับ ยูบิคีย์",
+    "l_on_yk_nfc_tap": "เมื่อแตะ เอ็นเอฟซี",
+    "l_on_yk_usb_insert": "เมื่อเสียบ ยูเอสบี",
+    "l_do_nothing": "ไม่ต้องทำอะไร",
+    "l_launch_ya": "เปิด เครื่องยืนยันตัวตนยูบิโค่",
+    "l_copy_otp_clipboard": "คัดลอกรหัส OTP ไปยังคลิปบอร์ด",
+    "l_launch_and_copy_otp": "เปิดแอปและคัดลอก OTP",
+    "l_kbd_layout_for_static": "รูปแบบแป้นพิมพ์ (สำหรับรหัสผ่านแบบคงที่)",
+    "s_choose_kbd_layout": "เลือกรูปแบบแป้นพิมพ์",
+    "l_bypass_touch_requirement": "ข้ามการสัมผัส",
+    "l_bypass_touch_requirement_on": "บัญชีที่ต้องสัมผัสจะแสดงโดยอัตโนมัติผ่าน เอ็นเอฟซี",
+    "l_bypass_touch_requirement_off": "บัญชีที่ต้องสัมผัสจะแสดงโดยอัตโนมัติผ่าน เอ็นเอฟซี",
+    "s_silence_nfc_sounds": "ปิดเสียง เอ็นเอฟซี",
+    "l_silence_nfc_sounds_on": "จะไม่มีเสียงเล่นเมื่อแตะ เอ็นเอฟซี",
+    "l_silence_nfc_sounds_off": "เสียงจะเล่นเมื่อแตะ เอ็นเอฟซี",
+    "l_launch_app_on_usb_on": "สิ่งนี้ป้องกันไม่ให้แอปอื่นใช้ ยูบิคีย์ ผ่าน ยูเอสบี",
+    "l_launch_app_on_usb_off": "แอปอื่น ๆ สามารถใช้ ยูบิคีย์ ผ่าน ยูเอสบี ได้",
+    "s_allow_screenshots": "อนุญาตให้ถ่ายภาพหน้าจอ",
+    "l_allow_screenshots_desc": "อนุญาตให้แอปอื่นถ่ายภาพหน้าจอ",
+    "@_nfc": {},
+
+    "s_nfc_ready_to_scan": "พร้อมสแกน",
+    "s_nfc_hold_still": "แตะค้างไว้...",
+    "s_nfc_tap_your_yubikey": "แตะ ยูบิคีย์ ของคุณ",
+    "s_nfc_remove_key": "นำ ยูบิคีย์ ออก",
+    "l_nfc_failed_to_scan": "ไม่สามารถสแกนได้ กรุณาลองอีกครั้ง",
+    "@_usb": {},
+
+    "s_usb_processing": "กำลังอ่านข้อมูลจาก ยูบิคีย์",
+    "s_usb_dont_remove": "อย่าเพิ่งเอาคีย์ออก",
+    "l_usb_read_error": "ไม่สามารถอ่านข้อมูลจาก ยูบิคีย์ ได้",
+    "@_ndef": {},
+
+    "p_ndef_set_otp": "คัดลอกรหัส OTP จาก ยูบิคีย์ ไปยังคลิปบอร์ดสำเร็จแล้ว",
+    "p_ndef_set_password": "คัดลอกรหัสผ่านจาก ยูบิคีย์ ไปยังคลิปบอร์ดสำเร็จแล้ว",
+    "p_ndef_parse_failure": "ไม่สามารถวางรหัส OTP จาก ยูบิคีย์ ได้",
+    "p_ndef_set_clip_failure": "ไม่สามารถเข้าถึงคลิปบอร์ดได้เมื่อพยายามคัดลอกรหัส OTP จาก ยูบิคีย์",
+    "@_key_customization": {},
+
+    "s_set_label": "กำหนดป้ายชื่อ",
+    "s_set_color": "ตั้งค่าสี",
+    "s_change_label": "เปลี่ยนป้ายชื่อ",
+    "p_set_will_add_custom_name": "นี่จะตั้งชื่อเฉพาะให้กับ ยูบิคีย์ ของคุณ",
+    "p_rename_will_change_custom_name": "นี่จะเป็นการเปลี่ยนป้ายชื่อของ ยูบิคีย์ ของคุณ",
+    "@_shortcuts": {},
+
+    "s_keyboard_shortcuts": "แป้นพิมพ์ลัด",
+    "s_global_shortcuts": "แป้นพิมพ์ลัดที่ใช้ได้ทั่วไป:",
+    "s_application_shortcuts": "ทางลัดแอปพลิเคชัน",
+    "@s_quit_app": {
+        "placeholders": {
+            "app": {
+                "type": "String"
+            }
+        }
+    },
+    "s_quit_app": "ออก {app}",
+    "@s_hide_app": {
+        "placeholders": {
+            "app": {
+                "type": "String"
+            }
+        }
+    },
+    "s_hide_app": "ซ่อน {app}",
+    "s_search": "ค้นหา",
+    "s_next_device": "อุปกรณ์ถัดไป",
+    "s_previous_device": "อุปกรณ์ก่อนหน้า",
+    "s_open_settings": "เปิดการตั้งค่า",
+    "s_open_item": "เปิดไอเท็ม",
+    "s_edit_item": "แก้ไขรายการ",
+    "s_delete_item": "ลบรายการ",
+    "s_calculate_oath_code": "คำนวณรหัส OATH",
+    "s_open_keyboard_shortcuts": "เปิดแป้นพิมพ์ลัด",
+    "@_eof": {}
+
+}
