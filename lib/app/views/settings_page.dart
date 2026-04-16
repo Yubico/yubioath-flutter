@@ -179,10 +179,7 @@ class _ThemeModeViewState extends ConsumerState<_ThemeModeView> {
               contentPadding: isDesktop
                   ? const EdgeInsets.symmetric(horizontal: 22)
                   : null,
-              leading: Radio<ThemeMode>(
-                value: e,
-                toggleable: true,
-              ),
+              leading: Radio<ThemeMode>(value: e, toggleable: true),
               title: Transform.translate(
                 offset: Offset(isDesktop ? 4 : 0, 0),
                 child: Text(e.getDisplayName(l10n)),
@@ -556,7 +553,6 @@ class _LanguageView extends ConsumerStatefulWidget {
 }
 
 class _LanguageViewState extends ConsumerState<_LanguageView> {
-
   Widget _buildLocaleTitle(
     BuildContext context,
     Locale locale,
@@ -682,11 +678,10 @@ class _LanguageViewState extends ConsumerState<_LanguageView> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(widget.isDialog ? 0 : 48.0),
               ),
-              contentPadding: isDesktop ? const EdgeInsets.symmetric(horizontal: 22) : null,
-              leading: Radio<Locale>(
-                value: e,
-                toggleable: true,
-              ),
+              contentPadding: isDesktop
+                  ? const EdgeInsets.symmetric(horizontal: 22)
+                  : null,
+              leading: Radio<Locale>(value: e, toggleable: true),
               title: Transform.translate(
                 offset: Offset(isDesktop ? 4 : 0, 0),
                 child: _buildLocaleTitle(context, e, status),
@@ -899,10 +894,7 @@ class _LogsViewState extends ConsumerState<_LogsView> {
               contentPadding: isDesktop
                   ? const EdgeInsets.symmetric(horizontal: 22)
                   : null,
-              leading: Radio<Level>(
-                value: e,
-                toggleable: true,
-              ),
+              leading: Radio<Level>(value: e, toggleable: true),
               title: Transform.translate(
                 offset: Offset(isDesktop ? 4 : 0, 0),
                 child: Text('${e.name[0]}${e.name.substring(1).toLowerCase()}'),
