@@ -51,6 +51,7 @@
     "s_nfc": "เอ็นอฟซี",
     "s_options": "ตัวเลือก",
     "s_details": "ราย​ละเอียด",
+    "s_required": null,
     "s_show_window": "แสดงหน้าต่าง",
     "s_hide_window": "ซ่อนหน้าต่าง",
     "s_show_navigation": "แสดงการนำทาง",
