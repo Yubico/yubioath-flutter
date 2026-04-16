@@ -51,6 +51,7 @@
     "s_nfc": "NFC",
     "s_options": "Опции",
     "s_details": "Сведения",
+    "s_required": null,
     "s_show_window": "Показать окно",
     "s_hide_window": "Скрыть окно",
     "s_show_navigation": "Показать навигацию",

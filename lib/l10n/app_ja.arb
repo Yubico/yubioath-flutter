@@ -51,6 +51,7 @@
     "s_nfc": "NFC",
     "s_options": "オプション",
     "s_details": "詳細",
+    "s_required": null,
     "s_show_window": "ウィンドウを表示",
     "s_hide_window": "ウィンドウを非表示",
     "s_show_navigation": "ナビゲーションを表示します",

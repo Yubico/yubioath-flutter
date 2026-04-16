@@ -243,6 +243,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                         labelText: widget.target == ManageTarget.pin
                             ? l10n.s_current_pin
                             : l10n.s_current_puk,
+                        isRequired: true,
                         errorText: _pinIsBlocked
                             ? (widget.target == ManageTarget.pin && !isBio
                                   ? l10n.l_piv_pin_blocked
@@ -320,6 +321,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                         labelText: widget.target == ManageTarget.puk
                             ? l10n.s_new_puk
                             : l10n.s_new_pin,
+                        isRequired: true,
                         errorText: _newIsWrong ? _newPinError : null,
                         icon: const Icon(Symbols.pin),
                         suffixIcon: VisibilityToggleButton(
@@ -367,6 +369,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                         labelText: widget.target == ManageTarget.puk
                             ? l10n.s_confirm_puk
                             : l10n.s_confirm_pin,
+                        isRequired: true,
                         icon: const Icon(Symbols.pin),
                         suffixIcon: VisibilityToggleButton(
                           isObscured: _isObscureConfirm,

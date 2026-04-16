@@ -112,6 +112,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_name,
+                        isRequired: true,
                         icon: const Icon(Symbols.fingerprint),
                       ),
                       onChanged: (_) {

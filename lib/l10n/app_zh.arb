@@ -51,6 +51,7 @@
     "s_nfc": "NFC",
     "s_options": "选项",
     "s_details": "详细信息",
+    "s_required": null,
     "s_show_window": "显示窗口",
     "s_hide_window": "隐藏窗口",
     "s_show_navigation": "显示导航按钮",
