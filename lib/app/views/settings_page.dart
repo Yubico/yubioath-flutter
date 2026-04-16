@@ -628,11 +628,25 @@ class _LanguageViewState extends ConsumerState<_LanguageView> {
 
   Locale? _pendingLocale;
   final _saveFocusNode = FocusNode();
+  final _saveButtonKey = GlobalKey();
 
   @override
   void dispose() {
     _saveFocusNode.dispose();
     super.dispose();
+  }
+
+  void _scrollToSave() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final ctx = _saveButtonKey.currentContext;
+      if (ctx != null) {
+        Scrollable.ensureVisible(
+          ctx,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
   }
 
   void _apply() {
@@ -668,6 +682,7 @@ class _LanguageViewState extends ConsumerState<_LanguageView> {
             _pendingLocale = value == currentLocale ? null : value;
           });
           _saveFocusNode.requestFocus();
+          _scrollToSave();
         }
       },
       child: Column(
@@ -691,6 +706,7 @@ class _LanguageViewState extends ConsumerState<_LanguageView> {
                   _pendingLocale = e == currentLocale ? null : e;
                 });
                 _saveFocusNode.requestFocus();
+                _scrollToSave();
               },
             ),
           ),
@@ -732,6 +748,7 @@ class _LanguageViewState extends ConsumerState<_LanguageView> {
               child: Align(
                 alignment: Alignment.centerRight,
                 child: ElevatedButton(
+                  key: _saveButtonKey,
                   focusNode: _saveFocusNode,
                   onPressed: _apply,
                   child: Text(l10n.s_save),
