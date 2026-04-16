@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2025 Yubico.
+ * Copyright (C) 2022-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -185,8 +185,9 @@ class _FidoLockedPage extends ConsumerWidget {
       keyActionsBuilder: hasActions
           ? (context) => _buildActions(context, ref)
           : null,
-      builder: (context, _) =>
-          Column(children: [PinEntryForm(state, deviceData)]),
+      builder: (context, _) => Column(
+        children: [PinEntryForm(state, deviceData, canRemember: false)],
+      ),
     );
   }
 
