@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2025 Yubico.
+ * Copyright (C) 2022-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,8 +34,14 @@ import '../state.dart';
 class PinEntryForm extends ConsumerStatefulWidget {
   final FidoState _state;
   final YubiKeyData _deviceData;
+  final bool canRemember;
 
-  const PinEntryForm(this._state, this._deviceData, {super.key});
+  const PinEntryForm(
+    this._state,
+    this._deviceData, {
+    this.canRemember = true,
+    super.key,
+  });
 
   @override
   ConsumerState<PinEntryForm> createState() => _PinEntryFormState();
@@ -122,7 +128,8 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
     final noFingerprints = widget._state.bioEnroll == false;
     final authBlocked = widget._state.pinBlocked;
     final pinRetries = widget._state.pinRetries;
-    final readOnlySupported = widget._state.readOnlySupported;
+    final readOnlySupported =
+        widget.canRemember && widget._state.readOnlySupported;
     return Padding(
       padding: const EdgeInsets.only(left: 18.0, right: 18, top: 8),
       child: Column(

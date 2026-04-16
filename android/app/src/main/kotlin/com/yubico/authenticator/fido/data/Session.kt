@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2025 Yubico.
+ * Copyright (C) 2024-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,8 @@ data class Options(
     val credentialMgmtPreview: Boolean,
     val bioEnroll: Boolean?,
     val alwaysUv: Boolean,
-    val ep: Boolean?
+    val ep: Boolean?,
+    val perCredMgmtRO: Boolean?
 ) {
     constructor(infoData: InfoData) : this(
         infoData.getOptionsBoolean("clientPin") == true,
@@ -42,7 +43,8 @@ data class Options(
         infoData.getOptionsBoolean("credentialMgmtPreview") == true,
         infoData.getOptionsBoolean("bioEnroll"),
         infoData.getOptionsBoolean("alwaysUv") == true,
-        infoData.getOptionsBoolean("ep")
+        infoData.getOptionsBoolean("ep"),
+        infoData.getOptionsBoolean("perCredMgmtRO")
     )
 
     fun sameDevice(other: Options): Boolean {

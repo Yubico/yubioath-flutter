@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2025 Yubico.
+ * Copyright (C) 2024-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -141,11 +141,12 @@ class AndroidFidoStateNotifier extends FidoStateNotifier {
     }
   }
 
-  // TODO: implement remember on Android
   @override
   Future<PinResult> unlock(String pin, {bool remember = false}) async {
     try {
-      final response = jsonDecode(await fido.invoke('unlock', {'pin': pin}));
+      final response = jsonDecode(
+        await fido.invoke('unlock', {'pin': pin, 'remember': remember}),
+      );
 
       if (response['success'] == true) {
         _log.debug('FIDO applet unlocked');
