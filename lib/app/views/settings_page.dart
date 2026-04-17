@@ -776,7 +776,6 @@ class _LogsViewState extends ConsumerState<_LogsView> {
       onChanged: (value) {
         if (value != null) {
           _selectLogLevel(value);
-          print("log level changed to ${value.name}");
         }
       },
       child: Column(
@@ -796,7 +795,6 @@ class _LogsViewState extends ConsumerState<_LogsView> {
                 child: Text('${e.name[0]}${e.name.substring(1).toLowerCase()}'),
               ),
               onTap: () {
-                print("ontap");
                 _selectLogLevel(e);
               },
             ),
