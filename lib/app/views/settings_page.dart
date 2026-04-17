@@ -493,75 +493,102 @@ class _LanguageView extends ConsumerWidget {
 
   const _LanguageView({required this.isDialog});
 
-  Widget _buildLocaleTitle(
+  Widget? _buildInfoButton(
     BuildContext context,
     Locale locale,
     Map<String, LocaleStatus> status,
   ) {
     final localeStatus = status[locale.toString()];
     if (localeStatus == null) {
-      return Text(locale.getNativeDisplayName());
+      return null;
     }
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
     int translated = localeStatus.translated;
     int proofread = localeStatus.proofread;
 
-    return Row(
-      mainAxisAlignment: .spaceBetween,
-      children: [
-        Text(locale.getNativeDisplayName()),
-        if (translated != 100 || proofread != 100) ...[
-          const SizedBox(width: 8.0),
-          InfoPopupButton(
-            size: 30,
-            iconSize: 20,
-            iconColor: (translated == 100 && proofread != 100)
-                ? theme.disabledColor
-                : theme.colorScheme.tertiary,
-            icon: Symbols.info,
-            infoText: Text.rich(
-              WidgetSpan(
-                child: Column(
-                  crossAxisAlignment: .start,
-                  children: [
-                    Text(
-                      l10n.l_incomplete_translation,
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        fontWeight: .w600,
-                      ),
-                    ),
-                    const SizedBox(height: 8.0),
-                    Text(
-                      l10n.s_translated(translated),
-                      style: theme.textTheme.labelSmall,
-                    ),
-                    LinearProgressIndicator(
-                      value: translated / 100,
-                      trackGap: 0,
-                    ),
-                    const SizedBox(height: 8.0),
-                    Text(
-                      l10n.s_proofread(proofread),
-                      style: theme.textTheme.labelSmall,
-                    ),
-                    LinearProgressIndicator(
-                      value: proofread / 100,
-                      trackGap: 0,
-                    ),
-                    const SizedBox(height: 8.0),
-                    Text(
-                      l10n.p_translation_progress_desc,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
+    if (translated == 100 && proofread == 100) {
+      return null;
+    }
+
+    return Semantics(
+      label: l10n.s_more_info,
+      button: true,
+      child: InfoPopupButton(
+        size: 30,
+        iconSize: 20,
+        iconColor: (translated == 100 && proofread != 100)
+            ? theme.disabledColor
+            : theme.colorScheme.tertiary,
+        icon: Symbols.info,
+        infoText: Text.rich(
+          WidgetSpan(
+            child: Column(
+              crossAxisAlignment: .start,
+              children: [
+                Text(
+                  l10n.l_incomplete_translation,
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    fontWeight: .w600,
+                  ),
                 ),
-              ),
+                const SizedBox(height: 8.0),
+                Text(
+                  l10n.s_translated(translated),
+                  style: theme.textTheme.labelSmall,
+                ),
+                LinearProgressIndicator(value: translated / 100, trackGap: 0),
+                const SizedBox(height: 8.0),
+                Text(
+                  l10n.s_proofread(proofread),
+                  style: theme.textTheme.labelSmall,
+                ),
+                LinearProgressIndicator(value: proofread / 100, trackGap: 0),
+                const SizedBox(height: 8.0),
+                Text(
+                  l10n.p_translation_progress_desc,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLocaleRow(
+    BuildContext context,
+    Locale e,
+    Map<String, LocaleStatus> status,
+    bool isDialog,
+  ) {
+    final infoButton = _buildInfoButton(context, e, status);
+    return Row(
+      children: [
+        Expanded(
+          child: RadioListTile(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(isDialog ? 0 : 48.0),
+            ),
+            contentPadding: isDesktop
+                ? EdgeInsets.symmetric(horizontal: 22)
+                : null,
+            title: Transform.translate(
+              offset: Offset(isDesktop ? 4 : 0, 0),
+              child: Text(e.getNativeDisplayName()),
+            ),
+            value: e,
+            toggleable: true,
+          ),
+        ),
+        if (infoButton != null)
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: infoButton,
+          ),
       ],
     );
   }
@@ -592,20 +619,7 @@ class _LanguageView extends ConsumerWidget {
         children: [
           ListTitle(l10n.s_options),
           ...supportedLocales.map(
-            (e) => RadioListTile(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(isDialog ? 0 : 48.0),
-              ),
-              contentPadding: isDesktop
-                  ? EdgeInsets.symmetric(horizontal: 22)
-                  : null,
-              title: Transform.translate(
-                offset: Offset(isDesktop ? 4 : 0, 0),
-                child: _buildLocaleTitle(context, e, status),
-              ),
-              value: e,
-              toggleable: true,
-            ),
+            (e) => _buildLocaleRow(context, e, status, isDialog),
           ),
           ActionListSection(
             l10n.s_community,
