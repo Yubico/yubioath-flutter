@@ -130,25 +130,11 @@ class _ThemeModeView extends ConsumerStatefulWidget {
 }
 
 class _ThemeModeViewState extends ConsumerState<_ThemeModeView> {
-  ThemeMode? _pendingTheme;
-  final _saveFocusNode = FocusNode();
-
-  @override
-  void dispose() {
-    _saveFocusNode.dispose();
-    super.dispose();
-  }
-
-  void _apply() {
-    if (_pendingTheme != null) {
-      ref.read(themeModeProvider.notifier).setThemeMode(_pendingTheme!);
-    }
+  void _select(ThemeMode mode) {
+    ref.read(themeModeProvider.notifier).setThemeMode(mode);
     if (widget.isDialog) {
-      Navigator.pop(context, _pendingTheme);
+      Navigator.pop(context, mode);
     }
-    setState(() {
-      _pendingTheme = null;
-    });
   }
 
   @override
@@ -156,16 +142,12 @@ class _ThemeModeViewState extends ConsumerState<_ThemeModeView> {
     final l10n = AppLocalizations.of(context);
     final themeMode = ref.watch(themeModeProvider);
     final supportedThemes = ref.read(supportedThemesProvider);
-    final selectedTheme = _pendingTheme ?? themeMode;
 
     final content = RadioGroup<ThemeMode>(
-      groupValue: selectedTheme,
+      groupValue: themeMode,
       onChanged: (value) {
         if (value != null) {
-          setState(() {
-            _pendingTheme = value == themeMode ? null : value;
-          });
-          _saveFocusNode.requestFocus();
+          _select(value);
         }
       },
       child: Column(
@@ -186,10 +168,7 @@ class _ThemeModeViewState extends ConsumerState<_ThemeModeView> {
               ),
               key: keys.themeModeOption(e),
               onTap: () {
-                setState(() {
-                  _pendingTheme = e == themeMode ? null : e;
-                });
-                _saveFocusNode.requestFocus();
+                _select(e);
               },
             ),
           ),
@@ -200,33 +179,10 @@ class _ThemeModeViewState extends ConsumerState<_ThemeModeView> {
       return ResponsiveDialog(
         title: Text(l10n.s_app_theme),
         dialogMaxWidth: 400,
-        actions: [
-          TextButton(
-            focusNode: _saveFocusNode,
-            onPressed: _pendingTheme != null ? _apply : null,
-            child: Text(l10n.s_save),
-          ),
-        ],
         builder: (context, fullScreen) => content,
       );
     } else {
-      return Column(
-        children: [
-          content,
-          if (_pendingTheme != null)
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: ElevatedButton(
-                  focusNode: _saveFocusNode,
-                  onPressed: _apply,
-                  child: Text(l10n.s_save),
-                ),
-              ),
-            ),
-        ],
-      );
+      return content;
     }
   }
 }
@@ -626,39 +582,11 @@ class _LanguageViewState extends ConsumerState<_LanguageView> {
     );
   }
 
-  Locale? _pendingLocale;
-  final _saveFocusNode = FocusNode();
-  final _saveButtonKey = GlobalKey();
-
-  @override
-  void dispose() {
-    _saveFocusNode.dispose();
-    super.dispose();
-  }
-
-  void _scrollToSave() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final ctx = _saveButtonKey.currentContext;
-      if (ctx != null) {
-        Scrollable.ensureVisible(
-          ctx,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-        );
-      }
-    });
-  }
-
-  void _apply() {
-    if (_pendingLocale != null) {
-      ref.read(currentLocaleProvider.notifier).setLocale(_pendingLocale!);
-    }
+  void _select(Locale locale) {
+    ref.read(currentLocaleProvider.notifier).setLocale(locale);
     if (widget.isDialog) {
-      Navigator.pop(context, _pendingLocale);
+      Navigator.pop(context, locale);
     }
-    setState(() {
-      _pendingLocale = null;
-    });
   }
 
   @override
@@ -667,7 +595,6 @@ class _LanguageViewState extends ConsumerState<_LanguageView> {
     final currentLocale = ref.watch(currentLocaleProvider);
     final supportedLocales = ref.read(supportedLocalesProvider);
     final status = ref.read(localeStatusProvider);
-    final selectedLocale = _pendingLocale ?? currentLocale;
     // Sort locales alphabetically
     supportedLocales.sort(
       (a, b) => a.getNativeDisplayName().compareTo(b.getNativeDisplayName()),
@@ -675,14 +602,10 @@ class _LanguageViewState extends ConsumerState<_LanguageView> {
 
     final itemRadius = widget.isDialog ? 0.0 : null;
     final content = RadioGroup<Locale>(
-      groupValue: selectedLocale,
+      groupValue: currentLocale,
       onChanged: (value) {
         if (value != null) {
-          setState(() {
-            _pendingLocale = value == currentLocale ? null : value;
-          });
-          _saveFocusNode.requestFocus();
-          _scrollToSave();
+          _select(value);
         }
       },
       child: Column(
@@ -702,11 +625,7 @@ class _LanguageViewState extends ConsumerState<_LanguageView> {
                 child: _buildLocaleTitle(context, e, status),
               ),
               onTap: () {
-                setState(() {
-                  _pendingLocale = e == currentLocale ? null : e;
-                });
-                _saveFocusNode.requestFocus();
-                _scrollToSave();
+                _select(e);
               },
             ),
           ),
@@ -729,34 +648,10 @@ class _LanguageViewState extends ConsumerState<_LanguageView> {
       return ResponsiveDialog(
         title: Text(l10n.s_language),
         dialogMaxWidth: 400,
-        actions: [
-          TextButton(
-            focusNode: _saveFocusNode,
-            onPressed: _pendingLocale != null ? _apply : null,
-            child: Text(l10n.s_save),
-          ),
-        ],
         builder: (context, fullScreen) => content,
       );
     } else {
-      return Column(
-        children: [
-          content,
-          if (_pendingLocale != null)
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: ElevatedButton(
-                  key: _saveButtonKey,
-                  focusNode: _saveFocusNode,
-                  onPressed: _apply,
-                  child: Text(l10n.s_save),
-                ),
-              ),
-            ),
-        ],
-      );
+      return content;
     }
   }
 }
@@ -866,38 +761,22 @@ class _LogsView extends ConsumerStatefulWidget {
 
 class _LogsViewState extends ConsumerState<_LogsView> {
   bool _diagnosing = false;
-  Level? _pendingLogLevel;
-  final _saveFocusNode = FocusNode();
 
-  @override
-  void dispose() {
-    _saveFocusNode.dispose();
-    super.dispose();
-  }
-
-  void _applyLogLevel() {
-    if (_pendingLogLevel != null) {
-      ref.read(logLevelProvider.notifier).setLogLevel(_pendingLogLevel!);
-    }
-    setState(() {
-      _pendingLogLevel = null;
-    });
+  void _selectLogLevel(Level level) {
+    ref.read(logLevelProvider.notifier).setLogLevel(level);
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final logLevel = ref.watch(logLevelProvider);
-    final selectedLogLevel = _pendingLogLevel ?? logLevel;
 
     final logLevelRadioGroup = RadioGroup<Level>(
-      groupValue: selectedLogLevel,
+      groupValue: logLevel,
       onChanged: (value) {
         if (value != null) {
-          setState(() {
-            _pendingLogLevel = value == logLevel ? null : value;
-          });
-          _saveFocusNode.requestFocus();
+          _selectLogLevel(value);
+          print("log level changed to ${value.name}");
         }
       },
       child: Column(
@@ -917,10 +796,8 @@ class _LogsViewState extends ConsumerState<_LogsView> {
                 child: Text('${e.name[0]}${e.name.substring(1).toLowerCase()}'),
               ),
               onTap: () {
-                setState(() {
-                  _pendingLogLevel = e == logLevel ? null : e;
-                });
-                _saveFocusNode.requestFocus();
+                print("ontap");
+                _selectLogLevel(e);
               },
             ),
           ),
@@ -1028,38 +905,10 @@ class _LogsViewState extends ConsumerState<_LogsView> {
       return ResponsiveDialog(
         title: Text(l10n.s_debugging_tools),
         dialogMaxWidth: 400,
-        actions: [
-          TextButton(
-            focusNode: _saveFocusNode,
-            onPressed: _pendingLogLevel != null
-                ? () {
-                    _applyLogLevel();
-                    Navigator.pop(context, _pendingLogLevel);
-                  }
-                : null,
-            child: Text(l10n.s_save),
-          ),
-        ],
         builder: (context, fullScreen) => content,
       );
     } else {
-      return Column(
-        children: [
-          content,
-          if (_pendingLogLevel != null)
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: ElevatedButton(
-                  focusNode: _saveFocusNode,
-                  onPressed: _applyLogLevel,
-                  child: Text(l10n.s_save),
-                ),
-              ),
-            ),
-        ],
-      );
+      return content;
     }
   }
 }
