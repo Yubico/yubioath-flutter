@@ -120,51 +120,62 @@ class _SettingsSectionItem extends StatelessWidget {
   }
 }
 
-class _ThemeModeView extends ConsumerWidget {
+class _ThemeModeView extends ConsumerStatefulWidget {
   final bool isDialog;
 
   const _ThemeModeView({required this.isDialog});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_ThemeModeView> createState() => _ThemeModeViewState();
+}
+
+class _ThemeModeViewState extends ConsumerState<_ThemeModeView> {
+  void _select(ThemeMode mode) {
+    ref.read(themeModeProvider.notifier).setThemeMode(mode);
+    if (widget.isDialog) {
+      Navigator.pop(context, mode);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final themeMode = ref.watch(themeModeProvider);
     final supportedThemes = ref.read(supportedThemesProvider);
 
-    final content = RadioGroup(
+    final content = RadioGroup<ThemeMode>(
       groupValue: themeMode,
-      onChanged: (mode) {
-        if (mode != null) {
-          ref.read(themeModeProvider.notifier).setThemeMode(mode);
-          if (isDialog) {
-            Navigator.pop(context, mode);
-          }
+      onChanged: (value) {
+        if (value != null) {
+          _select(value);
         }
       },
       child: Column(
         children: [
           ListTitle(l10n.s_options),
           ...supportedThemes.map(
-            (e) => RadioListTile(
+            (e) => ListTile(
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(isDialog ? 0 : 48.0),
+                borderRadius: BorderRadius.circular(widget.isDialog ? 0 : 48.0),
               ),
               contentPadding: isDesktop
-                  ? EdgeInsets.symmetric(horizontal: 22)
+                  ? const EdgeInsets.symmetric(horizontal: 22)
                   : null,
+              leading: Radio<ThemeMode>(value: e, toggleable: true),
               title: Transform.translate(
                 offset: Offset(isDesktop ? 4 : 0, 0),
                 child: Text(e.getDisplayName(l10n)),
               ),
-              value: e,
               key: keys.themeModeOption(e),
-              toggleable: true,
+              onTap: () {
+                _select(e);
+              },
             ),
           ),
         ],
       ),
     );
-    if (isDialog) {
+    if (widget.isDialog) {
       return ResponsiveDialog(
         title: Text(l10n.s_app_theme),
         dialogMaxWidth: 400,
@@ -488,11 +499,16 @@ class _IconsItem extends ConsumerWidget {
   }
 }
 
-class _LanguageView extends ConsumerWidget {
+class _LanguageView extends ConsumerStatefulWidget {
   final bool isDialog;
 
   const _LanguageView({required this.isDialog});
 
+  @override
+  ConsumerState<_LanguageView> createState() => _LanguageViewState();
+}
+
+class _LanguageViewState extends ConsumerState<_LanguageView> {
   Widget _buildLocaleTitle(
     BuildContext context,
     Locale locale,
@@ -566,8 +582,15 @@ class _LanguageView extends ConsumerWidget {
     );
   }
 
+  void _select(Locale locale) {
+    ref.read(currentLocaleProvider.notifier).setLocale(locale);
+    if (widget.isDialog) {
+      Navigator.pop(context, locale);
+    }
+  }
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final currentLocale = ref.watch(currentLocaleProvider);
     final supportedLocales = ref.read(supportedLocalesProvider);
@@ -577,43 +600,42 @@ class _LanguageView extends ConsumerWidget {
       (a, b) => a.getNativeDisplayName().compareTo(b.getNativeDisplayName()),
     );
 
-    final itemRadius = isDialog ? 0.0 : null;
-    final content = RadioGroup(
+    final itemRadius = widget.isDialog ? 0.0 : null;
+    final content = RadioGroup<Locale>(
       groupValue: currentLocale,
       onChanged: (value) {
         if (value != null) {
-          ref.read(currentLocaleProvider.notifier).setLocale(value);
-          if (isDialog) {
-            Navigator.pop(context, value);
-          }
+          _select(value);
         }
       },
       child: Column(
         children: [
           ListTitle(l10n.s_options),
           ...supportedLocales.map(
-            (e) => RadioListTile(
+            (e) => ListTile(
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(isDialog ? 0 : 48.0),
+                borderRadius: BorderRadius.circular(widget.isDialog ? 0 : 48.0),
               ),
               contentPadding: isDesktop
-                  ? EdgeInsets.symmetric(horizontal: 22)
+                  ? const EdgeInsets.symmetric(horizontal: 22)
                   : null,
+              leading: Radio<Locale>(value: e, toggleable: true),
               title: Transform.translate(
                 offset: Offset(isDesktop ? 4 : 0, 0),
                 child: _buildLocaleTitle(context, e, status),
               ),
-              value: e,
-              toggleable: true,
+              onTap: () {
+                _select(e);
+              },
             ),
           ),
           ActionListSection(
             l10n.s_community,
-            fullWidth: isDialog,
+            fullWidth: widget.isDialog,
             children: [
               ActionListItem(
                 borderRadius: itemRadius,
-                icon: Icon(Symbols.open_in_new),
+                icon: const Icon(Symbols.open_in_new),
                 title: l10n.l_localization_project,
                 onTap: (_) => launchCrowdinUrl(),
               ),
@@ -622,7 +644,7 @@ class _LanguageView extends ConsumerWidget {
         ],
       ),
     );
-    if (isDialog) {
+    if (widget.isDialog) {
       return ResponsiveDialog(
         title: Text(l10n.s_language),
         dialogMaxWidth: 400,
@@ -740,37 +762,41 @@ class _LogsView extends ConsumerStatefulWidget {
 class _LogsViewState extends ConsumerState<_LogsView> {
   bool _diagnosing = false;
 
+  void _selectLogLevel(Level level) {
+    ref.read(logLevelProvider.notifier).setLogLevel(level);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final logLevel = ref.watch(logLevelProvider);
-    final logLevelRadioGroup = RadioGroup(
+
+    final logLevelRadioGroup = RadioGroup<Level>(
       groupValue: logLevel,
       onChanged: (value) {
         if (value != null) {
-          ref.read(logLevelProvider.notifier).setLogLevel(value);
-          if (widget.isDialog) {
-            Navigator.pop(context, value);
-          }
+          _selectLogLevel(value);
         }
       },
       child: Column(
         children: [
           ListTitle(l10n.s_logging_level),
           ...Levels.LEVELS.map(
-            (e) => RadioListTile<Level>(
+            (e) => ListTile(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(widget.isDialog ? 0 : 48.0),
               ),
               contentPadding: isDesktop
-                  ? EdgeInsets.symmetric(horizontal: 22)
+                  ? const EdgeInsets.symmetric(horizontal: 22)
                   : null,
+              leading: Radio<Level>(value: e, toggleable: true),
               title: Transform.translate(
                 offset: Offset(isDesktop ? 4 : 0, 0),
                 child: Text('${e.name[0]}${e.name.substring(1).toLowerCase()}'),
               ),
-              value: e,
-              toggleable: true,
+              onTap: () {
+                _selectLogLevel(e);
+              },
             ),
           ),
         ],
@@ -779,7 +805,7 @@ class _LogsViewState extends ConsumerState<_LogsView> {
 
     final allowScreenshots = ref.watch(androidAllowScreenshotsProvider);
     final content = Column(
-      crossAxisAlignment: .start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         logLevelRadioGroup,
         ActionListSection(
@@ -809,7 +835,7 @@ class _LogsViewState extends ConsumerState<_LogsView> {
               ActionListItem(
                 borderRadius: widget.isDialog ? 0 : null,
                 icon: _diagnosing
-                    ? SizedBox(
+                    ? const SizedBox(
                         height: 16,
                         width: 16,
                         child: CircularProgressIndicator(
@@ -851,7 +877,7 @@ class _LogsViewState extends ConsumerState<_LogsView> {
               ActionListItem(
                 key: keys.allowScreenshotsSetting,
                 borderRadius: widget.isDialog ? 0 : null,
-                icon: Icon(Symbols.screenshot),
+                icon: const Icon(Symbols.screenshot),
                 title: l10n.s_allow_screenshots,
                 subtitle: l10n.l_allow_screenshots_desc,
                 trailing: Switch(
@@ -873,13 +899,15 @@ class _LogsViewState extends ConsumerState<_LogsView> {
       ],
     );
 
-    return widget.isDialog
-        ? ResponsiveDialog(
-            title: Text(l10n.s_debugging_tools),
-            dialogMaxWidth: 400,
-            builder: (context, fullScreen) => content,
-          )
-        : content;
+    if (widget.isDialog) {
+      return ResponsiveDialog(
+        title: Text(l10n.s_debugging_tools),
+        dialogMaxWidth: 400,
+        builder: (context, fullScreen) => content,
+      );
+    } else {
+      return content;
+    }
   }
 }
 
