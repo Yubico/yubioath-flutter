@@ -738,10 +738,6 @@ class _LogsView extends ConsumerStatefulWidget {
 class _LogsViewState extends ConsumerState<_LogsView> {
   bool _diagnosing = false;
 
-  void _selectLogLevel(Level level) {
-    ref.read(logLevelProvider.notifier).setLogLevel(level);
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -751,7 +747,7 @@ class _LogsViewState extends ConsumerState<_LogsView> {
       groupValue: logLevel,
       onChanged: (value) {
         if (value != null) {
-          _selectLogLevel(value);
+          ref.read(logLevelProvider.notifier).setLogLevel(value);
         }
       },
       child: Column(
@@ -771,7 +767,7 @@ class _LogsViewState extends ConsumerState<_LogsView> {
                 child: Text('${e.name[0]}${e.name.substring(1).toLowerCase()}'),
               ),
               onTap: () {
-                _selectLogLevel(e);
+                ref.read(logLevelProvider.notifier).setLogLevel(e);
               },
             ),
           ),
