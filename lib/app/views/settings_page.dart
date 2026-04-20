@@ -132,9 +132,6 @@ class _ThemeModeView extends ConsumerStatefulWidget {
 class _ThemeModeViewState extends ConsumerState<_ThemeModeView> {
   void _select(ThemeMode mode) {
     ref.read(themeModeProvider.notifier).setThemeMode(mode);
-    if (widget.isDialog) {
-      Navigator.pop(context, mode);
-    }
   }
 
   @override
@@ -584,9 +581,6 @@ class _LanguageViewState extends ConsumerState<_LanguageView> {
 
   void _select(Locale locale) {
     ref.read(currentLocaleProvider.notifier).setLocale(locale);
-    if (widget.isDialog) {
-      Navigator.pop(context, locale);
-    }
   }
 
   @override
