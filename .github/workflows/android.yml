@@ -70,7 +70,7 @@ jobs:
         run: android/scripts/collect-artifacts.sh ${GITHUB_REF}
         working-directory: ./app
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: yubico-authenticator-android
           path: app/artifacts/*
