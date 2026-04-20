@@ -120,22 +120,13 @@ class _SettingsSectionItem extends StatelessWidget {
   }
 }
 
-class _ThemeModeView extends ConsumerStatefulWidget {
+class _ThemeModeView extends ConsumerWidget {
   final bool isDialog;
 
   const _ThemeModeView({required this.isDialog});
 
   @override
-  ConsumerState<_ThemeModeView> createState() => _ThemeModeViewState();
-}
-
-class _ThemeModeViewState extends ConsumerState<_ThemeModeView> {
-  void _select(ThemeMode mode) {
-    ref.read(themeModeProvider.notifier).setThemeMode(mode);
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final themeMode = ref.watch(themeModeProvider);
     final supportedThemes = ref.read(supportedThemesProvider);
@@ -144,7 +135,7 @@ class _ThemeModeViewState extends ConsumerState<_ThemeModeView> {
       groupValue: themeMode,
       onChanged: (value) {
         if (value != null) {
-          _select(value);
+          ref.read(themeModeProvider.notifier).setThemeMode(value);
         }
       },
       child: Column(
@@ -153,7 +144,7 @@ class _ThemeModeViewState extends ConsumerState<_ThemeModeView> {
           ...supportedThemes.map(
             (e) => ListTile(
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(widget.isDialog ? 0 : 48.0),
+                borderRadius: BorderRadius.circular(isDialog ? 0 : 48.0),
               ),
               contentPadding: isDesktop
                   ? const EdgeInsets.symmetric(horizontal: 22)
@@ -165,14 +156,14 @@ class _ThemeModeViewState extends ConsumerState<_ThemeModeView> {
               ),
               key: keys.themeModeOption(e),
               onTap: () {
-                _select(e);
+                ref.read(themeModeProvider.notifier).setThemeMode(e);
               },
             ),
           ),
         ],
       ),
     );
-    if (widget.isDialog) {
+    if (isDialog) {
       return ResponsiveDialog(
         title: Text(l10n.s_app_theme),
         dialogMaxWidth: 400,
@@ -496,16 +487,11 @@ class _IconsItem extends ConsumerWidget {
   }
 }
 
-class _LanguageView extends ConsumerStatefulWidget {
+class _LanguageView extends ConsumerWidget {
   final bool isDialog;
 
   const _LanguageView({required this.isDialog});
 
-  @override
-  ConsumerState<_LanguageView> createState() => _LanguageViewState();
-}
-
-class _LanguageViewState extends ConsumerState<_LanguageView> {
   Widget _buildLocaleTitle(
     BuildContext context,
     Locale locale,
@@ -579,12 +565,8 @@ class _LanguageViewState extends ConsumerState<_LanguageView> {
     );
   }
 
-  void _select(Locale locale) {
-    ref.read(currentLocaleProvider.notifier).setLocale(locale);
-  }
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final currentLocale = ref.watch(currentLocaleProvider);
     final supportedLocales = ref.read(supportedLocalesProvider);
@@ -594,12 +576,12 @@ class _LanguageViewState extends ConsumerState<_LanguageView> {
       (a, b) => a.getNativeDisplayName().compareTo(b.getNativeDisplayName()),
     );
 
-    final itemRadius = widget.isDialog ? 0.0 : null;
+    final itemRadius = isDialog ? 0.0 : null;
     final content = RadioGroup<Locale>(
       groupValue: currentLocale,
       onChanged: (value) {
         if (value != null) {
-          _select(value);
+          ref.read(currentLocaleProvider.notifier).setLocale(value);
         }
       },
       child: Column(
@@ -608,7 +590,7 @@ class _LanguageViewState extends ConsumerState<_LanguageView> {
           ...supportedLocales.map(
             (e) => ListTile(
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(widget.isDialog ? 0 : 48.0),
+                borderRadius: BorderRadius.circular(isDialog ? 0 : 48.0),
               ),
               contentPadding: isDesktop
                   ? const EdgeInsets.symmetric(horizontal: 22)
@@ -619,13 +601,13 @@ class _LanguageViewState extends ConsumerState<_LanguageView> {
                 child: _buildLocaleTitle(context, e, status),
               ),
               onTap: () {
-                _select(e);
+                ref.read(currentLocaleProvider.notifier).setLocale(e);
               },
             ),
           ),
           ActionListSection(
             l10n.s_community,
-            fullWidth: widget.isDialog,
+            fullWidth: isDialog,
             children: [
               ActionListItem(
                 borderRadius: itemRadius,
@@ -638,7 +620,7 @@ class _LanguageViewState extends ConsumerState<_LanguageView> {
         ],
       ),
     );
-    if (widget.isDialog) {
+    if (isDialog) {
       return ResponsiveDialog(
         title: Text(l10n.s_language),
         dialogMaxWidth: 400,
