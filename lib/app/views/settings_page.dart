@@ -230,12 +230,14 @@ class _HelpView extends ConsumerWidget {
               borderRadius: itemRadius,
               icon: Icon(Symbols.open_in_new),
               title: l10n.s_terms_of_use,
+              titleStyle: const TextStyle(decoration: TextDecoration.underline),
               onTap: (_) => launchTermsUrl(),
             ),
             ActionListItem(
               borderRadius: itemRadius,
               icon: Icon(Symbols.open_in_new),
               title: l10n.s_privacy_policy,
+              titleStyle: const TextStyle(decoration: TextDecoration.underline),
               onTap: (_) => launchPrivacyUrl(),
             ),
             ActionListItem(
@@ -262,12 +264,14 @@ class _HelpView extends ConsumerWidget {
               borderRadius: itemRadius,
               icon: Icon(Symbols.open_in_new),
               title: l10n.s_user_guide,
+              titleStyle: const TextStyle(decoration: TextDecoration.underline),
               onTap: (_) => launchDocumentationUrl(),
             ),
             ActionListItem(
               borderRadius: itemRadius,
               icon: Icon(Symbols.open_in_new),
               title: l10n.s_i_need_help,
+              titleStyle: const TextStyle(decoration: TextDecoration.underline),
               onTap: (_) => launchHelpUrl(),
             ),
             if (isDesktop)
@@ -611,8 +615,11 @@ class _LanguageView extends ConsumerWidget {
             children: [
               ActionListItem(
                 borderRadius: itemRadius,
-                icon: const Icon(Symbols.open_in_new),
+                icon: Icon(Symbols.open_in_new),
                 title: l10n.l_localization_project,
+                titleStyle: const TextStyle(
+                  decoration: TextDecoration.underline,
+                ),
                 onTap: (_) => launchCrowdinUrl(),
               ),
             ],
@@ -777,7 +784,7 @@ class _LogsViewState extends ConsumerState<_LogsView> {
 
     final allowScreenshots = ref.watch(androidAllowScreenshotsProvider);
     final content = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         logLevelRadioGroup,
         ActionListSection(
@@ -807,7 +814,7 @@ class _LogsViewState extends ConsumerState<_LogsView> {
               ActionListItem(
                 borderRadius: widget.isDialog ? 0 : null,
                 icon: _diagnosing
-                    ? const SizedBox(
+                    ? SizedBox(
                         height: 16,
                         width: 16,
                         child: CircularProgressIndicator(
@@ -849,7 +856,7 @@ class _LogsViewState extends ConsumerState<_LogsView> {
               ActionListItem(
                 key: keys.allowScreenshotsSetting,
                 borderRadius: widget.isDialog ? 0 : null,
-                icon: const Icon(Symbols.screenshot),
+                icon: Icon(Symbols.screenshot),
                 title: l10n.s_allow_screenshots,
                 subtitle: l10n.l_allow_screenshots_desc,
                 trailing: Switch(
