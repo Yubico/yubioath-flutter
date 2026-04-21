@@ -85,7 +85,6 @@ class AppPage extends ConsumerStatefulWidget {
   final bool keyActionsBadge;
   final bool centered;
   final bool delayedContent;
-  final Widget Function(BuildContext context)? actionButtonBuilder;
   final Widget? fileDropOverlay;
   final Function(File file)? onFileDropped;
   final List<Capability>? capabilities;
@@ -99,7 +98,6 @@ class AppPage extends ConsumerStatefulWidget {
     this.centered = false,
     this.keyActionsBuilder,
     this.detailViewBuilder,
-    this.actionButtonBuilder,
     this.actionsBuilder,
     this.fileDropOverlay,
     this.capabilities,
@@ -594,9 +592,7 @@ class _AppPageState extends ConsumerState<AppPage> {
             widget.detailViewBuilder != null)) {
       ref.read(_sideMenuBarVisibilityProvider.notifier).toggleExpanded();
     }
-    if (!canExpand &&
-        widget.actionButtonBuilder == null &&
-        widget.keyActionsBuilder != null) {
+    if (!canExpand && widget.keyActionsBuilder != null) {
       if (!Navigator.of(context).canPop()) {
         _isKeyActionsDialogOpen = true;
         await showBlurDialog(
@@ -858,8 +854,7 @@ class _AppPageState extends ConsumerState<AppPage> {
                 // layouts (no side menu bar). Placed right after navigation
                 // so the user can open the key-actions dialog before
                 // tabbing into the main content (which has order 4).
-                if (widget.actionButtonBuilder == null &&
-                    (widget.keyActionsBuilder != null && !hasManage))
+                if ((widget.keyActionsBuilder != null && !hasManage))
                   FocusTraversalOrder(
                     order: NumericFocusOrder(3),
                     child: Padding(
@@ -914,11 +909,6 @@ class _AppPageState extends ConsumerState<AppPage> {
                         padding: const EdgeInsets.all(12),
                       ),
                     ),
-                  ),
-                if (widget.actionButtonBuilder != null)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 12),
-                    child: widget.actionButtonBuilder!.call(context),
                   ),
               ],
             ),
