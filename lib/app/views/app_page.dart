@@ -633,6 +633,8 @@ class _AppPageState extends ConsumerState<AppPage> {
     final showExpandedSideMenuBar = ref.watch(_sideMenuBarVisibilityProvider);
     final hasDetailsOrKeyActions =
         widget.detailViewBuilder != null || widget.keyActionsBuilder != null;
+    final sideMenuBarVisible =
+        hasManage && hasDetailsOrKeyActions && showExpandedSideMenuBar;
     var body = _buildMainContent(context, hasManage);
 
     final navigationText = fullyExpanded
@@ -653,90 +655,100 @@ class _AppPageState extends ConsumerState<AppPage> {
     }
     if (hasRail || hasManage) {
       body = SafeArea(
-        child: FocusTraversalGroup(
-          policy: OrderedTraversalPolicy(),
-          child: Row(
-            crossAxisAlignment: .stretch,
-            children: [
-              if (hasRail && (!fullyExpanded || !showExpandedNavigationBar))
-                FocusTraversalOrder(
-                  order: NumericFocusOrder(1),
-                  child: SizedBox(
-                    width: 72,
-                    child: _VisibilityListener(
-                      targetKey: _navKey,
-                      controller: _navController,
-                      child: NavigationContent(
-                        key: _navKey,
-                        shouldPop: false,
-                        extended: false,
-                      ),
+        child: Row(
+          crossAxisAlignment: .stretch,
+          children: [
+            // Order 2: Navigation column (rail or expanded) — second Tab
+            // stop, directly after the hamburger navigation button (order 1),
+            // matching the visual left-to-right reading order.
+            if (hasRail && (!fullyExpanded || !showExpandedNavigationBar))
+              FocusTraversalOrder(
+                order: NumericFocusOrder(2),
+                child: SizedBox(
+                  width: 72,
+                  child: _VisibilityListener(
+                    targetKey: _navKey,
+                    controller: _navController,
+                    child: NavigationContent(
+                      key: _navKey,
+                      shouldPop: false,
+                      extended: false,
                     ),
                   ),
-                ),
-              if (fullyExpanded && showExpandedNavigationBar)
-                FocusTraversalOrder(
-                  order: NumericFocusOrder(1),
-                  child: SizedBox(
-                    width: 280,
-                    child: _VisibilityListener(
-                      controller: _navController,
-                      targetKey: _navExpandedKey,
-                      child: Material(
-                        type: .transparency,
-                        child: NavigationContent(
-                          key: _navExpandedKey,
-                          shouldPop: false,
-                          extended: true,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: FocusTraversalOrder(
-                  order: NumericFocusOrder(2),
-                  child: body,
                 ),
               ),
-              if (hasManage &&
-                  !hasDetailsOrKeyActions &&
-                  showExpandedSideMenuBar &&
-                  widget.capabilities?.firstOrNull != Capability.u2f)
-                // Add a placeholder for the Manage/Details column. Exceptions are:
-                // - the "Security Key" because it does not have any actions/details.
-                // - pages without Capabilities
-                const SizedBox(width: 336), // simulate column
-              if (hasManage &&
-                  hasDetailsOrKeyActions &&
-                  showExpandedSideMenuBar)
-                FocusTraversalOrder(
-                  order: NumericFocusOrder(3),
+            if (fullyExpanded && showExpandedNavigationBar)
+              FocusTraversalOrder(
+                order: NumericFocusOrder(2), // Same order as collapsed rail
+                child: SizedBox(
+                  width: 280,
                   child: _VisibilityListener(
-                    controller: _detailsController,
-                    targetKey: _detailsViewGlobalKey,
-                    child: SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        child: SizedBox(
-                          width: 320,
-                          child: Column(
-                            key: _detailsViewGlobalKey,
-                            children: [
-                              if (widget.detailViewBuilder != null)
-                                widget.detailViewBuilder!(context),
-                              if (widget.keyActionsBuilder != null)
-                                widget.keyActionsBuilder!(context),
-                            ],
-                          ),
+                    controller: _navController,
+                    targetKey: _navExpandedKey,
+                    child: Material(
+                      type: .transparency,
+                      child: NavigationContent(
+                        key: _navExpandedKey,
+                        shouldPop: false,
+                        extended: true,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            const SizedBox(width: 8),
+            // Order 3 or 4: Body (main content area) — order depends on
+            // the side menu bar state:
+            //  - Side menu bar visible (order 3): the body is the natural
+            //    next stop after navigation (order 2) in the 3-column view.
+            //  - Side menu bar hidden (order 4): the next focusable
+            //    element after the toggle side menu bar button (order 3),
+            //    letting the user reveal the side menu bar before tabbing
+            //    into the body.
+            Expanded(
+              child: FocusTraversalOrder(
+                order: NumericFocusOrder(sideMenuBarVisible ? 3 : 4),
+                child: body,
+              ),
+            ),
+            if (hasManage &&
+                !hasDetailsOrKeyActions &&
+                showExpandedSideMenuBar &&
+                widget.capabilities?.firstOrNull != Capability.u2f)
+              // Add a placeholder for the Manage/Details column. Exceptions are:
+              // - the "Security Key" because it does not have any actions/details.
+              // - pages without Capabilities
+              const SizedBox(width: 336), // simulate column
+            if (hasManage && hasDetailsOrKeyActions && showExpandedSideMenuBar)
+              // Order 5: Side menu bar — last Tab stop.
+              // Only present in the 3-column layout where the side menu
+              // bar is expanded. The user tabs through Body(3) and the
+              // toggle button(4) before reaching this.
+              FocusTraversalOrder(
+                order: NumericFocusOrder(5),
+                child: _VisibilityListener(
+                  controller: _detailsController,
+                  targetKey: _detailsViewGlobalKey,
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: SizedBox(
+                        width: 320,
+                        child: Column(
+                          key: _detailsViewGlobalKey,
+                          children: [
+                            if (widget.detailViewBuilder != null)
+                              widget.detailViewBuilder!(context),
+                            if (widget.keyActionsBuilder != null)
+                              widget.keyActionsBuilder!(context),
+                          ],
                         ),
                       ),
                     ),
                   ),
                 ),
-            ],
-          ),
+              ),
+          ],
         ),
       );
     }
@@ -750,130 +762,169 @@ class _AppPageState extends ConsumerState<AppPage> {
           sideMenuVisibilityProvider,
           (prev, next) => _handleDetailViewVisibility(context, hasManage),
         );
-        return Scaffold(
-          key: scaffoldGlobalKey,
-          appBar: AppBar(
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(1.0),
-              child: ListenableBuilder(
-                listenable: _scrolledUnderController,
-                builder: (context, child) {
-                  final visible = _scrolledUnderController.someIsScrolledUnder;
-                  return AnimatedOpacity(
-                    opacity: visible ? 1 : 0,
-                    duration: const Duration(milliseconds: 300),
-                    child: Container(
-                      color: Theme.of(context).hoverColor,
-                      height: 1.0,
-                    ),
-                  );
-                },
+        // Focus traversal order for keyboard (Tab) navigation.
+        // The order adapts based on the current layout:
+        //
+        //  3-column (side menu bar visible):  Hamburger(1) → Nav(2) → Body(3) → Toggle(4) → SideMenuBar(5)
+        //  2-column (side menu bar hidden):    Hamburger(1) → Nav(2) → Toggle/ShowMenu(3) → Body(4)
+        //  Small screen (no rail):             Hamburger(1) → ShowMenu(3) → Body(4)
+        //
+        // The key idea: when the side menu bar is visible the body is
+        // the natural next stop after navigation (left-to-right). When
+        // the side menu bar is hidden the toggle/show-menu button is
+        // promoted so the user can reveal it before tabbing into the body.
+        return FocusTraversalGroup(
+          policy: OrderedTraversalPolicy(),
+          child: Scaffold(
+            key: scaffoldGlobalKey,
+            appBar: AppBar(
+              bottom: PreferredSize(
+                preferredSize: const Size.fromHeight(1.0),
+                child: ListenableBuilder(
+                  listenable: _scrolledUnderController,
+                  builder: (context, child) {
+                    final visible =
+                        _scrolledUnderController.someIsScrolledUnder;
+                    return AnimatedOpacity(
+                      opacity: visible ? 1 : 0,
+                      duration: const Duration(milliseconds: 300),
+                      child: Container(
+                        color: Theme.of(context).hoverColor,
+                        height: 1.0,
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
-            iconTheme: IconThemeData(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
-            scrolledUnderElevation: 0.0,
-            leadingWidth: hasRail ? 84 : null,
-            backgroundColor: Theme.of(context).colorScheme.surface,
-            title: _buildAppBarTitle(
-              context,
-              hasRail,
-              hasManage,
-              fullyExpanded,
-            ),
-            centerTitle: true,
-            leading: hasRail
-                ? Row(
-                    mainAxisAlignment: .spaceAround,
-                    children: [
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                          child: IconButton(
+              iconTheme: IconThemeData(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+              scrolledUnderElevation: 0.0,
+              leadingWidth: hasRail ? 84 : null,
+              backgroundColor: Theme.of(context).colorScheme.surface,
+              title: _buildAppBarTitle(
+                context,
+                hasRail,
+                hasManage,
+                fullyExpanded,
+              ),
+              centerTitle: true,
+              // Order 1: Hamburger navigation button — always the first Tab
+              // stop so keyboard users can quickly access navigation.
+              leading: FocusTraversalOrder(
+                order: NumericFocusOrder(1),
+                child: hasRail
+                    ? Row(
+                        mainAxisAlignment: .spaceAround,
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                              ),
+                              child: IconButton(
+                                icon: Icon(
+                                  Symbols.menu,
+                                  semanticLabel: navigationText,
+                                ),
+                                tooltip: navigationText,
+                                onPressed: () => _handleNavigationVisibility(
+                                  context,
+                                  fullyExpanded,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                        ],
+                      )
+                    : Builder(
+                        builder: (context) {
+                          // Need to wrap with builder to get Scaffold context
+                          return IconButton(
+                            key: drawerIconButtonKey,
+                            tooltip: l10n.s_show_navigation,
+                            onPressed: () => Scaffold.of(context).openDrawer(),
                             icon: Icon(
                               Symbols.menu,
-                              semanticLabel: navigationText,
+                              semanticLabel: l10n.s_show_navigation,
                             ),
-                            tooltip: navigationText,
-                            onPressed: () => _handleNavigationVisibility(
-                              context,
-                              fullyExpanded,
-                            ),
-                          ),
-                        ),
+                          );
+                        },
                       ),
-                      const SizedBox(width: 12),
-                    ],
-                  )
-                : Builder(
-                    builder: (context) {
-                      // Need to wrap with builder to get Scaffold context
-                      return IconButton(
-                        key: drawerIconButtonKey,
-                        tooltip: l10n.s_show_navigation,
-                        onPressed: () => Scaffold.of(context).openDrawer(),
-                        icon: Icon(
-                          Symbols.menu,
-                          semanticLabel: l10n.s_show_navigation,
-                        ),
-                      );
-                    },
-                  ),
-            actions: [
-              if (widget.actionButtonBuilder == null &&
-                  (widget.keyActionsBuilder != null && !hasManage))
-                Padding(
-                  padding: const EdgeInsets.only(left: 4),
-                  child: IconButton(
-                    key: actionsIconButtonKey,
-                    onPressed: () =>
-                        _handleDetailViewVisibility(context, hasManage),
-                    icon: widget.keyActionsBadge
-                        ? Badge(
-                            child: Icon(
-                              Symbols.more_vert,
-                              semanticLabel: l10n.s_show_menu,
-                            ),
-                          )
-                        : Icon(
-                            Symbols.more_vert,
-                            semanticLabel: l10n.s_show_menu,
-                          ),
-                    iconSize: 24,
-                    tooltip: l10n.s_show_menu,
-                    padding: const EdgeInsets.all(12),
-                  ),
-                ),
-              if (hasManage &&
-                  (widget.keyActionsBuilder != null ||
-                      widget.detailViewBuilder != null))
-                Padding(
-                  padding: const EdgeInsets.only(left: 4),
-                  child: IconButton(
-                    key: toggleDetailViewIconButtonKey,
-                    onPressed: () =>
-                        _handleDetailViewVisibility(context, hasManage),
-                    icon: Icon(
-                      Symbols.dock_to_left,
-                      fill: showExpandedSideMenuBar ? 1 : 0,
-                      weight: 600.0,
-                      semanticLabel: sideMenuBarText,
+              ),
+              actions: [
+                // Order 3: "Show menu" button — only shown on smaller
+                // layouts (no side menu bar). Placed right after navigation
+                // so the user can open the key-actions dialog before
+                // tabbing into the main content (which has order 4).
+                if (widget.actionButtonBuilder == null &&
+                    (widget.keyActionsBuilder != null && !hasManage))
+                  FocusTraversalOrder(
+                    order: NumericFocusOrder(3),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 4),
+                      child: IconButton(
+                        key: actionsIconButtonKey,
+                        onPressed: () =>
+                            _handleDetailViewVisibility(context, hasManage),
+                        icon: widget.keyActionsBadge
+                            ? Badge(
+                                child: Icon(
+                                  Symbols.more_vert,
+                                  semanticLabel: l10n.s_show_menu,
+                                ),
+                              )
+                            : Icon(
+                                Symbols.more_vert,
+                                semanticLabel: l10n.s_show_menu,
+                              ),
+                        iconSize: 24,
+                        tooltip: l10n.s_show_menu,
+                        padding: const EdgeInsets.all(12),
+                      ),
                     ),
-                    iconSize: 24,
-                    tooltip: sideMenuBarText,
-                    padding: const EdgeInsets.all(12),
                   ),
-                ),
-              if (widget.actionButtonBuilder != null)
-                Padding(
-                  padding: const EdgeInsets.only(right: 12),
-                  child: widget.actionButtonBuilder!.call(context),
-                ),
-            ],
+                // Order 3 or 4: Toggle side menu bar button — order depends
+                // on the side menu bar state:
+                //  - Side menu bar hidden (order 3): promoted before the
+                //    body (order 4) so the user can reveal the side menu
+                //    bar first.
+                //  - Side menu bar visible (order 4): the next focusable
+                //    element after the body (order 3).
+                if (hasManage &&
+                    (widget.keyActionsBuilder != null ||
+                        widget.detailViewBuilder != null))
+                  FocusTraversalOrder(
+                    order: NumericFocusOrder(!sideMenuBarVisible ? 3 : 4),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 4),
+                      child: IconButton(
+                        key: toggleDetailViewIconButtonKey,
+                        onPressed: () =>
+                            _handleDetailViewVisibility(context, hasManage),
+                        icon: Icon(
+                          Symbols.dock_to_left,
+                          fill: showExpandedSideMenuBar ? 1 : 0,
+                          weight: 600.0,
+                          semanticLabel: sideMenuBarText,
+                        ),
+                        iconSize: 24,
+                        tooltip: sideMenuBarText,
+                        padding: const EdgeInsets.all(12),
+                      ),
+                    ),
+                  ),
+                if (widget.actionButtonBuilder != null)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 12),
+                    child: widget.actionButtonBuilder!.call(context),
+                  ),
+              ],
+            ),
+            drawer: hasDrawer ? _buildDrawer(context) : null,
+            body: body,
           ),
-          drawer: hasDrawer ? _buildDrawer(context) : null,
-          body: body,
         );
       },
     );
