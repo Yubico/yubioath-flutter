@@ -54,7 +54,7 @@ class ConfigureHotpDialog extends ConsumerStatefulWidget {
 class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
   final _secretController = TextEditingController();
   final _secretFocus = FocusNode();
-  bool _validateSecret = false;
+  String? _secretError;
   int _digits = defaultDigits;
   final List<int> _digitsValues = [6, 8];
   bool _appendEnter = true;
@@ -76,9 +76,23 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
     final secretFormatValid = Format.base32.isValid(secret);
 
     void submit() async {
-      if (!secretLengthValid || !secretFormatValid) {
+      if (secret.isEmpty) {
         setState(() {
-          _validateSecret = true;
+          _secretError = l10n.l_field_required;
+        });
+        return;
+      }
+      if (!secretFormatValid) {
+        setState(() {
+          _secretError = l10n.l_invalid_format_allowed_chars(
+            Format.base32.allowedCharacters,
+          );
+        });
+        return;
+      }
+      if (!secretLengthValid) {
+        setState(() {
+          _secretError = l10n.s_invalid_length;
         });
         return;
       }
@@ -140,7 +154,7 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
       actions: [
         TextButton(
           key: keys.saveButton,
-          onPressed: !_validateSecret ? submit : null,
+          onPressed: submit,
           child: Text(l10n.s_save),
         ),
       ],
@@ -165,13 +179,7 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
                         isRequired: true,
                         helperText: '',
                         // Prevents resizing when errorText shown
-                        errorText: _validateSecret && !secretFormatValid
-                            ? l10n.l_invalid_format_allowed_chars(
-                                Format.base32.allowedCharacters,
-                              )
-                            : _validateSecret && !secretLengthValid
-                            ? l10n.s_invalid_length
-                            : null,
+                        errorText: _secretError,
                         icon: const Icon(Symbols.key),
                         suffixIcon: VisibilityToggleButton(
                           isObscured: _isObscure,
@@ -187,15 +195,11 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
                       textInputAction: .next,
                       onChanged: (value) {
                         setState(() {
-                          _validateSecret = false;
+                          _secretError = null;
                         });
                       },
                       onSubmitted: (_) {
-                        if (!_validateSecret) {
-                          submit();
-                        } else {
-                          _secretFocus.requestFocus();
-                        }
+                        submit();
                       },
                     ).init(),
                     Row(

@@ -88,7 +88,6 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
   HashAlgorithm _hashAlgorithm = defaultHashAlgorithm;
   int _digits = defaultDigits;
   int _counter = defaultCounter;
-  bool _validateSecret = false;
   bool _dataLoaded = false;
   bool _isObscure = true;
   List<int> _periodValues = [20, 30, 45, 60];
@@ -97,6 +96,9 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
   bool _submitting = false;
   bool _scanning = false;
   bool _qrScanSuccess = false;
+  String? _issuerError;
+  String? _nameError;
+  String? _secretError;
 
   @override
   void dispose() {
@@ -273,16 +275,6 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
 
     final isLocked = oathState?.locked ?? false;
 
-    final isValid =
-        !isLocked &&
-        nameText.isNotEmpty &&
-        secret.isNotEmpty &&
-        isUnique &&
-        issuerNoColon &&
-        issuerRemaining >= -1 &&
-        nameRemaining >= 0 &&
-        period > 0;
-
     final hashAlgorithms = HashAlgorithm.values
         .where(
           (alg) =>
@@ -300,6 +292,46 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
     }
 
     void submit() async {
+      bool hasError = false;
+      String? issuerErr;
+      String? nameErr;
+      String? secretErr;
+
+      if (!issuerNoColon) {
+        issuerErr = l10n.l_invalid_character_issuer;
+        hasError = true;
+      }
+
+      if (nameText.isEmpty) {
+        nameErr = l10n.l_field_required;
+        hasError = true;
+      } else if (!isUnique) {
+        nameErr = l10n.l_name_already_exists;
+        hasError = true;
+      }
+
+      if (secret.isEmpty) {
+        secretErr = l10n.l_field_required;
+        hasError = true;
+      } else if (!secretLengthValid) {
+        secretErr = l10n.s_invalid_length;
+        hasError = true;
+      } else if (!secretFormatValid) {
+        secretErr = l10n.l_invalid_format_allowed_chars(
+          Format.base32.allowedCharacters,
+        );
+        hasError = true;
+      }
+
+      if (hasError || isLocked) {
+        setState(() {
+          _issuerError = issuerErr;
+          _nameError = nameErr;
+          _secretError = secretErr;
+        });
+        return;
+      }
+
       if (secretLengthValid && secretFormatValid) {
         _issuerFocus.unfocus();
         _accountFocus.unfocus();
@@ -342,10 +374,6 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
 
         setState(() {
           _submitting = false;
-        });
-      } else {
-        setState(() {
-          _validateSecret = true;
         });
       }
     }
@@ -430,7 +458,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
         title: Text(l10n.s_add_account),
         actions: [
           TextButton(
-            onPressed: isValid ? submit : null,
+            onPressed: submit,
             child: Text(l10n.s_save, key: keys.saveButton),
           ),
         ],
@@ -606,15 +634,14 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                                 errorText:
                                     (byteLength(issuerText) > issuerMaxLength)
                                     ? '' // needs empty string to render as error
-                                    : issuerNoColon
-                                    ? null
-                                    : l10n.l_invalid_character_issuer,
+                                    : _issuerError,
                                 icon: const Icon(Symbols.business),
                               ),
                               textInputAction: .next,
                               focusNode: _issuerFocus,
                               onChanged: (value) {
                                 setState(() {
+                                  _issuerError = null;
                                   // Update maxlengths
                                 });
                               },
@@ -637,15 +664,14 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                                     ? null
                                     : (byteLength(nameText) > nameMaxLength)
                                     ? '' // needs empty string to render as error
-                                    : isUnique
-                                    ? null
-                                    : l10n.l_name_already_exists,
+                                    : _nameError,
                                 icon: const Icon(Symbols.person),
                               ),
                               textInputAction: .next,
                               focusNode: _accountFocus,
                               onChanged: (value) {
                                 setState(() {
+                                  _nameError = null;
                                   // Update max lengths
                                 });
                               },
@@ -663,13 +689,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                                 border: const OutlineInputBorder(),
                                 labelText: l10n.s_secret_key,
                                 isRequired: true,
-                                errorText: _validateSecret && !secretLengthValid
-                                    ? l10n.s_invalid_length
-                                    : _validateSecret && !secretFormatValid
-                                    ? l10n.l_invalid_format_allowed_chars(
-                                        Format.base32.allowedCharacters,
-                                      )
-                                    : null,
+                                errorText: _secretError,
                                 icon: const Icon(Symbols.key),
                                 suffixIcon: VisibilityToggleButton(
                                   isObscured: _isObscure,
@@ -687,11 +707,11 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                               focusNode: _secretFocus,
                               onChanged: (value) {
                                 setState(() {
-                                  _validateSecret = false;
+                                  _secretError = null;
                                 });
                               },
                               onSubmitted: (_) {
-                                if (isValid) submit();
+                                submit();
                               },
                             ).init(),
                             const SizedBox(height: 8),

@@ -505,6 +505,7 @@
     "l_add_account_unlock_required": "Déverrouillage requis",
     "l_add_account_func_missing": "Fonctionnalité manquante ou désactivée",
     "l_account_name_required": "Votre compte doit avoir un nom",
+    "l_field_required": null,
     "l_name_already_exists": "Ce nom existe déjà pour l'émetteur",
     "l_account_already_exists": "Ce compte existe déjà sur la YubiKey",
     "l_invalid_character_issuer": "Caractère invalide\u00a0: «\u00a0:\u00a0» non autorisé dans l'émetteur",

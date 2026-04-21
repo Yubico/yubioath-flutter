@@ -505,6 +505,7 @@
     "l_add_account_unlock_required": "Yêu cầu mở khóa",
     "l_add_account_func_missing": "Chức năng bị thiếu hoặc bị vô hiệu hóa",
     "l_account_name_required": "Tài khoản của bạn phải có tên",
+    "l_field_required": null,
     "l_name_already_exists": "Tên này đã tồn tại cho nhà phát hành",
     "l_account_already_exists": "Tài khoản này đã tồn tại trên YubiKey",
     "l_invalid_character_issuer": "Ký tự không hợp lệ: ':' không được phép trong nhà phát hành",

@@ -59,7 +59,7 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
   final _passwordController = TextEditingController();
   final _passwordFocus = FocusNode();
   final passwordMaxLength = 38;
-  bool _validatePassword = false;
+  String? _passwordError;
   bool _appendEnter = true;
   String _keyboardLayout = '';
   String _defaultKeyboardLayout = '';
@@ -101,9 +101,21 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
     ).hasMatch(password);
 
     void submit() async {
-      if (!passwordLengthValid || !passwordFormatValid) {
+      if (password.isEmpty) {
         setState(() {
-          _validatePassword = true;
+          _passwordError = l10n.l_field_required;
+        });
+        return;
+      }
+      if (!passwordLengthValid) {
+        setState(() {
+          _passwordError = l10n.s_invalid_length;
+        });
+        return;
+      }
+      if (!passwordFormatValid) {
+        setState(() {
+          _passwordError = l10n.l_invalid_keyboard_character;
         });
         return;
       }
@@ -166,7 +178,7 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
       actions: [
         TextButton(
           key: keys.saveButton,
-          onPressed: !_validatePassword ? submit : null,
+          onPressed: submit,
           child: Text(l10n.s_save),
         ),
       ],
@@ -193,11 +205,7 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_password,
                         isRequired: true,
-                        errorText: _validatePassword && !passwordLengthValid
-                            ? l10n.s_invalid_length
-                            : _validatePassword && !passwordFormatValid
-                            ? l10n.l_invalid_keyboard_character
-                            : null,
+                        errorText: _passwordError,
                         icon: const Icon(Symbols.key),
                         suffixIcon: IconButton(
                           key: keys.generateSecretKey,
@@ -213,7 +221,6 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
                                   _keyboardLayout,
                                 );
                             setState(() {
-                              _validatePassword = false;
                               _passwordController.text = password;
                             });
                           },
@@ -222,15 +229,11 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
                       textInputAction: .next,
                       onChanged: (value) {
                         setState(() {
-                          _validatePassword = false;
+                          _passwordError = null;
                         });
                       },
                       onSubmitted: (_) {
-                        if (!_validatePassword) {
-                          submit();
-                        } else {
-                          _passwordFocus.requestFocus();
-                        }
+                        submit();
                       },
                     ).init(),
                     Row(
@@ -273,7 +276,6 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
                                 onChanged: (layout) {
                                   setState(() {
                                     _keyboardLayout = layout;
-                                    _validatePassword = false;
                                   });
                                 },
                               ),

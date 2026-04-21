@@ -94,12 +94,7 @@ class _OathAddMultiAccountPageState
 
     return ResponsiveDialog(
       title: Text(l10n.s_add_accounts),
-      actions: [
-        TextButton(
-          onPressed: isValid() ? submit : null,
-          child: Text(l10n.s_save),
-        ),
-      ],
+      actions: [TextButton(onPressed: submit, child: Text(l10n.s_save))],
       builder: (context, _) => Column(
         crossAxisAlignment: .start,
         mainAxisSize: .min,
@@ -286,6 +281,9 @@ class _OathAddMultiAccountPageState
   }
 
   void submit() async {
+    if (!isValid()) {
+      return;
+    }
     final deviceNode = ref.watch(currentDeviceProvider);
     if (isAndroid &&
         (widget.devicePath == null || deviceNode?.transport == Transport.nfc)) {

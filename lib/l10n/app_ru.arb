@@ -505,6 +505,7 @@
     "l_add_account_unlock_required": "Требуется разблокировка",
     "l_add_account_func_missing": "Функциональность отсутствует или отключена",
     "l_account_name_required": "У вашей учетной записи должно быть имя",
+    "l_field_required": null,
     "l_name_already_exists": "Такое имя уже существует для этого издателя",
     "l_account_already_exists": "Эта учётная запись уже существует на YubiKey",
     "l_invalid_character_issuer": "Недопустимый символ: ':' не допускается в издателе",

@@ -61,6 +61,21 @@ class _AccessCodeDialogState extends ConsumerState<AccessCodeDialog> {
 
   void _submit() async {
     final l10n = AppLocalizations.of(context);
+    final accessCode = _accessCodeController.text.replaceAll(' ', '');
+    if (accessCode.isEmpty) {
+      setState(() {
+        _accessCodeIsWrong = true;
+        _accessCodeError = l10n.l_field_required;
+      });
+      return;
+    }
+    if (accessCode.length != accessCodeLength) {
+      setState(() {
+        _accessCodeIsWrong = true;
+        _accessCodeError = l10n.s_invalid_length;
+      });
+      return;
+    }
     if (!Format.hex.isValid(_accessCodeController.text)) {
       _accessCodeController.selection = TextSelection(
         baseOffset: 0,
@@ -95,16 +110,9 @@ class _AccessCodeDialogState extends ConsumerState<AccessCodeDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final accessCode = _accessCodeController.text.replaceAll(' ', '');
-    final accessCodeLengthValid = accessCode.length == accessCodeLength;
     return ResponsiveDialog(
       title: Text(l10n.s_access_code),
-      actions: [
-        TextButton(
-          onPressed: accessCodeLengthValid ? _submit : null,
-          child: Text(l10n.s_unlock),
-        ),
-      ],
+      actions: [TextButton(onPressed: _submit, child: Text(l10n.s_unlock))],
       builder: (context, _) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
@@ -151,11 +159,7 @@ class _AccessCodeDialogState extends ConsumerState<AccessCodeDialog> {
                         });
                       },
                       onSubmitted: (_) {
-                        if (accessCodeLengthValid) {
-                          _submit();
-                        } else {
-                          _accessCodeFocus.requestFocus();
-                        }
+                        _submit();
                       },
                     ).init(),
                   ]

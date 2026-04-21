@@ -505,6 +505,7 @@
     "l_add_account_unlock_required": "Feloldás szükséges",
     "l_add_account_func_missing": "Hiányzó vagy letiltott funkció",
     "l_account_name_required": "Adjon nevet a fióknak",
+    "l_field_required": null,
     "l_name_already_exists": "Ez a név már létezik a kibocsátó számára",
     "l_account_already_exists": "Ez a fiók már létezik a YubiKey-n.",
     "l_invalid_character_issuer": "Érvénytelen karakter: ':' nem megengedett a kibocsátó nevében",

@@ -505,6 +505,7 @@
     "l_add_account_unlock_required": "Upplåsning krävs",
     "l_add_account_func_missing": "Funktionalitet saknas eller är inaktiverad",
     "l_account_name_required": "Ditt konto måste ha ett namn",
+    "l_field_required": null,
     "l_name_already_exists": "Detta namn finns redan för emittenten",
     "l_account_already_exists": "Detta konto finns redan på YubiKey",
     "l_invalid_character_issuer": "Ogiltigt tecken: ':' är inte tillåtet i issuer",

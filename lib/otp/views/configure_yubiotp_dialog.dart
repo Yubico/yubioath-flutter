@@ -80,9 +80,9 @@ class _ConfigureYubiOtpDialogState
   final _privateIdFocus = FocusNode();
   OutputActions _action = OutputActions.noOutput;
   bool _appendEnter = true;
-  bool _validateSecretFormat = false;
-  bool _validatePublicIdFormat = false;
-  bool _validatePrivateIdFormat = false;
+  String? _publicIdError;
+  String? _privateIdError;
+  String? _secretError;
   final secretLength = 32;
   final publicIdLength = 12;
   final privateIdLength = 12;
@@ -116,20 +116,54 @@ class _ConfigureYubiOtpDialogState
     final publicIdLengthValid = publicId.length == publicIdLength;
     final publicIdFormatValid = Format.modhex.isValid(publicId);
 
-    final lengthsValid =
-        secretLengthValid && privateIdLengthValid && publicIdLengthValid;
-
     final outputFile = ref.read(yubiOtpOutputProvider);
 
     _createUploadText(context, l10n);
 
     void submit() async {
-      if (!secretFormatValid || !publicIdFormatValid || !privateIdFormatValid) {
-        setState(() {
-          _validateSecretFormat = !secretFormatValid;
-          _validatePublicIdFormat = !publicIdFormatValid;
-          _validatePrivateIdFormat = !privateIdFormatValid;
-        });
+      bool hasError = false;
+
+      if (publicId.isEmpty) {
+        _publicIdError = l10n.l_field_required;
+        hasError = true;
+      } else if (!publicIdFormatValid) {
+        _publicIdError = l10n.l_invalid_format_allowed_chars(
+          Format.modhex.allowedCharacters,
+        );
+        hasError = true;
+      } else if (!publicIdLengthValid) {
+        _publicIdError = l10n.s_invalid_length;
+        hasError = true;
+      }
+
+      if (privateId.isEmpty) {
+        _privateIdError = l10n.l_field_required;
+        hasError = true;
+      } else if (!privateIdFormatValid) {
+        _privateIdError = l10n.l_invalid_format_allowed_chars(
+          Format.hex.allowedCharacters,
+        );
+        hasError = true;
+      } else if (!privateIdLengthValid) {
+        _privateIdError = l10n.s_invalid_length;
+        hasError = true;
+      }
+
+      if (secret.isEmpty) {
+        _secretError = l10n.l_field_required;
+        hasError = true;
+      } else if (!secretFormatValid) {
+        _secretError = l10n.l_invalid_format_allowed_chars(
+          Format.hex.allowedCharacters,
+        );
+        hasError = true;
+      } else if (!secretLengthValid) {
+        _secretError = l10n.s_invalid_length;
+        hasError = true;
+      }
+
+      if (hasError) {
+        setState(() {});
         return;
       }
 
@@ -234,7 +268,7 @@ class _ConfigureYubiOtpDialogState
       actions: [
         TextButton(
           key: keys.saveButton,
-          onPressed: lengthsValid ? submit : null,
+          onPressed: submit,
           child: Text(l10n.s_save),
         ),
       ],
@@ -261,12 +295,7 @@ class _ConfigureYubiOtpDialogState
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_public_id,
                         isRequired: true,
-                        errorText:
-                            _validatePublicIdFormat && !publicIdFormatValid
-                            ? l10n.l_invalid_format_allowed_chars(
-                                Format.modhex.allowedCharacters,
-                              )
-                            : null,
+                        errorText: _publicIdError,
                         icon: const Icon(Symbols.public),
                         suffixIcon: IconButton(
                           key: keys.useSerial,
@@ -291,7 +320,7 @@ class _ConfigureYubiOtpDialogState
                       textInputAction: .next,
                       onChanged: (value) {
                         setState(() {
-                          _validatePublicIdFormat = false;
+                          _publicIdError = null;
                         });
                       },
                       onSubmitted: (_) {
@@ -318,12 +347,7 @@ class _ConfigureYubiOtpDialogState
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_private_id,
                         isRequired: true,
-                        errorText:
-                            _validatePrivateIdFormat && !privateIdFormatValid
-                            ? l10n.l_invalid_format_allowed_chars(
-                                Format.hex.allowedCharacters,
-                              )
-                            : null,
+                        errorText: _privateIdError,
                         icon: const Icon(Symbols.key),
                         suffixIcon: IconButton(
                           key: keys.generatePrivateId,
@@ -347,7 +371,7 @@ class _ConfigureYubiOtpDialogState
                       textInputAction: .next,
                       onChanged: (value) {
                         setState(() {
-                          _validatePrivateIdFormat = false;
+                          _privateIdError = null;
                         });
                       },
                       onSubmitted: (_) {
@@ -372,11 +396,7 @@ class _ConfigureYubiOtpDialogState
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_secret_key,
                         isRequired: true,
-                        errorText: _validateSecretFormat && !secretFormatValid
-                            ? l10n.l_invalid_format_allowed_chars(
-                                Format.hex.allowedCharacters,
-                              )
-                            : null,
+                        errorText: _secretError,
                         icon: const Icon(Symbols.key),
                         suffixIcon: IconButton(
                           key: keys.generateSecretKey,
@@ -400,15 +420,11 @@ class _ConfigureYubiOtpDialogState
                       textInputAction: .next,
                       onChanged: (value) {
                         setState(() {
-                          _validateSecretFormat = false;
+                          _secretError = null;
                         });
                       },
                       onSubmitted: (_) {
-                        if (lengthsValid) {
-                          submit();
-                        } else {
-                          _secretFocus.requestFocus();
-                        }
+                        submit();
                       },
                     ).init(),
                     Row(

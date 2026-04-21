@@ -70,6 +70,12 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
   }
 
   void _submit() async {
+    if (_pinController.text.isEmpty) {
+      setState(() {
+        _pinIsWrong = true;
+      });
+      return;
+    }
     _pinFocus.unfocus();
 
     setState(() {
@@ -117,6 +123,9 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
     }
     if (_retries != null) {
       return l10n.l_wrong_pin_attempts_remaining(_retries!);
+    }
+    if (_pinIsWrong && _pinController.text.isEmpty) {
+      return l10n.l_field_required;
     }
     return null;
   }
@@ -205,11 +214,7 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
               },
               // Update state on change
               onSubmitted: (_) {
-                if (_pinController.text.length >= widget._state.minPinLength) {
-                  _submit();
-                } else {
-                  _pinFocus.requestFocus();
-                }
+                _submit();
               },
             ).init(),
           ),
@@ -238,13 +243,7 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
                             key: unlockFido2WithPin,
                             icon: const Icon(Symbols.lock_open),
                             label: Text(l10n.s_unlock),
-                            onPressed:
-                                !_pinIsWrong &&
-                                    _pinController.text.length >=
-                                        widget._state.minPinLength &&
-                                    !_blocked
-                                ? _submit
-                                : null,
+                            onPressed: _submit,
                           ),
                         ],
                       ),
@@ -283,13 +282,7 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
                     key: unlockFido2WithPin,
                     icon: const Icon(Symbols.lock_open),
                     label: Text(l10n.s_unlock),
-                    onPressed:
-                        !_pinIsWrong &&
-                            _pinController.text.length >=
-                                widget._state.minPinLength &&
-                            !_blocked
-                        ? _submit
-                        : null,
+                    onPressed: _submit,
                   ),
                 ),
         ],

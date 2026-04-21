@@ -62,6 +62,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
   final _passwordController = TextEditingController();
   final _passwordFocus = FocusNode();
   bool _passwordIsWrong = false;
+  String? _passwordError;
   bool _importing = false;
   bool _isObscure = true;
 
@@ -113,6 +114,9 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
     setState(() {
       _state = result;
       _passwordIsWrong = passwordIsWrong;
+      if (passwordIsWrong) {
+        _passwordError = AppLocalizations.of(context).s_wrong_password;
+      }
     });
   }
 
@@ -153,7 +157,16 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
           actions: [
             TextButton(
               key: keys.unlockButton,
-              onPressed: password.isNotEmpty ? _examine : null,
+              onPressed: () {
+                if (password.isEmpty) {
+                  setState(() {
+                    _passwordIsWrong = true;
+                    _passwordError = l10n.l_field_required;
+                  });
+                } else {
+                  _examine();
+                }
+              },
               child: Text(l10n.s_unlock),
             ),
           ],
@@ -174,9 +187,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
                           decoration: AppInputDecoration(
                             border: const OutlineInputBorder(),
                             labelText: l10n.s_password,
-                            errorText: _passwordIsWrong
-                                ? l10n.s_wrong_password
-                                : null,
+                            errorText: _passwordIsWrong ? _passwordError : null,
                             errorMaxLines: 3,
                             icon: const Icon(Symbols.password),
                             suffixIcon: VisibilityToggleButton(
@@ -195,10 +206,13 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
                             });
                           },
                           onSubmitted: (_) {
-                            if (password.isNotEmpty && !_passwordIsWrong) {
+                            if (password.isEmpty) {
+                              setState(() {
+                                _passwordIsWrong = true;
+                                _passwordError = l10n.l_field_required;
+                              });
+                            } else if (!_passwordIsWrong) {
                               _examine();
-                            } else {
-                              _passwordFocus.requestFocus();
                             }
                           },
                         ).init(),
@@ -287,6 +301,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
                           // TODO: More error cases
                           setState(() {
                             _passwordIsWrong = true;
+                            _passwordError = l10n.s_wrong_password;
                             _importing = false;
                           });
                         } finally {
