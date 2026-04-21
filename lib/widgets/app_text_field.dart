@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 
 import '../app/shortcuts.dart';
@@ -87,18 +88,56 @@ class AppTextField extends TextField {
     super.magnifierConfiguration,
   }) : super(decoration: decoration);
 
-  Widget init() => Builder(
-    builder: (context) => Shortcuts(
-      shortcuts: {
-        // Override escape intent
-        const SingleActivator(LogicalKeyboardKey.escape): EscapeIntent(),
-      },
-      child: DefaultSelectionStyle(
-        selectionColor: decoration?.errorText != null
-            ? Theme.of(context).colorScheme.error
-            : null,
-        child: this,
+  Widget init() => _ErrorAnnouncer(
+    errorText: decoration?.errorText,
+    child: Builder(
+      builder: (context) => Shortcuts(
+        shortcuts: {
+          // Override escape intent
+          const SingleActivator(LogicalKeyboardKey.escape): EscapeIntent(),
+        },
+        child: DefaultSelectionStyle(
+          selectionColor: decoration?.errorText != null
+              ? Theme.of(context).colorScheme.error
+              : null,
+          child: this,
+        ),
       ),
     ),
   );
+}
+
+/// Announces error text changes to screen readers.
+class _ErrorAnnouncer extends StatefulWidget {
+  final String? errorText;
+  final Widget child;
+
+  const _ErrorAnnouncer({required this.errorText, required this.child});
+
+  @override
+  State<_ErrorAnnouncer> createState() => _ErrorAnnouncerState();
+}
+
+class _ErrorAnnouncerState extends State<_ErrorAnnouncer> {
+  @override
+  void didUpdateWidget(_ErrorAnnouncer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final errorText = widget.errorText;
+    if (errorText != null &&
+        errorText.isNotEmpty &&
+        errorText != oldWidget.errorText) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          SemanticsService.sendAnnouncement(
+            View.of(context),
+            errorText,
+            TextDirection.ltr,
+          );
+        }
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }
