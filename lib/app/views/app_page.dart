@@ -307,7 +307,7 @@ class _AppPageState extends ConsumerState<AppPage> {
                   color: widget.alternativeTitle != null
                       ? Theme.of(
                           context,
-                        ).colorScheme.onSurfaceVariant.withValues(alpha: 0.4)
+                        ).colorScheme.onSurfaceVariant.withValues(alpha: 0.6)
                       : Theme.of(
                           context,
                         ).colorScheme.primary.withValues(alpha: 0.9),
