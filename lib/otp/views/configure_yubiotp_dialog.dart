@@ -312,6 +312,7 @@ class _ConfigureYubiOtpDialogState
                                       .modhexEncodeSerial(info!.serial!);
                                   setState(() {
                                     _publicIdController.text = publicId;
+                                    _publicIdError = null;
                                   });
                                 }
                               : null,
@@ -364,6 +365,7 @@ class _ConfigureYubiOtpDialogState
                             ).join();
                             setState(() {
                               _privateIdController.text = key;
+                              _privateIdError = null;
                             });
                           },
                         ),
@@ -413,6 +415,7 @@ class _ConfigureYubiOtpDialogState
                             ).join();
                             setState(() {
                               _secretController.text = key;
+                              _secretError = null;
                             });
                           },
                         ),

@@ -366,6 +366,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                                   onPressed: () {
                                     setState(() {
                                       _defaultKeyUsed = !_defaultKeyUsed;
+                                      _currentIsWrong = false;
                                       if (_defaultKeyUsed) {
                                         _currentController.text =
                                             defaultManagementKey;
@@ -417,6 +418,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
                             setState(() {
                               _keyController.text = key;
                               _newInvalidFormat = false;
+                              _newError = null;
                             });
                           },
                         ),

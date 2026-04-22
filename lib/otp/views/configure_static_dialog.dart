@@ -222,6 +222,7 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
                                 );
                             setState(() {
                               _passwordController.text = password;
+                              _passwordError = null;
                             });
                           },
                         ),

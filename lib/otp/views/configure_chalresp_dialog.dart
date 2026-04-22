@@ -198,6 +198,7 @@ class _ConfigureChalrespDialogState
                               ).join();
                               setState(() {
                                 _secretController.text = key;
+                                _secretError = null;
                               });
                             });
                           },

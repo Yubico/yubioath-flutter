@@ -103,7 +103,10 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
 
     if (hasError) {
       setState(() {
-        _currentPasswordError = currentErr;
+        if (currentErr != null) {
+          _currentIsWrong = true;
+          _currentPasswordError = currentErr;
+        }
         _newPasswordError = newErr;
         _confirmPasswordError = confirmErr;
       });
