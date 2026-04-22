@@ -118,14 +118,14 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
 
   String? _getErrorText() {
     final l10n = AppLocalizations.of(context);
+    if (_pinIsWrong && _pinController.text.isEmpty) {
+      return l10n.l_field_required;
+    }
     if (_blocked) {
       return l10n.l_pin_soft_locked;
     }
     if (_retries != null) {
       return l10n.l_wrong_pin_attempts_remaining(_retries!);
-    }
-    if (_pinIsWrong && _pinController.text.isEmpty) {
-      return l10n.l_field_required;
     }
     return null;
   }
