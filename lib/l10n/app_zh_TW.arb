@@ -563,7 +563,6 @@
             }
         }
     },
-    "s_issuer_optional": "發行者（選用）",
     "s_counter_based": "基於計數器",
     "s_time_based": "基於時間",
     "l_copy_code_desc": "將驗證碼複製貼上到其他應用程式",

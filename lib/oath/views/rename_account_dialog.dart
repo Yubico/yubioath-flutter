@@ -232,7 +232,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
                       key: keys.issuerField,
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
-                        labelText: l10n.s_issuer_optional,
+                        labelText: l10n.s_issuer,
                         helperText:
                             '', // Prevents dialog resizing when disabled
                         errorText: _issuerError,

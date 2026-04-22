@@ -563,7 +563,6 @@
             }
         }
     },
-    "s_issuer_optional": "Vydavateľ (nepovinné)",
     "s_counter_based": "Založené na počítadle",
     "s_time_based": "Založené na čase",
     "l_copy_code_desc": "Vložiť kód do inej aplikácie",

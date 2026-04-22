@@ -629,7 +629,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                               buildCounter: buildByteCounterFor(issuerText),
                               decoration: AppInputDecoration(
                                 border: const OutlineInputBorder(),
-                                labelText: l10n.s_issuer_optional,
+                                labelText: l10n.s_issuer,
                                 helperText: '', // Prevents dialog resizing when
                                 errorText:
                                     (byteLength(issuerText) > issuerMaxLength)

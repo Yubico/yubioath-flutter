@@ -563,7 +563,6 @@
             }
         }
     },
-    "s_issuer_optional": "発行者 (オプション)",
     "s_counter_based": "カウンターベース",
     "s_time_based": "時間ベース",
     "l_copy_code_desc": "別のアプリケーションにコードを貼り付けてください",

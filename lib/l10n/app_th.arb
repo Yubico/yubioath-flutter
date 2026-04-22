@@ -563,7 +563,6 @@
             }
         }
     },
-    "s_issuer_optional": "ผู้ออก (ทางเลือก)",
     "s_counter_based": "อิงตัวนับ",
     "s_time_based": "อิงเวลา",
     "l_copy_code_desc": "วางรหัสไปที่อื่น",

@@ -563,7 +563,6 @@
             }
         }
     },
-    "s_issuer_optional": "Kibocsátó (opcionális)",
     "s_counter_based": "Számláló alapú",
     "s_time_based": "Időalapú",
     "l_copy_code_desc": "Kód beillesztése másik alkalmazásba",

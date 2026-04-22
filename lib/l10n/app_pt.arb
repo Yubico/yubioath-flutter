@@ -563,7 +563,6 @@
             }
         }
     },
-    "s_issuer_optional": "Emissor (opcional)",
     "s_counter_based": "Baseado no contador",
     "s_time_based": "Baseado no tempo",
     "l_copy_code_desc": "Cole o código em outro aplicativo",

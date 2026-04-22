@@ -563,7 +563,6 @@
             }
         }
     },
-    "s_issuer_optional": "Emittente (facoltativo)",
     "s_counter_based": "Basato su un contatore",
     "s_time_based": "Basato sul tempo",
     "l_copy_code_desc": "Incolla il codice in un'altra applicazione",

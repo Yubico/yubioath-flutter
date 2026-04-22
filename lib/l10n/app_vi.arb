@@ -563,7 +563,6 @@
             }
         }
     },
-    "s_issuer_optional": "Nhà phát hành (tùy chọn)",
     "s_counter_based": "Dựa trên bộ đếm",
     "s_time_based": "Dựa trên thời gian",
     "l_copy_code_desc": "Dán mã vào ứng dụng khác",

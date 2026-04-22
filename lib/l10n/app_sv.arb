@@ -563,7 +563,6 @@
             }
         }
     },
-    "s_issuer_optional": "Utfärdare (valfritt)",
     "s_counter_based": "Räknare baserad",
     "s_time_based": "Tidsbaserad",
     "l_copy_code_desc": "Klistra in koden i ett annat program",

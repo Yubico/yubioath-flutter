@@ -563,7 +563,6 @@
             }
         }
     },
-    "s_issuer_optional": "Anbieter/Dienst (optional)",
     "s_counter_based": "Zähler-basiert",
     "s_time_based": "Zeit-basiert",
     "l_copy_code_desc": "Füge den Code in einer anderen Anwendung ein",

@@ -563,7 +563,6 @@
             }
         }
     },
-    "s_issuer_optional": "Uitgever (optioneel)",
     "s_counter_based": "Op tellen gebaseerd",
     "s_time_based": "Op tijd gebaseerd",
     "l_copy_code_desc": "De code in een andere toepassing plakken",

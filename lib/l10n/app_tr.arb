@@ -563,7 +563,6 @@
             }
         }
     },
-    "s_issuer_optional": "Sağlayıcı (isteğe bağlı)",
     "s_counter_based": "Sayaca dayalı",
     "s_time_based": "Zamana dayalı",
     "l_copy_code_desc": "Kodu başka bir uygulamaya yapıştırın",

@@ -563,7 +563,6 @@
             }
         }
     },
-    "s_issuer_optional": "Wydawca (opcjonalnie)",
     "s_counter_based": "Na podstawie licznika",
     "s_time_based": "Na podstawie czasu",
     "l_copy_code_desc": "Wklej kod do innej aplikacji",

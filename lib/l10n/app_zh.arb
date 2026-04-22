@@ -563,7 +563,6 @@
             }
         }
     },
-    "s_issuer_optional": "发行者（可选）",
     "s_counter_based": "基于计数器",
     "s_time_based": "基于时间",
     "l_copy_code_desc": "将验证码粘贴到另一个应用程序中",

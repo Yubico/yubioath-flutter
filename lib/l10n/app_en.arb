@@ -563,7 +563,6 @@
             }
         }
     },
-    "s_issuer_optional": "Issuer",
     "s_counter_based": "Counter based",
     "s_time_based": "Time based",
     "l_copy_code_desc": "Paste the code into another application",
