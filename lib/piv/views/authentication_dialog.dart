@@ -77,13 +77,6 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
         });
         return;
       }
-      if (keyText.length != keyLen) {
-        setState(() {
-          _keyIsWrong = true;
-          _keyError = l10n.s_invalid_length;
-        });
-        return;
-      }
       if (keyFormatInvalid) {
         _keyController.selection = TextSelection(
           baseOffset: 0,

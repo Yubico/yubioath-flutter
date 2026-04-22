@@ -287,18 +287,11 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
     final l10n = AppLocalizations.of(context);
     final hasPin = widget.state.hasPin;
     final minPinLength = widget.state.minPinLength;
-    final currentMinPinLen = !hasPin
-        ? 0
-        : (widget.state.forcePinChange ? 4 : widget.state.minPinLength);
 
     bool valid = true;
 
     if (hasPin && _currentPinController.text.isEmpty) {
       _currentPinError = l10n.l_field_required;
-      _currentIsWrong = true;
-      valid = false;
-    } else if (hasPin && _currentPinController.text.length < currentMinPinLen) {
-      _currentPinError = l10n.s_invalid_length;
       _currentIsWrong = true;
       valid = false;
     }

@@ -64,22 +64,11 @@ class _PinDialogState extends ConsumerState<PinDialog> {
 
   Future<void> _submit() async {
     final l10n = AppLocalizations.of(context);
-    final minPinLen = widget.pivState.version.isAtLeast(4, 3, 1) == true
-        ? 6
-        : 4;
-    final currentPinLen = byteLength(_pinController.text);
 
     if (_pinController.text.isEmpty) {
       setState(() {
         _pinIsWrong = true;
         _pinError = l10n.l_field_required;
-      });
-      return;
-    }
-    if (currentPinLen < minPinLen) {
-      setState(() {
-        _pinIsWrong = true;
-        _pinError = l10n.s_invalid_length;
       });
       return;
     }

@@ -99,14 +99,8 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
 
   Future<void> _submit() async {
     final l10n = AppLocalizations.of(context);
-    final currentType =
-        widget.pivState.metadata?.managementKeyMetadata.keyType ??
-        defaultManagementKeyType;
     final hexLength = _keyType.keyLength * 2;
     final currentKeyOrPin = _currentController.text;
-    final currentLenOk = _usesStoredKey
-        ? currentKeyOrPin.length >= 4
-        : currentKeyOrPin.length == currentType.keyLength * 2;
     final newLenOk = _keyController.text.length == hexLength;
 
     bool hasError = false;
@@ -116,11 +110,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
     if (currentKeyOrPin.isEmpty) {
       currentErr = l10n.l_field_required;
       hasError = true;
-    } else if (!currentLenOk) {
-      currentErr = l10n.s_invalid_length;
-      hasError = true;
     }
-
     if (_keyController.text.isEmpty) {
       newErr = l10n.l_field_required;
       hasError = true;

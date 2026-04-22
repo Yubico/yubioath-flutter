@@ -67,11 +67,19 @@ class _FidoPinConfirmationDialog
   }
 
   void _submit() async {
+    final pin = _pinController.text;
+
+    if (pin.isEmpty) {
+      setState(() {
+        _pinIsWrong = true;
+      });
+      return;
+    }
+
     final navigator = Navigator.of(context);
     _pinFocus.unfocus();
 
     setState(() {
-      _pinIsWrong = false;
       _isObscure = true;
     });
     try {
@@ -111,6 +119,9 @@ class _FidoPinConfirmationDialog
 
   String? _getErrorText() {
     final l10n = AppLocalizations.of(context);
+    if (_pinController.text.isEmpty) {
+      return l10n.l_field_required;
+    }
     if (_retries == 0) {
       return l10n.l_pin_blocked_reset;
     }
@@ -134,12 +145,7 @@ class _FidoPinConfirmationDialog
       actions: [
         TextButton(
           key: unlockFido2WithPinConfirmation,
-          onPressed:
-              !_pinIsWrong &&
-                  _pinController.text.length >= widget.state.minPinLength &&
-                  !_blocked
-              ? _submit
-              : null,
+          onPressed: !authBlocked ? _submit : null,
           child: Text(l10n.s_unlock),
         ),
       ],
@@ -191,12 +197,7 @@ class _FidoPinConfirmationDialog
                       },
                       // Update state on change
                       onSubmitted: (_) {
-                        if (_pinController.text.length >=
-                            widget.state.minPinLength) {
-                          _submit();
-                        } else {
-                          _pinFocus.requestFocus();
-                        }
+                        _submit();
                       },
                     ).init(),
                   ]

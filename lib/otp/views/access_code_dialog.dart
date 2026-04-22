@@ -69,13 +69,6 @@ class _AccessCodeDialogState extends ConsumerState<AccessCodeDialog> {
       });
       return;
     }
-    if (accessCode.length != accessCodeLength) {
-      setState(() {
-        _accessCodeIsWrong = true;
-        _accessCodeError = l10n.s_invalid_length;
-      });
-      return;
-    }
     if (!Format.hex.isValid(_accessCodeController.text)) {
       _accessCodeController.selection = TextSelection(
         baseOffset: 0,
