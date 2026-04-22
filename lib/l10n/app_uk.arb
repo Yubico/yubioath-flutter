@@ -505,6 +505,7 @@
     "l_add_account_unlock_required": "Потрібне розблокування",
     "l_add_account_func_missing": "Функціональність відсутня або вимкнена",
     "l_account_name_required": "Ваш обліковий запис повинен мати ім'я",
+    "l_field_required": null,
     "l_name_already_exists": "Це ім'я вже існує для емітента",
     "l_account_already_exists": "Цей обліковий запис вже існує на YubiKey",
     "l_invalid_character_issuer": "Недійсний символ: ':' не дозволено в емітенті",
@@ -562,7 +563,6 @@
             }
         }
     },
-    "s_issuer_optional": "Емітент (необов'язково)",
     "s_counter_based": "На основі лічильника",
     "s_time_based": "Залежно від часу",
     "l_copy_code_desc": "Вставте код в іншу програму",

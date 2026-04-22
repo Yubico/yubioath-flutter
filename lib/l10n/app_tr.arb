@@ -505,6 +505,7 @@
     "l_add_account_unlock_required": "Kilidin açılması gerekli",
     "l_add_account_func_missing": "Bu özellik mevcut değil ya da devre dışı bırakılmış",
     "l_account_name_required": "Hesabınızın bir adı olmalıdır",
+    "l_field_required": null,
     "l_name_already_exists": "Bu adda sağlayıcı zaten mevcut",
     "l_account_already_exists": "Bu hesap YubiKey'de zaten mevcut",
     "l_invalid_character_issuer": "Geçersiz karakter: ':' sağlayıcı isminde izin verilmiyor",
@@ -562,7 +563,6 @@
             }
         }
     },
-    "s_issuer_optional": "Sağlayıcı (isteğe bağlı)",
     "s_counter_based": "Sayaca dayalı",
     "s_time_based": "Zamana dayalı",
     "l_copy_code_desc": "Kodu başka bir uygulamaya yapıştırın",

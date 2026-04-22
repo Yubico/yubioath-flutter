@@ -44,7 +44,7 @@ class AuthenticationDialog extends ConsumerStatefulWidget {
 class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
   bool _defaultKeyUsed = false;
   bool _keyIsWrong = false;
-  bool _keyFormatInvalid = false;
+  String? _keyError;
   final _keyController = TextEditingController();
   final _keyFocus = FocusNode();
 
@@ -68,16 +68,27 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
 
     void submit() async {
       _keyFocus.unfocus();
+      final keyText = _keyController.text;
+
+      if (keyText.isEmpty) {
+        setState(() {
+          _keyIsWrong = true;
+          _keyError = l10n.l_field_required;
+        });
+        return;
+      }
       if (keyFormatInvalid) {
         _keyController.selection = TextSelection(
           baseOffset: 0,
-          extentOffset: _keyController.text.length,
+          extentOffset: keyText.length,
         );
         _keyFocus.requestFocus();
         setState(() {
-          _keyFormatInvalid = true;
+          _keyIsWrong = true;
+          _keyError = l10n.l_invalid_format_allowed_chars(
+            Format.hex.allowedCharacters,
+          );
         });
-
         return;
       }
       final navigator = Navigator.of(context);
@@ -95,6 +106,7 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
           _keyFocus.requestFocus();
           setState(() {
             _keyIsWrong = true;
+            _keyError = l10n.l_wrong_key;
           });
         }
       } on CancellationException catch (_) {
@@ -108,6 +120,7 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
         // TODO: More error cases
         setState(() {
           _keyIsWrong = true;
+          _keyError = l10n.l_wrong_key;
         });
       }
     }
@@ -117,9 +130,7 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
       actions: [
         TextButton(
           key: keys.unlockButton,
-          onPressed: !_keyIsWrong && _keyController.text.length == keyLen
-              ? submit
-              : null,
+          onPressed: submit,
           child: Text(l10n.s_unlock),
         ),
       ],
@@ -146,13 +157,7 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
                         helperText: _defaultKeyUsed
                             ? l10n.l_default_key_used
                             : null,
-                        errorText: _keyIsWrong
-                            ? l10n.l_wrong_key
-                            : _keyFormatInvalid
-                            ? l10n.l_invalid_format_allowed_chars(
-                                Format.hex.allowedCharacters,
-                              )
-                            : null,
+                        errorText: _keyIsWrong ? _keyError : null,
                         errorMaxLines: 3,
                         icon: const Icon(Symbols.key),
                         suffixIcon: hasMetadata
@@ -165,7 +170,7 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
                                 tooltip: l10n.s_use_default,
                                 onPressed: () {
                                   setState(() {
-                                    _keyFormatInvalid = false;
+                                    _keyIsWrong = false;
                                     _defaultKeyUsed = !_defaultKeyUsed;
                                     if (_defaultKeyUsed) {
                                       _keyController.text =
@@ -181,16 +186,10 @@ class _AuthenticationDialogState extends ConsumerState<AuthenticationDialog> {
                       onChanged: (value) {
                         setState(() {
                           _keyIsWrong = false;
-                          _keyFormatInvalid = false;
                         });
                       },
                       onSubmitted: (_) {
-                        if (!_keyIsWrong &&
-                            _keyController.text.length == keyLen) {
-                          submit();
-                        } else {
-                          _keyFocus.requestFocus();
-                        }
+                        submit();
                       },
                     ).init(),
                   ]

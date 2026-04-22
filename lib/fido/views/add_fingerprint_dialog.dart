@@ -59,6 +59,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
   int _remaining = 5;
   Fingerprint? _fingerprint;
   String _label = '';
+  String? _labelError;
 
   @override
   void dispose() {
@@ -187,6 +188,12 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
   }
 
   void _submit() async {
+    if (_label.isEmpty) {
+      setState(() {
+        _labelError = AppLocalizations.of(context).l_field_required;
+      });
+      return;
+    }
     final l10n = AppLocalizations.of(context);
     try {
       await ref
@@ -281,10 +288,12 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
                                   border: const OutlineInputBorder(),
                                   labelText: l10n.s_name,
                                   isRequired: true,
+                                  errorText: _labelError,
                                   icon: const Icon(Symbols.fingerprint),
                                 ),
                                 onChanged: (value) {
                                   setState(() {
+                                    _labelError = null;
                                     _label = value.trim();
                                   });
                                 },
@@ -316,10 +325,7 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
       },
       actions: [
         if (_fingerprint != null)
-          TextButton(
-            onPressed: _label.isNotEmpty ? _submit : null,
-            child: Text(l10n.s_save),
-          ),
+          TextButton(onPressed: _submit, child: Text(l10n.s_save)),
       ],
     );
   }

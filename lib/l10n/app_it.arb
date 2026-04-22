@@ -505,6 +505,7 @@
     "l_add_account_unlock_required": "Sblocco richiesto",
     "l_add_account_func_missing": "Funzionalità mancante o disabilitata",
     "l_account_name_required": "Il tuo account deve avere un nome",
+    "l_field_required": null,
     "l_name_already_exists": "Questo nome esiste già per l'emittente",
     "l_account_already_exists": "Questo account esiste già sulla YubiKey",
     "l_invalid_character_issuer": "Carattere non valido: ':' non è consentito nell'emittente",
@@ -562,7 +563,6 @@
             }
         }
     },
-    "s_issuer_optional": "Emittente (facoltativo)",
     "s_counter_based": "Basato su un contatore",
     "s_time_based": "Basato sul tempo",
     "l_copy_code_desc": "Incolla il codice in un'altra applicazione",

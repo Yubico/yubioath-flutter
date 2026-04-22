@@ -44,6 +44,7 @@ class _PinDialogState extends ConsumerState<PinDialog> {
   final _pinController = TextEditingController();
   final _pinFocus = FocusNode();
   bool _pinIsWrong = false;
+  String? _pinError;
   int _attemptsRemaining = -1;
   late bool _pinIsBlocked;
   bool _isObscure = true;
@@ -62,6 +63,16 @@ class _PinDialogState extends ConsumerState<PinDialog> {
   }
 
   Future<void> _submit() async {
+    final l10n = AppLocalizations.of(context);
+
+    if (_pinController.text.isEmpty) {
+      setState(() {
+        _pinIsWrong = true;
+        _pinError = l10n.l_field_required;
+      });
+      return;
+    }
+
     _pinFocus.unfocus();
     final navigator = Navigator.of(context);
     try {
@@ -87,6 +98,9 @@ class _PinDialogState extends ConsumerState<PinDialog> {
                   setState(() {
                     _attemptsRemaining = attemptsRemaining;
                     _pinIsWrong = true;
+                    _pinError = l10n.l_wrong_pin_attempts_remaining(
+                      attemptsRemaining,
+                    );
                     if (_attemptsRemaining == 0) {
                       _pinIsBlocked = true;
                     }
@@ -105,18 +119,12 @@ class _PinDialogState extends ConsumerState<PinDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final minPinLen = widget.pivState.version.isAtLeast(4, 3, 1) == true
-        ? 6
-        : 4;
-    final currentPinLen = byteLength(_pinController.text);
     return ResponsiveDialog(
       title: Text(l10n.s_pin_required),
       actions: [
         TextButton(
           key: keys.unlockButton,
-          onPressed: currentPinLen >= minPinLen && !_pinIsBlocked
-              ? _submit
-              : null,
+          onPressed: !_pinIsBlocked ? _submit : null,
           child: Text(l10n.s_unlock),
         ),
       ],
@@ -144,9 +152,7 @@ class _PinDialogState extends ConsumerState<PinDialog> {
                         errorText: _pinIsBlocked
                             ? l10n.l_piv_pin_blocked
                             : _pinIsWrong
-                            ? l10n.l_wrong_pin_attempts_remaining(
-                                _attemptsRemaining,
-                              )
+                            ? _pinError
                             : null,
                         errorMaxLines: 3,
                         icon: const Icon(Symbols.pin),
@@ -168,11 +174,7 @@ class _PinDialogState extends ConsumerState<PinDialog> {
                         });
                       },
                       onSubmitted: (_) {
-                        if (currentPinLen >= minPinLen) {
-                          _submit();
-                        } else {
-                          _pinFocus.requestFocus();
-                        }
+                        _submit();
                       },
                     ).init(),
                   ]

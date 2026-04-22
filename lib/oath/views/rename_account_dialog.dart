@@ -95,6 +95,8 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
 
   final _issuerFocus = FocusNode();
   final _nameFocus = FocusNode();
+  String? _issuerError;
+  String? _nameError;
 
   @override
   void initState() {
@@ -115,10 +117,46 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
   void _submit() async {
     _issuerFocus.unfocus();
     _nameFocus.unfocus();
-    final nav = Navigator.of(context);
-    final withContext = ref.read(withContextProvider);
     final issuer = _issuerController.text.trim();
     final name = _nameController.text.trim();
+
+    final didChange = (widget.issuer ?? '') != issuer || widget.name != name;
+    final isUnique = !widget.existing.contains((issuer, name)) || !didChange;
+    final nameNotEmpty = name.isNotEmpty;
+    final issuerNoColon = !_issuerController.text.contains(':');
+
+    final nav = Navigator.of(context);
+    final withContext = ref.read(withContextProvider);
+
+    bool hasError = false;
+    String? issuerErr;
+    String? nameErr;
+
+    if (!issuerNoColon) {
+      issuerErr = AppLocalizations.of(context).l_invalid_character_issuer;
+      hasError = true;
+    }
+
+    if (!nameNotEmpty) {
+      nameErr = AppLocalizations.of(context).l_field_required;
+      hasError = true;
+    } else if (!isUnique) {
+      nameErr = AppLocalizations.of(context).l_name_already_exists;
+      hasError = true;
+    }
+
+    if (!didChange) {
+      nav.pop();
+      return;
+    }
+
+    if (hasError) {
+      setState(() {
+        _issuerError = issuerErr;
+        _nameError = nameErr;
+      });
+      return;
+    }
 
     try {
       // Rename credentials
@@ -169,26 +207,11 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
       name: name,
     );
 
-    // are the name/issuer values different from original
-    final didChange = (widget.issuer ?? '') != issuer || widget.name != name;
-
-    // is this credentials name/issuer pair different from all other, or initial value?
-    final isUnique = !widget.existing.contains((issuer, name)) || !didChange;
-
-    // is this credential name/issuer of valid format
-    final nameNotEmpty = name.isNotEmpty;
-
-    // issuer field does not contain a colon character
-    final issuerNoColon = !_issuerController.text.contains(':');
-
-    // can we rename with the new values
-    final isValid = isUnique && nameNotEmpty && issuerNoColon;
-
     return ResponsiveDialog(
       title: Text(l10n.s_rename_account),
       actions: [
         TextButton(
-          onPressed: didChange && isValid ? _submit : null,
+          onPressed: _submit,
           key: keys.saveButton,
           child: Text(l10n.s_save),
         ),
@@ -209,19 +232,19 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
                       key: keys.issuerField,
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
-                        labelText: l10n.s_issuer_optional,
+                        labelText: l10n.s_issuer,
                         helperText:
                             '', // Prevents dialog resizing when disabled
-                        errorText: issuerNoColon
-                            ? null
-                            : l10n.l_invalid_character_issuer,
+                        errorText: _issuerError,
                         icon: const Icon(Symbols.business),
                       ),
                       textInputAction: .next,
                       focusNode: _issuerFocus,
                       autofocus: true,
                       onChanged: (value) {
-                        setState(() {});
+                        setState(() {
+                          _issuerError = null;
+                        });
                       },
                     ).init(),
                     AppTextField(
@@ -236,24 +259,18 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
                         isRequired: true,
                         helperText:
                             '', // Prevents dialog resizing when disabled
-                        errorText: !nameNotEmpty
-                            ? l10n.l_account_name_required
-                            : !isUnique
-                            ? l10n.l_name_already_exists
-                            : null,
+                        errorText: _nameError,
                         icon: const Icon(Symbols.people_alt),
                       ),
                       textInputAction: .done,
                       focusNode: _nameFocus,
                       onChanged: (value) {
-                        setState(() {});
+                        setState(() {
+                          _nameError = null;
+                        });
                       },
                       onSubmitted: (_) {
-                        if (didChange && isValid) {
-                          _submit();
-                        } else {
-                          _nameFocus.requestFocus();
-                        }
+                        _submit();
                       },
                     ).init(),
                   ]

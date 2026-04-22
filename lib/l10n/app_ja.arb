@@ -505,6 +505,7 @@
     "l_add_account_unlock_required": "ロック解除が必要です",
     "l_add_account_func_missing": "機能が存在しないか無効です",
     "l_account_name_required": "アカウントには名前を付けてください",
+    "l_field_required": null,
     "l_name_already_exists": "この名前は発行者にすでに存在します",
     "l_account_already_exists": "このアカウントは YubiKey にすでに存在します",
     "l_invalid_character_issuer": "無効な文字: 「:」は発行者には使用できません",
@@ -562,7 +563,6 @@
             }
         }
     },
-    "s_issuer_optional": "発行者 (オプション)",
     "s_counter_based": "カウンターベース",
     "s_time_based": "時間ベース",
     "l_copy_code_desc": "別のアプリケーションにコードを貼り付けてください",

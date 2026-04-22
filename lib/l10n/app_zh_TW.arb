@@ -505,6 +505,7 @@
     "l_add_account_unlock_required": "需要解鎖",
     "l_add_account_func_missing": "功能遺失或停用",
     "l_account_name_required": "您的帳號必須有一個名稱",
+    "l_field_required": null,
     "l_name_already_exists": "此發行者名稱已存在",
     "l_account_already_exists": "此帳戶已存在於 YubiKey 上",
     "l_invalid_character_issuer": "無效字元：發行者中不允許使用 ':' 字元",
@@ -562,7 +563,6 @@
             }
         }
     },
-    "s_issuer_optional": "發行者（選用）",
     "s_counter_based": "基於計數器",
     "s_time_based": "基於時間",
     "l_copy_code_desc": "將驗證碼複製貼上到其他應用程式",

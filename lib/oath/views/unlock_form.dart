@@ -44,6 +44,7 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
   final _passwordFocus = FocusNode();
   bool _remember = false;
   bool _passwordIsWrong = false;
+  String? _passwordError;
   bool _isObscure = true;
 
   @override
@@ -60,6 +61,13 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
   }
 
   void _submit() async {
+    if (_passwordController.text.isEmpty) {
+      setState(() {
+        _passwordIsWrong = true;
+        _passwordError = AppLocalizations.of(context).l_field_required;
+      });
+      return;
+    }
     setState(() {
       _passwordIsWrong = false;
     });
@@ -76,6 +84,7 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
         _passwordFocus.requestFocus();
         setState(() {
           _passwordIsWrong = true;
+          _passwordError = AppLocalizations.of(context).s_wrong_password;
         });
       } else if (_remember && !remembered) {
         showMessage(context, AppLocalizations.of(context).l_remember_pw_failed);
@@ -109,7 +118,7 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
                   decoration: AppInputDecoration(
                     border: const OutlineInputBorder(),
                     labelText: l10n.s_password,
-                    errorText: _passwordIsWrong ? l10n.s_wrong_password : null,
+                    errorText: _passwordIsWrong ? _passwordError : null,
                     helperText: '', // Prevents resizing when errorText shown
                     icon: const Icon(Symbols.password),
                     suffixIcon: VisibilityToggleButton(
@@ -125,12 +134,7 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
                     _passwordIsWrong = false;
                   }), // Update state on change
                   onSubmitted: (_) {
-                    if (_passwordController.text.isNotEmpty &&
-                        !_passwordIsWrong) {
-                      _submit();
-                    } else {
-                      _passwordFocus.requestFocus();
-                    }
+                    _submit();
                   },
                 ).init(),
               ),
@@ -174,11 +178,7 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
                           key: keys.unlockButton,
                           label: Text(l10n.s_unlock),
                           icon: const Icon(Symbols.lock_open),
-                          onPressed:
-                              _passwordController.text.isNotEmpty &&
-                                  !_passwordIsWrong
-                              ? _submit
-                              : null,
+                          onPressed: _submit,
                         ),
                       ],
                     ),

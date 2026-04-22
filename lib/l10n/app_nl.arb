@@ -505,6 +505,7 @@
     "l_add_account_unlock_required": "Ontgrendelen vereist",
     "l_add_account_func_missing": "Functionaliteit ontbreekt of is uitgeschakeld",
     "l_account_name_required": "Uw account moet een naam hebben",
+    "l_field_required": null,
     "l_name_already_exists": "Deze naam bestaat al voor deze uitgever",
     "l_account_already_exists": "Dit account bestaat al op de YubiKey",
     "l_invalid_character_issuer": "Ongeldig teken. : is niet toegestaan",
@@ -562,7 +563,6 @@
             }
         }
     },
-    "s_issuer_optional": "Uitgever (optioneel)",
     "s_counter_based": "Op tellen gebaseerd",
     "s_time_based": "Op tijd gebaseerd",
     "l_copy_code_desc": "De code in een andere toepassing plakken",

@@ -505,6 +505,7 @@
     "l_add_account_unlock_required": "Wymagane odblokowanie",
     "l_add_account_func_missing": "Funkcja nie jest dostępna lub jest wyłączona",
     "l_account_name_required": "Konto musi mieć nazwę",
+    "l_field_required": null,
     "l_name_already_exists": "Ta nazwa wydawcy już istnieje",
     "l_account_already_exists": "To konto już istnieje w kluczu YubiKey",
     "l_invalid_character_issuer": "Nieprawidłowy znak: \":\" nie jest dozwolony w polu wydawcy",
@@ -562,7 +563,6 @@
             }
         }
     },
-    "s_issuer_optional": "Wydawca (opcjonalnie)",
     "s_counter_based": "Na podstawie licznika",
     "s_time_based": "Na podstawie czasu",
     "l_copy_code_desc": "Wklej kod do innej aplikacji",
