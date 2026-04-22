@@ -654,9 +654,6 @@ class _AppPageState extends ConsumerState<AppPage> {
         child: Row(
           crossAxisAlignment: .stretch,
           children: [
-            // Order 2: Navigation column (rail or expanded) — second Tab
-            // stop, directly after the hamburger navigation button (order 1),
-            // matching the visual left-to-right reading order.
             if (hasRail && (!fullyExpanded || !showExpandedNavigationBar))
               FocusTraversalOrder(
                 order: NumericFocusOrder(2),
@@ -693,14 +690,6 @@ class _AppPageState extends ConsumerState<AppPage> {
                 ),
               ),
             const SizedBox(width: 8),
-            // Order 3 or 4: Body (main content area) — order depends on
-            // the side menu bar state:
-            //  - Side menu bar visible (order 3): the body is the natural
-            //    next stop after navigation (order 2) in the 3-column view.
-            //  - Side menu bar hidden (order 4): the next focusable
-            //    element after the toggle side menu bar button (order 3),
-            //    letting the user reveal the side menu bar before tabbing
-            //    into the body.
             Expanded(
               child: FocusTraversalOrder(
                 order: NumericFocusOrder(sideMenuBarVisible ? 3 : 4),
@@ -716,10 +705,6 @@ class _AppPageState extends ConsumerState<AppPage> {
               // - pages without Capabilities
               const SizedBox(width: 336), // simulate column
             if (hasManage && hasDetailsOrKeyActions && showExpandedSideMenuBar)
-              // Order 5: Side menu bar — last Tab stop.
-              // Only present in the 3-column layout where the side menu
-              // bar is expanded. The user tabs through Body(3) and the
-              // toggle button(4) before reaching this.
               FocusTraversalOrder(
                 order: NumericFocusOrder(5),
                 child: _VisibilityListener(
@@ -805,8 +790,6 @@ class _AppPageState extends ConsumerState<AppPage> {
                 fullyExpanded,
               ),
               centerTitle: true,
-              // Order 1: Hamburger navigation button — always the first Tab
-              // stop so keyboard users can quickly access navigation.
               leading: FocusTraversalOrder(
                 order: NumericFocusOrder(1),
                 child: hasRail
@@ -850,10 +833,6 @@ class _AppPageState extends ConsumerState<AppPage> {
                       ),
               ),
               actions: [
-                // Order 3: "Show menu" button — only shown on smaller
-                // layouts (no side menu bar). Placed right after navigation
-                // so the user can open the key-actions dialog before
-                // tabbing into the main content (which has order 4).
                 if ((widget.keyActionsBuilder != null && !hasManage))
                   FocusTraversalOrder(
                     order: NumericFocusOrder(3),
@@ -880,13 +859,6 @@ class _AppPageState extends ConsumerState<AppPage> {
                       ),
                     ),
                   ),
-                // Order 3 or 4: Toggle side menu bar button — order depends
-                // on the side menu bar state:
-                //  - Side menu bar hidden (order 3): promoted before the
-                //    body (order 4) so the user can reveal the side menu
-                //    bar first.
-                //  - Side menu bar visible (order 4): the next focusable
-                //    element after the body (order 3).
                 if (hasManage &&
                     (widget.keyActionsBuilder != null ||
                         widget.detailViewBuilder != null))
