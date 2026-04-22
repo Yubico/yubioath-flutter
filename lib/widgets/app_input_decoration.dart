@@ -83,10 +83,7 @@ class AppInputDecoration extends InputDecoration {
           TextSpan(
             children: [
               TextSpan(text: super.labelText),
-              TextSpan(
-                text: ' *',
-                style: TextStyle(color: Theme.of(context).colorScheme.error),
-              ),
+              TextSpan(text: '*'),
             ],
           ),
           semanticsLabel: '${super.labelText}, ${l10n.s_required}',

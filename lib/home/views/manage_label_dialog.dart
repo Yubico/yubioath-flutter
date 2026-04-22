@@ -82,7 +82,6 @@ class _ManageLabelDialogState extends ConsumerState<ManageLabelDialog> {
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_label,
-                        isRequired: true,
                         helperText: '',
                         icon: const Icon(Symbols.key),
                       ),

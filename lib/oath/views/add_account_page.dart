@@ -688,6 +688,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                               decoration: AppInputDecoration(
                                 border: const OutlineInputBorder(),
                                 labelText: l10n.s_secret_key,
+                                helperText: '',
                                 isRequired: true,
                                 errorText: _secretError,
                                 icon: const Icon(Symbols.key),
