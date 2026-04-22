@@ -125,6 +125,9 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
     final nameNotEmpty = name.isNotEmpty;
     final issuerNoColon = !_issuerController.text.contains(':');
 
+    final nav = Navigator.of(context);
+    final withContext = ref.read(withContextProvider);
+
     bool hasError = false;
     String? issuerErr;
     String? nameErr;
@@ -143,6 +146,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
     }
 
     if (!didChange) {
+      nav.pop();
       return;
     }
 
@@ -153,9 +157,6 @@ class _RenameAccountDialogState extends ConsumerState<RenameAccountDialog> {
       });
       return;
     }
-
-    final nav = Navigator.of(context);
-    final withContext = ref.read(withContextProvider);
 
     try {
       // Rename credentials
