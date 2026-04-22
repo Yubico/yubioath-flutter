@@ -29,7 +29,6 @@ class MessagePage extends StatelessWidget {
   final String? footnote;
   final bool delayedContent;
   final Widget Function(BuildContext context)? keyActionsBuilder;
-  final Widget Function(BuildContext context)? actionButtonBuilder;
   final List<Widget> Function(BuildContext context, bool expanded)?
   actionsBuilder;
   final Widget? fileDropOverlay;
@@ -46,7 +45,6 @@ class MessagePage extends StatelessWidget {
     this.message,
     this.footnote,
     this.keyActionsBuilder,
-    this.actionButtonBuilder,
     this.actionsBuilder,
     this.fileDropOverlay,
     this.onFileDropped,
@@ -66,7 +64,6 @@ class MessagePage extends StatelessWidget {
     keyActionsBadge: keyActionsBadge,
     fileDropOverlay: fileDropOverlay,
     onFileDropped: onFileDropped,
-    actionButtonBuilder: actionButtonBuilder,
     actionsBuilder: actionsBuilder,
     delayedContent: delayedContent,
     builder: (context, _) => Padding(
