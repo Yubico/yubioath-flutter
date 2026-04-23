@@ -567,6 +567,9 @@
     "s_time_based": "Tidsbaserad",
     "l_copy_code_desc": "Klistra in koden i ett annat program",
     "l_calculate_code_desc": "Få en ny kod från din YubiKey",
+    "s_account_type": null,
+    "s_period": null,
+    "s_digits": null,
     "@_fido_credentials": {},
 
     "s_rp_id": "RP-ID",
@@ -751,6 +754,7 @@
     "l_key_deleted": "Nyckel borttagen",
     "l_certificate_and_key_deleted": "Certifikat och nyckel raderade",
     "l_include_certificate": "Inkludera certifikat",
+    "s_destination_slot": null,
     "l_select_destination_slot": "Välj destinationsplats",
     "q_move_key_confirm": "Flytta den privata nyckeln i PIV-platsen {from_slot}?",
     "@q_move_key_confirm": {
@@ -865,6 +869,7 @@
             }
         }
     },
+    "s_keyboard_layout": null,
     "l_keyboard_layout": "Tangentbord {layout}",
     "@l_keyboard_layout": {
         "placeholders": {

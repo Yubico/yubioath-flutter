@@ -567,6 +567,9 @@
     "s_time_based": "อิงเวลา",
     "l_copy_code_desc": "วางรหัสไปที่อื่น",
     "l_calculate_code_desc": "รับรหัสใหม่จาก ยูบิคีย์ ของคุณ",
+    "s_account_type": null,
+    "s_period": null,
+    "s_digits": null,
     "@_fido_credentials": {},
 
     "s_rp_id": "รหัสประจำตัว RP",
@@ -751,6 +754,7 @@
     "l_key_deleted": "ลบคีย์แล้ว",
     "l_certificate_and_key_deleted": "ใบรับรองและคีย์ถูกลบแล้ว",
     "l_include_certificate": "รวมใบรับรอง",
+    "s_destination_slot": null,
     "l_select_destination_slot": "เลือกสล็อตปลายทาง",
     "q_move_key_confirm": "ย้ายกุญเเจส่วนตัวในช่อง PIV {from_slot}?",
     "@q_move_key_confirm": {
@@ -865,6 +869,7 @@
             }
         }
     },
+    "s_keyboard_layout": null,
     "l_keyboard_layout": "คีย์บอร์ด {layout}",
     "@l_keyboard_layout": {
         "placeholders": {

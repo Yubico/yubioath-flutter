@@ -235,6 +235,7 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
                                 items: _digitsValues,
                                 value: _digits,
                                 selected: _digits != defaultDigits,
+                                tooltip: l10n.s_digits,
                                 itemBuilder: (value) =>
                                     Text(l10n.s_num_digits(value)),
                                 onChanged: (digits) {

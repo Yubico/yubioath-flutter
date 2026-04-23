@@ -567,6 +567,9 @@
     "s_time_based": "Időalapú",
     "l_copy_code_desc": "Kód beillesztése másik alkalmazásba",
     "l_calculate_code_desc": "Új kód kérése a YubiKey-től",
+    "s_account_type": null,
+    "s_period": null,
+    "s_digits": null,
     "@_fido_credentials": {},
 
     "s_rp_id": "RP ID",
@@ -751,6 +754,7 @@
     "l_key_deleted": "Kulcs törölve",
     "l_certificate_and_key_deleted": "Tanúsítvány és kulcs törölve",
     "l_include_certificate": "Tanúsítvány tartalmazása",
+    "s_destination_slot": null,
     "l_select_destination_slot": "Célhely kiválasztása",
     "q_move_key_confirm": "Áthelyezi a privát kulcsot a(z) {from_slot}. PIV-helyről?",
     "@q_move_key_confirm": {
@@ -865,6 +869,7 @@
             }
         }
     },
+    "s_keyboard_layout": null,
     "l_keyboard_layout": "{layout} billentyűzet",
     "@l_keyboard_layout": {
         "placeholders": {

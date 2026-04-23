@@ -567,6 +567,9 @@
     "s_time_based": "Βάσει χρόνου",
     "l_copy_code_desc": "Επικολλήστε τον κωδικό σε άλλη εφαρμογή",
     "l_calculate_code_desc": "Λάβετε νέο κωδικό από το YubiKey σας",
+    "s_account_type": null,
+    "s_period": null,
+    "s_digits": null,
     "@_fido_credentials": {},
 
     "s_rp_id": "Αναγνωριστικό RP",
@@ -751,6 +754,7 @@
     "l_key_deleted": "Το κλειδί διαγράφηκε",
     "l_certificate_and_key_deleted": "Το πιστοποιητικό και το κλειδί διαγράφηκαν",
     "l_include_certificate": "Συμπερίληψη πιστοποιητικού",
+    "s_destination_slot": null,
     "l_select_destination_slot": "Επιλογή υποδοχής προορισμού",
     "q_move_key_confirm": "Μετακίνηση του ιδιωτικού κλειδιού στην υποδοχή PIV {from_slot};",
     "@q_move_key_confirm": {
@@ -865,6 +869,7 @@
             }
         }
     },
+    "s_keyboard_layout": null,
     "l_keyboard_layout": "Πληκτρολόγιο {layout}",
     "@l_keyboard_layout": {
         "placeholders": {

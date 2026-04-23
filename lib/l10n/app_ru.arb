@@ -567,6 +567,9 @@
     "s_time_based": "На основе времени",
     "l_copy_code_desc": "Вставьте код в другое приложение",
     "l_calculate_code_desc": "Получите новый код из вашего YubiKey",
+    "s_account_type": null,
+    "s_period": null,
+    "s_digits": null,
     "@_fido_credentials": {},
 
     "s_rp_id": "RP ID",
@@ -751,6 +754,7 @@
     "l_key_deleted": "Ключ удален",
     "l_certificate_and_key_deleted": "Сертификат и ключ удалены",
     "l_include_certificate": "Включить сертификат",
+    "s_destination_slot": null,
     "l_select_destination_slot": "Выберите слот назначения",
     "q_move_key_confirm": "Переместить закрытый ключ в слот PIV {from_slot}?",
     "@q_move_key_confirm": {
@@ -865,6 +869,7 @@
             }
         }
     },
+    "s_keyboard_layout": null,
     "l_keyboard_layout": "Клавиатура {layout}",
     "@l_keyboard_layout": {
         "placeholders": {

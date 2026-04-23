@@ -567,6 +567,9 @@
     "s_time_based": "Založeno na čase",
     "l_copy_code_desc": "Vložte kód do jiné aplikace",
     "l_calculate_code_desc": "Získejte nový kód z vašeho YubiKey",
+    "s_account_type": null,
+    "s_period": null,
+    "s_digits": null,
     "@_fido_credentials": {},
 
     "s_rp_id": "RP ID",
@@ -751,6 +754,7 @@
     "l_key_deleted": "Klíč byl odstraněn",
     "l_certificate_and_key_deleted": "Certifikát a klíč byly odstraněny",
     "l_include_certificate": "Včetně certifikátu",
+    "s_destination_slot": null,
     "l_select_destination_slot": "Vyberte cílový slot",
     "q_move_key_confirm": "Přesunout soukromý klíč v PIV slotu {from_slot}?",
     "@q_move_key_confirm": {
@@ -865,6 +869,7 @@
             }
         }
     },
+    "s_keyboard_layout": null,
     "l_keyboard_layout": "Klávesnice {layout}",
     "@l_keyboard_layout": {
         "placeholders": {
