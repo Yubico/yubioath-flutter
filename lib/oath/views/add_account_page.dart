@@ -740,6 +740,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                                         FilterChip(
                                           key: keys.requireTouchFilterChip,
                                           label: Text(l10n.s_require_touch),
+                                          tooltip: l10n.s_require_touch,
                                           selected: _touch,
                                           onSelected: (value) {
                                             setState(() {
@@ -751,6 +752,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                                         key: keys.oathTypeFilterChip,
                                         items: OathType.values,
                                         value: _oathType,
+                                        tooltip: l10n.s_account_type,
                                         selected: _oathType != defaultOathType,
                                         itemBuilder: (value) => Text(
                                           value.getDisplayName(l10n),
@@ -770,6 +772,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                                         key: keys.hashAlgorithmFilterChip,
                                         items: hashAlgorithms,
                                         value: _hashAlgorithm,
+                                        tooltip: l10n.s_algorithm,
                                         selected:
                                             _hashAlgorithm !=
                                             defaultHashAlgorithm,
@@ -798,6 +801,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                                                 _periodController.text,
                                               ) ??
                                               defaultPeriod,
+                                          tooltip: l10n.s_period,
                                           selected:
                                               int.tryParse(
                                                 _periodController.text,
@@ -818,6 +822,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                                         key: keys.digitsFilterChip,
                                         items: _digitsValues,
                                         value: _digits,
+                                        tooltip: l10n.s_digits,
                                         selected: _digits != defaultDigits,
                                         itemBuilder: (value) =>
                                             Text(l10n.s_num_digits(value)),

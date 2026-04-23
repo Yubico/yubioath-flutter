@@ -567,6 +567,9 @@
     "s_time_based": "Dựa trên thời gian",
     "l_copy_code_desc": "Dán mã vào ứng dụng khác",
     "l_calculate_code_desc": "Lấy mã mới từ YubiKey của bạn",
+    "s_account_type": null,
+    "s_period": null,
+    "s_digits": null,
     "@_fido_credentials": {},
 
     "s_rp_id": "RP ID",
@@ -751,6 +754,7 @@
     "l_key_deleted": "Khóa đã bị xóa",
     "l_certificate_and_key_deleted": "Chứng chỉ và khóa đã bị xóa",
     "l_include_certificate": "Bao gồm chứng chỉ",
+    "s_destination_slot": null,
     "l_select_destination_slot": "Chọn khe đích",
     "q_move_key_confirm": "Di chuyển khóa riêng trong khe PIV {from_slot}?",
     "@q_move_key_confirm": {
@@ -865,6 +869,7 @@
             }
         }
     },
+    "s_keyboard_layout": null,
     "l_keyboard_layout": null,
     "@l_keyboard_layout": {
         "placeholders": {

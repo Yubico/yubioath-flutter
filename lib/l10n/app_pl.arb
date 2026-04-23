@@ -567,6 +567,9 @@
     "s_time_based": "Na podstawie czasu",
     "l_copy_code_desc": "Wklej kod do innej aplikacji",
     "l_calculate_code_desc": "Uzyskaj nowy kod z klucza YubiKey",
+    "s_account_type": null,
+    "s_period": null,
+    "s_digits": null,
     "@_fido_credentials": {},
 
     "s_rp_id": "RP ID",
@@ -751,6 +754,7 @@
     "l_key_deleted": "Klucz został usunięty",
     "l_certificate_and_key_deleted": "Certyfikat i klucz został usunięty",
     "l_include_certificate": "Dołącz certyfikat",
+    "s_destination_slot": null,
     "l_select_destination_slot": "Wybierz docelowy slot",
     "q_move_key_confirm": "Przenieść klucz prywatny ze slotu PIV {from_slot}?",
     "@q_move_key_confirm": {
@@ -865,6 +869,7 @@
             }
         }
     },
+    "s_keyboard_layout": null,
     "l_keyboard_layout": "Klawiatura {layout}",
     "@l_keyboard_layout": {
         "placeholders": {

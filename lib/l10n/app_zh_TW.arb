@@ -567,6 +567,9 @@
     "s_time_based": "基於時間",
     "l_copy_code_desc": "將驗證碼複製貼上到其他應用程式",
     "l_calculate_code_desc": "從您的 YubiKey 取得新密碼",
+    "s_account_type": null,
+    "s_period": null,
+    "s_digits": null,
     "@_fido_credentials": {},
 
     "s_rp_id": "RP ID",
@@ -751,6 +754,7 @@
     "l_key_deleted": "密鑰已刪除",
     "l_certificate_and_key_deleted": "證書和密鑰已刪除",
     "l_include_certificate": "包含證書",
+    "s_destination_slot": null,
     "l_select_destination_slot": "選擇目標槽位",
     "q_move_key_confirm": "移動 PIV 槽位 {from_slot} 中的私鑰？",
     "@q_move_key_confirm": {
@@ -865,6 +869,7 @@
             }
         }
     },
+    "s_keyboard_layout": null,
     "l_keyboard_layout": "鍵盤 {layout}",
     "@l_keyboard_layout": {
         "placeholders": {

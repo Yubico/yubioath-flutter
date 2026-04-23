@@ -567,6 +567,9 @@
     "s_time_based": "時間ベース",
     "l_copy_code_desc": "別のアプリケーションにコードを貼り付けてください",
     "l_calculate_code_desc": "YubiKey から新しいコードを取得します",
+    "s_account_type": null,
+    "s_period": null,
+    "s_digits": null,
     "@_fido_credentials": {},
 
     "s_rp_id": "RP ID",
@@ -751,6 +754,7 @@
     "l_key_deleted": "鍵を削除しました",
     "l_certificate_and_key_deleted": "証明書と鍵を削除しました",
     "l_include_certificate": "証明書を含める",
+    "s_destination_slot": null,
     "l_select_destination_slot": "移動先のスロットを選択",
     "q_move_key_confirm": "PIVスロット {from_slot} の秘密鍵を移動しますか？",
     "@q_move_key_confirm": {
@@ -865,6 +869,7 @@
             }
         }
     },
+    "s_keyboard_layout": null,
     "l_keyboard_layout": "キーボード {layout}",
     "@l_keyboard_layout": {
         "placeholders": {

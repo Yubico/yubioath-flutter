@@ -567,6 +567,9 @@
     "s_time_based": "Zamana dayalı",
     "l_copy_code_desc": "Kodu başka bir uygulamaya yapıştırın",
     "l_calculate_code_desc": "YubiKey'inizden yeni bir kod alın",
+    "s_account_type": null,
+    "s_period": null,
+    "s_digits": null,
     "@_fido_credentials": {},
 
     "s_rp_id": "RP kimliği",
@@ -751,6 +754,7 @@
     "l_key_deleted": "Anahtar silindi",
     "l_certificate_and_key_deleted": "Sertifika ve anahtar silindi",
     "l_include_certificate": "Sertifikayı dahil et",
+    "s_destination_slot": null,
     "l_select_destination_slot": "Hedef yuvasını seçin",
     "q_move_key_confirm": "{from_slot} PIV yuvasındaki özel anahtar taşınsın mı?",
     "@q_move_key_confirm": {
@@ -865,6 +869,7 @@
             }
         }
     },
+    "s_keyboard_layout": null,
     "l_keyboard_layout": "Klavye {layout}",
     "@l_keyboard_layout": {
         "placeholders": {

@@ -567,6 +567,9 @@
     "s_time_based": "Залежно від часу",
     "l_copy_code_desc": "Вставте код в іншу програму",
     "l_calculate_code_desc": "Отримайте новий код з вашого YubiKey",
+    "s_account_type": null,
+    "s_period": null,
+    "s_digits": null,
     "@_fido_credentials": {},
 
     "s_rp_id": "Ідентифікатор RP",
@@ -751,6 +754,7 @@
     "l_key_deleted": "Ключ видалено",
     "l_certificate_and_key_deleted": "Сертифікат і ключ видалено",
     "l_include_certificate": "Включити сертифікат",
+    "s_destination_slot": null,
     "l_select_destination_slot": "Виберіть слот призначення",
     "q_move_key_confirm": "Перемістити закритий ключ у слот PIV {from_slot}?",
     "@q_move_key_confirm": {
@@ -865,6 +869,7 @@
             }
         }
     },
+    "s_keyboard_layout": null,
     "l_keyboard_layout": "Розкладка клавіатури {layout}",
     "@l_keyboard_layout": {
         "placeholders": {

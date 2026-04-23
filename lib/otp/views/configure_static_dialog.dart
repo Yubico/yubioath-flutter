@@ -269,6 +269,7 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
                               ChoiceFilterChip(
                                 items: widget.keyboardLayouts.keys.toList(),
                                 value: _keyboardLayout,
+                                tooltip: l10n.s_keyboard_layout,
                                 selected:
                                     _keyboardLayout != _defaultKeyboardLayout,
                                 labelBuilder: (value) =>

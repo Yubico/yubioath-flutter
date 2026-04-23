@@ -554,6 +554,7 @@ class _ConfigureYubiOtpDialogState
       text: uploadOtpUri.host,
       style: theme.textTheme.bodySmall?.copyWith(
         color: theme.colorScheme.primary,
+        decoration: TextDecoration.underline,
       ),
       recognizer: TapGestureRecognizer()
         ..onTap = () async {

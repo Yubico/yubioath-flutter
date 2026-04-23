@@ -567,6 +567,9 @@
     "s_time_based": "Op tijd gebaseerd",
     "l_copy_code_desc": "De code in een andere toepassing plakken",
     "l_calculate_code_desc": "Een nieuwe code van uw YubiKey krijgen",
+    "s_account_type": null,
+    "s_period": null,
+    "s_digits": null,
     "@_fido_credentials": {},
 
     "s_rp_id": "RP ID",
@@ -751,6 +754,7 @@
     "l_key_deleted": "Sleutel verwijderd",
     "l_certificate_and_key_deleted": "Certificaat en sleutel verwijderd",
     "l_include_certificate": "Certificaat opnemen",
+    "s_destination_slot": null,
     "l_select_destination_slot": "Bestemmingsslot selecteren",
     "q_move_key_confirm": "De privésleutel in PIV-slot {from_slot} verplaatsen?",
     "@q_move_key_confirm": {
@@ -865,6 +869,7 @@
             }
         }
     },
+    "s_keyboard_layout": null,
     "l_keyboard_layout": "Toetsenbord {layout}",
     "@l_keyboard_layout": {
         "placeholders": {

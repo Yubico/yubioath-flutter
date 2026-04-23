@@ -567,6 +567,9 @@
     "s_time_based": "Time based",
     "l_copy_code_desc": "Paste the code into another application",
     "l_calculate_code_desc": "Get a new code from your YubiKey",
+    "s_account_type": "Account type",
+    "s_period": "Period",
+    "s_digits": "Digits",
     "@_fido_credentials": {},
 
     "s_rp_id": "RP ID",
@@ -751,6 +754,7 @@
     "l_key_deleted": "Key deleted",
     "l_certificate_and_key_deleted": "Certificate and key deleted",
     "l_include_certificate": "Include certificate",
+    "s_destination_slot": "Destination slot",
     "l_select_destination_slot": "Select destination slot",
     "q_move_key_confirm": "Move the private key in PIV slot {from_slot}?",
     "@q_move_key_confirm": {
@@ -865,6 +869,7 @@
             }
         }
     },
+    "s_keyboard_layout": "Keyboard layout",
     "l_keyboard_layout": "Keyboard {layout}",
     "@l_keyboard_layout": {
         "placeholders": {

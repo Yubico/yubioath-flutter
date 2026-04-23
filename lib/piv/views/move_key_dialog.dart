@@ -147,6 +147,7 @@ class _MoveKeyDialogState extends ConsumerState<MoveKeyDialog> {
                                 (element) => element != widget.pivSlot.slot,
                               )
                               .toList(),
+                          tooltip: l10n.s_destination_slot,
                           labelBuilder: (value) => Text(
                             _destination == null
                                 ? l10n.l_select_destination_slot
