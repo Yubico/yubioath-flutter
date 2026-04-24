@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2025 Yubico.
+ * Copyright (C) 2022-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package com.yubico.authenticator.oath
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import com.yubico.authenticator.AppContextManager
 import com.yubico.authenticator.AppPreferences
 import com.yubico.authenticator.NULL
@@ -61,11 +62,13 @@ import io.flutter.plugin.common.MethodChannel
 import java.io.IOException
 import java.net.URI
 import java.util.concurrent.CancellationException
+import java.util.concurrent.RejectedExecutionException
 import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.coroutines.suspendCoroutine
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import org.slf4j.LoggerFactory
 
 typealias OathAction = (Result<YubiKitOathSession, Exception>) -> Unit
@@ -107,6 +110,7 @@ class OathManager(
     override fun hasPending(): Boolean = pendingAction != null
 
     override fun onPause() {
+        refreshJob?.cancel()
         // cancel any pending actions, except for addToAny
         if (!addToAny) {
             pendingAction?.let {
@@ -204,12 +208,20 @@ class OathManager(
 
     override fun activate() {
         super.activate()
-        oathViewModel.credentials.observe(lifecycleOwner, credentialObserver)
+        // LiveData.observe() must be called on the main thread.
+        // Use lifecycleOwner's scope so the observer outlives this manager's coroutineScope.
+        lifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
+            oathViewModel.credentials.observe(lifecycleOwner, credentialObserver)
+        }
         logger.debug("OathManager activated")
     }
 
     override fun deactivate() {
-        oathViewModel.credentials.removeObserver(credentialObserver)
+        // LiveData.removeObserver() must be called on the main thread.
+        // Use lifecycleOwner's scope so removal isn't cancelled by dispose().
+        lifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
+            oathViewModel.credentials.removeObserver(credentialObserver)
+        }
         oathViewModel.clearSession()
         oathViewModel.updateCredentials(mapOf())
         pendingAction?.invoke(Result.failure(CancellationException()))
@@ -609,6 +621,9 @@ class OathManager(
                     illegalStateException
                 )
                 clearCodes()
+            } catch (_: RejectedExecutionException) {
+                logger.debug("USB device closed during credential refresh")
+                clearCodes()
             }
         }
     }
@@ -787,7 +802,8 @@ class OathManager(
         block: (YubiKitOathSession) -> T
     ): Result<T, Throwable> {
         try {
-            val result = suspendCoroutine { outer ->
+            val result = suspendCancellableCoroutine { outer ->
+                outer.invokeOnCancellation { pendingAction = null }
                 pendingAction = {
                     outer.resumeWith(
                         runCatching {

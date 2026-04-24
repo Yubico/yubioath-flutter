@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2025 Yubico.
+ * Copyright (C) 2024-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice
 import com.yubico.yubikit.core.fido.FidoConnection
 import com.yubico.yubikit.core.util.Result
 import kotlin.coroutines.cancellation.CancellationException
-import kotlin.coroutines.suspendCoroutine
+import kotlinx.coroutines.suspendCancellableCoroutine
 import org.slf4j.LoggerFactory
 
 class FidoConnectionHelper(private val deviceManager: DeviceManager) {
@@ -79,7 +79,8 @@ class FidoConnectionHelper(private val deviceManager: DeviceManager) {
 
     suspend fun <T : Any> useSessionNfc(block: (YubiKitFidoSession) -> T): Result<T, Throwable> {
         try {
-            val result = suspendCoroutine { outer ->
+            val result = suspendCancellableCoroutine { outer ->
+                outer.invokeOnCancellation { pendingAction = null }
                 pendingAction = {
                     outer.resumeWith(
                         runCatching {
