@@ -17,15 +17,51 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:vector_graphics/vector_graphics.dart';
+import 'package:vector_graphics_compiler/vector_graphics_compiler.dart'
+    show encodeSvg;
 
 import '../../generated/l10n/app_localizations.dart';
 import '../models.dart';
 import '../state.dart';
 import 'device_picker.dart';
 import 'keys.dart';
+
+class _SvgAssetBytesLoader extends BytesLoader {
+  final String assetPath;
+  static final Map<String, Uint8List> _cache = {};
+
+  const _SvgAssetBytesLoader(this.assetPath);
+
+  @override
+  Future<ByteData> loadBytes(BuildContext? context) async {
+    final cached = _cache[assetPath];
+    if (cached != null) {
+      return cached.buffer.asByteData();
+    }
+    final svgString = await rootBundle.loadString(assetPath);
+    final compiled = encodeSvg(
+      xml: svgString,
+      debugName: assetPath,
+      enableClippingOptimizer: false,
+      enableMaskingOptimizer: false,
+      enableOverdrawOptimizer: false,
+    );
+    _cache[assetPath] = compiled;
+    return compiled.buffer.asByteData();
+  }
+
+  @override
+  int get hashCode => assetPath.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      other is _SvgAssetBytesLoader && other.assetPath == assetPath;
+}
 
 class NavigationItem extends StatefulWidget {
   final Widget leading;
@@ -145,6 +181,43 @@ extension SectionUi on Section {
     Section.certificates => pivAppDrawer,
     Section.settings => settingsDrawer,
   };
+
+  Widget buildIcon({required bool selected, String? semanticLabel}) {
+    if (this == Section.passkeys) {
+      return _PasskeyIcon(selected: selected, semanticLabel: semanticLabel);
+    }
+    return Icon(
+      _icon,
+      fill: selected ? 1.0 : 0.0,
+      semanticLabel: semanticLabel,
+    );
+  }
+}
+
+class _PasskeyIcon extends StatelessWidget {
+  final bool selected;
+  final String? semanticLabel;
+
+  const _PasskeyIcon({required this.selected, this.semanticLabel});
+
+  @override
+  Widget build(BuildContext context) {
+    final iconColor =
+        IconTheme.of(context).color ?? Theme.of(context).colorScheme.onSurface;
+    return Semantics(
+      label: semanticLabel,
+      child: VectorGraphic(
+        loader: _SvgAssetBytesLoader(
+          selected
+              ? 'assets/graphics/passkey.svg'
+              : 'assets/graphics/passkey-outline.svg',
+        ),
+        colorFilter: ColorFilter.mode(iconColor, BlendMode.srcIn),
+        width: 24,
+        height: 24,
+      ),
+    );
+  }
 }
 
 class MoreItem extends ConsumerWidget {
@@ -240,9 +313,8 @@ class NavigationContent extends ConsumerWidget {
                   key: app.key,
                   title: app.getDisplayName(l10n),
                   borderRadius: borderRadius,
-                  leading: Icon(
-                    app._icon,
-                    fill: app == currentSection ? 1.0 : 0.0,
+                  leading: app.buildIcon(
+                    selected: app == currentSection,
                     semanticLabel: !extended ? app.getDisplayName(l10n) : null,
                   ),
                   collapsed: !extended,
@@ -283,9 +355,8 @@ class NavigationContent extends ConsumerWidget {
                   )
                 : null,
             title: settingsSection.getDisplayName(l10n),
-            leading: Icon(
-              settingsSection._icon,
-              fill: settingsSection == currentSection ? 1.0 : 0.0,
+            leading: settingsSection.buildIcon(
+              selected: settingsSection == currentSection,
               semanticLabel: !extended
                   ? settingsSection.getDisplayName(l10n)
                   : null,
