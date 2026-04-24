@@ -36,6 +36,7 @@ import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../../widgets/utf8_utils.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
@@ -79,9 +80,9 @@ class _ConfigureYubiOtpDialogState
   final _privateIdFocus = FocusNode();
   OutputActions _action = OutputActions.noOutput;
   bool _appendEnter = true;
-  bool _validateSecretFormat = false;
-  bool _validatePublicIdFormat = false;
-  bool _validatePrivateIdFormat = false;
+  String? _publicIdError;
+  String? _privateIdError;
+  String? _secretError;
   final secretLength = 32;
   final publicIdLength = 12;
   final privateIdLength = 12;
@@ -115,20 +116,54 @@ class _ConfigureYubiOtpDialogState
     final publicIdLengthValid = publicId.length == publicIdLength;
     final publicIdFormatValid = Format.modhex.isValid(publicId);
 
-    final lengthsValid =
-        secretLengthValid && privateIdLengthValid && publicIdLengthValid;
-
     final outputFile = ref.read(yubiOtpOutputProvider);
 
     _createUploadText(context, l10n);
 
     void submit() async {
-      if (!secretFormatValid || !publicIdFormatValid || !privateIdFormatValid) {
-        setState(() {
-          _validateSecretFormat = !secretFormatValid;
-          _validatePublicIdFormat = !publicIdFormatValid;
-          _validatePrivateIdFormat = !privateIdFormatValid;
-        });
+      bool hasError = false;
+
+      if (publicId.isEmpty) {
+        _publicIdError = l10n.l_field_required;
+        hasError = true;
+      } else if (!publicIdFormatValid) {
+        _publicIdError = l10n.l_invalid_format_allowed_chars(
+          Format.modhex.allowedCharacters,
+        );
+        hasError = true;
+      } else if (!publicIdLengthValid) {
+        _publicIdError = l10n.s_invalid_length;
+        hasError = true;
+      }
+
+      if (privateId.isEmpty) {
+        _privateIdError = l10n.l_field_required;
+        hasError = true;
+      } else if (!privateIdFormatValid) {
+        _privateIdError = l10n.l_invalid_format_allowed_chars(
+          Format.hex.allowedCharacters,
+        );
+        hasError = true;
+      } else if (!privateIdLengthValid) {
+        _privateIdError = l10n.s_invalid_length;
+        hasError = true;
+      }
+
+      if (secret.isEmpty) {
+        _secretError = l10n.l_field_required;
+        hasError = true;
+      } else if (!secretFormatValid) {
+        _secretError = l10n.l_invalid_format_allowed_chars(
+          Format.hex.allowedCharacters,
+        );
+        hasError = true;
+      } else if (!secretLengthValid) {
+        _secretError = l10n.s_invalid_length;
+        hasError = true;
+      }
+
+      if (hasError) {
+        setState(() {});
         return;
       }
 
@@ -233,7 +268,7 @@ class _ConfigureYubiOtpDialogState
       actions: [
         TextButton(
           key: keys.saveButton,
-          onPressed: lengthsValid ? submit : null,
+          onPressed: submit,
           child: Text(l10n.s_save),
         ),
       ],
@@ -252,15 +287,15 @@ class _ConfigureYubiOtpDialogState
                           : const [AutofillHints.password],
                       focusNode: _publicIdFocus,
                       maxLength: publicIdLength,
+                      buildCounter: buildByteCounterFor(
+                        _publicIdController.text,
+                      ),
+                      inputFormatters: [limitBytesLength(publicIdLength)],
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_public_id,
-                        errorText:
-                            _validatePublicIdFormat && !publicIdFormatValid
-                            ? l10n.l_invalid_format_allowed_chars(
-                                Format.modhex.allowedCharacters,
-                              )
-                            : null,
+                        isRequired: true,
+                        errorText: _publicIdError,
                         icon: const Icon(Symbols.public),
                         suffixIcon: IconButton(
                           key: keys.useSerial,
@@ -277,6 +312,7 @@ class _ConfigureYubiOtpDialogState
                                       .modhexEncodeSerial(info!.serial!);
                                   setState(() {
                                     _publicIdController.text = publicId;
+                                    _publicIdError = null;
                                   });
                                 }
                               : null,
@@ -285,7 +321,7 @@ class _ConfigureYubiOtpDialogState
                       textInputAction: .next,
                       onChanged: (value) {
                         setState(() {
-                          _validatePublicIdFormat = false;
+                          _publicIdError = null;
                         });
                       },
                       onSubmitted: (_) {
@@ -303,16 +339,16 @@ class _ConfigureYubiOtpDialogState
                           ? []
                           : const [AutofillHints.password],
                       maxLength: privateIdLength,
+                      buildCounter: buildByteCounterFor(
+                        _privateIdController.text,
+                      ),
+                      inputFormatters: [limitBytesLength(privateIdLength)],
                       focusNode: _privateIdFocus,
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_private_id,
-                        errorText:
-                            _validatePrivateIdFormat && !privateIdFormatValid
-                            ? l10n.l_invalid_format_allowed_chars(
-                                Format.hex.allowedCharacters,
-                              )
-                            : null,
+                        isRequired: true,
+                        errorText: _privateIdError,
                         icon: const Icon(Symbols.key),
                         suffixIcon: IconButton(
                           key: keys.generatePrivateId,
@@ -329,6 +365,7 @@ class _ConfigureYubiOtpDialogState
                             ).join();
                             setState(() {
                               _privateIdController.text = key;
+                              _privateIdError = null;
                             });
                           },
                         ),
@@ -336,7 +373,7 @@ class _ConfigureYubiOtpDialogState
                       textInputAction: .next,
                       onChanged: (value) {
                         setState(() {
-                          _validatePrivateIdFormat = false;
+                          _privateIdError = null;
                         });
                       },
                       onSubmitted: (_) {
@@ -354,15 +391,14 @@ class _ConfigureYubiOtpDialogState
                           ? []
                           : const [AutofillHints.password],
                       maxLength: secretLength,
+                      buildCounter: buildByteCounterFor(_secretController.text),
+                      inputFormatters: [limitBytesLength(secretLength)],
                       focusNode: _secretFocus,
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_secret_key,
-                        errorText: _validateSecretFormat && !secretFormatValid
-                            ? l10n.l_invalid_format_allowed_chars(
-                                Format.hex.allowedCharacters,
-                              )
-                            : null,
+                        isRequired: true,
+                        errorText: _secretError,
                         icon: const Icon(Symbols.key),
                         suffixIcon: IconButton(
                           key: keys.generateSecretKey,
@@ -379,6 +415,7 @@ class _ConfigureYubiOtpDialogState
                             ).join();
                             setState(() {
                               _secretController.text = key;
+                              _secretError = null;
                             });
                           },
                         ),
@@ -386,15 +423,11 @@ class _ConfigureYubiOtpDialogState
                       textInputAction: .next,
                       onChanged: (value) {
                         setState(() {
-                          _validateSecretFormat = false;
+                          _secretError = null;
                         });
                       },
                       onSubmitted: (_) {
-                        if (lengthsValid) {
-                          submit();
-                        } else {
-                          _secretFocus.requestFocus();
-                        }
+                        submit();
                       },
                     ).init(),
                     Row(
@@ -521,6 +554,7 @@ class _ConfigureYubiOtpDialogState
       text: uploadOtpUri.host,
       style: theme.textTheme.bodySmall?.copyWith(
         color: theme.colorScheme.primary,
+        decoration: TextDecoration.underline,
       ),
       recognizer: TapGestureRecognizer()
         ..onTap = () async {

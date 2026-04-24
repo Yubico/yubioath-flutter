@@ -51,15 +51,18 @@
     "s_nfc": "NFC",
     "s_options": "オプション",
     "s_details": "詳細",
+    "s_required": null,
     "s_show_window": "ウィンドウを表示",
     "s_hide_window": "ウィンドウを非表示",
     "s_show_navigation": "ナビゲーションを表示します",
     "s_expand_navigation": "ナビゲーションバーを展開します",
     "s_collapse_navigation": "ナビゲーションバーを折りたたみます",
     "s_expand_collapse_navigation": "ナビゲーションバーの展開/折りたたみ",
+    "s_expanded": null,
+    "s_collapsed": null,
     "s_show_menu": "メニューを表示します",
-    "s_expand_menu_bar": null,
-    "s_collapse_menu_bar": null,
+    "s_expand_menu_bar": "メニューバーを展開",
+    "s_collapse_menu_bar": "メニューバーを折りたたむ",
     "s_toggle_menu_bar": "メニューバーを切り替える",
     "s_more_info": "詳細情報",
     "l_bullet": "• {item}",
@@ -129,6 +132,17 @@
         }
     },
     "s_character_count": "文字数",
+    "l_characters_used": null,
+    "@l_characters_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "max": {
+                "type": "int"
+            }
+        }
+    },
     "@_language": {},
 
     "s_language": "言語",
@@ -346,6 +360,7 @@
             }
         }
     },
+    "s_persist_read_only_access": "読み取り専用アクセスを永続化",
     "s_ep_attestation": "Enterprise Attestation",
     "s_ep_attestation_enabled": "Enterprise Attestation が有効です",
     "q_enable_ep_attestation": "Enterprise Attestation を有効にしますか？",
@@ -490,6 +505,7 @@
     "l_add_account_unlock_required": "ロック解除が必要です",
     "l_add_account_func_missing": "機能が存在しないか無効です",
     "l_account_name_required": "アカウントには名前を付けてください",
+    "l_field_required": null,
     "l_name_already_exists": "この名前は発行者にすでに存在します",
     "l_account_already_exists": "このアカウントは YubiKey にすでに存在します",
     "l_invalid_character_issuer": "無効な文字: 「:」は発行者には使用できません",
@@ -519,6 +535,7 @@
     "p_warning_disable_credential": "ログインできなくならないように、まず登録しているサービスからこの資格情報を無効にしてください。",
     "s_account_name": "アカウント名",
     "s_search_accounts": "アカウントを検索",
+    "s_clear_search": null,
     "l_accounts_used": "アカウント {used} / {capacity} 個を使用中",
     "@l_accounts_used": {
         "placeholders": {
@@ -546,11 +563,13 @@
             }
         }
     },
-    "s_issuer_optional": "発行者 (オプション)",
     "s_counter_based": "カウンターベース",
     "s_time_based": "時間ベース",
     "l_copy_code_desc": "別のアプリケーションにコードを貼り付けてください",
     "l_calculate_code_desc": "YubiKey から新しいコードを取得します",
+    "s_account_type": null,
+    "s_period": null,
+    "s_digits": null,
     "@_fido_credentials": {},
 
     "s_rp_id": "RP ID",
@@ -735,6 +754,7 @@
     "l_key_deleted": "鍵を削除しました",
     "l_certificate_and_key_deleted": "証明書と鍵を削除しました",
     "l_include_certificate": "証明書を含める",
+    "s_destination_slot": null,
     "l_select_destination_slot": "移動先のスロットを選択",
     "q_move_key_confirm": "PIVスロット {from_slot} の秘密鍵を移動しますか？",
     "@q_move_key_confirm": {
@@ -849,6 +869,7 @@
             }
         }
     },
+    "s_keyboard_layout": null,
     "l_keyboard_layout": "キーボード {layout}",
     "@l_keyboard_layout": {
         "placeholders": {
@@ -1087,6 +1108,14 @@
 
     "s_set_label": "ラベルを設定します",
     "s_set_color": "色を設定",
+    "s_color_teal": null,
+    "s_color_cyan": null,
+    "s_color_blue": null,
+    "s_color_purple": null,
+    "s_color_red": null,
+    "s_color_orange": null,
+    "s_color_yellow": null,
+    "s_color_green": null,
     "s_change_label": "ラベルを変更します",
     "p_set_will_add_custom_name": "YubiKey に任意の名前を付けます。",
     "p_rename_will_change_custom_name": "YubiKey のラベルを変更します。",

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="p_ndef_set_otp">คัดลอกรหัส OTP จาก ยูบิคีย์ ไปยังคลิปบอร์ดสำเร็จแล้ว</string>
+    <string name="p_ndef_set_password">คัดลอกรหัสผ่านจาก ยูบิคีย์ ไปยังคลิปบอร์ดสำเร็จแล้ว</string>
+    <string name="p_ndef_parse_failure">ไม่สามารถวางรหัส OTP จาก ยูบิคีย์ ได้</string>
+    <string name="p_ndef_set_clip_failure">ไม่สามารถเข้าถึงคลิปบอร์ดได้เมื่อพยายามคัดลอกรหัส OTP จาก ยูบิคีย์</string>
+</resources>

@@ -37,7 +37,7 @@
     "s_enabled": "Aktif",
     "s_disabled": "Deaktif",
     "s_status": "Durum",
-    "s_unlock": "Kilidini aç",
+    "s_unlock": "Kilidi aç",
     "s_calculate": "Hesapla",
     "s_import": "İçe Aktar",
     "s_overwrite": "Geçerli Olanın Üzerine Yaz",
@@ -51,15 +51,18 @@
     "s_nfc": "NFC",
     "s_options": "Seçenekler",
     "s_details": "Ayrıntılar",
+    "s_required": null,
     "s_show_window": "Pencereyi göster",
     "s_hide_window": "Pencereyi gizle",
     "s_show_navigation": "Navigasyonu göster",
     "s_expand_navigation": "Gezinme çubuğunu genişlet",
     "s_collapse_navigation": "Gezinme çubuğunu daralt",
     "s_expand_collapse_navigation": "Gezinme çubuğunu genişlet/daralt",
+    "s_expanded": null,
+    "s_collapsed": null,
     "s_show_menu": "Menüyü göster",
-    "s_expand_menu_bar": null,
-    "s_collapse_menu_bar": null,
+    "s_expand_menu_bar": "Menü çubuğunu genişlet",
+    "s_collapse_menu_bar": "Menü çubuğunu daralt",
     "s_toggle_menu_bar": "Menü çubuğunu aç/kapat",
     "s_more_info": "Daha fazla bilgi",
     "l_bullet": "• {item}",
@@ -93,7 +96,7 @@
     "s_help": "Yardım",
     "s_app_information": "Uygulama bilgileri",
     "s_home": "Ana sayfa",
-    "s_user_guide": "Kullanıcı Rehberi",
+    "s_user_guide": "Kullanıcı rehberi",
     "s_i_need_help": "Yardıma ihtiyacım var",
     "s_terms_of_use": "Kullanım koşulları",
     "s_privacy_policy": "Gizlilik politikası",
@@ -129,6 +132,17 @@
         }
     },
     "s_character_count": "Karakter sayısı",
+    "l_characters_used": null,
+    "@l_characters_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "max": {
+                "type": "int"
+            }
+        }
+    },
     "@_language": {},
 
     "s_language": "Dil",
@@ -346,6 +360,7 @@
             }
         }
     },
+    "s_persist_read_only_access": "Kalıcı salt okunur erişim",
     "s_ep_attestation": "Kurumsal Doğrulama",
     "s_ep_attestation_enabled": "Kurumsal Doğrulama etkinleştirildi",
     "q_enable_ep_attestation": "Kurumsal Doğrulama etkinleştirilsin mi?",
@@ -490,6 +505,7 @@
     "l_add_account_unlock_required": "Kilidin açılması gerekli",
     "l_add_account_func_missing": "Bu özellik mevcut değil ya da devre dışı bırakılmış",
     "l_account_name_required": "Hesabınızın bir adı olmalıdır",
+    "l_field_required": null,
     "l_name_already_exists": "Bu adda sağlayıcı zaten mevcut",
     "l_account_already_exists": "Bu hesap YubiKey'de zaten mevcut",
     "l_invalid_character_issuer": "Geçersiz karakter: ':' sağlayıcı isminde izin verilmiyor",
@@ -497,7 +513,7 @@
     "s_pin_account": "Hesabı sabitle",
     "s_unpin_account": "Hesabın sabitlemesini kaldır",
     "s_no_pinned_accounts": "Sabitlenmiş hesap yok",
-    "s_pinned": "Sabitlendi",
+    "s_pinned": "Sabitlenenler",
     "l_pin_account_desc": "Önemli hesaplarınızı bir arada tutun",
     "s_rename_account": "Hesabı yeniden adlandır",
     "l_rename_account_desc": "Hesabın sağlayıcısını/adını düzenleyin",
@@ -519,6 +535,7 @@
     "p_warning_disable_credential": "Kilitlenmeyi önlemek için bu hesabın kayıtlı olduğu hizmetten devre dışı bıraktığınızdan emin olun.",
     "s_account_name": "Hesap adı",
     "s_search_accounts": "Hesap ara",
+    "s_clear_search": null,
     "l_accounts_used": "Toplam {capacity} hesap kapasitesinin, {used} tanesi kullanılıyor",
     "@l_accounts_used": {
         "placeholders": {
@@ -546,11 +563,13 @@
             }
         }
     },
-    "s_issuer_optional": "Sağlayıcı (isteğe bağlı)",
     "s_counter_based": "Sayaca dayalı",
     "s_time_based": "Zamana dayalı",
     "l_copy_code_desc": "Kodu başka bir uygulamaya yapıştırın",
     "l_calculate_code_desc": "YubiKey'inizden yeni bir kod alın",
+    "s_account_type": null,
+    "s_period": null,
+    "s_digits": null,
     "@_fido_credentials": {},
 
     "s_rp_id": "RP kimliği",
@@ -735,6 +754,7 @@
     "l_key_deleted": "Anahtar silindi",
     "l_certificate_and_key_deleted": "Sertifika ve anahtar silindi",
     "l_include_certificate": "Sertifikayı dahil et",
+    "s_destination_slot": null,
     "l_select_destination_slot": "Hedef yuvasını seçin",
     "q_move_key_confirm": "{from_slot} PIV yuvasındaki özel anahtar taşınsın mı?",
     "@q_move_key_confirm": {
@@ -849,6 +869,7 @@
             }
         }
     },
+    "s_keyboard_layout": null,
     "l_keyboard_layout": "Klavye {layout}",
     "@l_keyboard_layout": {
         "placeholders": {
@@ -1087,6 +1108,14 @@
 
     "s_set_label": "Etiket ayarla",
     "s_set_color": "Renk ayarla",
+    "s_color_teal": null,
+    "s_color_cyan": null,
+    "s_color_blue": null,
+    "s_color_purple": null,
+    "s_color_red": null,
+    "s_color_orange": null,
+    "s_color_yellow": null,
+    "s_color_green": null,
     "s_change_label": "Etiketi değiştir",
     "p_set_will_add_custom_name": "Bu, YubiKey'inize özel bir ad verecektir.",
     "p_rename_will_change_custom_name": "Bu, YubiKey'inizin etiketini değiştirecektir.",

@@ -51,15 +51,18 @@
     "s_nfc": "NFC",
     "s_options": "Možnosti",
     "s_details": "Detaily",
+    "s_required": null,
     "s_show_window": "Zobrazit okno",
     "s_hide_window": "Skrýt okno",
     "s_show_navigation": "Zobrazit navigaci",
     "s_expand_navigation": "Rozbalit navigační panel",
     "s_collapse_navigation": "Skrýt navigační panel",
     "s_expand_collapse_navigation": "Rozbalit/skrýt navigační panel",
+    "s_expanded": null,
+    "s_collapsed": null,
     "s_show_menu": "Zobrazit nabídku",
-    "s_expand_menu_bar": null,
-    "s_collapse_menu_bar": null,
+    "s_expand_menu_bar": "Rozbalit panel nabídky",
+    "s_collapse_menu_bar": "Skrýt panel nabídky",
     "s_toggle_menu_bar": "Přepnout panel nabídky",
     "s_more_info": "Více informací",
     "l_bullet": "• {item}",
@@ -129,6 +132,17 @@
         }
     },
     "s_character_count": "Počet znaků",
+    "l_characters_used": null,
+    "@l_characters_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "max": {
+                "type": "int"
+            }
+        }
+    },
     "@_language": {},
 
     "s_language": "Jazyk",
@@ -346,6 +360,7 @@
             }
         }
     },
+    "s_persist_read_only_access": "Zachovat čtecí přístup",
     "s_ep_attestation": "Ověření podniku",
     "s_ep_attestation_enabled": "Ověření podniku je povoleno",
     "q_enable_ep_attestation": "Povolit ověření podniku?",
@@ -490,6 +505,7 @@
     "l_add_account_unlock_required": "Vyžadováno odemknutí",
     "l_add_account_func_missing": "Chybějící nebo deaktivovaná funkce",
     "l_account_name_required": "Váš účet musí mít jméno",
+    "l_field_required": null,
     "l_name_already_exists": "Toto jméno již pro vydavatele existuje",
     "l_account_already_exists": "Tento účet již na YubiKey existuje",
     "l_invalid_character_issuer": "Neplatný znak: ':' není u vydavatele povoleno",
@@ -519,6 +535,7 @@
     "p_warning_disable_credential": "Ujistěte se, že jste zakázali tento účet ze služby, se kterou je registrován, abyste se vyhnuli zablokování.",
     "s_account_name": "Název účtu",
     "s_search_accounts": "Hledat účty",
+    "s_clear_search": null,
     "l_accounts_used": "Použito {used} z {capacity} účtů",
     "@l_accounts_used": {
         "placeholders": {
@@ -546,11 +563,13 @@
             }
         }
     },
-    "s_issuer_optional": "Vydavatel (nepovinné)",
     "s_counter_based": "Založeno na počítadle",
     "s_time_based": "Založeno na čase",
     "l_copy_code_desc": "Vložte kód do jiné aplikace",
     "l_calculate_code_desc": "Získejte nový kód z vašeho YubiKey",
+    "s_account_type": null,
+    "s_period": null,
+    "s_digits": null,
     "@_fido_credentials": {},
 
     "s_rp_id": "RP ID",
@@ -735,6 +754,7 @@
     "l_key_deleted": "Klíč byl odstraněn",
     "l_certificate_and_key_deleted": "Certifikát a klíč byly odstraněny",
     "l_include_certificate": "Včetně certifikátu",
+    "s_destination_slot": null,
     "l_select_destination_slot": "Vyberte cílový slot",
     "q_move_key_confirm": "Přesunout soukromý klíč v PIV slotu {from_slot}?",
     "@q_move_key_confirm": {
@@ -849,6 +869,7 @@
             }
         }
     },
+    "s_keyboard_layout": null,
     "l_keyboard_layout": "Klávesnice {layout}",
     "@l_keyboard_layout": {
         "placeholders": {
@@ -1087,6 +1108,14 @@
 
     "s_set_label": "Nastavit jmenovku",
     "s_set_color": "Nastavit barvu",
+    "s_color_teal": null,
+    "s_color_cyan": null,
+    "s_color_blue": null,
+    "s_color_purple": null,
+    "s_color_red": null,
+    "s_color_orange": null,
+    "s_color_yellow": null,
+    "s_color_green": null,
     "s_change_label": "Změnit jmenovku",
     "p_set_will_add_custom_name": "Tímto nastavíte jmenovku vašeho YubiKey.",
     "p_rename_will_change_custom_name": "Tímto změníte jmenovku vašeho YubiKey.",

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2025 Yubico.
+ * Copyright (C) 2024-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -133,7 +133,8 @@ class FidoManager(
                 "cancelReset" -> resetHelper.cancelReset()
 
                 "unlock" -> unlock(
-                    (args["pin"] as String).toCharArray()
+                    (args["pin"] as String).toCharArray(),
+                    args["remember"] as Boolean
                 )
 
                 "setPin" -> setPin(
@@ -343,10 +344,11 @@ class FidoManager(
     private fun unlockSession(
         fidoSession: YubiKitFidoSession,
         clientPin: ClientPin,
-        pin: CharArray
+        pin: CharArray,
+        remember: Boolean
     ): String {
         val infoData = fidoSession.info
-        if (CredentialManagement.isReadonlySupported(infoData)) {
+        if (remember && CredentialManagement.isReadonlySupported(infoData)) {
             persistentPinUvAuthToken =
                 clientPin.getPinToken(pin, ClientPin.PIN_PERMISSION_PCMR, null)
             persistentPinUvAuthToken?.let { persistentPinUvAuthToken ->
@@ -480,7 +482,7 @@ class FidoManager(
         }
     }
 
-    private suspend fun unlock(pin: CharArray): String =
+    private suspend fun unlock(pin: CharArray, remember: Boolean): String =
         connectionHelper.useSession { fidoSession ->
 
             try {
@@ -488,7 +490,7 @@ class FidoManager(
                     ClientPin(fidoSession, getPreferredPinUvAuthProtocol(fidoSession.cachedInfo))
 
                 catchPinErrors(clientPin) {
-                    unlockSession(fidoSession, clientPin, pin)
+                    unlockSession(fidoSession, clientPin, pin, remember)
                 }
             } catch (e: IOException) {
                 // something failed, keep the session locked
@@ -525,7 +527,7 @@ class FidoManager(
 
                 catchPinErrors(clientPin) {
                     setOrChangePin(fidoSession, clientPin, pin, newPin)
-                    unlockSession(fidoSession, clientPin, newPin)
+                    unlockSession(fidoSession, clientPin, newPin, remember = false)
                 }
             } finally {
                 Arrays.fill(newPin, 0.toChar())

@@ -51,15 +51,18 @@
     "s_nfc": "NFC",
     "s_options": "Alternativ",
     "s_details": "Detaljer",
+    "s_required": null,
     "s_show_window": "Visa fönster",
     "s_hide_window": "Dölj fönster",
     "s_show_navigation": "Visa navigering",
     "s_expand_navigation": "Expandera navigeringsfältet",
     "s_collapse_navigation": "Minimera navigationsfältet",
     "s_expand_collapse_navigation": "Expandera/minimera navigeringsfältet",
+    "s_expanded": null,
+    "s_collapsed": null,
     "s_show_menu": "Visa meny",
-    "s_expand_menu_bar": null,
-    "s_collapse_menu_bar": null,
+    "s_expand_menu_bar": "Expandera menyfältet",
+    "s_collapse_menu_bar": "Dölj menyfältet",
     "s_toggle_menu_bar": "Växla menyfältet",
     "s_more_info": "Mer info",
     "l_bullet": "• {item}",
@@ -129,6 +132,17 @@
         }
     },
     "s_character_count": "Antal tecken",
+    "l_characters_used": null,
+    "@l_characters_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "max": {
+                "type": "int"
+            }
+        }
+    },
     "@_language": {},
 
     "s_language": "Språk",
@@ -148,9 +162,9 @@
 
     "s_select_to_scan": "Välj att skanna",
     "s_hide_reader": "Göm läsare",
-    "s_show_hidden_readers": "Visa gömda läsare",
+    "s_show_hidden_readers": "Visa dolda läsare",
     "s_toggle_readers": "Växla läsare",
-    "l_toggle_readers_desc": "Visa eller göm läsare",
+    "l_toggle_readers_desc": "Visa eller dölj läsare",
     "s_sn_serial": "S/N: {serial}",
     "@s_sn_serial": {
         "placeholders": {
@@ -346,6 +360,7 @@
             }
         }
     },
+    "s_persist_read_only_access": "Behåll skrivskyddad åtkomst",
     "s_ep_attestation": "Företagsintyg",
     "s_ep_attestation_enabled": "Företagsattestering aktiverad",
     "q_enable_ep_attestation": "Aktivera Enterprise Attestation?",
@@ -490,6 +505,7 @@
     "l_add_account_unlock_required": "Upplåsning krävs",
     "l_add_account_func_missing": "Funktionalitet saknas eller är inaktiverad",
     "l_account_name_required": "Ditt konto måste ha ett namn",
+    "l_field_required": null,
     "l_name_already_exists": "Detta namn finns redan för emittenten",
     "l_account_already_exists": "Detta konto finns redan på YubiKey",
     "l_invalid_character_issuer": "Ogiltigt tecken: ':' är inte tillåtet i issuer",
@@ -519,6 +535,7 @@
     "p_warning_disable_credential": "Se till att inaktivera det här kontot från den tjänst det är registrerat med för att undvika att bli utelåst.",
     "s_account_name": "Kontonamn",
     "s_search_accounts": "Sök konton",
+    "s_clear_search": null,
     "l_accounts_used": "{used} av {capacity} konton som används",
     "@l_accounts_used": {
         "placeholders": {
@@ -546,11 +563,13 @@
             }
         }
     },
-    "s_issuer_optional": "Utfärdare (valfritt)",
     "s_counter_based": "Räknare baserad",
     "s_time_based": "Tidsbaserad",
     "l_copy_code_desc": "Klistra in koden i ett annat program",
     "l_calculate_code_desc": "Få en ny kod från din YubiKey",
+    "s_account_type": null,
+    "s_period": null,
+    "s_digits": null,
     "@_fido_credentials": {},
 
     "s_rp_id": "RP-ID",
@@ -563,7 +582,7 @@
     "l_ready_to_use": "Klar att använda",
     "l_register_sk_on_websites": "Registrera som säkerhetsnyckel på webbplatser",
     "l_no_discoverable_accounts": "Inga passkeys lagrade",
-    "p_non_passkeys_note": "Icke-passkey autentiseringsuppgifter kan finnas, men kan inte listas.",
+    "p_non_passkeys_note": "Autentiseringsuppgifter som inte är passkeys kan finnas, men kan inte visas.",
     "s_delete_passkey": "Radera passkey",
     "q_delete_passkey": "Radera passkey?",
     "l_delete_passkey_desc": "Ta bort passkey från YubiKey",
@@ -735,6 +754,7 @@
     "l_key_deleted": "Nyckel borttagen",
     "l_certificate_and_key_deleted": "Certifikat och nyckel raderade",
     "l_include_certificate": "Inkludera certifikat",
+    "s_destination_slot": null,
     "l_select_destination_slot": "Välj destinationsplats",
     "q_move_key_confirm": "Flytta den privata nyckeln i PIV-platsen {from_slot}?",
     "@q_move_key_confirm": {
@@ -826,7 +846,7 @@
     "l_otp_slot_configured": "Kortplatsen är konfigurerad",
     "@_otp_slot_configurations": {},
 
-    "l_yubiotp_desc": "Programmera en Yubico OTP-legitimation",
+    "l_yubiotp_desc": "Programmera en Yubico OTP-autentiseringsuppgift",
     "s_challenge_response": "Utmaning-svar",
     "l_challenge_response_desc": "Programmera en referens för utmaning/svar",
     "s_static_password": "Statiskt lösenord",
@@ -849,6 +869,7 @@
             }
         }
     },
+    "s_keyboard_layout": null,
     "l_keyboard_layout": "Tangentbord {layout}",
     "@l_keyboard_layout": {
         "placeholders": {
@@ -897,7 +918,7 @@
         }
     },
     "s_append_enter": "Tillägg ⏎",
-    "l_append_enter_desc": "Lägg till en Enter-tangenttryckning efter att OTP:n har skickats ut",
+    "l_append_enter_desc": "Lägg till ett Enter-tangenttryck efter att OTP:n har skickats",
     "@_otp_errors": {},
 
     "p_otp_swap_error": "Misslyckades med att byta kortplatser! Kontrollera att YubiKey inte har begränsad åtkomst.",
@@ -962,10 +983,10 @@
 
     "s_reset": "Återställ",
     "s_factory_reset": "Fabriksåterställning",
-    "l_factory_reset_desc": "Återställ YubiKey-standardvärden",
+    "l_factory_reset_desc": "Återställ YubiKey till standardinställningar",
     "l_factory_reset_required": "Fabriksåterställning krävs",
-    "l_oath_application_reset": "Återställning av OATH-ansökan",
-    "l_fido_app_reset": "Återställning av FIDO-applikation",
+    "l_oath_application_reset": "Återställning av OATH-applikationen",
+    "l_fido_app_reset": "Återställning av FIDO-applikationen",
     "l_reset_failed": "Fel vid återställning: {message}",
     "@l_reset_failed": {
         "placeholders": {
@@ -974,7 +995,7 @@
             }
         }
     },
-    "l_piv_app_reset": "Återställning av PIV-ansökan",
+    "l_piv_app_reset": "Återställning av PIV-applikationen",
     "p_factory_reset_an_app": "Fabriksåterställ en applikation på din YubiKey.",
     "p_factory_reset_desc": "Data lagras i flera applikationer på YubiKey, varav vissa kan fabriksåterställas oberoende av varandra.\n\nVälj en applikation ovan för att återställa.",
     "p_warning_factory_reset": "Varning för detta! Detta kommer oåterkalleligen att radera alla OATH TOTP / HOTP-konton från din YubiKey.",
@@ -1087,6 +1108,14 @@
 
     "s_set_label": "Ställ in etikett",
     "s_set_color": "Ställ in färg",
+    "s_color_teal": null,
+    "s_color_cyan": null,
+    "s_color_blue": null,
+    "s_color_purple": null,
+    "s_color_red": null,
+    "s_color_orange": null,
+    "s_color_yellow": null,
+    "s_color_green": null,
     "s_change_label": "Ändra etikett",
     "p_set_will_add_custom_name": "Detta ger din YubiKey ett eget namn.",
     "p_rename_will_change_custom_name": "Detta kommer att ändra etiketten på din YubiKey.",

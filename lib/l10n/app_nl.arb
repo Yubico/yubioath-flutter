@@ -51,15 +51,18 @@
     "s_nfc": "NFC",
     "s_options": "Opties",
     "s_details": "Details",
+    "s_required": null,
     "s_show_window": "Venster weergeven",
     "s_hide_window": "Venster verbergen",
     "s_show_navigation": "Navigatie weergeven",
     "s_expand_navigation": "Navigatiebalk uitklappen",
     "s_collapse_navigation": "Navigatiebalk inklappen",
     "s_expand_collapse_navigation": "Navigatiebalk uit-/inklappen",
+    "s_expanded": null,
+    "s_collapsed": null,
     "s_show_menu": "Menu weergeven",
-    "s_expand_menu_bar": null,
-    "s_collapse_menu_bar": null,
+    "s_expand_menu_bar": "Menubalk uitklappen",
+    "s_collapse_menu_bar": "Menubalk inklappen",
     "s_toggle_menu_bar": "Menubalk wisselen",
     "s_more_info": "Meer info",
     "l_bullet": "• {item}",
@@ -129,6 +132,17 @@
         }
     },
     "s_character_count": "Aantal tekens",
+    "l_characters_used": null,
+    "@l_characters_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "max": {
+                "type": "int"
+            }
+        }
+    },
     "@_language": {},
 
     "s_language": "Taal",
@@ -346,6 +360,7 @@
             }
         }
     },
+    "s_persist_read_only_access": "Doorgaan met alleen-lezen toegang",
     "s_ep_attestation": "Bedrijf herkenning",
     "s_ep_attestation_enabled": "Bedrijfsherkenning ingeschakeld",
     "q_enable_ep_attestation": "Bedrijfsherkenning inschakelen?",
@@ -490,6 +505,7 @@
     "l_add_account_unlock_required": "Ontgrendelen vereist",
     "l_add_account_func_missing": "Functionaliteit ontbreekt of is uitgeschakeld",
     "l_account_name_required": "Uw account moet een naam hebben",
+    "l_field_required": null,
     "l_name_already_exists": "Deze naam bestaat al voor deze uitgever",
     "l_account_already_exists": "Dit account bestaat al op de YubiKey",
     "l_invalid_character_issuer": "Ongeldig teken. : is niet toegestaan",
@@ -519,6 +535,7 @@
     "p_warning_disable_credential": "Zorg ervoor dat u dit account uitschakelt bij de service waarbij het is geregistreerd om te voorkomen dat u wordt buitengesloten.",
     "s_account_name": "Accountnaam",
     "s_search_accounts": "Accounts zoeken",
+    "s_clear_search": null,
     "l_accounts_used": "{used} van {capacity} accounts gebruikt",
     "@l_accounts_used": {
         "placeholders": {
@@ -546,11 +563,13 @@
             }
         }
     },
-    "s_issuer_optional": "Uitgever (optioneel)",
     "s_counter_based": "Op tellen gebaseerd",
     "s_time_based": "Op tijd gebaseerd",
     "l_copy_code_desc": "De code in een andere toepassing plakken",
     "l_calculate_code_desc": "Een nieuwe code van uw YubiKey krijgen",
+    "s_account_type": null,
+    "s_period": null,
+    "s_digits": null,
     "@_fido_credentials": {},
 
     "s_rp_id": "RP ID",
@@ -735,6 +754,7 @@
     "l_key_deleted": "Sleutel verwijderd",
     "l_certificate_and_key_deleted": "Certificaat en sleutel verwijderd",
     "l_include_certificate": "Certificaat opnemen",
+    "s_destination_slot": null,
     "l_select_destination_slot": "Bestemmingsslot selecteren",
     "q_move_key_confirm": "De privésleutel in PIV-slot {from_slot} verplaatsen?",
     "@q_move_key_confirm": {
@@ -849,6 +869,7 @@
             }
         }
     },
+    "s_keyboard_layout": null,
     "l_keyboard_layout": "Toetsenbord {layout}",
     "@l_keyboard_layout": {
         "placeholders": {
@@ -1087,6 +1108,14 @@
 
     "s_set_label": "Label instellen",
     "s_set_color": "Kleur instellen",
+    "s_color_teal": null,
+    "s_color_cyan": null,
+    "s_color_blue": null,
+    "s_color_purple": null,
+    "s_color_red": null,
+    "s_color_orange": null,
+    "s_color_yellow": null,
+    "s_color_green": null,
     "s_change_label": "Label wijzigen",
     "p_set_will_add_custom_name": "Dit geeft uw YubiKey een aangepaste naam.",
     "p_rename_will_change_custom_name": "Dit verandert het label van uw YubiKey.",

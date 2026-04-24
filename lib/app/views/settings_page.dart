@@ -131,34 +131,33 @@ class _ThemeModeView extends ConsumerWidget {
     final themeMode = ref.watch(themeModeProvider);
     final supportedThemes = ref.read(supportedThemesProvider);
 
-    final content = RadioGroup(
+    final content = RadioGroup<ThemeMode>(
       groupValue: themeMode,
-      onChanged: (mode) {
-        if (mode != null) {
-          ref.read(themeModeProvider.notifier).setThemeMode(mode);
-          if (isDialog) {
-            Navigator.pop(context, mode);
-          }
+      onChanged: (value) {
+        if (value != null) {
+          ref.read(themeModeProvider.notifier).setThemeMode(value);
         }
       },
       child: Column(
         children: [
           ListTitle(l10n.s_options),
           ...supportedThemes.map(
-            (e) => RadioListTile(
+            (e) => ListTile(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(isDialog ? 0 : 48.0),
               ),
               contentPadding: isDesktop
-                  ? EdgeInsets.symmetric(horizontal: 22)
+                  ? const EdgeInsets.symmetric(horizontal: 22)
                   : null,
+              leading: Radio<ThemeMode>(value: e, toggleable: true),
               title: Transform.translate(
                 offset: Offset(isDesktop ? 4 : 0, 0),
                 child: Text(e.getDisplayName(l10n)),
               ),
-              value: e,
               key: keys.themeModeOption(e),
-              toggleable: true,
+              onTap: () {
+                ref.read(themeModeProvider.notifier).setThemeMode(e);
+              },
             ),
           ),
         ],
@@ -231,12 +230,14 @@ class _HelpView extends ConsumerWidget {
               borderRadius: itemRadius,
               icon: Icon(Symbols.open_in_new),
               title: l10n.s_terms_of_use,
+              titleStyle: const TextStyle(decoration: TextDecoration.underline),
               onTap: (_) => launchTermsUrl(),
             ),
             ActionListItem(
               borderRadius: itemRadius,
               icon: Icon(Symbols.open_in_new),
               title: l10n.s_privacy_policy,
+              titleStyle: const TextStyle(decoration: TextDecoration.underline),
               onTap: (_) => launchPrivacyUrl(),
             ),
             ActionListItem(
@@ -263,12 +264,14 @@ class _HelpView extends ConsumerWidget {
               borderRadius: itemRadius,
               icon: Icon(Symbols.open_in_new),
               title: l10n.s_user_guide,
+              titleStyle: const TextStyle(decoration: TextDecoration.underline),
               onTap: (_) => launchDocumentationUrl(),
             ),
             ActionListItem(
               borderRadius: itemRadius,
               icon: Icon(Symbols.open_in_new),
               title: l10n.s_i_need_help,
+              titleStyle: const TextStyle(decoration: TextDecoration.underline),
               onTap: (_) => launchHelpUrl(),
             ),
             if (isDesktop)
@@ -578,33 +581,32 @@ class _LanguageView extends ConsumerWidget {
     );
 
     final itemRadius = isDialog ? 0.0 : null;
-    final content = RadioGroup(
+    final content = RadioGroup<Locale>(
       groupValue: currentLocale,
       onChanged: (value) {
         if (value != null) {
           ref.read(currentLocaleProvider.notifier).setLocale(value);
-          if (isDialog) {
-            Navigator.pop(context, value);
-          }
         }
       },
       child: Column(
         children: [
           ListTitle(l10n.s_options),
           ...supportedLocales.map(
-            (e) => RadioListTile(
+            (e) => ListTile(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(isDialog ? 0 : 48.0),
               ),
               contentPadding: isDesktop
-                  ? EdgeInsets.symmetric(horizontal: 22)
+                  ? const EdgeInsets.symmetric(horizontal: 22)
                   : null,
+              leading: Radio<Locale>(value: e, toggleable: true),
               title: Transform.translate(
                 offset: Offset(isDesktop ? 4 : 0, 0),
                 child: _buildLocaleTitle(context, e, status),
               ),
-              value: e,
-              toggleable: true,
+              onTap: () {
+                ref.read(currentLocaleProvider.notifier).setLocale(e);
+              },
             ),
           ),
           ActionListSection(
@@ -615,6 +617,9 @@ class _LanguageView extends ConsumerWidget {
                 borderRadius: itemRadius,
                 icon: Icon(Symbols.open_in_new),
                 title: l10n.l_localization_project,
+                titleStyle: const TextStyle(
+                  decoration: TextDecoration.underline,
+                ),
                 onTap: (_) => launchCrowdinUrl(),
               ),
             ],
@@ -744,33 +749,33 @@ class _LogsViewState extends ConsumerState<_LogsView> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final logLevel = ref.watch(logLevelProvider);
-    final logLevelRadioGroup = RadioGroup(
+
+    final logLevelRadioGroup = RadioGroup<Level>(
       groupValue: logLevel,
       onChanged: (value) {
         if (value != null) {
           ref.read(logLevelProvider.notifier).setLogLevel(value);
-          if (widget.isDialog) {
-            Navigator.pop(context, value);
-          }
         }
       },
       child: Column(
         children: [
           ListTitle(l10n.s_logging_level),
           ...Levels.LEVELS.map(
-            (e) => RadioListTile<Level>(
+            (e) => ListTile(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(widget.isDialog ? 0 : 48.0),
               ),
               contentPadding: isDesktop
-                  ? EdgeInsets.symmetric(horizontal: 22)
+                  ? const EdgeInsets.symmetric(horizontal: 22)
                   : null,
+              leading: Radio<Level>(value: e, toggleable: true),
               title: Transform.translate(
                 offset: Offset(isDesktop ? 4 : 0, 0),
                 child: Text('${e.name[0]}${e.name.substring(1).toLowerCase()}'),
               ),
-              value: e,
-              toggleable: true,
+              onTap: () {
+                ref.read(logLevelProvider.notifier).setLogLevel(e);
+              },
             ),
           ),
         ],
@@ -873,13 +878,15 @@ class _LogsViewState extends ConsumerState<_LogsView> {
       ],
     );
 
-    return widget.isDialog
-        ? ResponsiveDialog(
-            title: Text(l10n.s_debugging_tools),
-            dialogMaxWidth: 400,
-            builder: (context, fullScreen) => content,
-          )
-        : content;
+    if (widget.isDialog) {
+      return ResponsiveDialog(
+        title: Text(l10n.s_debugging_tools),
+        dialogMaxWidth: 400,
+        builder: (context, fullScreen) => content,
+      );
+    } else {
+      return content;
+    }
   }
 }
 

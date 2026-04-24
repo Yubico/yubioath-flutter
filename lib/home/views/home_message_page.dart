@@ -30,7 +30,6 @@ class HomeMessagePage extends ConsumerWidget {
   final String? message;
   final String? footnote;
   final bool delayedContent;
-  final Widget Function(BuildContext context)? actionButtonBuilder;
   final List<Widget> Function(BuildContext context, bool expanded)?
   actionsBuilder;
   final Widget? fileDropOverlay;
@@ -45,7 +44,6 @@ class HomeMessagePage extends ConsumerWidget {
     this.header,
     this.message,
     this.footnote,
-    this.actionButtonBuilder,
     this.actionsBuilder,
     this.fileDropOverlay,
     this.onFileDropped,
@@ -65,7 +63,6 @@ class HomeMessagePage extends ConsumerWidget {
       header: header,
       message: message,
       footnote: footnote,
-      actionButtonBuilder: actionButtonBuilder,
       actionsBuilder: actionsBuilder,
       fileDropOverlay: fileDropOverlay,
       onFileDropped: onFileDropped,

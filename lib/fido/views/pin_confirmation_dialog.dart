@@ -24,6 +24,7 @@ import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../../widgets/visibility_toggle_button.dart';
 import '../keys.dart';
 import '../models.dart';
 import '../state.dart';
@@ -66,11 +67,19 @@ class _FidoPinConfirmationDialog
   }
 
   void _submit() async {
+    final pin = _pinController.text;
+
+    if (pin.isEmpty) {
+      setState(() {
+        _pinIsWrong = true;
+      });
+      return;
+    }
+
     final navigator = Navigator.of(context);
     _pinFocus.unfocus();
 
     setState(() {
-      _pinIsWrong = false;
       _isObscure = true;
     });
     try {
@@ -110,6 +119,9 @@ class _FidoPinConfirmationDialog
 
   String? _getErrorText() {
     final l10n = AppLocalizations.of(context);
+    if (_pinController.text.isEmpty) {
+      return l10n.l_field_required;
+    }
     if (_retries == 0) {
       return l10n.l_pin_blocked_reset;
     }
@@ -133,12 +145,7 @@ class _FidoPinConfirmationDialog
       actions: [
         TextButton(
           key: unlockFido2WithPinConfirmation,
-          onPressed:
-              !_pinIsWrong &&
-                  _pinController.text.length >= widget.state.minPinLength &&
-                  !_blocked
-              ? _submit
-              : null,
+          onPressed: !authBlocked ? _submit : null,
           child: Text(l10n.s_unlock),
         ),
       ],
@@ -172,21 +179,15 @@ class _FidoPinConfirmationDialog
                             : null,
                         errorMaxLines: 3,
                         icon: const Icon(Symbols.pin),
-                        suffixIcon: IconButton(
-                          isSelected: !_isObscure,
-                          icon: Icon(
-                            _isObscure
-                                ? Symbols.visibility
-                                : Symbols.visibility_off,
-                          ),
-                          onPressed: () {
+                        suffixIcon: VisibilityToggleButton(
+                          isObscured: _isObscure,
+                          onToggle: () {
                             setState(() {
                               _isObscure = !_isObscure;
                             });
                           },
-                          tooltip: _isObscure
-                              ? l10n.s_show_pin
-                              : l10n.s_hide_pin,
+                          showLabel: l10n.s_show_pin,
+                          hideLabel: l10n.s_hide_pin,
                         ),
                       ),
                       onChanged: (value) {
@@ -196,12 +197,7 @@ class _FidoPinConfirmationDialog
                       },
                       // Update state on change
                       onSubmitted: (_) {
-                        if (_pinController.text.length >=
-                            widget.state.minPinLength) {
-                          _submit();
-                        } else {
-                          _pinFocus.requestFocus();
-                        }
+                        _submit();
                       },
                     ).init(),
                   ]

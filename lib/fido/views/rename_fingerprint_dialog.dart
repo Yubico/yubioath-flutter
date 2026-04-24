@@ -43,6 +43,7 @@ class RenameFingerprintDialog extends ConsumerStatefulWidget {
 class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
   late TextEditingController _labelController;
   late FocusNode _labelFocus;
+  String? _labelError;
   _RenameAccountDialogState();
 
   @override
@@ -60,6 +61,13 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
   }
 
   Future<void> _submit() async {
+    final label = _labelController.text.trim();
+    if (label.isEmpty) {
+      setState(() {
+        _labelError = AppLocalizations.of(context).l_field_required;
+      });
+      return;
+    }
     final l10n = AppLocalizations.of(context);
     try {
       final renamed = await ref
@@ -90,12 +98,7 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
     final label = _labelController.text.trim();
     return ResponsiveDialog(
       title: Text(l10n.s_rename_fp),
-      actions: [
-        TextButton(
-          onPressed: label.isNotEmpty ? _submit : null,
-          child: Text(l10n.s_save),
-        ),
-      ],
+      actions: [TextButton(onPressed: _submit, child: Text(l10n.s_save))],
       builder: (context, _) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
@@ -112,10 +115,14 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_name,
+                        isRequired: true,
+                        errorText: _labelError,
                         icon: const Icon(Symbols.fingerprint),
                       ),
                       onChanged: (_) {
-                        setState(() {});
+                        setState(() {
+                          _labelError = null;
+                        });
                       },
                       onSubmitted: (_) {
                         if (label.isNotEmpty) {

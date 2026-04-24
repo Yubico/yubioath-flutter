@@ -51,15 +51,18 @@
     "s_nfc": "NFC",
     "s_options": "Опции",
     "s_details": "Сведения",
+    "s_required": null,
     "s_show_window": "Показать окно",
     "s_hide_window": "Скрыть окно",
     "s_show_navigation": "Показать навигацию",
     "s_expand_navigation": "Развернуть панель навигации",
     "s_collapse_navigation": "Свернуть панель навигации",
     "s_expand_collapse_navigation": "Развернуть/свернуть панель навигации",
+    "s_expanded": null,
+    "s_collapsed": null,
     "s_show_menu": "Показать меню",
-    "s_expand_menu_bar": null,
-    "s_collapse_menu_bar": null,
+    "s_expand_menu_bar": "Развернуть строку меню",
+    "s_collapse_menu_bar": "Свернуть строку меню",
     "s_toggle_menu_bar": "Показать/скрыть строку меню",
     "s_more_info": "Дополнительная информация",
     "l_bullet": "• {item}",
@@ -129,6 +132,17 @@
         }
     },
     "s_character_count": "Количество символов",
+    "l_characters_used": null,
+    "@l_characters_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "max": {
+                "type": "int"
+            }
+        }
+    },
     "@_language": {},
 
     "s_language": "Язык",
@@ -346,6 +360,7 @@
             }
         }
     },
+    "s_persist_read_only_access": "Установить доступ только для чтения",
     "s_ep_attestation": "Корпоративная Аттестация",
     "s_ep_attestation_enabled": "Включена Корпоративная Аттестация",
     "q_enable_ep_attestation": "Включить Корпоративную Аттестацию?",
@@ -490,6 +505,7 @@
     "l_add_account_unlock_required": "Требуется разблокировка",
     "l_add_account_func_missing": "Функциональность отсутствует или отключена",
     "l_account_name_required": "У вашей учетной записи должно быть имя",
+    "l_field_required": null,
     "l_name_already_exists": "Такое имя уже существует для этого издателя",
     "l_account_already_exists": "Эта учётная запись уже существует на YubiKey",
     "l_invalid_character_issuer": "Недопустимый символ: ':' не допускается в издателе",
@@ -519,6 +535,7 @@
     "p_warning_disable_credential": "Отключите эту учётную запись в сервисе, иначе вы можете потерять к нему доступ.",
     "s_account_name": "Имя учётной записи",
     "s_search_accounts": "Поиск учётных записей",
+    "s_clear_search": null,
     "l_accounts_used": "Используется {used} из {capacity} учётных записей",
     "@l_accounts_used": {
         "placeholders": {
@@ -546,11 +563,13 @@
             }
         }
     },
-    "s_issuer_optional": "Издатель (необязательно)",
     "s_counter_based": "На основе счётчика",
     "s_time_based": "На основе времени",
     "l_copy_code_desc": "Вставьте код в другое приложение",
     "l_calculate_code_desc": "Получите новый код из вашего YubiKey",
+    "s_account_type": null,
+    "s_period": null,
+    "s_digits": null,
     "@_fido_credentials": {},
 
     "s_rp_id": "RP ID",
@@ -735,6 +754,7 @@
     "l_key_deleted": "Ключ удален",
     "l_certificate_and_key_deleted": "Сертификат и ключ удалены",
     "l_include_certificate": "Включить сертификат",
+    "s_destination_slot": null,
     "l_select_destination_slot": "Выберите слот назначения",
     "q_move_key_confirm": "Переместить закрытый ключ в слот PIV {from_slot}?",
     "@q_move_key_confirm": {
@@ -849,6 +869,7 @@
             }
         }
     },
+    "s_keyboard_layout": null,
     "l_keyboard_layout": "Клавиатура {layout}",
     "@l_keyboard_layout": {
         "placeholders": {
@@ -1087,6 +1108,14 @@
 
     "s_set_label": "Установить метку",
     "s_set_color": "Установить цвет",
+    "s_color_teal": null,
+    "s_color_cyan": null,
+    "s_color_blue": null,
+    "s_color_purple": null,
+    "s_color_red": null,
+    "s_color_orange": null,
+    "s_color_yellow": null,
+    "s_color_green": null,
     "s_change_label": "Изменить метку",
     "p_set_will_add_custom_name": "Это даст вашему YubiKey пользовательское имя.",
     "p_rename_will_change_custom_name": "Это изменит метку YubiKey.",

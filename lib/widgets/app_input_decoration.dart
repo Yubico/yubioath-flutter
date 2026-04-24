@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
+import '../generated/l10n/app_localizations.dart';
+
 class AppInputDecoration extends InputDecoration {
   final List<Widget>? suffixIcons;
+  final bool isRequired;
 
   const AppInputDecoration({
     // allow multiple suffixIcons
     this.suffixIcons,
+    this.isRequired = false,
     // forward other TextField parameters
     super.icon,
     super.iconColor,
@@ -64,6 +68,29 @@ class AppInputDecoration extends InputDecoration {
          !(suffixIcon != null && suffixIcons != null),
          'Declaring both suffixIcon and suffixIcons is not supported.',
        );
+
+  @override
+  String? get labelText => isRequired ? null : super.labelText;
+
+  @override
+  Widget? get label {
+    if (super.label != null) return super.label;
+    if (!isRequired || super.labelText == null) return null;
+    return Builder(
+      builder: (context) {
+        final l10n = AppLocalizations.of(context);
+        return Text.rich(
+          TextSpan(
+            children: [
+              TextSpan(text: super.labelText),
+              TextSpan(text: '*'),
+            ],
+          ),
+          semanticsLabel: '${super.labelText}, ${l10n.s_required}',
+        );
+      },
+    );
+  }
 
   @override
   Widget? get suffixIcon {

@@ -31,6 +31,7 @@ import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/choice_filter_chip.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../../widgets/visibility_toggle_button.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
@@ -53,7 +54,7 @@ class ConfigureHotpDialog extends ConsumerStatefulWidget {
 class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
   final _secretController = TextEditingController();
   final _secretFocus = FocusNode();
-  bool _validateSecret = false;
+  String? _secretError;
   int _digits = defaultDigits;
   final List<int> _digitsValues = [6, 8];
   bool _appendEnter = true;
@@ -75,9 +76,23 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
     final secretFormatValid = Format.base32.isValid(secret);
 
     void submit() async {
-      if (!secretLengthValid || !secretFormatValid) {
+      if (secret.isEmpty) {
         setState(() {
-          _validateSecret = true;
+          _secretError = l10n.l_field_required;
+        });
+        return;
+      }
+      if (!secretFormatValid) {
+        setState(() {
+          _secretError = l10n.l_invalid_format_allowed_chars(
+            Format.base32.allowedCharacters,
+          );
+        });
+        return;
+      }
+      if (!secretLengthValid) {
+        setState(() {
+          _secretError = l10n.s_invalid_length;
         });
         return;
       }
@@ -139,7 +154,7 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
       actions: [
         TextButton(
           key: keys.saveButton,
-          onPressed: !_validateSecret ? submit : null,
+          onPressed: submit,
           child: Text(l10n.s_save),
         ),
       ],
@@ -161,45 +176,30 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_secret_key,
+                        isRequired: true,
                         helperText: '',
                         // Prevents resizing when errorText shown
-                        errorText: _validateSecret && !secretFormatValid
-                            ? l10n.l_invalid_format_allowed_chars(
-                                Format.base32.allowedCharacters,
-                              )
-                            : _validateSecret && !secretLengthValid
-                            ? l10n.s_invalid_length
-                            : null,
+                        errorText: _secretError,
                         icon: const Icon(Symbols.key),
-                        suffixIcon: IconButton(
-                          isSelected: !_isObscure,
-                          icon: Icon(
-                            _isObscure
-                                ? Symbols.visibility
-                                : Symbols.visibility_off,
-                          ),
-                          onPressed: () {
+                        suffixIcon: VisibilityToggleButton(
+                          isObscured: _isObscure,
+                          onToggle: () {
                             setState(() {
                               _isObscure = !_isObscure;
                             });
                           },
-                          tooltip: _isObscure
-                              ? l10n.s_show_secret_key
-                              : l10n.s_hide_secret_key,
+                          showLabel: l10n.s_show_secret_key,
+                          hideLabel: l10n.s_hide_secret_key,
                         ),
                       ),
                       textInputAction: .next,
                       onChanged: (value) {
                         setState(() {
-                          _validateSecret = false;
+                          _secretError = null;
                         });
                       },
                       onSubmitted: (_) {
-                        if (!_validateSecret) {
-                          submit();
-                        } else {
-                          _secretFocus.requestFocus();
-                        }
+                        submit();
                       },
                     ).init(),
                     Row(
@@ -235,6 +235,7 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
                                 items: _digitsValues,
                                 value: _digits,
                                 selected: _digits != defaultDigits,
+                                tooltip: l10n.s_digits,
                                 itemBuilder: (value) =>
                                     Text(l10n.s_num_digits(value)),
                                 onChanged: (digits) {

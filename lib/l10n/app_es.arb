@@ -51,12 +51,15 @@
     "s_nfc": "NFC",
     "s_options": "Opciones",
     "s_details": "Detalles",
+    "s_required": null,
     "s_show_window": "Mostrar ventana",
     "s_hide_window": "Ocultar ventana",
     "s_show_navigation": "Mostrar navegación",
     "s_expand_navigation": "Ampliar la barra navegación",
     "s_collapse_navigation": "Contraer barra de navegación",
     "s_expand_collapse_navigation": "Ampliar/contraer barra de navegación",
+    "s_expanded": null,
+    "s_collapsed": null,
     "s_show_menu": "Mostrar menú",
     "s_expand_menu_bar": null,
     "s_collapse_menu_bar": null,
@@ -129,6 +132,17 @@
         }
     },
     "s_character_count": "Cantidad de caracteres",
+    "l_characters_used": null,
+    "@l_characters_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "max": {
+                "type": "int"
+            }
+        }
+    },
     "@_language": {},
 
     "s_language": "Idioma",
@@ -346,6 +360,7 @@
             }
         }
     },
+    "s_persist_read_only_access": null,
     "s_ep_attestation": "Atestación empresarial",
     "s_ep_attestation_enabled": "Atestación empresarial habilitada",
     "q_enable_ep_attestation": "¿Habilitar atestación empresarial?",
@@ -490,6 +505,7 @@
     "l_add_account_unlock_required": "Desbloqueo requerido",
     "l_add_account_func_missing": "Funcionalidad faltante o deshabilitada",
     "l_account_name_required": "Tu cuenta debe tener un nombre",
+    "l_field_required": null,
     "l_name_already_exists": "Este nombre ya existe para el emisor",
     "l_account_already_exists": "Esta cuenta ya existe en la YubiKey",
     "l_invalid_character_issuer": "Carácter inválido: “:” no está permitido en el emisor",
@@ -519,6 +535,7 @@
     "p_warning_disable_credential": "Asegúrate de deshabilitar esta cuenta del servicio en el que está registrada para evitar que se bloquee.",
     "s_account_name": "Nombre de la cuenta",
     "s_search_accounts": "Buscar cuentas",
+    "s_clear_search": null,
     "l_accounts_used": "{used} de {capacity} cuentas usadas",
     "@l_accounts_used": {
         "placeholders": {
@@ -546,11 +563,13 @@
             }
         }
     },
-    "s_issuer_optional": "Emisor (opcional)",
     "s_counter_based": "Basado en contador",
     "s_time_based": "Basado en tiempo",
     "l_copy_code_desc": "Pegar el código en otra aplicación",
     "l_calculate_code_desc": "Obtener un nuevo código de tu YubiKey",
+    "s_account_type": null,
+    "s_period": null,
+    "s_digits": null,
     "@_fido_credentials": {},
 
     "s_rp_id": "RP ID",
@@ -735,6 +754,7 @@
     "l_key_deleted": "Clave borrada",
     "l_certificate_and_key_deleted": "Certificado y clave borrados",
     "l_include_certificate": "Incluir certificado",
+    "s_destination_slot": null,
     "l_select_destination_slot": "Selecciona la ranura de destino",
     "q_move_key_confirm": "¿Mover la clave privada de la ranura PIV {from_slot}?",
     "@q_move_key_confirm": {
@@ -849,6 +869,7 @@
             }
         }
     },
+    "s_keyboard_layout": null,
     "l_keyboard_layout": "Teclado {layout}",
     "@l_keyboard_layout": {
         "placeholders": {
@@ -1087,6 +1108,14 @@
 
     "s_set_label": "Establecer etiqueta",
     "s_set_color": "Establecer color",
+    "s_color_teal": null,
+    "s_color_cyan": null,
+    "s_color_blue": null,
+    "s_color_purple": null,
+    "s_color_red": null,
+    "s_color_orange": null,
+    "s_color_yellow": null,
+    "s_color_green": null,
     "s_change_label": "Cambiar etiqueta",
     "p_set_will_add_custom_name": "Esto asignará un nombre personalizado a tu YubiKey.",
     "p_rename_will_change_custom_name": "Esto cambiará la etiqueta de tu YubiKey.",

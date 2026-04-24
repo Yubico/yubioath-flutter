@@ -28,6 +28,7 @@ import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../../widgets/utf8_utils.dart';
+import '../../widgets/visibility_toggle_button.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
@@ -67,6 +68,9 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
   bool _isObscureConfirm = true;
   late final bool _defaultPinUsed;
   late final bool _defaultPukUsed;
+  String? _currentPinError;
+  bool _confirmIsWrong = false;
+  String? _confirmPinError;
 
   @override
   void initState() {
@@ -98,8 +102,72 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
     _currentPinFocus.unfocus();
     _newPinFocus.unfocus();
     _confirmPinFocus.unfocus();
-    final notifier = ref.read(pivStateProvider(widget.path).notifier);
+
     final l10n = AppLocalizations.of(context);
+    final currentPin = _currentPinController.text;
+    final newPin = _newPinController.text;
+
+    final deviceData = ref.read(currentDeviceDataProvider).value;
+    final isFipsCapable =
+        deviceData?.info.getFipsStatus(Capability.piv).$1 ?? false;
+    final currentMinPinLen = isFipsCapable
+        ? 8
+        : widget.pivState.version.isAtLeast(4, 3, 1)
+        ? 6
+        : 4;
+    final newMinPinLen = currentMinPinLen > 4 ? currentMinPinLen : 6;
+
+    bool hasError = false;
+    String? currentErr;
+    String? newPinErr;
+    bool newIsWrong = false;
+    String? confirmErr;
+    bool confirmIsWrong = false;
+
+    if (currentPin.isEmpty) {
+      currentErr = l10n.l_field_required;
+      hasError = true;
+    }
+
+    if (newPin.isEmpty) {
+      newPinErr = l10n.l_field_required;
+      newIsWrong = true;
+      hasError = true;
+    } else if (byteLength(newPin) < newMinPinLen) {
+      newPinErr = l10n.s_invalid_length;
+      newIsWrong = true;
+      hasError = true;
+    }
+
+    if (_confirmPin.isEmpty) {
+      confirmErr = l10n.l_field_required;
+      confirmIsWrong = true;
+      hasError = true;
+    } else if (newPin != _confirmPin) {
+      confirmErr =
+          widget.target == ManageTarget.pin ||
+              widget.target == ManageTarget.unblock
+          ? l10n.l_pin_mismatch
+          : l10n.l_puk_mismatch;
+      confirmIsWrong = true;
+      hasError = true;
+    }
+
+    if (hasError) {
+      setState(() {
+        if (currentErr != null) {
+          _currentIsWrong = true;
+          _currentPinError = currentErr;
+        }
+        _newIsWrong = newIsWrong;
+        _newPinError = newPinErr;
+        _confirmIsWrong = confirmIsWrong;
+        _confirmPinError = confirmErr;
+      });
+      return;
+    }
+
+    final notifier = ref.read(pivStateProvider(widget.path).notifier);
 
     final result = await switch (widget.target) {
       ManageTarget.pin => notifier.changePin(
@@ -139,6 +207,9 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                 setState(() {
                   _attemptsRemaining = attemptsRemaining;
                   _currentIsWrong = true;
+                  _currentPinError = widget.target == ManageTarget.pin
+                      ? l10n.l_wrong_pin_attempts_remaining(attemptsRemaining)
+                      : l10n.l_wrong_puk_attempts_remaining(attemptsRemaining);
                   if (_attemptsRemaining == 0) {
                     _pinIsBlocked = true;
                   }
@@ -170,11 +241,6 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
     final currentPinLen = byteLength(currentPin);
     final newPin = _newPinController.text;
     final newPinLen = byteLength(newPin);
-    final isValid =
-        !_currentIsWrong &&
-        newPin.isNotEmpty &&
-        newPin == _confirmPin &&
-        currentPin.isNotEmpty;
 
     final titleText = switch (widget.target) {
       ManageTarget.pin => l10n.s_change_pin,
@@ -209,7 +275,7 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
       title: Text(titleText),
       actions: [
         TextButton(
-          onPressed: isValid ? _submit : null,
+          onPressed: _submit,
           key: keys.saveButton,
           child: Text(l10n.s_save),
         ),
@@ -242,40 +308,29 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                         labelText: widget.target == ManageTarget.pin
                             ? l10n.s_current_pin
                             : l10n.s_current_puk,
+                        isRequired: true,
                         errorText: _pinIsBlocked
                             ? (widget.target == ManageTarget.pin && !isBio
                                   ? l10n.l_piv_pin_blocked
                                   : l10n.l_piv_pin_puk_blocked)
-                            : (_currentIsWrong
-                                  ? (widget.target == ManageTarget.pin
-                                        ? l10n.l_wrong_pin_attempts_remaining(
-                                            _attemptsRemaining,
-                                          )
-                                        : l10n.l_wrong_puk_attempts_remaining(
-                                            _attemptsRemaining,
-                                          ))
-                                  : null),
+                            : _currentIsWrong
+                            ? _currentPinError
+                            : null,
                         errorMaxLines: 3,
                         icon: const Icon(Symbols.pin),
-                        suffixIcon: IconButton(
-                          isSelected: !_isObscureCurrent,
-                          icon: Icon(
-                            _isObscureCurrent
-                                ? Symbols.visibility
-                                : Symbols.visibility_off,
-                          ),
-                          onPressed: () {
+                        suffixIcon: VisibilityToggleButton(
+                          isObscured: _isObscureCurrent,
+                          onToggle: () {
                             setState(() {
                               _isObscureCurrent = !_isObscureCurrent;
                             });
                           },
-                          tooltip: widget.target == ManageTarget.pin
-                              ? (_isObscureCurrent
-                                    ? l10n.s_show_pin
-                                    : l10n.s_hide_pin)
-                              : (_isObscureCurrent
-                                    ? l10n.s_show_puk
-                                    : l10n.s_hide_puk),
+                          showLabel: widget.target == ManageTarget.pin
+                              ? l10n.s_show_pin
+                              : l10n.s_show_puk,
+                          hideLabel: widget.target == ManageTarget.pin
+                              ? l10n.s_hide_pin
+                              : l10n.s_hide_puk,
                         ),
                       ),
                       textInputAction: .next,
@@ -325,31 +380,24 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                         labelText: widget.target == ManageTarget.puk
                             ? l10n.s_new_puk
                             : l10n.s_new_pin,
+                        isRequired: true,
                         errorText: _newIsWrong ? _newPinError : null,
                         icon: const Icon(Symbols.pin),
-                        suffixIcon: IconButton(
-                          isSelected: !_isObscureNew,
-                          icon: Icon(
-                            _isObscureNew
-                                ? Symbols.visibility
-                                : Symbols.visibility_off,
-                          ),
-                          onPressed: () {
+                        suffixIcon: VisibilityToggleButton(
+                          isObscured: _isObscureNew,
+                          onToggle: () {
                             setState(() {
                               _isObscureNew = !_isObscureNew;
                             });
                           },
-                          tooltip: widget.target == ManageTarget.pin
-                              ? (_isObscureNew
-                                    ? l10n.s_show_pin
-                                    : l10n.s_hide_pin)
-                              : (_isObscureNew
-                                    ? l10n.s_show_puk
-                                    : l10n.s_hide_puk),
+                          showLabel: widget.target == ManageTarget.pin
+                              ? l10n.s_show_pin
+                              : l10n.s_show_puk,
+                          hideLabel: widget.target == ManageTarget.pin
+                              ? l10n.s_hide_pin
+                              : l10n.s_hide_puk,
                         ),
-                        enabled:
-                            currentPinLen >= currentMinPinLen ||
-                            (isFipsCapable && showDefaultPinUsed),
+                        enabled: true,
                       ),
                       textInputAction: .next,
                       onChanged: (value) {
@@ -378,51 +426,36 @@ class _ManagePinPukDialogState extends ConsumerState<ManagePinPukDialog> {
                         labelText: widget.target == ManageTarget.puk
                             ? l10n.s_confirm_puk
                             : l10n.s_confirm_pin,
+                        isRequired: true,
                         icon: const Icon(Symbols.pin),
-                        suffixIcon: IconButton(
-                          isSelected: !_isObscureConfirm,
-                          icon: Icon(
-                            _isObscureConfirm
-                                ? Symbols.visibility
-                                : Symbols.visibility_off,
-                          ),
-                          onPressed: () {
+                        suffixIcon: VisibilityToggleButton(
+                          isObscured: _isObscureConfirm,
+                          onToggle: () {
                             setState(() {
                               _isObscureConfirm = !_isObscureConfirm;
                             });
                           },
-                          tooltip: widget.target == ManageTarget.pin
-                              ? (_isObscureConfirm
-                                    ? l10n.s_show_pin
-                                    : l10n.s_hide_pin)
-                              : (_isObscureConfirm
-                                    ? l10n.s_show_puk
-                                    : l10n.s_hide_puk),
+                          showLabel: widget.target == ManageTarget.pin
+                              ? l10n.s_show_pin
+                              : l10n.s_show_puk,
+                          hideLabel: widget.target == ManageTarget.pin
+                              ? l10n.s_hide_pin
+                              : l10n.s_hide_puk,
                         ),
-                        enabled: newPinLen >= newMinPinLen,
-                        errorText:
-                            newPinLen == _confirmPin.length &&
-                                newPin != _confirmPin
-                            ? (widget.target == ManageTarget.pin ||
-                                      widget.target == ManageTarget.unblock
-                                  ? l10n.l_pin_mismatch
-                                  : l10n.l_puk_mismatch)
-                            : null,
+                        enabled: true,
+                        errorText: _confirmIsWrong ? _confirmPinError : null,
                         helperText:
                             '', // Prevents resizing when errorText shown
                       ),
                       textInputAction: .done,
                       onChanged: (value) {
                         setState(() {
+                          _confirmIsWrong = false;
                           _confirmPin = value;
                         });
                       },
                       onSubmitted: (_) {
-                        if (isValid) {
-                          _submit();
-                        } else {
-                          _confirmPinFocus.requestFocus();
-                        }
+                        _submit();
                       },
                     ).init(),
                   ]

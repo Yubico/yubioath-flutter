@@ -51,15 +51,18 @@
     "s_nfc": "NFC",
     "s_options": "Opções",
     "s_details": "Detalhes",
+    "s_required": null,
     "s_show_window": "Mostrar janela",
     "s_hide_window": "Ocultar janela",
     "s_show_navigation": "Mostrar navegação",
     "s_expand_navigation": "Expandir barra de navegação",
     "s_collapse_navigation": "Recolher barra de navegação",
     "s_expand_collapse_navigation": "Expandir/recolher barra de navegação",
+    "s_expanded": null,
+    "s_collapsed": null,
     "s_show_menu": "Mostrar Menu",
-    "s_expand_menu_bar": null,
-    "s_collapse_menu_bar": null,
+    "s_expand_menu_bar": "Expandir barra de menu",
+    "s_collapse_menu_bar": "Recolher barra de menu",
     "s_toggle_menu_bar": "Alternar barra de menu",
     "s_more_info": "Mais informações",
     "l_bullet": "• {item}",
@@ -129,6 +132,17 @@
         }
     },
     "s_character_count": "Contagem de caracteres",
+    "l_characters_used": null,
+    "@l_characters_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "max": {
+                "type": "int"
+            }
+        }
+    },
     "@_language": {},
 
     "s_language": "Idioma",
@@ -346,6 +360,7 @@
             }
         }
     },
+    "s_persist_read_only_access": "Manter acesso somente leitura",
     "s_ep_attestation": "Atestado Corporativo",
     "s_ep_attestation_enabled": "Atestação Empresarial habilitado",
     "q_enable_ep_attestation": "Habilitar Certificação Empresarial?",
@@ -490,6 +505,7 @@
     "l_add_account_unlock_required": "Desbloqueio necessário",
     "l_add_account_func_missing": "Funcionalidade ausente ou desativada",
     "l_account_name_required": "Sua conta deve ter um nome",
+    "l_field_required": null,
     "l_name_already_exists": "Esse nome já existe para o emissor",
     "l_account_already_exists": "Esta conta já existe no YubiKey",
     "l_invalid_character_issuer": "Caractere inválido: \":\" não é permitido no emissor",
@@ -519,6 +535,7 @@
     "p_warning_disable_credential": "Certifique-se de desativar essa conta no serviço em que está registrado para evitar ser bloqueado.",
     "s_account_name": "Nome da conta",
     "s_search_accounts": "Pesquisar contas",
+    "s_clear_search": null,
     "l_accounts_used": "{used} de contas {capacity} usadas",
     "@l_accounts_used": {
         "placeholders": {
@@ -546,11 +563,13 @@
             }
         }
     },
-    "s_issuer_optional": "Emissor (opcional)",
     "s_counter_based": "Baseado no contador",
     "s_time_based": "Baseado no tempo",
     "l_copy_code_desc": "Cole o código em outro aplicativo",
     "l_calculate_code_desc": "Obter um novo código de seu YubiKey",
+    "s_account_type": null,
+    "s_period": null,
+    "s_digits": null,
     "@_fido_credentials": {},
 
     "s_rp_id": "ID do RP",
@@ -735,6 +754,7 @@
     "l_key_deleted": "Chave excluída",
     "l_certificate_and_key_deleted": "Certificado e chave excluídos",
     "l_include_certificate": "Incluir certificado",
+    "s_destination_slot": null,
     "l_select_destination_slot": "Selecione o slot de destino",
     "q_move_key_confirm": "Mover a chave privada no espaço PIV {from_slot}?",
     "@q_move_key_confirm": {
@@ -849,6 +869,7 @@
             }
         }
     },
+    "s_keyboard_layout": null,
     "l_keyboard_layout": "Teclado {layout}",
     "@l_keyboard_layout": {
         "placeholders": {
@@ -1087,6 +1108,14 @@
 
     "s_set_label": "Definir Rótulo",
     "s_set_color": "Definir cor",
+    "s_color_teal": null,
+    "s_color_cyan": null,
+    "s_color_blue": null,
+    "s_color_purple": null,
+    "s_color_red": null,
+    "s_color_orange": null,
+    "s_color_yellow": null,
+    "s_color_green": null,
     "s_change_label": "Alterar rótulo",
     "p_set_will_add_custom_name": "Isso dará um nome personalizado para sua YubiKey.",
     "p_rename_will_change_custom_name": "Isso mudará o nome da sua YubiKey.",

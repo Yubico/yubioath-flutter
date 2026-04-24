@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023-2025 Yubico.
+ * Copyright (C) 2023-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
 
 import '../../app/logging.dart';
+import '_wm_helper_linux_impl.dart';
 import '_wm_helper_macos_impl.dart';
 import '_wm_helper_windows_impl.dart';
 import 'defaults.dart';
@@ -60,6 +61,10 @@ class WindowManagerHelper {
       await WindowManagerHelperWindows.saveWindowManagerProperties(
         sharedPreferences,
       );
+    } else if (Platform.isLinux) {
+      await WindowManagerHelperLinux.saveWindowManagerProperties(
+        sharedPreferences,
+      );
     }
 
     _log.debug('Window manager properties saved.');
@@ -94,6 +99,11 @@ class WindowManagerHelper {
         sharedPreferences,
         bounds,
       );
+    } else if (Platform.isLinux) {
+      await WindowManagerHelperLinux.restoreWindowManagerProperties(
+        sharedPreferences,
+        bounds,
+      );
     }
   }
 
@@ -103,6 +113,8 @@ class WindowManagerHelper {
       return await WindowManagerHelperMacOs.getBounds();
     } else if (Platform.isWindows) {
       return await WindowManagerHelperWindows.getBounds();
+    } else if (Platform.isLinux) {
+      return await WindowManagerHelperLinux.getBounds();
     } else {
       final size = await windowManager.getSize();
       return Rect.fromLTWH(
@@ -120,6 +132,8 @@ class WindowManagerHelper {
       await WindowManagerHelperMacOs.setBounds(sharedPreferences, rect);
     } else if (Platform.isWindows) {
       await WindowManagerHelperWindows.setBounds(sharedPreferences, rect);
+    } else if (Platform.isLinux) {
+      await WindowManagerHelperLinux.setBounds(sharedPreferences, rect);
     } else {
       await windowManager.setSize(rect.size);
     }

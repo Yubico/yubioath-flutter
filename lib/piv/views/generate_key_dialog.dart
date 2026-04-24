@@ -54,7 +54,7 @@ class GenerateKeyDialog extends ConsumerStatefulWidget {
 
 class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
   String _subject = '';
-  bool _invalidSubject = true;
+  String? _subjectError;
   GenerateType _generateType = defaultGenerateType;
   KeyType _keyType = defaultKeyType;
   late DateTime _validFrom;
@@ -94,18 +94,24 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
     final isFips =
         ref.watch(currentDeviceDataProvider).value?.info.isFips ?? false;
 
-    final canSave =
-        !_generating &&
-        (!_invalidSubject || _generateType == GenerateType.publicKey);
-
     return ResponsiveDialog(
       allowCancel: !_generating,
       title: Text(l10n.s_generate_key),
       actions: [
         TextButton(
           key: keys.saveButton,
-          onPressed: canSave
+          onPressed: !_generating
               ? () async {
+                  final subjectRequired =
+                      _generateType != GenerateType.publicKey;
+
+                  if (subjectRequired && _subject.isEmpty) {
+                    setState(() {
+                      _subjectError = l10n.l_field_required;
+                    });
+                    return;
+                  }
+
                   if (!await confirmOverwrite(
                     context,
                     widget.pivSlot,
@@ -123,11 +129,12 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                     pivSlotsProvider(widget.devicePath).notifier,
                   );
 
-                  if (!(_generateType == GenerateType.publicKey ||
-                      await pivNotifier.validateRfc4514(_subject))) {
+                  if (subjectRequired &&
+                      !await pivNotifier.validateRfc4514(_subject)) {
                     setState(() {
                       _generating = false;
-                      _invalidSubject = true;
+                      _subjectError =
+                          '${l10n.l_rfc4514_invalid}\n\n${l10n.rfc4514_examples}';
                     });
                     return;
                   }
@@ -189,12 +196,11 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_subject,
+                        isRequired: true,
                         helperText:
                             '${l10n.p_subject_desc}\n\n${l10n.rfc4514_examples}',
                         helperMaxLines: 10,
-                        errorText: _subject.isNotEmpty && _invalidSubject
-                            ? '${l10n.l_rfc4514_invalid}\n\n${l10n.rfc4514_examples}'
-                            : null,
+                        errorText: _subjectError,
                         icon: Icon(Symbols.subject),
                       ),
                       textInputAction: .next,
@@ -203,7 +209,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                           _generateType != GenerateType.publicKey,
                       onChanged: (value) {
                         setState(() {
-                          _invalidSubject = value.isEmpty;
+                          _subjectError = null;
                           _subject = value;
                         });
                       },

@@ -25,6 +25,7 @@ import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/focus_utils.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../../widgets/utf8_utils.dart';
 
 class ManageLabelDialog extends ConsumerStatefulWidget {
   final KeyCustomization initialCustomization;
@@ -56,19 +57,11 @@ class _ManageLabelDialogState extends ConsumerState<ManageLabelDialog> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final initialLabel = widget.initialCustomization.name;
-    final trimmed = _labelController.text.trim();
-    final label = trimmed.isEmpty ? null : trimmed;
-    final didChange = initialLabel != label;
     return ResponsiveDialog(
       title: Text(
         initialLabel != null ? l10n.s_change_label : l10n.s_set_label,
       ),
-      actions: [
-        TextButton(
-          onPressed: didChange ? _submit : null,
-          child: Text(l10n.s_save),
-        ),
-      ],
+      actions: [TextButton(onPressed: _submit, child: Text(l10n.s_save))],
       builder: (context, _) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
@@ -84,6 +77,8 @@ class _ManageLabelDialogState extends ConsumerState<ManageLabelDialog> {
                       autofocus: true,
                       controller: _labelController,
                       maxLength: 20,
+                      buildCounter: buildByteCounterFor(_labelController.text),
+                      inputFormatters: [limitBytesLength(20)],
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_label,

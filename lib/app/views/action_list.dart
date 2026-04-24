@@ -31,6 +31,7 @@ class ActionListItem extends StatefulWidget {
   final ActionStyle actionStyle;
   final Feature? feature;
   final double? borderRadius;
+  final TextStyle? titleStyle;
 
   const ActionListItem({
     super.key,
@@ -42,6 +43,7 @@ class ActionListItem extends StatefulWidget {
     this.actionStyle = ActionStyle.normal,
     this.feature,
     this.borderRadius,
+    this.titleStyle,
   });
 
   @override
@@ -87,7 +89,9 @@ class _ActionListItemState extends State<ActionListItem> {
           shape: RoundedRectangleBorder(borderRadius: borderRadius),
           title: TooltipIfTruncated(
             text: widget.title,
-            style: TextStyle(fontSize: theme.textTheme.bodyLarge!.fontSize),
+            style: TextStyle(
+              fontSize: theme.textTheme.bodyLarge!.fontSize,
+            ).merge(widget.titleStyle),
           ),
           subtitle: widget.subtitle != null
               ? TooltipIfTruncated(

@@ -44,6 +44,7 @@ import '../../widgets/file_drop_target.dart';
 import '../../widgets/info_popup_button.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../../widgets/utf8_utils.dart';
+import '../../widgets/visibility_toggle_button.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
@@ -87,7 +88,6 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
   HashAlgorithm _hashAlgorithm = defaultHashAlgorithm;
   int _digits = defaultDigits;
   int _counter = defaultCounter;
-  bool _validateSecret = false;
   bool _dataLoaded = false;
   bool _isObscure = true;
   List<int> _periodValues = [20, 30, 45, 60];
@@ -96,6 +96,9 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
   bool _submitting = false;
   bool _scanning = false;
   bool _qrScanSuccess = false;
+  String? _issuerError;
+  String? _nameError;
+  String? _secretError;
 
   @override
   void dispose() {
@@ -272,16 +275,6 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
 
     final isLocked = oathState?.locked ?? false;
 
-    final isValid =
-        !isLocked &&
-        nameText.isNotEmpty &&
-        secret.isNotEmpty &&
-        isUnique &&
-        issuerNoColon &&
-        issuerRemaining >= -1 &&
-        nameRemaining >= 0 &&
-        period > 0;
-
     final hashAlgorithms = HashAlgorithm.values
         .where(
           (alg) =>
@@ -299,6 +292,46 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
     }
 
     void submit() async {
+      bool hasError = false;
+      String? issuerErr;
+      String? nameErr;
+      String? secretErr;
+
+      if (!issuerNoColon) {
+        issuerErr = l10n.l_invalid_character_issuer;
+        hasError = true;
+      }
+
+      if (nameText.isEmpty) {
+        nameErr = l10n.l_field_required;
+        hasError = true;
+      } else if (!isUnique) {
+        nameErr = l10n.l_name_already_exists;
+        hasError = true;
+      }
+
+      if (secret.isEmpty) {
+        secretErr = l10n.l_field_required;
+        hasError = true;
+      } else if (!secretLengthValid) {
+        secretErr = l10n.s_invalid_length;
+        hasError = true;
+      } else if (!secretFormatValid) {
+        secretErr = l10n.l_invalid_format_allowed_chars(
+          Format.base32.allowedCharacters,
+        );
+        hasError = true;
+      }
+
+      if (hasError || isLocked) {
+        setState(() {
+          _issuerError = issuerErr;
+          _nameError = nameErr;
+          _secretError = secretErr;
+        });
+        return;
+      }
+
       if (secretLengthValid && secretFormatValid) {
         _issuerFocus.unfocus();
         _accountFocus.unfocus();
@@ -341,10 +374,6 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
 
         setState(() {
           _submitting = false;
-        });
-      } else {
-        setState(() {
-          _validateSecret = true;
         });
       }
     }
@@ -429,7 +458,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
         title: Text(l10n.s_add_account),
         actions: [
           TextButton(
-            onPressed: isValid ? submit : null,
+            onPressed: submit,
             child: Text(l10n.s_save, key: keys.saveButton),
           ),
         ],
@@ -600,20 +629,19 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                               buildCounter: buildByteCounterFor(issuerText),
                               decoration: AppInputDecoration(
                                 border: const OutlineInputBorder(),
-                                labelText: l10n.s_issuer_optional,
+                                labelText: l10n.s_issuer,
                                 helperText: '', // Prevents dialog resizing when
                                 errorText:
                                     (byteLength(issuerText) > issuerMaxLength)
                                     ? '' // needs empty string to render as error
-                                    : issuerNoColon
-                                    ? null
-                                    : l10n.l_invalid_character_issuer,
+                                    : _issuerError,
                                 icon: const Icon(Symbols.business),
                               ),
                               textInputAction: .next,
                               focusNode: _issuerFocus,
                               onChanged: (value) {
                                 setState(() {
+                                  _issuerError = null;
                                   // Update maxlengths
                                 });
                               },
@@ -629,21 +657,21 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                               decoration: AppInputDecoration(
                                 border: const OutlineInputBorder(),
                                 labelText: l10n.s_account_name,
+                                isRequired: true,
                                 helperText:
                                     '', // Prevents dialog resizing when disabled
                                 errorText: _submitting
                                     ? null
                                     : (byteLength(nameText) > nameMaxLength)
                                     ? '' // needs empty string to render as error
-                                    : isUnique
-                                    ? null
-                                    : l10n.l_name_already_exists,
+                                    : _nameError,
                                 icon: const Icon(Symbols.person),
                               ),
                               textInputAction: .next,
                               focusNode: _accountFocus,
                               onChanged: (value) {
                                 setState(() {
+                                  _nameError = null;
                                   // Update max lengths
                                 });
                               },
@@ -660,29 +688,19 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                               decoration: AppInputDecoration(
                                 border: const OutlineInputBorder(),
                                 labelText: l10n.s_secret_key,
-                                errorText: _validateSecret && !secretLengthValid
-                                    ? l10n.s_invalid_length
-                                    : _validateSecret && !secretFormatValid
-                                    ? l10n.l_invalid_format_allowed_chars(
-                                        Format.base32.allowedCharacters,
-                                      )
-                                    : null,
+                                helperText: '',
+                                isRequired: true,
+                                errorText: _secretError,
                                 icon: const Icon(Symbols.key),
-                                suffixIcon: IconButton(
-                                  isSelected: !_isObscure,
-                                  icon: Icon(
-                                    _isObscure
-                                        ? Symbols.visibility
-                                        : Symbols.visibility_off,
-                                  ),
-                                  onPressed: () {
+                                suffixIcon: VisibilityToggleButton(
+                                  isObscured: _isObscure,
+                                  onToggle: () {
                                     setState(() {
                                       _isObscure = !_isObscure;
                                     });
                                   },
-                                  tooltip: _isObscure
-                                      ? l10n.s_show_secret_key
-                                      : l10n.s_hide_secret_key,
+                                  showLabel: l10n.s_show_secret_key,
+                                  hideLabel: l10n.s_hide_secret_key,
                                 ),
                               ),
                               readOnly: _dataLoaded,
@@ -690,11 +708,11 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                               focusNode: _secretFocus,
                               onChanged: (value) {
                                 setState(() {
-                                  _validateSecret = false;
+                                  _secretError = null;
                                 });
                               },
                               onSubmitted: (_) {
-                                if (isValid) submit();
+                                submit();
                               },
                             ).init(),
                             const SizedBox(height: 8),
@@ -722,6 +740,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                                         FilterChip(
                                           key: keys.requireTouchFilterChip,
                                           label: Text(l10n.s_require_touch),
+                                          tooltip: l10n.s_require_touch,
                                           selected: _touch,
                                           onSelected: (value) {
                                             setState(() {
@@ -733,6 +752,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                                         key: keys.oathTypeFilterChip,
                                         items: OathType.values,
                                         value: _oathType,
+                                        tooltip: l10n.s_account_type,
                                         selected: _oathType != defaultOathType,
                                         itemBuilder: (value) => Text(
                                           value.getDisplayName(l10n),
@@ -752,6 +772,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                                         key: keys.hashAlgorithmFilterChip,
                                         items: hashAlgorithms,
                                         value: _hashAlgorithm,
+                                        tooltip: l10n.s_algorithm,
                                         selected:
                                             _hashAlgorithm !=
                                             defaultHashAlgorithm,
@@ -780,6 +801,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                                                 _periodController.text,
                                               ) ??
                                               defaultPeriod,
+                                          tooltip: l10n.s_period,
                                           selected:
                                               int.tryParse(
                                                 _periodController.text,
@@ -800,6 +822,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                                         key: keys.digitsFilterChip,
                                         items: _digitsValues,
                                         value: _digits,
+                                        tooltip: l10n.s_digits,
                                         selected: _digits != defaultDigits,
                                         itemBuilder: (value) =>
                                             Text(l10n.s_num_digits(value)),

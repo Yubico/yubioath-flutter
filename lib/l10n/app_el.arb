@@ -51,15 +51,18 @@
     "s_nfc": "NFC",
     "s_options": "Επιλογές",
     "s_details": "Λεπτομέρειες",
+    "s_required": null,
     "s_show_window": "Εμφάνιση παραθύρου",
     "s_hide_window": "Απόκρυψη παραθύρου",
     "s_show_navigation": "Εμφάνιση πλοήγησης",
     "s_expand_navigation": "Επέκταση γραμμής πλοήγησης",
     "s_collapse_navigation": "Σύμπτυξη γραμμής πλοήγησης",
     "s_expand_collapse_navigation": "Επέκταση/σύμπτυξη γραμμής πλοήγησης",
+    "s_expanded": null,
+    "s_collapsed": null,
     "s_show_menu": "Εμφάνιση μενού",
-    "s_expand_menu_bar": null,
-    "s_collapse_menu_bar": null,
+    "s_expand_menu_bar": "Ανάπτυξη γραμμής μενού",
+    "s_collapse_menu_bar": "Σύμπτυξη γραμμής μενού",
     "s_toggle_menu_bar": "Εναλλαγή γραμμής μενού",
     "s_more_info": "Περισσότερες πληροφορίες",
     "l_bullet": "• {item}",
@@ -129,6 +132,17 @@
         }
     },
     "s_character_count": "Αριθμός χαρακτήρων",
+    "l_characters_used": null,
+    "@l_characters_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "max": {
+                "type": "int"
+            }
+        }
+    },
     "@_language": {},
 
     "s_language": "Γλώσσα",
@@ -346,6 +360,7 @@
             }
         }
     },
+    "s_persist_read_only_access": "Διατήρηση πρόσβασης μόνο για ανάγνωση",
     "s_ep_attestation": "Εταιρική Πιστοποίηση (Enterprise Attestation)",
     "s_ep_attestation_enabled": "Η Εταιρική Πιστοποίηση είναι ενεργοποιημένη",
     "q_enable_ep_attestation": "Ενεργοποίηση Εταιρικής Πιστοποίησης;",
@@ -490,6 +505,7 @@
     "l_add_account_unlock_required": "Απαιτείται ξεκλείδωμα",
     "l_add_account_func_missing": "Η λειτουργικότητα λείπει ή είναι απενεργοποιημένη",
     "l_account_name_required": "Ο λογαριασμός σας πρέπει να έχει όνομα",
+    "l_field_required": null,
     "l_name_already_exists": "Αυτό το όνομα υπάρχει ήδη για τον εκδότη",
     "l_account_already_exists": "Αυτός ο λογαριασμός υπάρχει ήδη στο YubiKey",
     "l_invalid_character_issuer": "Μη έγκυρος χαρακτήρας: Το ':' δεν επιτρέπεται στον εκδότη",
@@ -519,6 +535,7 @@
     "p_warning_disable_credential": "Βεβαιωθείτε ότι έχετε απενεργοποιήσει αυτόν τον λογαριασμό από την υπηρεσία με την οποία είναι καταχωρημένος για να αποφύγετε τον αποκλεισμό.",
     "s_account_name": "Όνομα λογαριασμού",
     "s_search_accounts": "Αναζήτηση λογαριασμών",
+    "s_clear_search": null,
     "l_accounts_used": "{used} από {capacity} λογαριασμοί σε χρήση",
     "@l_accounts_used": {
         "placeholders": {
@@ -546,11 +563,13 @@
             }
         }
     },
-    "s_issuer_optional": "Εκδότης (προαιρετικό)",
     "s_counter_based": "Βάσει μετρητή",
     "s_time_based": "Βάσει χρόνου",
     "l_copy_code_desc": "Επικολλήστε τον κωδικό σε άλλη εφαρμογή",
     "l_calculate_code_desc": "Λάβετε νέο κωδικό από το YubiKey σας",
+    "s_account_type": null,
+    "s_period": null,
+    "s_digits": null,
     "@_fido_credentials": {},
 
     "s_rp_id": "Αναγνωριστικό RP",
@@ -735,6 +754,7 @@
     "l_key_deleted": "Το κλειδί διαγράφηκε",
     "l_certificate_and_key_deleted": "Το πιστοποιητικό και το κλειδί διαγράφηκαν",
     "l_include_certificate": "Συμπερίληψη πιστοποιητικού",
+    "s_destination_slot": null,
     "l_select_destination_slot": "Επιλογή υποδοχής προορισμού",
     "q_move_key_confirm": "Μετακίνηση του ιδιωτικού κλειδιού στην υποδοχή PIV {from_slot};",
     "@q_move_key_confirm": {
@@ -849,6 +869,7 @@
             }
         }
     },
+    "s_keyboard_layout": null,
     "l_keyboard_layout": "Πληκτρολόγιο {layout}",
     "@l_keyboard_layout": {
         "placeholders": {
@@ -1087,6 +1108,14 @@
 
     "s_set_label": "Ορισμός ετικέτας",
     "s_set_color": "Ορισμός χρώματος",
+    "s_color_teal": null,
+    "s_color_cyan": null,
+    "s_color_blue": null,
+    "s_color_purple": null,
+    "s_color_red": null,
+    "s_color_orange": null,
+    "s_color_yellow": null,
+    "s_color_green": null,
     "s_change_label": "Αλλαγή ετικέτας",
     "p_set_will_add_custom_name": "Αυτό θα δώσει στο YubiKey σας ένα προσαρμοσμένο όνομα.",
     "p_rename_will_change_custom_name": "Αυτό θα αλλάξει την ετικέτα του YubiKey σας.",

@@ -51,15 +51,18 @@
     "s_nfc": "NFC",
     "s_options": "Opcje",
     "s_details": "Szczegóły",
+    "s_required": null,
     "s_show_window": "Pokaż okno",
     "s_hide_window": "Ukryj okno",
     "s_show_navigation": "Pokaż nawigację",
     "s_expand_navigation": "Rozwiń pasek nawigacji",
     "s_collapse_navigation": "Zwiń pasek nawigacji",
     "s_expand_collapse_navigation": "Przełącz pasek nawigacji",
+    "s_expanded": null,
+    "s_collapsed": null,
     "s_show_menu": "Pokaż menu",
-    "s_expand_menu_bar": null,
-    "s_collapse_menu_bar": null,
+    "s_expand_menu_bar": "Rozwiń pasek menu",
+    "s_collapse_menu_bar": "Zwiń pasek menu",
     "s_toggle_menu_bar": "Przełącz pasek menu",
     "s_more_info": "Więcej informacji",
     "l_bullet": "• {item}",
@@ -129,6 +132,17 @@
         }
     },
     "s_character_count": "Liczba znaków",
+    "l_characters_used": null,
+    "@l_characters_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "max": {
+                "type": "int"
+            }
+        }
+    },
     "@_language": {},
 
     "s_language": "Język",
@@ -346,6 +360,7 @@
             }
         }
     },
+    "s_persist_read_only_access": "Zachowaj dostęp tylko do odczytu",
     "s_ep_attestation": "Atest przedsiębiorstwa",
     "s_ep_attestation_enabled": "Atest przedsiębiorstwa został włączony",
     "q_enable_ep_attestation": "Włączyć atest przedsiębiorstwa?",
@@ -490,6 +505,7 @@
     "l_add_account_unlock_required": "Wymagane odblokowanie",
     "l_add_account_func_missing": "Funkcja nie jest dostępna lub jest wyłączona",
     "l_account_name_required": "Konto musi mieć nazwę",
+    "l_field_required": null,
     "l_name_already_exists": "Ta nazwa wydawcy już istnieje",
     "l_account_already_exists": "To konto już istnieje w kluczu YubiKey",
     "l_invalid_character_issuer": "Nieprawidłowy znak: \":\" nie jest dozwolony w polu wydawcy",
@@ -519,6 +535,7 @@
     "p_warning_disable_credential": "Upewnij się, że poświadczenie zostało wyłączone, aby uniknąć zablokowania konta.",
     "s_account_name": "Nazwa konta",
     "s_search_accounts": "Szukaj kont",
+    "s_clear_search": null,
     "l_accounts_used": "Użyto {used} z {capacity} kont",
     "@l_accounts_used": {
         "placeholders": {
@@ -546,11 +563,13 @@
             }
         }
     },
-    "s_issuer_optional": "Wydawca (opcjonalnie)",
     "s_counter_based": "Na podstawie licznika",
     "s_time_based": "Na podstawie czasu",
     "l_copy_code_desc": "Wklej kod do innej aplikacji",
     "l_calculate_code_desc": "Uzyskaj nowy kod z klucza YubiKey",
+    "s_account_type": null,
+    "s_period": null,
+    "s_digits": null,
     "@_fido_credentials": {},
 
     "s_rp_id": "RP ID",
@@ -735,6 +754,7 @@
     "l_key_deleted": "Klucz został usunięty",
     "l_certificate_and_key_deleted": "Certyfikat i klucz został usunięty",
     "l_include_certificate": "Dołącz certyfikat",
+    "s_destination_slot": null,
     "l_select_destination_slot": "Wybierz docelowy slot",
     "q_move_key_confirm": "Przenieść klucz prywatny ze slotu PIV {from_slot}?",
     "@q_move_key_confirm": {
@@ -849,6 +869,7 @@
             }
         }
     },
+    "s_keyboard_layout": null,
     "l_keyboard_layout": "Klawiatura {layout}",
     "@l_keyboard_layout": {
         "placeholders": {
@@ -1087,6 +1108,14 @@
 
     "s_set_label": "Ustaw etykietę",
     "s_set_color": "Ustaw kolor",
+    "s_color_teal": null,
+    "s_color_cyan": null,
+    "s_color_blue": null,
+    "s_color_purple": null,
+    "s_color_red": null,
+    "s_color_orange": null,
+    "s_color_yellow": null,
+    "s_color_green": null,
     "s_change_label": "Zmień etykietę",
     "p_set_will_add_custom_name": "Spowoduje to nazwanie klucza YubiKey.",
     "p_rename_will_change_custom_name": "Spowoduje to zmianę etykiety klucza YubiKey.",

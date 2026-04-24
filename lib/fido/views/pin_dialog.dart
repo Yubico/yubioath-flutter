@@ -31,6 +31,7 @@ import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
 import '../../widgets/utf8_utils.dart';
+import '../../widgets/visibility_toggle_button.dart';
 import '../keys.dart';
 import '../models.dart';
 import '../state.dart';
@@ -56,8 +57,10 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
   final _confirmPinFocus = FocusNode();
   String? _currentPinError;
   String? _newPinError;
+  String? _confirmPinError;
   bool _currentIsWrong = false;
   bool _newIsWrong = false;
+  bool _confirmIsWrong = false;
   bool _isObscureCurrent = true;
   bool _isObscureNew = true;
   bool _isObscureConfirm = true;
@@ -79,22 +82,6 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
     final l10n = AppLocalizations.of(context);
     final hasPin = widget.state.hasPin;
     final minPinLength = widget.state.minPinLength;
-    final currentMinPinLen = !hasPin
-        ? 0
-        // N.B. current PIN may be shorter than minimum if set before the minimum was increased
-        : (widget.state.forcePinChange ? 4 : widget.state.minPinLength);
-    final currentPinLenOk =
-        _currentPinController.text.length >= currentMinPinLen;
-    final newPinLenOk = _newPinController.text.length >= minPinLength;
-    final isValid =
-        currentPinLenOk &&
-        newPinLenOk &&
-        _newPinController.text == _confirmPinController.text &&
-        !_currentIsWrong;
-
-    final newPinEnabled = !_isBlocked && currentPinLenOk;
-    final confirmPinEnabled = !_isBlocked && currentPinLenOk && newPinLenOk;
-
     final deviceData = ref.read(currentDeviceDataProvider).value;
 
     final hasPinComplexity = deviceData?.info.pinComplexity ?? false;
@@ -118,7 +105,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
       title: Text(hasPin ? l10n.s_change_pin : l10n.s_set_pin),
       actions: [
         TextButton(
-          onPressed: isValid ? _submit : null,
+          onPressed: _submit,
           key: saveButton,
           child: Text(l10n.s_save),
         ),
@@ -146,6 +133,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                           enabled: !_isBlocked,
                           border: const OutlineInputBorder(),
                           labelText: l10n.s_current_pin,
+                          isRequired: true,
                           helperText: pinRetries != null && pinRetries <= 3
                               ? l10n.l_attempts_remaining(pinRetries)
                               : '',
@@ -153,21 +141,15 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                           errorText: _currentIsWrong ? _currentPinError : null,
                           errorMaxLines: 3,
                           icon: const Icon(Symbols.pin),
-                          suffixIcon: IconButton(
-                            isSelected: !_isObscureCurrent,
-                            icon: Icon(
-                              _isObscureCurrent
-                                  ? Symbols.visibility
-                                  : Symbols.visibility_off,
-                            ),
-                            onPressed: () {
+                          suffixIcon: VisibilityToggleButton(
+                            isObscured: _isObscureCurrent,
+                            onToggle: () {
                               setState(() {
                                 _isObscureCurrent = !_isObscureCurrent;
                               });
                             },
-                            tooltip: _isObscureCurrent
-                                ? l10n.s_show_pin
-                                : l10n.s_hide_pin,
+                            showLabel: l10n.s_show_pin,
+                            hideLabel: l10n.s_hide_pin,
                           ),
                         ),
                         textInputAction: .next,
@@ -201,7 +183,8 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_new_pin,
-                        enabled: newPinEnabled,
+                        isRequired: true,
+                        enabled: !_isBlocked,
                         helperText: hasPinComplexity
                             ? l10n.p_new_fido2_pin_complexity_active_requirements(
                                 minPinLength,
@@ -217,24 +200,15 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                         errorText: _newIsWrong ? _newPinError : null,
                         errorMaxLines: 3,
                         icon: const Icon(Symbols.pin),
-                        suffixIcon: ExcludeFocusTraversal(
-                          excluding: !newPinEnabled,
-                          child: IconButton(
-                            isSelected: !_isObscureNew,
-                            icon: Icon(
-                              _isObscureNew
-                                  ? Symbols.visibility
-                                  : Symbols.visibility_off,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _isObscureNew = !_isObscureNew;
-                              });
-                            },
-                            tooltip: _isObscureNew
-                                ? l10n.s_show_pin
-                                : l10n.s_hide_pin,
-                          ),
+                        suffixIcon: VisibilityToggleButton(
+                          isObscured: _isObscureNew,
+                          onToggle: () {
+                            setState(() {
+                              _isObscureNew = !_isObscureNew;
+                            });
+                          },
+                          showLabel: l10n.s_show_pin,
+                          hideLabel: l10n.s_hide_pin,
                         ),
                       ),
                       textInputAction: .next,
@@ -265,47 +239,31 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_confirm_pin,
+                        isRequired: true,
                         icon: const Icon(Symbols.pin),
-                        suffixIcon: ExcludeFocusTraversal(
-                          excluding: !confirmPinEnabled,
-                          child: IconButton(
-                            isSelected: !_isObscureConfirm,
-                            icon: Icon(
-                              _isObscureConfirm
-                                  ? Symbols.visibility
-                                  : Symbols.visibility_off,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _isObscureConfirm = !_isObscureConfirm;
-                              });
-                            },
-                            tooltip: _isObscureConfirm
-                                ? l10n.s_show_pin
-                                : l10n.s_hide_pin,
-                          ),
+                        suffixIcon: VisibilityToggleButton(
+                          isObscured: _isObscureConfirm,
+                          onToggle: () {
+                            setState(() {
+                              _isObscureConfirm = !_isObscureConfirm;
+                            });
+                          },
+                          showLabel: l10n.s_show_pin,
+                          hideLabel: l10n.s_hide_pin,
                         ),
-                        enabled: confirmPinEnabled,
-                        errorText:
-                            _newPinController.text.length ==
-                                    _confirmPinController.text.length &&
-                                _newPinController.text !=
-                                    _confirmPinController.text
-                            ? l10n.l_pin_mismatch
-                            : null,
+                        enabled: !_isBlocked,
+                        errorText: _confirmIsWrong ? _confirmPinError : null,
                         helperText:
                             '', // Prevents resizing when errorText shown
                       ),
                       textInputAction: .done,
                       onChanged: (value) {
-                        setState(() {});
+                        setState(() {
+                          _confirmIsWrong = false;
+                        });
                       },
                       onSubmitted: (_) {
-                        if (isValid) {
-                          _submit();
-                        } else {
-                          _confirmPinFocus.requestFocus();
-                        }
+                        _submit();
                       },
                     ).init(),
                   ]
@@ -327,6 +285,42 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
     _confirmPinFocus.unfocus();
 
     final l10n = AppLocalizations.of(context);
+    final hasPin = widget.state.hasPin;
+    final minPinLength = widget.state.minPinLength;
+
+    bool valid = true;
+
+    if (hasPin && _currentPinController.text.isEmpty) {
+      _currentPinError = l10n.l_field_required;
+      _currentIsWrong = true;
+      valid = false;
+    }
+
+    if (_newPinController.text.isEmpty) {
+      _newPinError = l10n.l_field_required;
+      _newIsWrong = true;
+      valid = false;
+    } else if (_newPinController.text.length < minPinLength) {
+      _newPinError = l10n.s_invalid_length;
+      _newIsWrong = true;
+      valid = false;
+    }
+
+    if (_confirmPinController.text.isEmpty) {
+      _confirmPinError = l10n.l_field_required;
+      _confirmIsWrong = true;
+      valid = false;
+    } else if (_newPinController.text != _confirmPinController.text &&
+        _confirmPinController.text.isNotEmpty) {
+      _confirmPinError = l10n.l_pin_mismatch;
+      _confirmIsWrong = true;
+      valid = false;
+    }
+
+    if (!valid || _currentIsWrong) {
+      setState(() {});
+      return;
+    }
     final oldPin = _currentPinController.text.isNotEmpty
         ? _currentPinController.text
         : null;

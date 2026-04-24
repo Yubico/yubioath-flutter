@@ -51,12 +51,15 @@
     "s_nfc": "NFC",
     "s_options": "选项",
     "s_details": "详细信息",
+    "s_required": null,
     "s_show_window": "显示窗口",
     "s_hide_window": "隐藏窗口",
     "s_show_navigation": "显示导航按钮",
     "s_expand_navigation": "展开导航栏",
     "s_collapse_navigation": "折叠导航栏",
     "s_expand_collapse_navigation": "展开/折叠导航栏",
+    "s_expanded": null,
+    "s_collapsed": null,
     "s_show_menu": "显示菜单",
     "s_expand_menu_bar": null,
     "s_collapse_menu_bar": null,
@@ -129,6 +132,17 @@
         }
     },
     "s_character_count": "字符数",
+    "l_characters_used": null,
+    "@l_characters_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "max": {
+                "type": "int"
+            }
+        }
+    },
     "@_language": {},
 
     "s_language": "语言",
@@ -346,6 +360,7 @@
             }
         }
     },
+    "s_persist_read_only_access": null,
     "s_ep_attestation": "企业认证",
     "s_ep_attestation_enabled": "企业认证已启用",
     "q_enable_ep_attestation": "启用企业认证？",
@@ -490,6 +505,7 @@
     "l_add_account_unlock_required": "需要解锁",
     "l_add_account_func_missing": "功能缺失或禁用",
     "l_account_name_required": "您的帐号必须有一个名称",
+    "l_field_required": null,
     "l_name_already_exists": "发行者名称已存在",
     "l_account_already_exists": "此账户已存在于 YubiKey 中",
     "l_invalid_character_issuer": "无效字符：发行人中不允许使用\":\"",
@@ -519,6 +535,7 @@
     "p_warning_disable_credential": "请确保已从注册的服务中禁用此账户，以避免无法登录。",
     "s_account_name": "账户名",
     "s_search_accounts": "搜索账户",
+    "s_clear_search": null,
     "l_accounts_used": "已使用{used} 个账户 ，总共{capacity} 账户可用",
     "@l_accounts_used": {
         "placeholders": {
@@ -546,11 +563,13 @@
             }
         }
     },
-    "s_issuer_optional": "发行者（可选）",
     "s_counter_based": "基于计数器",
     "s_time_based": "基于时间",
     "l_copy_code_desc": "将验证码粘贴到另一个应用程序中",
     "l_calculate_code_desc": "从您的 YubiKey 获取新代码",
+    "s_account_type": null,
+    "s_period": null,
+    "s_digits": null,
     "@_fido_credentials": {},
 
     "s_rp_id": "RP ID",
@@ -735,6 +754,7 @@
     "l_key_deleted": "密钥已删除",
     "l_certificate_and_key_deleted": "证书和密钥已删除",
     "l_include_certificate": "包含证书",
+    "s_destination_slot": null,
     "l_select_destination_slot": "选择目标槽位",
     "q_move_key_confirm": "移动 PIV 槽位 {from_slot} 中的私钥？",
     "@q_move_key_confirm": {
@@ -849,6 +869,7 @@
             }
         }
     },
+    "s_keyboard_layout": null,
     "l_keyboard_layout": "键盘 {layout}",
     "@l_keyboard_layout": {
         "placeholders": {
@@ -1087,6 +1108,14 @@
 
     "s_set_label": "设置标签",
     "s_set_color": "设置颜色",
+    "s_color_teal": null,
+    "s_color_cyan": null,
+    "s_color_blue": null,
+    "s_color_purple": null,
+    "s_color_red": null,
+    "s_color_orange": null,
+    "s_color_yellow": null,
+    "s_color_green": null,
     "s_change_label": "更改标签",
     "p_set_will_add_custom_name": "这将为你的 YubiKey 起一个自定义名称。",
     "p_rename_will_change_custom_name": "这将更改您的 YubiKey 的标签。",

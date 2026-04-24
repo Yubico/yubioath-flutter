@@ -6,7 +6,7 @@
     "@native_language_name": {
         "description": "IMPORTANT: This is the name of YOUR language written in YOUR language. For example: 'Deutsch' for German, 'Français' for French. DO NOT translate the word 'English'."
     },
-    "s_translated": "翻譯： {percentage}%",
+    "s_translated": "翻譯進度：{percentage}%",
     "@s_translated": {
         "placeholders": {
             "percentage": {
@@ -14,7 +14,7 @@
             }
         }
     },
-    "s_proofread": "校對： {percentage}%",
+    "s_proofread": "校對進度：{percentage}%",
     "@s_proofread": {
         "placeholders": {
             "percentage": {
@@ -22,17 +22,17 @@
             }
         }
     },
-    "l_incomplete_translation": "翻譯不完整",
-    "p_translation_progress_desc": "進度指標反映翻譯的成熟度。",
+    "l_incomplete_translation": "翻譯未完成",
+    "p_translation_progress_desc": "各項進度指標反映了翻譯的成熟度。",
     "s_community": "社群",
-    "l_localization_project": "本地化專案",
+    "l_localization_project": "在地化專案",
 
     "s_save": "儲存",
     "s_cancel": "取消",
     "s_close": "關閉",
     "s_delete": "刪除",
     "s_move": "移動",
-    "s_quit": "離開",
+    "s_quit": "結束",
     "s_enable": "啟用",
     "s_enabled": "已啟用",
     "s_disabled": "已停用",
@@ -43,7 +43,7 @@
     "s_overwrite": "覆寫",
     "s_done": "完成",
     "s_success": "成功",
-    "s_loading": "載入中\u2026",
+    "s_loading": "正在載入\u2026",
     "s_more": "更多功能",
     "s_label": "標籤",
     "s_name": "名稱",
@@ -51,12 +51,15 @@
     "s_nfc": "NFC",
     "s_options": "選項",
     "s_details": "詳細資訊",
+    "s_required": null,
     "s_show_window": "顯示視窗",
     "s_hide_window": "隱藏視窗",
     "s_show_navigation": "顯示導覽列",
     "s_expand_navigation": "展開導覽列",
-    "s_collapse_navigation": "折疊導覽列",
-    "s_expand_collapse_navigation": "展開/折疊導覽列",
+    "s_collapse_navigation": "收合導覽列",
+    "s_expand_collapse_navigation": "展開/收合導覽列",
+    "s_expanded": null,
+    "s_collapsed": null,
     "s_show_menu": "顯示選單",
     "s_expand_menu_bar": null,
     "s_collapse_menu_bar": null,
@@ -77,35 +80,35 @@
     "s_appearance": "外觀",
     "s_actions": "動作",
     "s_manage": "管理",
-    "s_setup": "設定",
+    "s_setup": "配置",
     "s_device": "裝置",
     "s_application": "應用程式",
     "s_settings": "設定",
-    "s_reset_settings": "重置設定",
-    "l_reset_settings_desc": "將設定還原為預設值",
-    "q_reset_settings": "重置設定？",
-    "p_reset_settings_confirmation_desc": "一旦執行，會將所有設定恢復成預設值。",
+    "s_reset_settings": "重設設定",
+    "l_reset_settings_desc": "還原至預設配置",
+    "q_reset_settings": "要重設設定嗎？",
+    "p_reset_settings_confirmation_desc": "這麼做會將所有設定還原至預設值。",
     "s_support": "支援",
-    "s_certificates": "證書",
-    "s_security_key": "安全密鑰",
+    "s_certificates": "憑證",
+    "s_security_key": "安全金鑰",
     "s_slots": "槽位",
-    "s_help_and_about": "說明與資訊",
+    "s_help_and_about": "說明和簡介",
     "s_help": "說明",
-    "s_app_information": "本應用程式的相關資訊",
+    "s_app_information": "應用程式相關資訊",
     "s_home": "首頁",
-    "s_user_guide": "使用手冊",
+    "s_user_guide": "使用指南",
     "s_i_need_help": "尋求協助",
     "s_terms_of_use": "使用條款",
     "s_privacy_policy": "隱私權政策",
     "s_open_src_licenses": "開放原始碼授權",
     "s_please_wait": "請稍候\u2026",
-    "s_secret_key": "密鑰",
-    "s_show_secret_key": "查看密鑰",
-    "s_hide_secret_key": "隱藏密鑰",
-    "s_private_key": "私鑰",
-    "s_public_key": "公鑰",
+    "s_secret_key": "私密金鑰",
+    "s_show_secret_key": "顯示私密金鑰",
+    "s_hide_secret_key": "隱藏私密金鑰",
+    "s_private_key": "秘密金鑰",
+    "s_public_key": "公開金鑰",
     "s_invalid_length": "長度無效",
-    "l_invalid_format_allowed_chars": "無效格式，允許字元： {characters}",
+    "l_invalid_format_allowed_chars": "格式無效。允許的字元：{characters}",
     "@l_invalid_format_allowed_chars": {
         "placeholders": {
             "characters": {
@@ -113,14 +116,14 @@
             }
         }
     },
-    "l_invalid_keyboard_character": "所選鍵盤的字元無效",
-    "s_require_touch": "要求輕觸",
-    "q_have_account_info": "有帳號資訊嗎？",
-    "s_debugging_tools": "除錯工具",
+    "l_invalid_keyboard_character": "字元無效，不適用所選鍵盤",
+    "s_require_touch": "必須觸控",
+    "q_have_account_info": "您擁有帳戶資訊嗎？",
+    "s_debugging_tools": "偵錯工具",
     "s_run_diagnostics": "執行診斷",
-    "l_run_diagnostics_desc": "執行診斷以排除問題",
-    "s_logging_level": "日誌層級",
-    "s_current_log_level": "日誌層級：{level}",
+    "l_run_diagnostics_desc": "透過執行診斷，排解疑難",
+    "s_logging_level": "記錄層級",
+    "s_current_log_level": "記錄層級：{level}",
     "@s_current_log_level": {
         "placeholders": {
             "level": {
@@ -129,29 +132,40 @@
         }
     },
     "s_character_count": "字元計數",
+    "l_characters_used": null,
+    "@l_characters_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "max": {
+                "type": "int"
+            }
+        }
+    },
     "@_language": {},
 
     "s_language": "語言",
     "@_theme": {},
 
-    "s_app_theme": "應用程式佈景主題",
-    "s_system_default": "系統預設值",
-    "s_light_mode": "淺色主題",
-    "s_dark_mode": "深色主題",
+    "s_app_theme": "應用程式主題",
+    "s_system_default": "系統預設",
+    "s_light_mode": "淺色模式",
+    "s_dark_mode": "深色模式",
     "@_layout": {},
 
-    "s_list_layout": "列表配置",
-    "s_grid_layout": "網格配置",
-    "s_mixed_layout": "混合配置",
-    "s_select_layout": "選擇配置",
+    "s_list_layout": "清單版面",
+    "s_grid_layout": "方格版面",
+    "s_mixed_layout": "混合版面",
+    "s_select_layout": "選取版面",
     "@_yubikey_selection": {},
 
-    "s_select_to_scan": "選擇以掃描",
+    "s_select_to_scan": "選取後開始掃描",
     "s_hide_reader": "隱藏讀卡機",
     "s_show_hidden_readers": "顯示隱藏的讀卡機",
     "s_toggle_readers": "切換讀卡機",
     "l_toggle_readers_desc": "顯示或隱藏讀卡機",
-    "s_sn_serial": "S/N: {serial}",
+    "s_sn_serial": "序號：{serial}",
     "@s_sn_serial": {
         "placeholders": {
             "serial": {
@@ -159,7 +173,7 @@
             }
         }
     },
-    "s_fw_version": "F/W: {version}",
+    "s_fw_version": "韌體：{version}",
     "@s_fw_version": {
         "placeholders": {
             "version": {
@@ -167,7 +181,7 @@
             }
         }
     },
-    "l_serial_number": "序號： {serial}",
+    "l_serial_number": "產品序號：{serial}",
     "@l_serial_number": {
         "placeholders": {
             "serial": {
@@ -175,7 +189,7 @@
             }
         }
     },
-    "l_firmware_version": "韌體版本： {version}",
+    "l_firmware_version": "韌體版本：{version}",
     "@l_firmware_version": {
         "placeholders": {
             "version": {
@@ -183,22 +197,22 @@
             }
         }
     },
-    "l_fips_capable": "FIPS 兼容",
-    "l_fips_approved": "通過 FIPS 認證",
+    "l_fips_capable": "FIPS 同等規格",
+    "l_fips_approved": "FIPS 認證",
     "@_yubikey_interactions": {},
 
-    "l_insert_yk": "插入您的 YubiKey",
-    "l_insert_or_tap_yk": "插入或感應 YubiKey",
-    "l_unplug_yk": "拔出您的 YubiKey",
-    "l_reinsert_yk": "重新插入您的 YubiKey",
-    "l_place_on_nfc_reader": "將您的 YubiKey 放在 NFC 讀卡機上",
-    "l_replace_yk_on_reader": "將您的 YubiKey 放回讀卡機上",
-    "l_remove_yk_from_reader": "從 NFC 讀卡機中取走 YubiKey",
-    "p_try_reinsert_yk": "嘗試移除並重新插入您的 YubiKey。",
-    "s_touch_required": "需要輕觸",
-    "l_touch_button_now": "立即輕觸 YubiKey 上的按鈕",
-    "l_long_touch_button_now": "現在按住 YubiKey 上的按鈕 5 秒鐘",
-    "l_keep_touching_yk": "持續重複觸摸您的 YubiKey\u2026",
+    "l_insert_yk": "插入你的 YubiKey",
+    "l_insert_or_tap_yk": "插入/靠近 YubiKey",
+    "l_unplug_yk": "拔除你的 YubiKey",
+    "l_reinsert_yk": "重新插入你的 YubiKey",
+    "l_place_on_nfc_reader": "將你的 YubiKey 放在 NFC 讀卡機上",
+    "l_replace_yk_on_reader": "將你的 YubiKey 放回讀卡機上",
+    "l_remove_yk_from_reader": "將你的 YubiKey 從 NFC 讀卡機上移除",
+    "p_try_reinsert_yk": "請嘗試移除並重新插入你的 YubiKey。",
+    "s_touch_required": "需要觸控",
+    "l_touch_button_now": "現在請輕觸你的 YubiKey 按鈕",
+    "l_long_touch_button_now": "現在請按住 YubiKey 按鈕 5 秒",
+    "l_keep_touching_yk": "請不斷輕觸你的 YubiKey\u2026",
     "@_capabilities": {},
 
     "s_capability_otp": "Yubico OTP",
@@ -210,54 +224,54 @@
     "s_capability_hsmauth": "YubiHSM Auth",
     "@_app_configuration": {},
 
-    "s_toggle_applications": "切換應用",
-    "s_toggle_interfaces": "切換介面",
-    "p_toggle_applications_desc": "在可使用的傳輸介面上，啟用或停用某些應用。",
-    "p_toggle_interfaces_desc": "啟用或停用 USB 介面。",
-    "l_toggle_applications_desc": "啟用/停用應用",
+    "s_toggle_applications": "切換採行規格",
+    "s_toggle_interfaces": "切換傳輸介面",
+    "p_toggle_applications_desc": "啟用/停用對應傳輸介面的各種規格。",
+    "p_toggle_interfaces_desc": "啟用/停用 USB 介面。",
+    "l_toggle_applications_desc": "啟用/停用採行規格",
     "l_toggle_interfaces_desc": "啟用/停用傳輸介面",
-    "s_reconfiguring_yk": "正在重新配置 YubiKey\u2026",
-    "s_config_updated": "配置已更新",
-    "l_config_updated_reinsert": "已更新配置，請移除並重新插入您的 YubiKey",
-    "s_fido_disabled": "FIDO2 已停用",
-    "l_webauthn_req_fido2": "WebAuthn 需要在您的 YubiKey 上啟用 FIDO2 應用",
+    "s_reconfiguring_yk": "正在重新設定 YubiKey\u2026",
+    "s_config_updated": "已更新配置",
+    "l_config_updated_reinsert": "已更新配置，請移除並重新插入你的 YubiKey",
+    "s_fido_disabled": "已停用 FIDO2",
+    "l_webauthn_req_fido2": "WebAuthn 需要 FIDO2 採行規格在你的 YubiKey 上啟用",
     "s_lock_code": "鎖定密碼",
-    "l_wrong_lock_code": "鎖定密碼錯誤",
+    "l_wrong_lock_code": "鎖定密碼有誤",
     "s_show_lock_code": "顯示鎖定密碼",
     "s_hide_lock_code": "隱藏鎖定密碼",
-    "p_lock_code_required_desc": "您要執行的動作需要輸入設定鎖定密碼。",
+    "p_lock_code_required_desc": "如要執行動作，必須輸入事先設定的鎖定密碼。",
     "@_connectivity_issues": {},
 
-    "l_helper_not_responding": "輔助程序沒有回應",
-    "l_yk_no_access": "無法存取此 YubiKey",
+    "l_helper_not_responding": "Helper 處理程序無回應",
+    "l_yk_no_access": "無法存取這把 YubiKey",
     "s_yk_inaccessible": "裝置無法存取",
     "l_open_connection_failed": "無法建立連線",
-    "l_ccid_connection_failed": "智慧卡連線失敗",
-    "p_ccid_service_unavailable": "確保您的智慧卡服務正常運作。",
-    "p_pcscd_unavailable": "確定 pcscd 已經安裝並開始執行。",
-    "l_no_yk_present": "沒有 YubiKey",
-    "s_unknown_type": "未知類別",
+    "l_ccid_connection_failed": "無法與智慧卡建立連線",
+    "p_ccid_service_unavailable": "請確認你的智慧卡服務運作了當。",
+    "p_pcscd_unavailable": "請確認 pcscd 已經安裝，並正在執行。",
+    "l_no_yk_present": "未存在 YubiKey",
+    "s_unknown_type": "未知類型",
     "s_unknown_device": "無法辨識的裝置",
     "s_restricted_nfc": "NFC 啟用",
     "l_deactivate_restricted_nfc": "如何啟用 NFC",
-    "p_deactivate_restricted_nfc_desc": "將 YubiKey 連接到任何 USB 電源，例如電腦，至少 3 秒鐘。\n\n一旦接上電源，NFC 就會啟用並可隨時使用。",
-    "p_deactivate_restricted_nfc_footer": "您的 YubiKey 配備了 NFC 限制功能，此功能是為了防止在運送過程中被無線操控而設計。這表示在您啟用 NFC 之前，功能會暫時失效。",
+    "p_deactivate_restricted_nfc_desc": "將你的 YubiKey 連接到任何 USB 電源（例如電腦）至少 3 秒。\n\n一旦接上電源，NFC 就會啟用並可隨時使用。",
+    "p_deactivate_restricted_nfc_footer": "你的 YubiKey 尚有 NFC 功能限制。為防止 YubiKey 於運送期間遭無線操控，在您完成啟用前，NFC 操作將暫時停用。",
     "s_unsupported_yk": "不支援的 YubiKey",
-    "p_operation_failed_try_again": "操作失敗，請重試。",
-    "l_configuration_unsupported": "不支援的配置",
-    "p_scp_unsupported": "要透過 NFC 進行通訊，YubiKey 需要本手機不支援的技術。請將 YubiKey 插入手機的 USB 連接埠。",
+    "p_operation_failed_try_again": "操作失敗，請再試一次。",
+    "l_configuration_unsupported": "不支援的設定",
+    "p_scp_unsupported": "如要使用 NFC 與 YubiKey 通訊，必須配置搭載了相應技術的手機。請將 YubiKey 插入手機的 USB 連接埠。",
     "@_general_errors": {},
 
     "l_error_occurred": "發生錯誤",
     "s_application_error": "應用程式錯誤",
     "l_import_error": "匯入錯誤",
     "l_file_not_found": "找不到檔案",
-    "l_file_too_big": "檔案太大",
+    "l_file_too_big": "檔案大小過大",
     "l_filesystem_error": "檔案系統操作錯誤",
     "@_pins": {},
 
-    "s_pin": "PIN 碼",
-    "s_puk": "PUK 碼",
+    "s_pin": "PIN",
+    "s_puk": "PUK",
     "s_set_pin": "設定 PIN 碼",
     "s_change_pin": "變更 PIN 碼",
     "s_change_puk": "變更 PUK 碼",
@@ -267,16 +281,16 @@
     "s_hide_puk": "隱藏 PUK 碼",
     "s_current_pin": "目前的 PIN 碼",
     "s_current_puk": "目前的 PUK 碼",
-    "s_new_pin": "新 PIN 碼",
-    "s_new_puk": "新 PUK 碼",
+    "s_new_pin": "新設定的 PIN 碼",
+    "s_new_puk": "新設定的 PUK 碼",
     "s_confirm_pin": "確認 PIN 碼",
     "s_confirm_puk": "確認 PUK 碼",
-    "s_unblock_pin": "重置 PIN 碼",
-    "l_pin_mismatch": "PIN 碼不符",
-    "l_puk_mismatch": "PUK 碼不符",
-    "s_pin_set": "PIN 碼已設定",
-    "s_puk_set": "PUK 碼已設定",
-    "l_set_pin_failed": "設定 PIN 失敗： {message}",
+    "s_unblock_pin": "重設 PIN 碼",
+    "l_pin_mismatch": "PIN 碼不相符",
+    "l_puk_mismatch": "PUK 碼不相符",
+    "s_pin_set": "已設定 PIN 碼",
+    "s_puk_set": "已設定 PUK 碼",
+    "l_set_pin_failed": "無法設定 PIN 碼：{message}",
     "@l_set_pin_failed": {
         "placeholders": {
             "message": {
@@ -284,7 +298,7 @@
             }
         }
     },
-    "l_attempts_remaining": "{retries, plural, =1{剩下 {retries} 次嘗試}other{剩下 {retries} 次嘗試}}",
+    "l_attempts_remaining": "{retries, plural, =1{還剩 {retries} 次機會}other{還剩 {retries} 次機會}}",
     "@l_attempts_remaining": {
         "placeholders": {
             "retries": {
@@ -292,7 +306,7 @@
             }
         }
     },
-    "l_wrong_pin_attempts_remaining": "錯誤的 PIN 碼，{retries, plural, =1{剩下 {retries} 次嘗試}other{剩下 {retries} 次嘗試}}",
+    "l_wrong_pin_attempts_remaining": "PIN 碼有誤，{retries, plural, =1{還剩 {retries} 次機會}other{還剩 {retries} 次機會}}",
     "@l_wrong_pin_attempts_remaining": {
         "placeholders": {
             "retries": {
@@ -300,7 +314,7 @@
             }
         }
     },
-    "l_wrong_puk_attempts_remaining": "錯誤的 PUK 碼，{retries, plural, =1{剩下 {retries} 次嘗試}other{剩下 {retries} 次嘗試}}",
+    "l_wrong_puk_attempts_remaining": "PUK 碼有誤，{retries, plural, =1{還剩 {retries} 次機會}other{還剩 {retries} 次機會}}",
     "@l_wrong_puk_attempts_remaining": {
         "placeholders": {
             "retries": {
@@ -308,17 +322,17 @@
             }
         }
     },
-    "s_fido_pin_protection": "FIDO PIN 保護",
-    "s_pin_change_required": "需要更改 PIN 碼",
-    "l_enter_fido2_pin": "輸入 YubiKey 的 FIDO2 PIN 碼",
-    "p_fido2_pin_required": "您要執行的動作需要輸入 FIDO2 PIN。",
-    "l_pin_blocked_reset": "PIN 碼已被封鎖，請進行 FIDO 應用的出廠重置",
-    "l_pin_blocked": "PIN 碼已被封鎖",
+    "s_fido_pin_protection": "FIDO PIN 防護機制",
+    "s_pin_change_required": "需要變更 PIN 碼",
+    "l_enter_fido2_pin": "輸入你目前 YubiKey 的 FIDO2 PIN",
+    "p_fido2_pin_required": "如要執行動作，必須輸入 FIDO2 PIN。",
+    "l_pin_blocked_reset": "PIN 已遭封鎖，請將 FIDO 採行規格恢復原廠設定",
+    "l_pin_blocked": "PIN 遭到封鎖",
     "l_set_pin_first": "需要 PIN 碼",
     "l_unlock_pin_first": "使用 PIN 碼解鎖",
-    "l_pin_soft_locked": "直到 YubiKey 被移除並重新插入前，PIN 碼已被封鎖",
-    "l_pin_change_required_desc": "必須設定新的 PIN 碼，才能使用此應用",
-    "p_new_fido2_pin_requirements": "PIN 碼的長度必須為 {min_length}-{max_length} 字元，並可包含字母、數字和特殊符號。",
+    "l_pin_soft_locked": "從上次移除 YubiKey 到如今重新插入，PIN 仍遭封鎖",
+    "l_pin_change_required_desc": "必須先設定新的 PIN 碼，才能使用這個採行規格",
+    "p_new_fido2_pin_requirements": "PIN 碼的長度必須介於 {min_length}-{max_length} 個字元，可包含字母、數字和特殊字元。",
     "@p_new_fido2_pin_requirements": {
         "placeholders": {
             "min_length": {
@@ -329,7 +343,7 @@
             }
         }
     },
-    "p_new_fido2_pin_complexity_active_requirements": "PIN 碼的長度必須是 {min_length}-{max_length} 字元，至少包含 {unique_characters} 個獨特字元，而且不能是常用的 PIN 碼，例如 \"{common_pin}\"。PIN 碼可以包含字母、數字和特殊符號。",
+    "p_new_fido2_pin_complexity_active_requirements": "PIN 碼的長度必須介於 {min_length}-{max_length} 個字元，至少包含 {unique_characters} 種不同字元，並且不能是常用的 PIN 碼（例如 {common_pin}）。可包含字母、數字和特殊字元。",
     "@p_new_fido2_pin_complexity_active_requirements": {
         "placeholders": {
             "min_length": {
@@ -346,19 +360,20 @@
             }
         }
     },
-    "s_ep_attestation": "企業驗證",
-    "s_ep_attestation_enabled": "企業驗證已啟用",
-    "q_enable_ep_attestation": "啟用企業驗證？",
-    "p_enable_ep_attestation_desc": "這將啟用企業驗證，允許授權網域唯一識別您的 YubiKey。",
-    "p_enable_ep_attestation_disable_with_factory_reset": "一旦啟用，企業認證只能透過執行 FIDO 出廠重置來停用。",
+    "s_persist_read_only_access": null,
+    "s_ep_attestation": "企業身分認定",
+    "s_ep_attestation_enabled": "已啟用企業身分認定",
+    "q_enable_ep_attestation": "要啟用企業身分認定嗎？",
+    "p_enable_ep_attestation_desc": "這麼做會啟用企業身分認定，允許在授權網域辨識你指定的 YubiKey。",
+    "p_enable_ep_attestation_disable_with_factory_reset": "選項啟用後，要停用企業身分認定只能將 FIDO 恢復原廠設定。",
     "s_pin_required": "需要 PIN 碼",
-    "p_pin_required_desc": "您要執行的動作需要輸入 PIV PIN。",
-    "l_piv_pin_blocked": "已封鎖，請使用 PUK 碼重置",
-    "p_piv_pin_blocked_desc": "PIN 碼已被封鎖，請使用 PUK 碼重置。",
-    "p_piv_pin_blocked_bio_desc": "PIN 碼已被封鎖，需要進行出廠重置。",
-    "l_piv_pin_puk_blocked": "已封鎖，需要出廠重置",
-    "p_piv_pin_puk_blocked_desc": "PIN 碼和 PUK 碼均被封鎖，需要對 PIV 應用進行出廠重置。",
-    "p_new_piv_pin_puk_requirements": "{name} 的長度必須至少為 {length} 個字元。",
+    "p_pin_required_desc": "如要執行動作，必須輸入 PIV PIN。",
+    "l_piv_pin_blocked": "已封鎖，請使用 PUK 碼重設",
+    "p_piv_pin_blocked_desc": "PIN 已遭封鎖，請使用 PUK 碼將其重設。",
+    "p_piv_pin_blocked_bio_desc": "PIN 已遭封鎖，必須恢復原廠設定。",
+    "l_piv_pin_puk_blocked": "已封鎖，需恢復原廠設定",
+    "p_piv_pin_puk_blocked_desc": "PIN 和 PUK 已遭封鎖，必須將 PIV 採行規格恢復原廠設定。",
+    "p_new_piv_pin_puk_requirements": "{name} 碼必須至少有 {length} 個字元。",
     "@p_new_piv_pin_puk_requirements": {
         "placeholders": {
             "name": {
@@ -369,7 +384,7 @@
             }
         }
     },
-    "p_new_piv_pin_puk_complexity_active_requirements": "{name} 的長度必須至少為 {length} 個字元，至少包含 2 個獨特的字元，而且不能是常用的 {name}，例如 \"{common}\" 。",
+    "p_new_piv_pin_puk_complexity_active_requirements": "{name} 碼必須至少有 {length} 個字元，至少包含 2 種不同字元，並且不能是常用的 {name} 碼（例如 {common}）。",
     "@p_new_piv_pin_puk_complexity_active_requirements": {
         "placeholders": {
             "name": {
@@ -383,7 +398,7 @@
             }
         }
     },
-    "p_pin_puk_complexity_failure": "新的 {name} 不符合複雜性要求。",
+    "p_pin_puk_complexity_failure": "新設定的 {name} 碼不符複雜度要求。",
     "@p_pin_puk_complexity_failure": {
         "placeholders": {
             "name": {
@@ -392,61 +407,61 @@
         }
     },
     "s_dismiss": "關閉",
-    "p_default_pin_puk_key_desc": "建議變更預設 PIN 碼、PUK 碼和管理金鑰。",
+    "p_default_pin_puk_key_desc": "建議將預設的 PIN 碼、PUK 碼和管理金鑰進行變更。",
     "p_default_pin_puk_key_fips_desc": "為符合 FIPS 規範，您需要變更預設的 PIN、PUK 和管理金鑰。",
-    "l_warning_default_pin": "警告：使用了預設 PIN 碼",
-    "l_warning_default_puk": "警告：使用了預設 PUK 碼",
-    "l_default_pin_used": "使用的預設 PIN 碼",
-    "l_default_puk_used": "使用的預設 PUK 碼",
-    "l_pin_complexity": "已套用 PIN 碼複雜性要求",
+    "l_warning_default_pin": "警告：已使用預設 PIN 碼",
+    "l_warning_default_puk": "警告：已使用預設 PUK 碼",
+    "l_default_pin_used": "已使用預設 PIN 碼",
+    "l_default_puk_used": "已使用預設 PUK 碼",
+    "l_pin_complexity": "已套用 PIN 碼複雜度要求",
     "@_passwords": {},
 
     "s_password": "密碼",
     "s_manage_password": "管理密碼",
     "s_set_password": "設定密碼",
-    "s_password_set": "密碼已設定",
+    "s_password_set": "已設定密碼",
     "s_show_password": "顯示密碼",
     "s_hide_password": "隱藏密碼",
-    "l_password_protection": "帳戶密碼保護",
-    "s_new_password": "新密碼",
-    "s_current_password": "目前密碼",
+    "l_password_protection": "帳戶密碼防護",
+    "s_new_password": "新設定的密碼",
+    "s_current_password": "目前的密碼",
     "s_confirm_password": "確認密碼",
-    "l_password_mismatch": "密碼不一致",
-    "s_wrong_password": "密碼錯誤",
-    "p_wrong_password": "密碼錯誤，如果您不知道您的密碼，您需要重新設定 YubiKey。",
+    "l_password_mismatch": "密碼不相符",
+    "s_wrong_password": "密碼有誤",
+    "p_wrong_password": "密碼有誤。如果不知道密碼，您將需要重設 YubiKey。",
     "s_remove_password": "移除密碼",
-    "s_password_removed": "密碼已移除",
+    "s_password_removed": "已移除密碼",
     "s_remember_password": "記住密碼",
-    "s_clear_saved_password": "清除已儲存的密碼",
+    "s_clear_saved_password": "清除儲存的密碼",
     "s_password_forgotten": "忘記密碼",
-    "l_keystore_unavailable": "作業系統密鑰庫無法使用",
+    "l_keystore_unavailable": "系統金鑰庫無法使用",
     "l_remember_pw_failed": "無法記住密碼",
     "l_unlock_first": "使用密碼解鎖",
     "l_set_password_first": "設定密碼",
-    "l_enter_oath_pw": "輸入 YubiKey 的 OATH 密碼",
-    "p_new_password_requirements": "密碼可包含字母、數字和特殊字符。",
+    "l_enter_oath_pw": "輸入你目前 YubiKey 的 OATH 密碼",
+    "p_new_password_requirements": "密碼可包含字母、數字和特殊字元。",
     "@_management_key": {},
 
-    "s_management_key": "管理密鑰",
-    "s_current_management_key": "目前的管理密鑰",
-    "s_new_management_key": "新的管理密鑰",
-    "l_change_management_key": "變更管理密鑰",
-    "l_management_key_changed": "管理密鑰已變更",
-    "l_default_key_used": "使用的預設管理密鑰",
-    "s_generate_random": "隨機生成",
+    "s_management_key": "管理金鑰",
+    "s_current_management_key": "目前的管理金鑰",
+    "s_new_management_key": "新設定的管理金鑰",
+    "l_change_management_key": "變更管理金鑰",
+    "l_management_key_changed": "已變更管理金鑰",
+    "l_default_key_used": "已使用預設的管理金鑰",
+    "s_generate_random": "隨機產生",
     "s_use_default": "使用預設",
-    "l_warning_default_key": "警告：已使用預設密鑰",
+    "l_warning_default_key": "警告：已使用預設金鑰",
     "s_protect_key": "使用 PIN 碼保護",
-    "p_protect_key_desc": "在需要管理密鑰驗證的作業中，使用 PIN 碼代替管理密鑰。",
-    "s_management_key_algorithm": "管理密鑰演算法",
-    "p_management_key_algorithm_desc": "為管理密鑰選擇的演算法。",
+    "p_protect_key_desc": "在需要管理金鑰驗證的作業中，使用 PIN 碼取而代之。",
+    "s_management_key_algorithm": "管理金鑰演算法",
+    "p_management_key_algorithm_desc": "選擇要用於管理金鑰的演算法。",
     "l_pin_protected_key": "可使用 PIN 碼代替",
-    "l_wrong_key": "錯誤的密鑰",
+    "l_wrong_key": "金鑰有誤",
     "l_unlock_piv_management": "解鎖 PIV 管理",
-    "p_unlock_piv_management_desc": "您將要執行的動作需要 PIV 管理密鑰。",
+    "p_unlock_piv_management_desc": "如要執行動作，必須擁有 PIV 管理金鑰。",
     "@_oath_accounts": {},
 
-    "l_account": "帳號： {label}",
+    "l_account": "帳戶：{label}",
     "@l_account": {
         "placeholders": {
             "label": {
@@ -454,9 +469,9 @@
             }
         }
     },
-    "s_accounts": "帳號",
-    "s_no_accounts": "沒有帳號",
-    "l_results_for": "\"{query}\" 的結果",
+    "s_accounts": "帳戶",
+    "s_no_accounts": "沒有帳戶",
+    "l_results_for": "「{query}」的結果",
     "@l_results_for": {
         "placeholders": {
             "query": {
@@ -464,7 +479,7 @@
             }
         }
     },
-    "l_authenticator_get_started": "開始使用 OTP 帳號",
+    "l_authenticator_get_started": "開始使用 OTP 帳戶",
     "l_no_accounts_desc": "從任何支援 OATH TOTP/HOTP 的服務供應商新增帳號至您的 YubiKey",
     "s_add_account": "新增帳號",
     "p_add_account_desc": "掃描 QR Code 或手動輸入憑證詳細資料。",
@@ -490,6 +505,7 @@
     "l_add_account_unlock_required": "需要解鎖",
     "l_add_account_func_missing": "功能遺失或停用",
     "l_account_name_required": "您的帳號必須有一個名稱",
+    "l_field_required": null,
     "l_name_already_exists": "此發行者名稱已存在",
     "l_account_already_exists": "此帳戶已存在於 YubiKey 上",
     "l_invalid_character_issuer": "無效字元：發行者中不允許使用 ':' 字元",
@@ -498,7 +514,7 @@
     "s_unpin_account": "取消置頂帳號",
     "s_no_pinned_accounts": "無置頂帳號",
     "s_pinned": "已置頂",
-    "l_pin_account_desc": "將您的重要帳號放在一起",
+    "l_pin_account_desc": "將你的重要帳號放在一起",
     "s_rename_account": "重新命名帳號",
     "l_rename_account_desc": "編輯帳號的發行者/名稱",
     "s_account_renamed": "帳號重新命名",
@@ -519,6 +535,7 @@
     "p_warning_disable_credential": "請確保從註冊的服務中停用此登入資訊，以避免發生無法登入的狀況。",
     "s_account_name": "帳號名稱",
     "s_search_accounts": "搜尋帳號",
+    "s_clear_search": null,
     "l_accounts_used": "{used} / {capacity} 個帳號已使用",
     "@l_accounts_used": {
         "placeholders": {
@@ -546,11 +563,13 @@
             }
         }
     },
-    "s_issuer_optional": "發行者（選用）",
     "s_counter_based": "基於計數器",
     "s_time_based": "基於時間",
     "l_copy_code_desc": "將驗證碼複製貼上到其他應用程式",
     "l_calculate_code_desc": "從您的 YubiKey 取得新密碼",
+    "s_account_type": null,
+    "s_period": null,
+    "s_digits": null,
     "@_fido_credentials": {},
 
     "s_rp_id": "RP ID",
@@ -612,7 +631,7 @@
             }
         }
     },
-    "s_setup_fingerprints": "設定指紋",
+    "s_setup_fingerprints": "配置指紋",
     "p_setup_fingerprints_desc": "在使用通行密鑰前，必須先設定指紋。",
     "s_add_fingerprint": "新增指紋",
     "s_delete_fingerprint": "刪除指紋",
@@ -735,6 +754,7 @@
     "l_key_deleted": "密鑰已刪除",
     "l_certificate_and_key_deleted": "證書和密鑰已刪除",
     "l_include_certificate": "包含證書",
+    "s_destination_slot": null,
     "l_select_destination_slot": "選擇目標槽位",
     "q_move_key_confirm": "移動 PIV 槽位 {from_slot} 中的私鑰？",
     "@q_move_key_confirm": {
@@ -827,7 +847,7 @@
     "@_otp_slot_configurations": {},
 
     "l_yubiotp_desc": "配置 Yubico OTP 憑證",
-    "s_challenge_response": "盤問回應 (Challenge-response)",
+    "s_challenge_response": "挑戰/回應",
     "l_challenge_response_desc": "配置盤問回應憑證",
     "s_static_password": "靜態密碼",
     "l_static_password_desc": "配置靜態密碼",
@@ -849,6 +869,7 @@
             }
         }
     },
+    "s_keyboard_layout": null,
     "l_keyboard_layout": "鍵盤 {layout}",
     "@l_keyboard_layout": {
         "placeholders": {
@@ -1068,8 +1089,8 @@
     "@_nfc": {},
 
     "s_nfc_ready_to_scan": "準備掃描",
-    "s_nfc_hold_still": "保持不動\u2026",
-    "s_nfc_tap_your_yubikey": "感應您的 YubiKey",
+    "s_nfc_hold_still": "請保持不動\u2026",
+    "s_nfc_tap_your_yubikey": "感應你的 YubiKey",
     "s_nfc_remove_key": "移除 YubiKey",
     "l_nfc_failed_to_scan": "掃描失敗，請重試",
     "@_usb": {},
@@ -1087,6 +1108,14 @@
 
     "s_set_label": "設定標籤",
     "s_set_color": "設定顏色",
+    "s_color_teal": null,
+    "s_color_cyan": null,
+    "s_color_blue": null,
+    "s_color_purple": null,
+    "s_color_red": null,
+    "s_color_orange": null,
+    "s_color_yellow": null,
+    "s_color_green": null,
     "s_change_label": "變更標籤",
     "p_set_will_add_custom_name": "這將為您的 YubiKey 自訂一個名稱。",
     "p_rename_will_change_custom_name": "這將會變更 YubiKey 的標籤。",

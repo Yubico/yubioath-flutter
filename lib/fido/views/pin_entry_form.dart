@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2025 Yubico.
+ * Copyright (C) 2022-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
+import '../../widgets/visibility_toggle_button.dart';
 import '../keys.dart';
 import '../models.dart';
 import '../state.dart';
@@ -33,8 +34,14 @@ import '../state.dart';
 class PinEntryForm extends ConsumerStatefulWidget {
   final FidoState _state;
   final YubiKeyData _deviceData;
+  final bool canRemember;
 
-  const PinEntryForm(this._state, this._deviceData, {super.key});
+  const PinEntryForm(
+    this._state,
+    this._deviceData, {
+    this.canRemember = true,
+    super.key,
+  });
 
   @override
   ConsumerState<PinEntryForm> createState() => _PinEntryFormState();
@@ -47,6 +54,7 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
   int? _retries;
   bool _pinIsWrong = false;
   bool _isObscure = true;
+  bool _remember = false;
 
   @override
   void initState() {
@@ -62,6 +70,12 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
   }
 
   void _submit() async {
+    if (_pinController.text.isEmpty) {
+      setState(() {
+        _pinIsWrong = true;
+      });
+      return;
+    }
     _pinFocus.unfocus();
 
     setState(() {
@@ -71,7 +85,7 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
     try {
       final result = await ref
           .read(fidoStateProvider(widget._deviceData.node.path).notifier)
-          .unlock(_pinController.text);
+          .unlock(_pinController.text, remember: _remember);
       switch (result) {
         case PinResultFailure(:final reason):
           {
@@ -104,6 +118,9 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
 
   String? _getErrorText() {
     final l10n = AppLocalizations.of(context);
+    if (_pinIsWrong && _pinController.text.isEmpty) {
+      return l10n.l_field_required;
+    }
     if (_blocked) {
       return l10n.l_pin_soft_locked;
     }
@@ -120,6 +137,8 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
     final noFingerprints = widget._state.bioEnroll == false;
     final authBlocked = widget._state.pinBlocked;
     final pinRetries = widget._state.pinRetries;
+    final readOnlySupported =
+        widget.canRemember && widget._state.readOnlySupported;
     return Padding(
       padding: const EdgeInsets.only(left: 18.0, right: 18, top: 8),
       child: Column(
@@ -177,17 +196,15 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
                     : null,
                 errorMaxLines: 3,
                 icon: const Icon(Symbols.pin),
-                suffixIcon: IconButton(
-                  isSelected: !_isObscure,
-                  icon: Icon(
-                    _isObscure ? Symbols.visibility : Symbols.visibility_off,
-                  ),
-                  onPressed: () {
+                suffixIcon: VisibilityToggleButton(
+                  isObscured: _isObscure,
+                  onToggle: () {
                     setState(() {
                       _isObscure = !_isObscure;
                     });
                   },
-                  tooltip: _isObscure ? l10n.s_show_pin : l10n.s_hide_pin,
+                  showLabel: l10n.s_show_pin,
+                  hideLabel: l10n.s_hide_pin,
                 ),
               ),
               onChanged: (value) {
@@ -197,40 +214,77 @@ class _PinEntryFormState extends ConsumerState<PinEntryForm> {
               },
               // Update state on change
               onSubmitted: (_) {
-                if (_pinController.text.length >= widget._state.minPinLength) {
-                  _submit();
-                } else {
-                  _pinFocus.requestFocus();
-                }
+                _submit();
               },
             ).init(),
           ),
-          ListTile(
-            leading: noFingerprints
-                ? Icon(
-                    Symbols.warning_amber,
-                    color: Theme.of(context).colorScheme.tertiary,
-                  )
-                : null,
-            title: noFingerprints
-                ? Text(l10n.l_no_fps_added, overflow: .fade)
-                : null,
-            dense: true,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 0),
-            minLeadingWidth: 0,
-            trailing: FilledButton.icon(
-              key: unlockFido2WithPin,
-              icon: const Icon(Symbols.lock_open),
-              label: Text(l10n.s_unlock),
-              onPressed:
-                  !_pinIsWrong &&
-                      _pinController.text.length >=
-                          widget._state.minPinLength &&
-                      !_blocked
-                  ? _submit
-                  : null,
-            ),
-          ),
+          readOnlySupported
+              ? Column(
+                  crossAxisAlignment: .stretch,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 40),
+                      child: Wrap(
+                        alignment: .spaceBetween,
+                        crossAxisAlignment: .center,
+                        spacing: 4.0,
+                        runSpacing: 8.0,
+                        children: [
+                          FilterChip(
+                            label: Text(l10n.s_persist_read_only_access),
+                            selected: _remember,
+                            onSelected: (value) {
+                              setState(() {
+                                _remember = value;
+                              });
+                            },
+                          ),
+                          FilledButton.icon(
+                            key: unlockFido2WithPin,
+                            icon: const Icon(Symbols.lock_open),
+                            label: Text(l10n.s_unlock),
+                            onPressed: _submit,
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (noFingerprints) ...[
+                      const SizedBox(height: 8.0),
+                      ListTile(
+                        leading: Icon(
+                          Symbols.warning_amber,
+                          color: Theme.of(context).colorScheme.tertiary,
+                        ),
+                        title: Text(l10n.l_no_fps_added, overflow: .fade),
+                        dense: true,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 0,
+                        ),
+                        minLeadingWidth: 0,
+                      ),
+                    ],
+                  ],
+                )
+              : ListTile(
+                  leading: noFingerprints
+                      ? Icon(
+                          Symbols.warning_amber,
+                          color: Theme.of(context).colorScheme.tertiary,
+                        )
+                      : null,
+                  title: noFingerprints
+                      ? Text(l10n.l_no_fps_added, overflow: .fade)
+                      : null,
+                  dense: true,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 0),
+                  minLeadingWidth: 0,
+                  trailing: FilledButton.icon(
+                    key: unlockFido2WithPin,
+                    icon: const Icon(Symbols.lock_open),
+                    label: Text(l10n.s_unlock),
+                    onPressed: _submit,
+                  ),
+                ),
         ],
       ),
     );

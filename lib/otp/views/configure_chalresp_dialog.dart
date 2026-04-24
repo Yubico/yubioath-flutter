@@ -31,6 +31,7 @@ import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../../widgets/utf8_utils.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
@@ -54,7 +55,7 @@ class _ConfigureChalrespDialogState
     extends ConsumerState<ConfigureChalrespDialog> {
   final _secretController = TextEditingController();
   final _secretFocus = FocusNode();
-  bool _validateSecret = false;
+  String? _secretError;
   bool _requireTouch = false;
   final int secretMaxLength = 40;
 
@@ -77,9 +78,23 @@ class _ConfigureChalrespDialogState
     final secretFormatValid = Format.hex.isValid(secret);
 
     void submit() async {
-      if (!secretLengthValid || !secretFormatValid) {
+      if (secret.isEmpty) {
         setState(() {
-          _validateSecret = true;
+          _secretError = l10n.l_field_required;
+        });
+        return;
+      }
+      if (!secretFormatValid) {
+        setState(() {
+          _secretError = l10n.l_invalid_format_allowed_chars(
+            Format.hex.allowedCharacters,
+          );
+        });
+        return;
+      }
+      if (!secretLengthValid) {
+        setState(() {
+          _secretError = l10n.s_invalid_length;
         });
         return;
       }
@@ -141,7 +156,7 @@ class _ConfigureChalrespDialogState
       actions: [
         TextButton(
           key: keys.saveButton,
-          onPressed: !_validateSecret ? submit : null,
+          onPressed: submit,
           child: Text(l10n.s_save),
         ),
       ],
@@ -160,16 +175,13 @@ class _ConfigureChalrespDialogState
                           ? []
                           : const [AutofillHints.password],
                       maxLength: secretMaxLength,
+                      buildCounter: buildByteCounterFor(_secretController.text),
+                      inputFormatters: [limitBytesLength(secretMaxLength)],
                       decoration: AppInputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: l10n.s_secret_key,
-                        errorText: _validateSecret && !secretFormatValid
-                            ? l10n.l_invalid_format_allowed_chars(
-                                Format.hex.allowedCharacters,
-                              )
-                            : _validateSecret && !secretLengthValid
-                            ? l10n.s_invalid_length
-                            : null,
+                        isRequired: true,
+                        errorText: _secretError,
                         icon: const Icon(Symbols.key),
                         suffixIcon: IconButton(
                           key: keys.generateSecretKey,
@@ -186,7 +198,7 @@ class _ConfigureChalrespDialogState
                               ).join();
                               setState(() {
                                 _secretController.text = key;
-                                _validateSecret = false;
+                                _secretError = null;
                               });
                             });
                           },
@@ -196,15 +208,11 @@ class _ConfigureChalrespDialogState
                       textInputAction: .next,
                       onChanged: (value) {
                         setState(() {
-                          _validateSecret = false;
+                          _secretError = null;
                         });
                       },
                       onSubmitted: (_) {
-                        if (!_validateSecret) {
-                          submit();
-                        } else {
-                          _secretFocus.requestFocus();
-                        }
+                        submit();
                       },
                     ).init(),
                     Row(

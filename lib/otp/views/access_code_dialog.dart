@@ -24,6 +24,8 @@ import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/responsive_dialog.dart';
+import '../../widgets/utf8_utils.dart';
+import '../../widgets/visibility_toggle_button.dart';
 import '../models.dart';
 
 class AccessCodeDialog extends ConsumerStatefulWidget {
@@ -59,6 +61,14 @@ class _AccessCodeDialogState extends ConsumerState<AccessCodeDialog> {
 
   void _submit() async {
     final l10n = AppLocalizations.of(context);
+    final accessCode = _accessCodeController.text.replaceAll(' ', '');
+    if (accessCode.isEmpty) {
+      setState(() {
+        _accessCodeIsWrong = true;
+        _accessCodeError = l10n.l_field_required;
+      });
+      return;
+    }
     if (!Format.hex.isValid(_accessCodeController.text)) {
       _accessCodeController.selection = TextSelection(
         baseOffset: 0,
@@ -93,16 +103,9 @@ class _AccessCodeDialogState extends ConsumerState<AccessCodeDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final accessCode = _accessCodeController.text.replaceAll(' ', '');
-    final accessCodeLengthValid = accessCode.length == accessCodeLength;
     return ResponsiveDialog(
       title: Text(l10n.s_access_code),
-      actions: [
-        TextButton(
-          onPressed: accessCodeLengthValid ? _submit : null,
-          child: Text(l10n.s_unlock),
-        ),
-      ],
+      actions: [TextButton(onPressed: _submit, child: Text(l10n.s_unlock))],
       builder: (context, _) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
@@ -118,6 +121,10 @@ class _AccessCodeDialogState extends ConsumerState<AccessCodeDialog> {
                       autofocus: true,
                       obscureText: _isObscure,
                       maxLength: accessCodeLength,
+                      buildCounter: buildByteCounterFor(
+                        _accessCodeController.text,
+                      ),
+                      inputFormatters: [limitBytesLength(accessCodeLength)],
                       autofillHints: const [AutofillHints.password],
                       controller: _accessCodeController,
                       focusNode: _accessCodeFocus,
@@ -127,21 +134,15 @@ class _AccessCodeDialogState extends ConsumerState<AccessCodeDialog> {
                         errorText: _accessCodeIsWrong ? _accessCodeError : null,
                         errorMaxLines: 3,
                         icon: const Icon(Symbols.pin),
-                        suffixIcon: IconButton(
-                          isSelected: !_isObscure,
-                          icon: Icon(
-                            _isObscure
-                                ? Symbols.visibility
-                                : Symbols.visibility_off,
-                          ),
-                          onPressed: () {
+                        suffixIcon: VisibilityToggleButton(
+                          isObscured: _isObscure,
+                          onToggle: () {
                             setState(() {
                               _isObscure = !_isObscure;
                             });
                           },
-                          tooltip: _isObscure
-                              ? l10n.s_show_access_code
-                              : l10n.s_hide_access_code,
+                          showLabel: l10n.s_show_access_code,
+                          hideLabel: l10n.s_hide_access_code,
                         ),
                       ),
                       textInputAction: .next,
@@ -151,11 +152,7 @@ class _AccessCodeDialogState extends ConsumerState<AccessCodeDialog> {
                         });
                       },
                       onSubmitted: (_) {
-                        if (accessCodeLengthValid) {
-                          _submit();
-                        } else {
-                          _accessCodeFocus.requestFocus();
-                        }
+                        _submit();
                       },
                     ).init(),
                   ]

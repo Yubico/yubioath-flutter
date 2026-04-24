@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2025 Yubico.
+ * Copyright (C) 2022-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,8 +68,15 @@ const String _hidden = 'hidden';
 const String _shown = 'shown';
 
 Timer? _saveWindowManagerPropertiesTimer;
+bool _isInitializingWindow = false;
 
 void _queueSaveWindowManagerProperties(WindowManagerHelper helper) {
+  // Guard: Don't save during initialization
+  if (_isInitializingWindow) {
+    _log.debug('Skipping save during window initialization');
+    return;
+  }
+
   _saveWindowManagerPropertiesTimer?.cancel();
   _saveWindowManagerPropertiesTimer = Timer(
     const Duration(
@@ -160,17 +167,24 @@ Future<Widget> initialize(List<String> argv) async {
         const WindowOptions(minimumSize: WindowDefaults.minSize),
       )
       .then((_) async {
-        await windowManagerHelper.restoreWindowManagerProperties();
+        _isInitializingWindow = true;
 
-        if (isHidden) {
-          await windowManager.setSkipTaskbar(true);
-        } else {
-          await windowManager.show();
+        try {
+          await windowManagerHelper.restoreWindowManagerProperties();
+
+          if (isHidden) {
+            await windowManager.setSkipTaskbar(true);
+          } else {
+            await windowManager.show();
+          }
+          windowManager.addListener(_WindowEventListener(windowManagerHelper));
+          screenRetriever.addListener(
+            _ScreenRetrieverListener(windowManagerHelper),
+          );
+        } finally {
+          _isInitializingWindow = false;
+          _log.debug('Window initialization complete, saves enabled');
         }
-        windowManager.addListener(_WindowEventListener(windowManagerHelper));
-        screenRetriever.addListener(
-          _ScreenRetrieverListener(windowManagerHelper),
-        );
       });
 
   // Either use the _HELPER_PATH environment variable, or look relative to executable.
