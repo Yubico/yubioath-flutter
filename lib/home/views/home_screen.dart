@@ -451,7 +451,9 @@ class _ColorButtonState extends State<_ColorButton> {
         ),
         child: ExcludeSemantics(
           excluding: isAndroid,
-          child: RawMaterialButton(
+          child: Tooltip(
+            message: widget.colorName,
+            child: RawMaterialButton(
             focusNode: _focusNode,
             onPressed: widget.onPressed,
             constraints: const BoxConstraints(minWidth: 26.0, minHeight: 26.0),
@@ -470,6 +472,7 @@ class _ColorButtonState extends State<_ColorButton> {
                   ? Colors.transparent
                   : iconColor,
             ),
+          ),
           ),
         ),
       ),
