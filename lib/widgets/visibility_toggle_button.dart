@@ -48,8 +48,10 @@ class VisibilityToggleButton extends StatelessWidget {
       label: label,
       onTap: onToggle,
       child: IconButton(
-        icon: Icon(isObscured ? Symbols.visibility : Symbols.visibility_off),
-        isSelected: !isObscured,
+        icon: Icon(
+          isObscured ? Symbols.visibility : Symbols.visibility_off,
+          semanticLabel: label,
+        ),
         onPressed: onToggle,
         tooltip: label,
       ),
