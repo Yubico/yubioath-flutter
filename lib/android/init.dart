@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2025 Yubico.
+ * Copyright (C) 2022-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,8 +49,6 @@ import 'state.dart';
 import 'window_state_provider.dart';
 
 Future<Widget> initialize({Level? level}) async {
-  _initSystemUi();
-
   if (level != null || kDebugMode) {
     Logger.root.level = level ?? Levels.DEBUG;
   }
@@ -176,13 +174,6 @@ class DismissKeyboard extends StatelessWidget {
       child: child,
     );
   }
-}
-
-void _initSystemUi() async {
-  await SystemChrome.setEnabledSystemUIMode(
-    .edgeToEdge,
-    overlays: SystemUiOverlay.values,
-  );
 }
 
 void _initLicenses() async {
