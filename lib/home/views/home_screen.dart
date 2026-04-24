@@ -454,25 +454,28 @@ class _ColorButtonState extends State<_ColorButton> {
           child: Tooltip(
             message: widget.colorName,
             child: RawMaterialButton(
-            focusNode: _focusNode,
-            onPressed: widget.onPressed,
-            constraints: const BoxConstraints(minWidth: 26.0, minHeight: 26.0),
-            fillColor: widget.color,
-            hoverColor: Colors.black12,
-            shape: const CircleBorder(),
-            child: Icon(
-              widget.isDefault && !widget.isSelected
-                  ? Symbols.clear
-                  : Symbols.circle,
-              fill: 1,
-              size: 16,
-              weight: widget.isDefault ? 700 : null,
-              opticalSize: widget.isDefault ? 20 : null,
-              color: !widget.isDefault && !widget.isSelected
-                  ? Colors.transparent
-                  : iconColor,
+              focusNode: _focusNode,
+              onPressed: widget.onPressed,
+              constraints: const BoxConstraints(
+                minWidth: 26.0,
+                minHeight: 26.0,
+              ),
+              fillColor: widget.color,
+              hoverColor: Colors.black12,
+              shape: const CircleBorder(),
+              child: Icon(
+                widget.isDefault && !widget.isSelected
+                    ? Symbols.clear
+                    : Symbols.circle,
+                fill: 1,
+                size: 16,
+                weight: widget.isDefault ? 700 : null,
+                opticalSize: widget.isDefault ? 20 : null,
+                color: !widget.isDefault && !widget.isSelected
+                    ? Colors.transparent
+                    : iconColor,
+              ),
             ),
-          ),
           ),
         ),
       ),
