@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2025 Yubico.
+ * Copyright (C) 2022-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,13 @@
 
 package com.yubico.authenticator
 
-import android.annotation.SuppressLint
 import android.app.Application
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
-import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
-import android.content.res.Configuration
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.hardware.usb.UsbDevice
@@ -135,10 +132,6 @@ class MainActivity : FlutterFragmentActivity() {
 
         Security.removeProvider("BC")
         Security.insertProviderAt(BouncyCastleProvider(), 1)
-
-        if (isPortraitOnly()) {
-            forcePortraitOrientation()
-        }
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
@@ -317,17 +310,6 @@ class MainActivity : FlutterFragmentActivity() {
         appPreferences.registerListener(sharedPreferencesListener)
 
         preserveConnectionOnPause = false
-    }
-
-    override fun onMultiWindowModeChanged(isInMultiWindowMode: Boolean, newConfig: Configuration) {
-        super.onMultiWindowModeChanged(isInMultiWindowMode, newConfig)
-
-        if (isPortraitOnly()) {
-            when (isInMultiWindowMode) {
-                true -> allowAnyOrientation()
-                else -> forcePortraitOrientation()
-            }
-        }
     }
 
     private suspend fun processYubiKey(device: YubiKeyDevice) {
@@ -821,17 +803,6 @@ class MainActivity : FlutterFragmentActivity() {
         }
         return null
     }
-
-    @SuppressLint("SourceLockedOrientationActivity")
-    private fun forcePortraitOrientation() {
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-    }
-
-    private fun allowAnyOrientation() {
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-    }
-
-    private fun isPortraitOnly() = resources.getBoolean(R.bool.portrait_only)
 
     private val defaultLogLevel =
         if (BuildConfig.DEBUG) Log.LogLevel.TRAFFIC else Log.LogLevel.INFO

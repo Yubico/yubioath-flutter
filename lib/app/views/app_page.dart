@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2025 Yubico.
+ * Copyright (C) 2022-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
+
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -29,6 +30,7 @@ import '../../core/state.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
 import '../../widgets/delayed_visibility.dart';
+import '../../widgets/ensure_focus_visible.dart';
 import '../../widgets/file_drop_target.dart';
 import '../message.dart';
 import '../shortcuts.dart';
@@ -481,7 +483,7 @@ class _AppPageState extends ConsumerState<AppPage> {
                           parent: AlwaysScrollableScrollPhysics(),
                         )
                       : null,
-                  child: safeArea,
+                  child: EnsureFocusVisible(child: safeArea),
                 ),
               ),
             ),
@@ -517,23 +519,31 @@ class _AppPageState extends ConsumerState<AppPage> {
               slivers: [
                 SliverPersistentHeader(
                   pinned: true,
-                  delegate: _SliverTitleDelegate(
-                    child: ColoredBox(
-                      color: Theme.of(context).colorScheme.surface,
-                      child: Padding(
-                        key: _sliverTitleWrapperGlobalKey,
-                        padding: const EdgeInsets.only(
-                          left: 18.0,
-                          right: 18.0,
-                          bottom: 12.0,
-                          top: 4.0,
-                        ),
-                        child: _buildTitle(context),
-                      ),
-                    ),
-                    // Header height = title height + vertical padding
-                    height: _getTitleHeight(context) + 16,
-                  ),
+                  delegate: () {
+                    final isLandscape =
+                        isAndroid &&
+                        MediaQuery.of(context).orientation ==
+                            Orientation.landscape;
+                    return _SliverTitleDelegate(
+                      child: isLandscape
+                          ? const SizedBox.shrink()
+                          : ColoredBox(
+                              color: Theme.of(context).colorScheme.surface,
+                              child: Padding(
+                                key: _sliverTitleWrapperGlobalKey,
+                                padding: const EdgeInsets.only(
+                                  left: 18.0,
+                                  right: 18.0,
+                                  bottom: 12.0,
+                                  top: 4.0,
+                                ),
+                                child: _buildTitle(context),
+                              ),
+                            ),
+                      // Header height = title height + vertical padding
+                      height: isLandscape ? 0 : _getTitleHeight(context) + 16,
+                    );
+                  }(),
                 ),
                 if (widget.headerSliver != null)
                   SliverToBoxAdapter(
@@ -549,16 +559,25 @@ class _AppPageState extends ConsumerState<AppPage> {
                           _sliverTitleWrapperGlobalKey,
                         );
 
-                        return Container(
-                          key: headerSliverGlobalKey,
-                          child: widget.headerSliver,
+                        return EnsureFocusVisible(
+                          child: Container(
+                            key: headerSliverGlobalKey,
+                            child: widget.headerSliver,
+                          ),
                         );
                       },
                     ),
                   ),
               ],
             ),
-            SliverToBoxAdapter(child: safeArea),
+            SliverToBoxAdapter(child: EnsureFocusVisible(child: safeArea)),
+            // Extra space so content can scroll above the software keyboard
+            if (isAndroid)
+              SliverToBoxAdapter(
+                child: SizedBox(
+                  height: MediaQuery.of(context).viewInsets.bottom,
+                ),
+              ),
           ],
         ),
       );
@@ -569,7 +588,7 @@ class _AppPageState extends ConsumerState<AppPage> {
           ? const ClampingScrollPhysics(parent: AlwaysScrollableScrollPhysics())
           : null,
       primary: false,
-      child: safeArea,
+      child: EnsureFocusVisible(child: safeArea),
     );
   }
 
