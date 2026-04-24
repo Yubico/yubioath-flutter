@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Yubico.
+ * Copyright (C) 2022-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,19 +21,26 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.provider.Settings
 import android.util.Log
 import android.util.Size
 import android.view.View
-import androidx.camera.core.*
-import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.CameraState
+import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.ImageProxy
+import androidx.camera.core.resolutionselector.ResolutionSelector
+import androidx.camera.core.resolutionselector.ResolutionStrategy
+import androidx.camera.view.CameraController
+import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.startActivity
+import androidx.core.net.toUri
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import com.google.zxing.BinaryBitmap
 import com.google.zxing.NotFoundException
 import com.google.zxing.RGBLuminanceSource
@@ -44,7 +51,6 @@ import io.flutter.plugin.common.PluginRegistry
 import io.flutter.plugin.common.StandardMessageCodec
 import io.flutter.plugin.platform.PlatformView
 import io.flutter.plugin.platform.PlatformViewFactory
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject
@@ -83,17 +89,13 @@ internal class QRScannerView(
 ) : PlatformView {
 
     private val stateChangeObserver = StateChangeObserver(context)
-    private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
     companion object {
         const val TAG = "QRScannerView"
 
         // permission related
         const val PERMISSION_REQUEST_CODE = 1
-        private val PERMISSIONS_TO_REQUEST =
-            mutableListOf(
-                Manifest.permission.CAMERA,
-            ).toTypedArray()
+        private val PERMISSIONS_TO_REQUEST = arrayOf(Manifest.permission.CAMERA)
 
         // communication channel
         private const val CHANNEL_NAME =
@@ -125,12 +127,7 @@ internal class QRScannerView(
     }
 
     private val cameraExecutor: ExecutorService = Executors.newSingleThreadExecutor()
-    private val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
-    private var cameraProvider: ProcessCameraProvider? = null
-    private val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-
-    private var imageAnalysis: ImageAnalysis? = null
-    private var preview: Preview? = null
+    private var cameraController: LifecycleCameraController? = null
     private val barcodeAnalyzer = with(creationParams) {
         var marginPct : Double? = null
         if (this?.get("margin") is Number) {
@@ -155,21 +152,25 @@ internal class QRScannerView(
     }
 
     override fun dispose() {
-        cameraProvider?.unbindAll()
-        preview = null
-        imageAnalysis?.clearAnalyzer()
-        imageAnalysis = null
+        permissionsResultRegistrar.setListener(null)
+        releaseCamera()
         cameraExecutor.shutdown()
         methodChannel.setMethodCallHandler(null)
         Log.v(TAG, "dispose()")
     }
 
-    private val methodChannel: MethodChannel = MethodChannel(binaryMessenger, CHANNEL_NAME)
-    private var permissionsGranted = false
-
-    private val screenSize = with(context.resources.displayMetrics) {
-        Size(widthPixels, heightPixels)
+    private fun releaseCamera() {
+        lifecycleOwner?.let { owner ->
+            cameraController?.cameraInfo?.cameraState?.removeObservers(owner)
+        }
+        previewView.controller = null
+        cameraController?.unbind()
+        cameraController = null
     }
+
+    private val methodChannel: MethodChannel = MethodChannel(binaryMessenger, CHANNEL_NAME)
+    private val lifecycleOwner = context as? LifecycleOwner
+    private var permissionsGranted = false
 
     init {
         if (context is Activity) {
@@ -189,7 +190,7 @@ internal class QRScannerView(
 
                     val intent = Intent(
                         Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                        Uri.parse("package:" + context.getPackageName())
+                        "package:${context.packageName}".toUri()
                     )
                     intent.addCategory(Intent.CATEGORY_DEFAULT)
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -235,16 +236,14 @@ internal class QRScannerView(
     }
 
     private fun reportViewInitialized(permissionsGranted: Boolean) {
-        coroutineScope.launch {
-            methodChannel.invokeMethod(
-                "viewInitialized",
-                JSONObject(mapOf("permissionsGranted" to permissionsGranted)).toString()
-            )
-        }
+        methodChannel.invokeMethod(
+            "viewInitialized",
+            JSONObject(mapOf("permissionsGranted" to permissionsGranted)).toString()
+        )
     }
 
     private fun reportCodeFound(code: String) {
-        coroutineScope.launch {
+        lifecycleOwner?.lifecycleScope?.launch(Dispatchers.Main) {
             methodChannel.invokeMethod(
                 "codeFound", JSONObject(
                     mapOf("value" to code)
@@ -254,48 +253,70 @@ internal class QRScannerView(
     }
 
     private fun bindUseCases(context: Context) {
-        cameraProviderFuture.addListener({
+        val owner = lifecycleOwner
+        if (owner == null) {
+            Log.e(TAG, "Context is not a LifecycleOwner, cannot bind camera")
+            previewView.visibility = View.GONE
+            reportViewInitialized(false)
+            return
+        }
 
+        // Clean up any previously bound controller
+        releaseCamera()
+
+        try {
             previewView.visibility = View.VISIBLE
-            cameraProvider = cameraProviderFuture.get()
 
-            cameraProvider?.unbindAll()
+            val controller = LifecycleCameraController(context).apply {
+                // Only enable image analysis (preview is handled automatically)
+                setEnabledUseCases(CameraController.IMAGE_ANALYSIS)
 
-            imageAnalysis = ImageAnalysis.Builder()
-                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                .setTargetResolution(Size(768,1024))
-                .build()
-                .also {
-                    it.setAnalyzer(cameraExecutor, barcodeAnalyzer)
-                }
+                // Use back camera
+                cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
-            preview = Preview.Builder()
-                .setTargetResolution(screenSize)
-                .build()
-                .also {
-                    it.setSurfaceProvider(previewView.surfaceProvider)
-                }
+                // Configure image analysis
+                imageAnalysisResolutionSelector = ResolutionSelector.Builder()
+                    .setResolutionStrategy(
+                        ResolutionStrategy(
+                            Size(768, 1024),
+                            ResolutionStrategy.FALLBACK_RULE_CLOSEST_LOWER_THEN_HIGHER
+                        )
+                    )
+                    .build()
+                imageAnalysisBackpressureStrategy = ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST
+                setImageAnalysisAnalyzer(cameraExecutor, barcodeAnalyzer)
+            }
 
-            val camera = cameraProvider?.bindToLifecycle(
-                context as LifecycleOwner,
-                cameraSelector,
-                preview, imageAnalysis
-            )
+            previewView.controller = controller
+            controller.bindToLifecycle(owner)
 
-            camera?.cameraInfo?.cameraState?.let {
-                it.removeObservers(context as LifecycleOwner)
-                it.observe(context as LifecycleOwner, stateChangeObserver)
+            cameraController = controller
+
+            // Observe camera state
+            controller.cameraInfo?.cameraState?.let {
+                it.removeObservers(owner)
+                it.observe(owner, stateChangeObserver)
             }
 
             reportViewInitialized(true)
-        }, ContextCompat.getMainExecutor(context))
+        } catch (e: IllegalArgumentException) {
+            Log.e(TAG, "Failed to bind camera use cases: ${e.message}", e)
+            previewView.visibility = View.GONE
+            reportViewInitialized(false)
+        } catch (e: Exception) {
+            Log.e(TAG, "Unexpected error binding camera use cases: ${e.message}", e)
+            previewView.visibility = View.GONE
+            reportViewInitialized(false)
+        }
     }
 
     private class BarcodeAnalyzer(
         private val marginPct: Double?, private val listener: BarcodeAnalyzerListener
     ) : ImageAnalysis.Analyzer {
 
+        @Volatile
         var analysisPaused = false
+        @Volatile
         var analyzedImagesCount = 0
 
         private fun ByteBuffer.toByteArray(lastRowPadding: Int): ByteArray {
@@ -420,18 +441,18 @@ internal class QRScannerView(
     private class StateChangeObserver(val context: Context) : Observer<CameraState> {
         private var cameraOpened: Boolean = false
 
-        override fun onChanged(t: CameraState) {
-            Log.v(TAG, "Camera state changed to ${t.type}")
+        override fun onChanged(value: CameraState) {
+            Log.v(TAG, "Camera state changed to ${value.type}")
 
-            if (t.type == CameraState.Type.OPEN) {
+            if (value.type == CameraState.Type.OPEN) {
                 cameraOpened = true
             }
 
-            if (cameraOpened && t.type == CameraState.Type.CLOSED) {
+            if (cameraOpened && value.type == CameraState.Type.CLOSED) {
                 Log.v(TAG, "Camera closed")
                 val stateChangedIntent =
                     Intent("com.yubico.authenticator.QRScannerView.CameraClosed").apply {
-                        setPackage("com.yubico.yubioath")
+                        setPackage(context.packageName)
                     }
                 context.sendBroadcast(stateChangedIntent)
                 cameraOpened = false
