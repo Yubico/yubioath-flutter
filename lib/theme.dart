@@ -16,6 +16,8 @@
 
 import 'package:flutter/material.dart';
 
+import 'core/state.dart';
+
 const defaultPrimaryColor = Colors.lightGreen;
 
 class AppTheme {
@@ -57,7 +59,7 @@ class AppTheme {
 
   static ThemeData _themeData(Brightness brightness, Color primaryColor) {
     final colorScheme = _colorScheme(brightness, primaryColor);
-    final focusBorder = _focusBorderSide(colorScheme);
+    final focusBorder = isAndroid ? null : _focusBorderSide(colorScheme);
     final focusButtonStyle = ButtonStyle(side: focusBorder);
 
     return ThemeData(
@@ -76,7 +78,7 @@ class AppTheme {
           color: colorScheme.onSurface,
         ),
         side: WidgetStateBorderSide.resolveWith((states) {
-          if (states.contains(WidgetState.focused)) {
+          if (!isAndroid && states.contains(WidgetState.focused)) {
             return BorderSide(color: colorScheme.primary);
           }
           if (states.contains(WidgetState.disabled)) {
