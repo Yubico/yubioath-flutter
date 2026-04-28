@@ -116,24 +116,24 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
           namesRoute: true,
           explicitChildNodes: true,
           label: _extractTitleText(),
-          child: Scaffold(
-            appBar: AppBar(
-              title: widget.title,
-              actions: widget.actions,
-              leading: IconButton(
-                key: closeButton,
-                tooltip: _getCancelText(context),
-                icon: const Icon(Symbols.close),
-                onPressed: widget.allowCancel
-                    ? () {
-                        widget.onCancel?.call();
-                        Navigator.of(context).pop();
-                      }
-                    : null,
+          child: SafeArea(
+            child: Scaffold(
+              appBar: AppBar(
+                title: widget.title,
+                actions: widget.actions,
+                leading: IconButton(
+                  key: closeButton,
+                  tooltip: _getCancelText(context),
+                  icon: const Icon(Symbols.close),
+                  onPressed: widget.allowCancel
+                      ? () {
+                          widget.onCancel?.call();
+                          Navigator.of(context).pop();
+                        }
+                      : null,
+                ),
               ),
-            ),
-            body: Center(
-              child: SingleChildScrollView(
+              body: SingleChildScrollView(
                 child: EnsureFocusVisible(
                   child: Container(
                     key: _childKey,
