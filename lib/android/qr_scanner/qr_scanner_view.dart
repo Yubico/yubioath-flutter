@@ -15,16 +15,16 @@
  */
 
 import 'package:flutter/material.dart';
-
 import 'package:qrscanner_zxing/qrscanner_zxing_view.dart';
 
 import '../../generated/l10n/app_localizations.dart';
 import '../../oath/models.dart';
 import '../app_methods.dart';
-import 'qr_scanner_overlay_view.dart';
+import 'qr_scanner_overlay_view.dart'
+    show QRScannerCutoutBackground, QRScannerBorder;
 import 'qr_scanner_permissions_view.dart';
 import 'qr_scanner_scan_status.dart';
-import 'qr_scanner_ui_view.dart';
+import 'qr_scanner_widgets.dart';
 
 /// Shows Camera preview, overlay and UI
 /// Handles user interactions
@@ -36,13 +36,16 @@ class QrScannerView extends StatefulWidget {
 }
 
 GlobalKey<QRScannerZxingViewState> _zxingViewKey = GlobalKey();
+const double _kMaxCutoutSize = 400;
 
-class _QrScannerViewState extends State<QrScannerView> {
+class _QrScannerViewState extends State<QrScannerView>
+    with WidgetsBindingObserver {
   String? _scannedString;
 
   ScanStatus _status = ScanStatus.scanning;
   bool _previewInitialized = false;
   bool _permissionsGranted = false;
+  bool _scanningReady = false;
 
   void setError() {
     _scannedString = null;
@@ -65,23 +68,19 @@ class _QrScannerViewState extends State<QrScannerView> {
   }
 
   void handleResult(String qrCodeData) {
-    if (_status != ScanStatus.scanning) {
-      // on success and error ignore reported codes
+    if (_status != ScanStatus.scanning || !_scanningReady) {
       return;
     }
     setState(() {
       if (qrCodeData.isNotEmpty) {
         try {
-          CredentialData.fromUri(
-            Uri.parse(qrCodeData),
-          ); // throws ArgumentError if validation fails
+          CredentialData.fromUri(Uri.parse(qrCodeData));
           _scannedString = qrCodeData;
           _status = ScanStatus.success;
 
           final navigator = Navigator.of(context);
           Future.delayed(const Duration(milliseconds: 800), () {
             if (navigator.canPop()) {
-              // prevent several callbacks
               navigator.pop(_scannedString);
             }
           });
@@ -100,86 +99,126 @@ class _QrScannerViewState extends State<QrScannerView> {
   void initState() {
     super.initState();
     _status = ScanStatus.scanning;
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed &&
+        _previewInitialized &&
+        !_permissionsGranted) {
+      _zxingViewKey.currentState?.recheckPermissions();
+    }
+  }
+
+  Widget _buildTextContent(AppLocalizations l10n, ThemeData theme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          l10n.s_qr_scan,
+          style: theme.textTheme.displaySmall?.copyWith(
+            fontWeight: FontWeight.w500,
+            color: theme.colorScheme.onSurface,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Text(
+          l10n.l_point_camera_scan,
+          style: theme.textTheme.bodyLarge?.copyWith(
+            color: theme.colorScheme.onSurface,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildScannerCutout(ThemeData theme) {
+    return Stack(
+      children: [
+        // Layer 1: Camera preview (full area, not clipped)
+        Visibility(
+          maintainState: true,
+          maintainInteractivity: true,
+          maintainAnimation: true,
+          maintainSize: true,
+          visible: _permissionsGranted,
+          child: QRScannerZxingView(
+            key: _zxingViewKey,
+            overlaySizeFraction: 1.0,
+            onDetect: (scannedData) => handleResult(scannedData),
+            onViewInitialized: (bool permissionsGranted) {
+              Future.delayed(const Duration(milliseconds: 50), () {
+                if (!mounted) return;
+                setState(() {
+                  _previewInitialized = true;
+                  _permissionsGranted = permissionsGranted;
+                });
+                // Delay scanning readiness to ignore any buffered frames
+                // from a previous session.
+                if (permissionsGranted) {
+                  Future.delayed(const Duration(milliseconds: 300), () {
+                    if (mounted) {
+                      setState(() {
+                        _scanningReady = true;
+                      });
+                    }
+                  });
+                }
+              });
+            },
+            beforePermissionsRequest: () async {
+              await preserveConnectedDeviceWhenPaused();
+            },
+          ),
+        ),
+        // Layer 2: Background with cutout hole (masks camera to rounded rect)
+        QRScannerCutoutBackground(backgroundColor: theme.colorScheme.surface),
+        // Layer 3: Rounded rect border around the cutout
+        Visibility(
+          visible: _permissionsGranted,
+          child: QRScannerBorder(
+            status: _status,
+            primaryColor: theme.colorScheme.primary,
+          ),
+        ),
+      ],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final screenSize = MediaQuery.of(context).size;
-    final overlayWidgetKey = GlobalKey();
+    final theme = Theme.of(context);
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      extendBodyBehindAppBar: true,
-      extendBody: true,
-      appBar: AppBar(
-        title: Text(
-          l10n.s_add_account,
-          style: const TextStyle(color: Colors.white),
-        ),
-        backgroundColor: Colors.transparent,
-        foregroundColor: Colors.white,
-        elevation: 0,
-        leading: BackButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-      ),
       body: Stack(
         children: [
-          Container(
-            color: Colors.black,
-            child: const Column(
-              mainAxisAlignment: .center,
-              mainAxisSize: .max,
-              crossAxisAlignment: .stretch,
-              children: [Spacer()],
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 8.0,
+              ),
+              child: isLandscape
+                  ? _buildLandscapeLayout(l10n, theme)
+                  : _buildPortraitLayout(l10n, theme),
             ),
           ),
-          Visibility(
-            maintainState: true,
-            maintainInteractivity: true,
-            maintainAnimation: true,
-            maintainSize: true,
-            visible: _permissionsGranted,
-            child: QRScannerZxingView(
-              key: _zxingViewKey,
-              overlaySizeFraction: 0.65,
-              onDetect: (scannedData) => handleResult(scannedData),
-              onViewInitialized: (bool permissionsGranted) {
-                Future.delayed(const Duration(milliseconds: 50), () {
-                  setState(() {
-                    _previewInitialized = true;
-                    _permissionsGranted = permissionsGranted;
-                  });
-                });
-              },
-              beforePermissionsRequest: () async {
-                await preserveConnectedDeviceWhenPaused();
-              },
-            ),
-          ),
-          Visibility(
-            visible: _permissionsGranted,
-            child: QRScannerOverlay(
-              status: _status,
-              screenSize: screenSize,
-              overlayWidgetKey: overlayWidgetKey,
-            ),
-          ),
-          Visibility(
-            visible: _permissionsGranted,
-            child: QRScannerUI(
-              status: _status,
-              screenSize: screenSize,
-              overlayWidgetKey: overlayWidgetKey,
-            ),
-          ),
+          // Show permissions UI on top when needed
           Visibility(
             visible: _previewInitialized && !_permissionsGranted,
             child: QRScannerPermissionsUI(
-              status: _status,
-              screenSize: screenSize,
               onPermissionRequest: () {
                 _zxingViewKey.currentState?.requestPermissions();
               },
@@ -187,6 +226,75 @@ class _QrScannerViewState extends State<QrScannerView> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildPortraitLayout(AppLocalizations l10n, ThemeData theme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const QrScannerTopBar(),
+        const SizedBox(height: 24),
+        _buildTextContent(l10n, theme),
+        Expanded(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 40.0),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: _kMaxCutoutSize),
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: _buildScannerCutout(theme),
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 48),
+        const QrScannerNoQrCodeGroup(),
+        const SizedBox(height: 8),
+      ],
+    );
+  }
+
+  Widget _buildLandscapeLayout(AppLocalizations l10n, ThemeData theme) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Expanded(
+          flex: 55,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const QrScannerTopBar(),
+              const SizedBox(height: 16),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: _buildTextContent(l10n, theme),
+              ),
+              const Spacer(),
+              const QrScannerNoQrCodeGroup(),
+              const SizedBox(height: 18.0),
+            ],
+          ),
+        ),
+        const SizedBox(width: 24),
+        Expanded(
+          flex: 45,
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(0.0, 24.0, 58.0, 24.0),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: _kMaxCutoutSize),
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: _buildScannerCutout(theme),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

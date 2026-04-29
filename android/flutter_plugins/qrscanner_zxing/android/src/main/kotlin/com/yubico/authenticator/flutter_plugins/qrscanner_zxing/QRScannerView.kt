@@ -191,6 +191,13 @@ internal class QRScannerView(
                     intent.addCategory(Intent.CATEGORY_DEFAULT)
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     startActivity(context, intent, null)
+                } else if (call.method == "recheckPermissions") {
+                    if (allPermissionsGranted(context)) {
+                        previewView.visibility = View.VISIBLE
+                        bindUseCases(context)
+                    } else {
+                        reportViewInitialized(false)
+                    }
                 } else if (call.method == "resumeScanning") {
                     barcodeAnalyzer.analysisPaused = false
                 }
