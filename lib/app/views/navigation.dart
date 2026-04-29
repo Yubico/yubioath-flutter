@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023-2025 Yubico.
+ * Copyright (C) 2023-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import 'package:vector_graphics/vector_graphics.dart';
 import 'package:vector_graphics_compiler/vector_graphics_compiler.dart'
     show encodeSvg;
 
+import '../../core/state.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/focus_border.dart';
 import '../models.dart';
@@ -233,7 +234,7 @@ class MoreItem extends ConsumerWidget {
             (e) => ConstrainedBox(
               constraints: BoxConstraints(minWidth: 150),
               child: MenuItemButton(
-                leadingIcon: Icon(e._icon),
+                leadingIcon: e.buildIcon(selected: false),
                 onPressed:
                     data != null &&
                         e.getAvailability(data) == Availability.enabled
@@ -405,7 +406,9 @@ class NavigationContent extends ConsumerWidget {
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final totalHeight = constraints.maxHeight;
-                final itemHeight = 53;
+                // On Android landscape, use actual collapsed item height
+                // to keep the rail tight and avoid overflow.
+                final itemHeight = isAndroid && !extended ? 61 : 53;
 
                 // Available height for the app list
                 final appListHeight = totalHeight - itemHeight;
