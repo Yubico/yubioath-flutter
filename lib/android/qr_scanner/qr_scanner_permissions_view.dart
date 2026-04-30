@@ -58,7 +58,7 @@ class QRScannerPermissionsUI extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               Center(
-                child: FilledButton.tonal(
+                child: FilledButton(
                   onPressed: () => onPermissionRequest(),
                   child: Text(l10n.s_review_permissions),
                 ),

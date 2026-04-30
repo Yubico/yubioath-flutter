@@ -71,7 +71,7 @@ class QrScannerNoQrCodeGroup extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            FilledButton.tonal(
+            OutlinedButton(
               onPressed: () {
                 Navigator.of(
                   context,
@@ -81,7 +81,7 @@ class QrScannerNoQrCodeGroup extends StatelessWidget {
               child: Text(l10n.s_enter_manually),
             ),
             const SizedBox(width: 8),
-            FilledButton.tonal(
+            OutlinedButton(
               onPressed: () {
                 Navigator.of(
                   context,
