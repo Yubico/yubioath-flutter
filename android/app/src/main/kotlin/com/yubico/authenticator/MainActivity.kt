@@ -82,6 +82,7 @@ import java.security.Security
 import java.util.concurrent.Executors
 import javax.crypto.Mac
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.bouncycastle.jce.provider.BouncyCastleProvider
@@ -154,20 +155,36 @@ class MainActivity : FlutterFragmentActivity() {
         setIntent(intent)
     }
 
-    private fun startNfcDiscovery() = try {
-        logger.debug("Starting nfc discovery")
-        yubikit.startNfcDiscovery(
-            nfcConfiguration.disableNfcDiscoverySound(appPreferences.silenceNfcSounds),
-            this
-        ) { nfcYubiKeyDevice ->
-            if (!deviceManager.isUsbKeyConnected()) {
-                launchProcessYubiKey(nfcYubiKeyDevice)
+    private fun startNfcDiscovery(retryCount: Int = 0) {
+        try {
+            logger.debug("Starting nfc discovery")
+            yubikit.startNfcDiscovery(
+                nfcConfiguration.disableNfcDiscoverySound(appPreferences.silenceNfcSounds),
+                this
+            ) { nfcYubiKeyDevice ->
+                if (!deviceManager.isUsbKeyConnected()) {
+                    launchProcessYubiKey(nfcYubiKeyDevice)
+                }
+            }
+
+            hasNfc = true
+        } catch (_: NfcNotAvailable) {
+            hasNfc = false
+        } catch (e: Exception) {
+            logger.error("Start NFC discovery failed (attempt {}): {}", retryCount + 1, e.message)
+            hasNfc = false
+            if (retryCount < NFC_DISCOVERY_MAX_RETRIES) {
+                lifecycleScope.launch(Dispatchers.Main) {
+                    delay(NFC_DISCOVERY_RETRY_DELAY_MS)
+                    startNfcDiscovery(retryCount + 1)
+                }
+            } else {
+                logger.error(
+                    "Start NFC discovery failed after {} attempts, giving up",
+                    NFC_DISCOVERY_MAX_RETRIES + 1
+                )
             }
         }
-
-        hasNfc = true
-    } catch (_: NfcNotAvailable) {
-        hasNfc = false
     }
 
     private fun stopNfcDiscovery() {
@@ -629,6 +646,8 @@ class MainActivity : FlutterFragmentActivity() {
     companion object {
         const val YUBICO_VENDOR_ID = 4176
         const val FLAG_SECURE = WindowManager.LayoutParams.FLAG_SECURE
+        private const val NFC_DISCOVERY_MAX_RETRIES = 3
+        private const val NFC_DISCOVERY_RETRY_DELAY_MS = 2000L
         val supportsScp11b = try {
             Mac.getInstance("AESCMAC")
             true
