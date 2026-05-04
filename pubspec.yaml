@@ -71,7 +71,7 @@ dependencies:
   io: ^1.0.5
   base32: ^2.2.0
   convert: ^3.1.2
-  material_symbols_icons: ^4.2906.0
+  material_symbols_icons: ^4.2928.1
 
 dev_dependencies:
   integration_test:
