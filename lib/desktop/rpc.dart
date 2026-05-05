@@ -17,7 +17,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:async/async.dart';
 import 'package:logging/logging.dart';
@@ -149,97 +148,6 @@ class RpcSession {
     );
 
     _pump();
-  }
-
-  Future<bool> elevate() async {
-    if (!Platform.isWindows) {
-      throw Exception('Elevate is only available for Windows');
-    }
-
-    final random = Random.secure();
-    final nonce = base64Encode(List.generate(32, (_) => random.nextInt(256)));
-
-    // Bind to random port
-    final server = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
-    final port = server.port;
-    _log.debug('Listening for Helper connection on $port');
-
-    // Launch the elevated process
-    final process = await Process.start('powershell.exe', [
-      '-NoProfile',
-      '-Command',
-      '-',
-    ]);
-
-    _log.info('Attempting to elevate $executable');
-    process.stdin.writeln(
-      'Start-Process "$executable" -Verb runAs -WindowStyle hidden -ArgumentList "--tcp $port $nonce"',
-    );
-    await process.stdin.flush();
-    await process.stdin.close();
-    if (await process.exitCode != 0) {
-      await server.close();
-      final error = await process.stderr
-          .transform(const Utf8Decoder())
-          .transform(const LineSplitter())
-          .join('\n');
-      _log.warning('Failed to elevate the Helper process', error);
-      return false;
-    }
-    _log.debug('Elevated Helper process started');
-
-    // Accept only a single connection
-    final client = await server.first;
-    await server.close();
-    _log.debug('Helper connected from port: ${client.remotePort}');
-
-    // Stop the old subprocess.
-    try {
-      await command('quit', []);
-    } catch (error) {
-      _log.warning('Failed to dispose existing process', error);
-    }
-
-    bool authenticated = false;
-    final completer = Completer<void>();
-    final read = utf8.decoder
-        .bind(client)
-        .transform(const LineSplitter())
-        .map((line) {
-          // The nonce needs to be received first.
-          if (!authenticated) {
-            if (nonce == line) {
-              _log.debug('Helper authenticated with correct nonce');
-              authenticated = true;
-              completer.complete();
-              return '';
-            } else {
-              _log.warning('Helper used WRONG NONCE: $line');
-              client.close();
-              completer.completeError(Exception('Invalid nonce'));
-              throw Exception('Invalid nonce');
-            }
-          } else {
-            // Filter out (and log) log messages
-            final type = line[0];
-            final message = line.substring(1);
-            switch (type) {
-              case 'O':
-                return message;
-              case 'E':
-                _logEntry(message);
-                return '';
-              default:
-                _log.error('Invalid message: $line');
-                throw Exception('Invalid message type: $type');
-            }
-          }
-        })
-        .where((line) => line.isNotEmpty);
-    _connection = _RpcConnection(client, read);
-
-    await completer.future;
-    return true;
   }
 
   Future<Map<String, dynamic>> command(

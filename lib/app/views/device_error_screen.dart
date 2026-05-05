@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../core/models.dart';
-import '../../core/state.dart';
-import '../../desktop/state.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../home/views/home_message_page.dart';
 import '../models.dart';
-import '../state.dart';
-import 'elevate_fido_buttons.dart';
 
 class DeviceErrorScreen extends ConsumerWidget {
   final DeviceNode node;
@@ -36,19 +30,6 @@ class DeviceErrorScreen extends ConsumerWidget {
 
   Widget _buildUsbPid(BuildContext context, WidgetRef ref, UsbPid pid) {
     final l10n = AppLocalizations.of(context);
-    if (pid.usbInterfaces == UsbInterface.fido.value) {
-      if (Platform.isWindows &&
-          !ref.watch(rpcStateProvider.select((state) => state.isAdmin))) {
-        final currentSection = ref.read(currentSectionProvider);
-        return HomeMessagePage(
-          capabilities: currentSection.capabilities,
-          header: l10n.l_admin_privileges_required,
-          message: l10n.p_elevated_permissions_required,
-          actionsBuilder: (context, expanded) => [const ElevateFidoButtons()],
-          footnote: isMicrosoftStore ? l10n.p_ms_store_permission_note : null,
-        );
-      }
-    }
     return HomeMessagePage(
       centered: true,
       graphic: Image.asset(
@@ -64,50 +45,51 @@ class DeviceErrorScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    return switch (node) {
-      UsbYubiKeyNode(:final pid) => _buildUsbPid(context, ref, pid),
-      NfcReaderNode() => switch (error) {
-        'unknown-device' => HomeMessagePage(
-          centered: true,
-          graphic: Icon(
-            Symbols.help,
-            size: 96,
-            color: Theme.of(context).colorScheme.error,
-          ),
-          header: l10n.s_unknown_device,
+    final ykNode = node as YubiKeyDeviceNode;
+    if (ykNode.transport == Transport.usb && ykNode.pid != null) {
+      return _buildUsbPid(context, ref, ykNode.pid!);
+    }
+    return switch (error) {
+      'unknown-device' => HomeMessagePage(
+        centered: true,
+        graphic: Icon(
+          Symbols.help,
+          size: 96,
+          color: Theme.of(context).colorScheme.error,
         ),
-        'restricted-nfc' => HomeMessagePage(
-          centered: true,
-          graphic: Icon(
-            Symbols.contactless,
-            size: 96,
-            color: Theme.of(context).colorScheme.tertiary,
-          ),
-          header: l10n.l_deactivate_restricted_nfc,
-          message: l10n.p_deactivate_restricted_nfc_desc,
-          footnote: l10n.p_deactivate_restricted_nfc_footer,
+        header: l10n.s_unknown_device,
+      ),
+      'restricted-nfc' => HomeMessagePage(
+        centered: true,
+        graphic: Icon(
+          Symbols.contactless,
+          size: 96,
+          color: Theme.of(context).colorScheme.tertiary,
         ),
-        'no-scp11b-nfc-support' => HomeMessagePage(
-          centered: true,
-          graphic: Icon(
-            Symbols.contactless,
-            size: 96,
-            color: Theme.of(context).colorScheme.tertiary,
-          ),
-          header: l10n.l_configuration_unsupported,
-          message: l10n.p_scp_unsupported,
+        header: l10n.l_deactivate_restricted_nfc,
+        message: l10n.p_deactivate_restricted_nfc_desc,
+        footnote: l10n.p_deactivate_restricted_nfc_footer,
+      ),
+      'no-scp11b-nfc-support' => HomeMessagePage(
+        centered: true,
+        graphic: Icon(
+          Symbols.contactless,
+          size: 96,
+          color: Theme.of(context).colorScheme.tertiary,
         ),
-        _ => HomeMessagePage(
-          centered: true,
-          graphic: Image.asset(
-            'assets/graphics/no-key.png',
-            filterQuality: .medium,
-            scale: 2,
-            color: Theme.of(context).colorScheme.primary,
-          ),
-          header: l10n.l_place_on_nfc_reader,
+        header: l10n.l_configuration_unsupported,
+        message: l10n.p_scp_unsupported,
+      ),
+      _ => HomeMessagePage(
+        centered: true,
+        graphic: Image.asset(
+          'assets/graphics/no-key.png',
+          filterQuality: .medium,
+          scale: 2,
+          color: Theme.of(context).colorScheme.primary,
         ),
-      },
+        header: l10n.l_place_on_nfc_reader,
+      ),
     };
   }
 }

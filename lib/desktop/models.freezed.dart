@@ -493,7 +493,7 @@ as Map<String, dynamic>,
 /// @nodoc
 mixin _$RpcState {
 
- String get version; bool get isAdmin;
+ String get version;
 /// Create a copy of RpcState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -506,16 +506,16 @@ $RpcStateCopyWith<RpcState> get copyWith => _$RpcStateCopyWithImpl<RpcState>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RpcState&&(identical(other.version, version) || other.version == version)&&(identical(other.isAdmin, isAdmin) || other.isAdmin == isAdmin));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RpcState&&(identical(other.version, version) || other.version == version));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,version,isAdmin);
+int get hashCode => Object.hash(runtimeType,version);
 
 @override
 String toString() {
-  return 'RpcState(version: $version, isAdmin: $isAdmin)';
+  return 'RpcState(version: $version)';
 }
 
 
@@ -526,7 +526,7 @@ abstract mixin class $RpcStateCopyWith<$Res>  {
   factory $RpcStateCopyWith(RpcState value, $Res Function(RpcState) _then) = _$RpcStateCopyWithImpl;
 @useResult
 $Res call({
- String version, bool isAdmin
+ String version
 });
 
 
@@ -543,11 +543,10 @@ class _$RpcStateCopyWithImpl<$Res>
 
 /// Create a copy of RpcState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? version = null,Object? isAdmin = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? version = null,}) {
   return _then(_self.copyWith(
 version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
-as String,isAdmin: null == isAdmin ? _self.isAdmin : isAdmin // ignore: cast_nullable_to_non_nullable
-as bool,
+as String,
   ));
 }
 
@@ -632,10 +631,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String version,  bool isAdmin)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String version)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RpcState() when $default != null:
-return $default(_that.version,_that.isAdmin);case _:
+return $default(_that.version);case _:
   return orElse();
 
 }
@@ -653,10 +652,10 @@ return $default(_that.version,_that.isAdmin);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String version,  bool isAdmin)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String version)  $default,) {final _that = this;
 switch (_that) {
 case _RpcState():
-return $default(_that.version,_that.isAdmin);case _:
+return $default(_that.version);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -673,10 +672,10 @@ return $default(_that.version,_that.isAdmin);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String version,  bool isAdmin)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String version)?  $default,) {final _that = this;
 switch (_that) {
 case _RpcState() when $default != null:
-return $default(_that.version,_that.isAdmin);case _:
+return $default(_that.version);case _:
   return null;
 
 }
@@ -688,11 +687,10 @@ return $default(_that.version,_that.isAdmin);case _:
 @JsonSerializable()
 
 class _RpcState implements RpcState {
-  const _RpcState(this.version, this.isAdmin);
+  const _RpcState(this.version);
   factory _RpcState.fromJson(Map<String, dynamic> json) => _$RpcStateFromJson(json);
 
 @override final  String version;
-@override final  bool isAdmin;
 
 /// Create a copy of RpcState
 /// with the given fields replaced by the non-null parameter values.
@@ -707,16 +705,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RpcState&&(identical(other.version, version) || other.version == version)&&(identical(other.isAdmin, isAdmin) || other.isAdmin == isAdmin));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RpcState&&(identical(other.version, version) || other.version == version));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,version,isAdmin);
+int get hashCode => Object.hash(runtimeType,version);
 
 @override
 String toString() {
-  return 'RpcState(version: $version, isAdmin: $isAdmin)';
+  return 'RpcState(version: $version)';
 }
 
 
@@ -727,7 +725,7 @@ abstract mixin class _$RpcStateCopyWith<$Res> implements $RpcStateCopyWith<$Res>
   factory _$RpcStateCopyWith(_RpcState value, $Res Function(_RpcState) _then) = __$RpcStateCopyWithImpl;
 @override @useResult
 $Res call({
- String version, bool isAdmin
+ String version
 });
 
 
@@ -744,11 +742,10 @@ class __$RpcStateCopyWithImpl<$Res>
 
 /// Create a copy of RpcState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? version = null,Object? isAdmin = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? version = null,}) {
   return _then(_RpcState(
 null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
-as String,null == isAdmin ? _self.isAdmin : isAdmin // ignore: cast_nullable_to_non_nullable
-as bool,
+as String,
   ));
 }
 

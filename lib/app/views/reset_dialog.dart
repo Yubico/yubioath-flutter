@@ -28,7 +28,6 @@ import '../../app/logging.dart';
 import '../../core/models.dart';
 import '../../core/state.dart';
 import '../../desktop/models.dart';
-import '../../desktop/state.dart';
 import '../../exception/cancellation_exception.dart';
 import '../../exception/ctap_exception.dart';
 import '../../fido/models.dart';
@@ -44,7 +43,6 @@ import '../features.dart' as features;
 import '../message.dart';
 import '../models.dart';
 import '../state.dart';
-import 'elevate_fido_buttons.dart';
 import 'keys.dart';
 
 final _log = Logger('fido.views.reset_dialog');
@@ -182,10 +180,6 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
     final usbTransport = widget.data.node.transport == Transport.usb;
 
     double progress = _currentStep == -1 ? 0.0 : _currentStep / _totalSteps;
-    final winNonElevated =
-        Platform.isWindows &&
-        !ref.watch(rpcStateProvider.select((state) => state.isAdmin));
-    final needsElevation = winNonElevated && _application == Capability.fido2;
 
     // show the progress widgets on desktop, or on Android when using USB
     final showResetProgress =
@@ -196,8 +190,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                     .node
                     .transport]! &
                 Capability.fido2.value !=
-            0 &&
-        !winNonElevated) {
+            0) {
       if (isDesktop) {
         // on desktop we have direct access to the ctap info
         final ctapInfo =
@@ -477,21 +470,16 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                         context,
                       ).textTheme.bodyMedium?.copyWith(fontWeight: .w700),
                     ),
-                    if (needsElevation) ...[
-                      Text(l10n.p_elevated_permissions_required),
-                      const ElevateFidoButtons(),
-                    ] else ...[
-                      Text(switch (_application) {
-                        Capability.oath => l10n.p_warning_disable_credentials,
+                    Text(switch (_application) {
+                      Capability.oath => l10n.p_warning_disable_credentials,
 
-                        Capability.piv => l10n.p_warning_piv_reset_desc,
-                        Capability.fido2 => l10n.p_warning_disable_accounts,
-                        _ =>
-                          _globalReset
-                              ? l10n.p_warning_global_reset_desc
-                              : l10n.p_factory_reset_desc,
-                      }),
-                    ],
+                      Capability.piv => l10n.p_warning_piv_reset_desc,
+                      Capability.fido2 => l10n.p_warning_disable_accounts,
+                      _ =>
+                        _globalReset
+                            ? l10n.p_warning_global_reset_desc
+                            : l10n.p_factory_reset_desc,
+                    }),
                     if (_application == Capability.fido2 &&
                         _fidoTransportDisabled)
                       Row(

@@ -21,6 +21,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../android/state.dart';
+import '../../core/models.dart';
 import '../../core/state.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
@@ -51,7 +52,7 @@ class DevicePickerContent extends ConsumerWidget {
         .toList();
     final currentNode = ref.watch(currentDeviceProvider);
 
-    final showUsb = isDesktop && devices.whereType<UsbYubiKeyNode>().isEmpty;
+    final showUsb = isDesktop && devices.whereType<YubiKeyDeviceNode>().isEmpty;
     final borderRadius = isDrawer
         ? BorderRadius.only(
             topRight: Radius.circular(24),
@@ -114,21 +115,14 @@ class DevicePickerContent extends ConsumerWidget {
                 extended,
                 borderRadius,
               )
-            : switch (e) {
-                UsbYubiKeyNode() => _buildDeviceRow(
-                  context,
-                  ref,
-                  e,
-                  e.info,
-                  extended,
-                  borderRadius,
-                ),
-                NfcReaderNode() => NfcDeviceRow(
-                  e,
-                  extended: extended,
-                  borderRadius: borderRadius,
-                ),
-              },
+            : _buildDeviceRow(
+                context,
+                ref,
+                e,
+                (e as YubiKeyDeviceNode).info,
+                extended,
+                borderRadius,
+              ),
       ),
     ];
 
@@ -167,7 +161,7 @@ List<String> _getDeviceStrings(
       [l10n.l_no_yk_present];
 
   // Add the NFC reader name, unless it's already included (as device name, like on Android)
-  if (node is NfcReaderNode && !messages.contains(node.name)) {
+  if (node.transport == Transport.nfc && !messages.contains(node.name)) {
     messages.add(node.name);
   }
 
@@ -388,7 +382,7 @@ class _DeviceRowState extends ConsumerState<DeviceRow> {
             enabled: hidden.isNotEmpty,
           ),
         ),
-      if (isDesktop && node is NfcReaderNode)
+      if (isDesktop && node != null && node.transport == Transport.nfc)
         PopupMenuItem(
           onTap: () {
             ref.read(hiddenDevicesProvider.notifier).hideDevice(node.path);
@@ -413,13 +407,10 @@ DeviceRow _buildDeviceRow(
   BorderRadiusGeometry? borderRadius,
 ) {
   final l10n = AppLocalizations.of(context);
-  final subtitle = switch (node) {
-    UsbYubiKeyNode(:final info) =>
-      info == null
-          ? l10n.s_yk_inaccessible
-          : _getDeviceInfoString(context, info),
-    NfcReaderNode() => l10n.s_select_to_scan,
-  };
+  final ykNode = node as YubiKeyDeviceNode;
+  final subtitle = ykNode.info == null
+      ? l10n.s_yk_inaccessible
+      : _getDeviceInfoString(context, ykNode.info!);
 
   final keyCustomization = ref.watch(
     keyCustomizationManagerProvider,
@@ -479,21 +470,4 @@ DeviceRow _buildCurrentDeviceRow(
     node: node,
     onTap: () {},
   );
-}
-
-class NfcDeviceRow extends ConsumerWidget {
-  final DeviceNode node;
-  final bool extended;
-  final BorderRadiusGeometry? borderRadius;
-
-  const NfcDeviceRow(
-    this.node, {
-    super.key,
-    required this.extended,
-    this.borderRadius,
-  });
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) =>
-      _buildDeviceRow(context, ref, node, null, extended, borderRadius);
 }
