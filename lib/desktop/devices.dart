@@ -92,7 +92,7 @@ class DevicesNotifier extends StateNotifier<List<YubiKeyDeviceNode>> {
         _log.info('Devices state change', jsonEncode(devicesResult));
         _devicesState = devicesResult['data']['state'];
         final pids = {
-          for (var e in (devicesResult['data']['pids'] as Map).entries)
+          for (var e in ((devicesResult['data']['pids'] as Map?) ?? {}).entries)
             UsbPid.fromValue(int.parse(e.key)): e.value as int,
         };
         List<YubiKeyDeviceNode> devices = [];

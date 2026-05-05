@@ -27,7 +27,7 @@ pub fn is_admin() -> bool {
         use std::mem::MaybeUninit;
         unsafe {
             let mut token = MaybeUninit::uninit();
-            if windows_sys::Win32::Security::OpenProcessToken(
+            if windows_sys::Win32::System::Threading::OpenProcessToken(
                 windows_sys::Win32::System::Threading::GetCurrentProcess(),
                 windows_sys::Win32::Security::TOKEN_QUERY,
                 token.as_mut_ptr(),
