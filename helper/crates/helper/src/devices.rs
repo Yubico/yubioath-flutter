@@ -73,12 +73,11 @@ impl RpcNode for DevicesNode {
                 })
             }
             DeviceSource::Service(_) => {
-                // For service mode, state is managed by the service.
-                json!({"state": 0})
+                // For service mode, state and pid accounting are managed by the service.
+                json!({"state": 0, "pids": {}})
             }
         }
     }
-
     fn list_actions(&self) -> Vec<&'static str> {
         vec!["scan"]
     }
@@ -322,6 +321,11 @@ impl ServiceDeviceNode {
         let info = device.info();
         let name = device.name();
         let pid = device.pid();
+        // The OTP/CCID applet SELECT response returns version 0.0.1 for dev firmware.
+        // patch_version() replaces that with the override, but only if it's been set.
+        // In service mode the helper never opens a local device, so we set it here
+        // from the real firmware version read from the service.
+        yubikit::core::set_override_version(info.version);
         let data = json!({
             "pid": pid,
             "name": name,
