@@ -242,11 +242,11 @@ class GlobalShortcuts extends ConsumerWidget {
           scaffoldGlobalKey.currentState?.isDrawerOpen == true) {
         final attached = ref
             .read(attachedDevicesProvider)
-            .whereType<UsbYubiKeyNode>()
+            .whereType<YubiKeyDeviceNode>()
             .toList();
         if (attached.length > 1) {
           final current = ref.read(currentDeviceProvider);
-          if (current != null && current is UsbYubiKeyNode) {
+          if (current != null && current is YubiKeyDeviceNode) {
             final index = attached.indexOf(current);
             ref
                 .read(currentDeviceProvider.notifier)

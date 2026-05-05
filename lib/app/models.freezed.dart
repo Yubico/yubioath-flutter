@@ -313,7 +313,7 @@ $DeviceInfoCopyWith<$Res> get info {
 /// @nodoc
 mixin _$DeviceNode {
 
- DevicePath get path; String get name;
+ DevicePath get path; String get name; UsbPid? get pid; Transport get transport; DeviceInfo? get info;
 /// Create a copy of DeviceNode
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -324,16 +324,16 @@ $DeviceNodeCopyWith<DeviceNode> get copyWith => _$DeviceNodeCopyWithImpl<DeviceN
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is DeviceNode&&(identical(other.path, path) || other.path == path)&&(identical(other.name, name) || other.name == name));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DeviceNode&&(identical(other.path, path) || other.path == path)&&(identical(other.name, name) || other.name == name)&&(identical(other.pid, pid) || other.pid == pid)&&(identical(other.transport, transport) || other.transport == transport)&&(identical(other.info, info) || other.info == info));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,path,name);
+int get hashCode => Object.hash(runtimeType,path,name,pid,transport,info);
 
 @override
 String toString() {
-  return 'DeviceNode(path: $path, name: $name)';
+  return 'DeviceNode(path: $path, name: $name, pid: $pid, transport: $transport, info: $info)';
 }
 
 
@@ -344,11 +344,11 @@ abstract mixin class $DeviceNodeCopyWith<$Res>  {
   factory $DeviceNodeCopyWith(DeviceNode value, $Res Function(DeviceNode) _then) = _$DeviceNodeCopyWithImpl;
 @useResult
 $Res call({
- DevicePath path, String name
+ DevicePath path, String name, UsbPid? pid, Transport transport, DeviceInfo? info
 });
 
 
-
+$DeviceInfoCopyWith<$Res>? get info;
 
 }
 /// @nodoc
@@ -361,14 +361,29 @@ class _$DeviceNodeCopyWithImpl<$Res>
 
 /// Create a copy of DeviceNode
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? path = null,Object? name = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? path = null,Object? name = null,Object? pid = freezed,Object? transport = null,Object? info = freezed,}) {
   return _then(_self.copyWith(
 path: null == path ? _self.path : path // ignore: cast_nullable_to_non_nullable
 as DevicePath,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,
+as String,pid: freezed == pid ? _self.pid : pid // ignore: cast_nullable_to_non_nullable
+as UsbPid?,transport: null == transport ? _self.transport : transport // ignore: cast_nullable_to_non_nullable
+as Transport,info: freezed == info ? _self.info : info // ignore: cast_nullable_to_non_nullable
+as DeviceInfo?,
   ));
 }
+/// Create a copy of DeviceNode
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$DeviceInfoCopyWith<$Res>? get info {
+    if (_self.info == null) {
+    return null;
+  }
 
+  return $DeviceInfoCopyWith<$Res>(_self.info!, (value) {
+    return _then(_self.copyWith(info: value));
+  });
+}
 }
 
 
@@ -386,12 +401,11 @@ extension DeviceNodePatterns on DeviceNode {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( UsbYubiKeyNode value)?  usbYubiKey,TResult Function( NfcReaderNode value)?  nfcReader,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( YubiKeyDeviceNode value)?  yubiKey,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case UsbYubiKeyNode() when usbYubiKey != null:
-return usbYubiKey(_that);case NfcReaderNode() when nfcReader != null:
-return nfcReader(_that);case _:
+case YubiKeyDeviceNode() when yubiKey != null:
+return yubiKey(_that);case _:
   return orElse();
 
 }
@@ -409,12 +423,11 @@ return nfcReader(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( UsbYubiKeyNode value)  usbYubiKey,required TResult Function( NfcReaderNode value)  nfcReader,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( YubiKeyDeviceNode value)  yubiKey,}){
 final _that = this;
 switch (_that) {
-case UsbYubiKeyNode():
-return usbYubiKey(_that);case NfcReaderNode():
-return nfcReader(_that);}
+case YubiKeyDeviceNode():
+return yubiKey(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -428,12 +441,11 @@ return nfcReader(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( UsbYubiKeyNode value)?  usbYubiKey,TResult? Function( NfcReaderNode value)?  nfcReader,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( YubiKeyDeviceNode value)?  yubiKey,}){
 final _that = this;
 switch (_that) {
-case UsbYubiKeyNode() when usbYubiKey != null:
-return usbYubiKey(_that);case NfcReaderNode() when nfcReader != null:
-return nfcReader(_that);case _:
+case YubiKeyDeviceNode() when yubiKey != null:
+return yubiKey(_that);case _:
   return null;
 
 }
@@ -450,11 +462,10 @@ return nfcReader(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( DevicePath path,  String name,  UsbPid pid,  DeviceInfo? info)?  usbYubiKey,TResult Function( DevicePath path,  String name)?  nfcReader,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( DevicePath path,  String name,  UsbPid? pid,  Transport transport,  DeviceInfo? info)?  yubiKey,required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case UsbYubiKeyNode() when usbYubiKey != null:
-return usbYubiKey(_that.path,_that.name,_that.pid,_that.info);case NfcReaderNode() when nfcReader != null:
-return nfcReader(_that.path,_that.name);case _:
+case YubiKeyDeviceNode() when yubiKey != null:
+return yubiKey(_that.path,_that.name,_that.pid,_that.transport,_that.info);case _:
   return orElse();
 
 }
@@ -472,11 +483,10 @@ return nfcReader(_that.path,_that.name);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( DevicePath path,  String name,  UsbPid pid,  DeviceInfo? info)  usbYubiKey,required TResult Function( DevicePath path,  String name)  nfcReader,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( DevicePath path,  String name,  UsbPid? pid,  Transport transport,  DeviceInfo? info)  yubiKey,}) {final _that = this;
 switch (_that) {
-case UsbYubiKeyNode():
-return usbYubiKey(_that.path,_that.name,_that.pid,_that.info);case NfcReaderNode():
-return nfcReader(_that.path,_that.name);}
+case YubiKeyDeviceNode():
+return yubiKey(_that.path,_that.name,_that.pid,_that.transport,_that.info);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -490,11 +500,10 @@ return nfcReader(_that.path,_that.name);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( DevicePath path,  String name,  UsbPid pid,  DeviceInfo? info)?  usbYubiKey,TResult? Function( DevicePath path,  String name)?  nfcReader,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( DevicePath path,  String name,  UsbPid? pid,  Transport transport,  DeviceInfo? info)?  yubiKey,}) {final _that = this;
 switch (_that) {
-case UsbYubiKeyNode() when usbYubiKey != null:
-return usbYubiKey(_that.path,_that.name,_that.pid,_that.info);case NfcReaderNode() when nfcReader != null:
-return nfcReader(_that.path,_that.name);case _:
+case YubiKeyDeviceNode() when yubiKey != null:
+return yubiKey(_that.path,_that.name,_that.pid,_that.transport,_that.info);case _:
   return null;
 
 }
@@ -505,68 +514,70 @@ return nfcReader(_that.path,_that.name);case _:
 /// @nodoc
 
 
-class UsbYubiKeyNode extends DeviceNode {
-   UsbYubiKeyNode(this.path, this.name, this.pid, this.info): super._();
+class YubiKeyDeviceNode extends DeviceNode {
+   YubiKeyDeviceNode(this.path, this.name, this.pid, this.transport, this.info): super._();
   
 
 @override final  DevicePath path;
 @override final  String name;
- final  UsbPid pid;
- final  DeviceInfo? info;
+@override final  UsbPid? pid;
+@override final  Transport transport;
+@override final  DeviceInfo? info;
 
 /// Create a copy of DeviceNode
 /// with the given fields replaced by the non-null parameter values.
 @override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-$UsbYubiKeyNodeCopyWith<UsbYubiKeyNode> get copyWith => _$UsbYubiKeyNodeCopyWithImpl<UsbYubiKeyNode>(this, _$identity);
+$YubiKeyDeviceNodeCopyWith<YubiKeyDeviceNode> get copyWith => _$YubiKeyDeviceNodeCopyWithImpl<YubiKeyDeviceNode>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UsbYubiKeyNode&&(identical(other.path, path) || other.path == path)&&(identical(other.name, name) || other.name == name)&&(identical(other.pid, pid) || other.pid == pid)&&(identical(other.info, info) || other.info == info));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is YubiKeyDeviceNode&&(identical(other.path, path) || other.path == path)&&(identical(other.name, name) || other.name == name)&&(identical(other.pid, pid) || other.pid == pid)&&(identical(other.transport, transport) || other.transport == transport)&&(identical(other.info, info) || other.info == info));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,path,name,pid,info);
+int get hashCode => Object.hash(runtimeType,path,name,pid,transport,info);
 
 @override
 String toString() {
-  return 'DeviceNode.usbYubiKey(path: $path, name: $name, pid: $pid, info: $info)';
+  return 'DeviceNode.yubiKey(path: $path, name: $name, pid: $pid, transport: $transport, info: $info)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class $UsbYubiKeyNodeCopyWith<$Res> implements $DeviceNodeCopyWith<$Res> {
-  factory $UsbYubiKeyNodeCopyWith(UsbYubiKeyNode value, $Res Function(UsbYubiKeyNode) _then) = _$UsbYubiKeyNodeCopyWithImpl;
+abstract mixin class $YubiKeyDeviceNodeCopyWith<$Res> implements $DeviceNodeCopyWith<$Res> {
+  factory $YubiKeyDeviceNodeCopyWith(YubiKeyDeviceNode value, $Res Function(YubiKeyDeviceNode) _then) = _$YubiKeyDeviceNodeCopyWithImpl;
 @override @useResult
 $Res call({
- DevicePath path, String name, UsbPid pid, DeviceInfo? info
+ DevicePath path, String name, UsbPid? pid, Transport transport, DeviceInfo? info
 });
 
 
-$DeviceInfoCopyWith<$Res>? get info;
+@override $DeviceInfoCopyWith<$Res>? get info;
 
 }
 /// @nodoc
-class _$UsbYubiKeyNodeCopyWithImpl<$Res>
-    implements $UsbYubiKeyNodeCopyWith<$Res> {
-  _$UsbYubiKeyNodeCopyWithImpl(this._self, this._then);
+class _$YubiKeyDeviceNodeCopyWithImpl<$Res>
+    implements $YubiKeyDeviceNodeCopyWith<$Res> {
+  _$YubiKeyDeviceNodeCopyWithImpl(this._self, this._then);
 
-  final UsbYubiKeyNode _self;
-  final $Res Function(UsbYubiKeyNode) _then;
+  final YubiKeyDeviceNode _self;
+  final $Res Function(YubiKeyDeviceNode) _then;
 
 /// Create a copy of DeviceNode
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? path = null,Object? name = null,Object? pid = null,Object? info = freezed,}) {
-  return _then(UsbYubiKeyNode(
+@override @pragma('vm:prefer-inline') $Res call({Object? path = null,Object? name = null,Object? pid = freezed,Object? transport = null,Object? info = freezed,}) {
+  return _then(YubiKeyDeviceNode(
 null == path ? _self.path : path // ignore: cast_nullable_to_non_nullable
 as DevicePath,null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,null == pid ? _self.pid : pid // ignore: cast_nullable_to_non_nullable
-as UsbPid,freezed == info ? _self.info : info // ignore: cast_nullable_to_non_nullable
+as String,freezed == pid ? _self.pid : pid // ignore: cast_nullable_to_non_nullable
+as UsbPid?,null == transport ? _self.transport : transport // ignore: cast_nullable_to_non_nullable
+as Transport,freezed == info ? _self.info : info // ignore: cast_nullable_to_non_nullable
 as DeviceInfo?,
   ));
 }
@@ -584,74 +595,6 @@ $DeviceInfoCopyWith<$Res>? get info {
     return _then(_self.copyWith(info: value));
   });
 }
-}
-
-/// @nodoc
-
-
-class NfcReaderNode extends DeviceNode {
-   NfcReaderNode(this.path, this.name): super._();
-  
-
-@override final  DevicePath path;
-@override final  String name;
-
-/// Create a copy of DeviceNode
-/// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$NfcReaderNodeCopyWith<NfcReaderNode> get copyWith => _$NfcReaderNodeCopyWithImpl<NfcReaderNode>(this, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is NfcReaderNode&&(identical(other.path, path) || other.path == path)&&(identical(other.name, name) || other.name == name));
-}
-
-
-@override
-int get hashCode => Object.hash(runtimeType,path,name);
-
-@override
-String toString() {
-  return 'DeviceNode.nfcReader(path: $path, name: $name)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class $NfcReaderNodeCopyWith<$Res> implements $DeviceNodeCopyWith<$Res> {
-  factory $NfcReaderNodeCopyWith(NfcReaderNode value, $Res Function(NfcReaderNode) _then) = _$NfcReaderNodeCopyWithImpl;
-@override @useResult
-$Res call({
- DevicePath path, String name
-});
-
-
-
-
-}
-/// @nodoc
-class _$NfcReaderNodeCopyWithImpl<$Res>
-    implements $NfcReaderNodeCopyWith<$Res> {
-  _$NfcReaderNodeCopyWithImpl(this._self, this._then);
-
-  final NfcReaderNode _self;
-  final $Res Function(NfcReaderNode) _then;
-
-/// Create a copy of DeviceNode
-/// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? path = null,Object? name = null,}) {
-  return _then(NfcReaderNode(
-null == path ? _self.path : path // ignore: cast_nullable_to_non_nullable
-as DevicePath,null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,
-  ));
-}
-
-
 }
 
 /// @nodoc

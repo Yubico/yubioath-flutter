@@ -118,18 +118,13 @@ class DevicePath {
 @freezed
 sealed class DeviceNode with _$DeviceNode {
   const DeviceNode._();
-  factory DeviceNode.usbYubiKey(
+  factory DeviceNode.yubiKey(
     DevicePath path,
     String name,
-    UsbPid pid,
+    UsbPid? pid,
+    Transport transport,
     DeviceInfo? info,
-  ) = UsbYubiKeyNode;
-  factory DeviceNode.nfcReader(DevicePath path, String name) = NfcReaderNode;
-
-  Transport get transport => switch (this) {
-    UsbYubiKeyNode() => Transport.usb,
-    NfcReaderNode() => Transport.nfc,
-  };
+  ) = YubiKeyDeviceNode;
 }
 
 enum ActionStyle { normal, primary, error }

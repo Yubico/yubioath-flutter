@@ -38,21 +38,3 @@ repos:
       language: script
       entry: spotless_apply.py
       require_serial: true
-
-# Python
-- repo: local
-  hooks:
-    - id: mypy
-      name: mypy
-      files: helper/
-      language: script
-      entry: run-mypy.sh
-      require_serial: true
-- repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.12.0
-  hooks:
-    # Run the linter, organize imports
-    - id: ruff-check
-      args: [ --fix ]
-    # Run the formatter
-    - id: ruff-format

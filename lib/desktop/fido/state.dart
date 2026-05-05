@@ -16,7 +16,6 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
@@ -121,10 +120,6 @@ class DesktopFidoStateNotifier extends FidoStateNotifier {
   @override
   FutureOr<FidoState> build() async {
     _session = ref.watch(_sessionProvider(devicePath));
-    if (Platform.isWindows) {
-      // Make sure to rebuild if isAdmin changes
-      ref.watch(rpcStateProvider.select((state) => state.isAdmin));
-    }
 
     ref.listen<WindowState>(windowStateProvider, (prev, next) async {
       if (prev?.active == false && next.active) {

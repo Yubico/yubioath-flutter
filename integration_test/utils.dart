@@ -286,7 +286,7 @@ extension PatrolTesterUtils on PatrolTester {
     }
     // Make sure no other YubiKeys are connected via USB
     if (read(attachedDevicesProvider)
-        .whereType<UsbYubiKeyNode>()
+        .whereType<YubiKeyDeviceNode>()
         .where((node) => node != device.node)
         .isNotEmpty) {
       await fatalError('Additional YubiKeys connected');

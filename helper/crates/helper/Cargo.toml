@@ -1,0 +1,38 @@
+[package]
+name = "authenticator-helper"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "authenticator-helper"
+path = "src/main.rs"
+
+[dependencies]
+yubikit = { path = "../../../../yubikit/crates/yubikit" }
+ykman = { path = "../../../../yubikit/crates/ykman" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+log = "0.4"
+sha2 = "0.10"
+hex = "0.4"
+chrono = "0.4"
+x509-cert = { version = "0.2.5", features = ["pem", "builder"] }
+der = { version = "0.7", features = ["pem"] }
+pkcs8 = { version = "0.10.2", features = ["encryption", "pem"] }
+p12-keystore = "0.2.1"
+getrandom = "0.3"
+base64 = "0.22"
+base32 = "0.5"
+hmac = "0.12"
+env_logger = "0.11"
+image = { version = "0.25", default-features = false, features = ["png", "jpeg", "gif", "bmp", "webp"] }
+rqrr = "0.10"
+
+[target.'cfg(not(target_os = "linux"))'.dependencies]
+xcap = "0.9"
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.59", features = ["Win32_Foundation", "Win32_Security", "Win32_System_Threading"] }

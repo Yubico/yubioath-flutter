@@ -48,7 +48,7 @@ final rpcStateProvider = StateNotifierProvider<_RpcStateNotifier, RpcState>(
 class _RpcStateNotifier extends StateNotifier<RpcState> {
   final RpcSession? _rpc;
 
-  _RpcStateNotifier(this._rpc) : super(const RpcState('unknown', false)) {
+  _RpcStateNotifier(this._rpc) : super(const RpcState('unknown')) {
     _init();
   }
 
@@ -219,13 +219,13 @@ class DesktopCurrentDeviceNotifier extends CurrentDeviceNotifier {
       final parts = lastDevice.split('/');
       if (parts.firstOrNull == 'pid') {
         node = devices
-            .whereType<UsbYubiKeyNode>()
-            .where((e) => e.pid.value.toString() == parts[1])
+            .whereType<YubiKeyDeviceNode>()
+            .where((e) => e.pid?.value.toString() == parts[1])
             .firstOrNull;
       }
     }
 
-    node = node ?? devices.whereType<UsbYubiKeyNode>().firstOrNull;
+    node = node ?? devices.whereType<YubiKeyDeviceNode>().firstOrNull;
 
     final devicePaths = devices.map((dev) => dev.path.key);
     if (node != null && !devicePaths.contains(lastDevice)) {
