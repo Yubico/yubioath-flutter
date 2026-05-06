@@ -118,25 +118,28 @@ class _QrScannerViewState extends State<QrScannerView>
   }
 
   Widget _buildTextContent(AppLocalizations l10n, ThemeData theme) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          l10n.s_qr_scan,
-          style: theme.textTheme.displaySmall?.copyWith(
-            fontWeight: FontWeight.w500,
-            color: theme.colorScheme.onSurface,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            l10n.s_qr_scan,
+            style: theme.textTheme.displaySmall?.copyWith(
+              fontWeight: FontWeight.w500,
+              color: theme.colorScheme.onSurface,
+            ),
           ),
-        ),
-        const SizedBox(height: 16),
-        Text(
-          l10n.l_point_camera_scan,
-          style: theme.textTheme.bodyLarge?.copyWith(
-            color: theme.colorScheme.onSurface,
+          const SizedBox(height: 16),
+          Text(
+            l10n.l_point_camera_scan,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: theme.colorScheme.onSurface,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
