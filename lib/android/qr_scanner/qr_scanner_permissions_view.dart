@@ -20,7 +20,7 @@ import '../../generated/l10n/app_localizations.dart';
 import 'qr_scanner_widgets.dart';
 
 class QRScannerPermissionsUI extends StatelessWidget {
-  final Function onPermissionRequest;
+  final VoidCallback onPermissionRequest;
 
   const QRScannerPermissionsUI({super.key, required this.onPermissionRequest});
 

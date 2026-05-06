@@ -196,6 +196,7 @@ internal class QRScannerView(
                         previewView.visibility = View.VISIBLE
                         bindUseCases(context)
                     } else {
+                        previewView.visibility = View.GONE
                         reportViewInitialized(false)
                     }
                 } else if (call.method == "resumeScanning") {
