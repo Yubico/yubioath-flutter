@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2025 Yubico.
+ * Copyright (C) 2022-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,103 +17,57 @@
 import 'package:flutter/material.dart';
 
 import '../../generated/l10n/app_localizations.dart';
-import 'qr_scanner_provider.dart';
-import 'qr_scanner_scan_status.dart';
 import 'qr_scanner_widgets.dart';
 
 class QRScannerPermissionsUI extends StatelessWidget {
-  final ScanStatus status;
-  final Size screenSize;
-  final Function onPermissionRequest;
+  final VoidCallback onPermissionRequest;
 
-  const QRScannerPermissionsUI({
-    super.key,
-    required this.status,
-    required this.screenSize,
-    required this.onPermissionRequest,
-  });
+  const QRScannerPermissionsUI({super.key, required this.onPermissionRequest});
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
 
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32.0),
-        child: Column(
-          mainAxisSize: .max,
-          crossAxisAlignment: .stretch,
-          mainAxisAlignment: .spaceEvenly,
-          children: [
-            Text(
-              l10n.p_need_camera_permission,
-              style: const TextStyle(color: Colors.white),
-              textAlign: .center,
-            ),
-            Column(
-              children: [
-                Row(
-                  mainAxisSize: .min,
-                  mainAxisAlignment: .spaceEvenly,
-                  children: [
-                    Column(
-                      children: [
-                        SmallWhiteText(l10n.q_want_to_scan),
-                        OutlinedButton(
-                          onPressed: () {
-                            onPermissionRequest();
-                          },
-                          child: Text(
-                            l10n.s_review_permissions,
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+    return ColoredBox(
+      color: theme.colorScheme.surface,
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const QrScannerTopBar(),
+              const SizedBox(height: 24),
+              Text(
+                l10n.s_qr_scan,
+                style: theme.textTheme.displaySmall?.copyWith(
+                  fontWeight: FontWeight.w500,
+                  color: theme.colorScheme.onSurface,
                 ),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisSize: .min,
-                  mainAxisAlignment: .spaceEvenly,
-                  children: [
-                    Column(
-                      children: [SmallWhiteText(l10n.q_have_account_info)],
-                    ),
-                  ],
+              ),
+              const Spacer(),
+              Center(
+                child: Text(
+                  l10n.p_need_camera_permission,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    color: theme.colorScheme.onSurface,
+                  ),
                 ),
-                Row(
-                  mainAxisSize: .min,
-                  mainAxisAlignment: .spaceEvenly,
-                  children: [
-                    OutlinedButton(
-                      onPressed: () {
-                        Navigator.of(
-                          context,
-                        ).pop(AndroidQrScanner.kQrScannerRequestManualEntry);
-                      },
-                      child: Text(
-                        l10n.s_enter_manually,
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    OutlinedButton(
-                      onPressed: () {
-                        Navigator.of(
-                          context,
-                        ).pop(AndroidQrScanner.kQrScannerRequestReadFromFile);
-                      },
-                      child: Text(
-                        l10n.s_read_from_file,
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ],
+              ),
+              const SizedBox(height: 24),
+              Center(
+                child: FilledButton(
+                  onPressed: () => onPermissionRequest(),
+                  child: Text(l10n.s_review_permissions),
                 ),
-              ],
-            ),
-          ],
+              ),
+              const Spacer(),
+              const QrScannerNoQrCodeGroup(),
+              const SizedBox(height: 8),
+            ],
+          ),
         ),
       ),
     );
