@@ -85,15 +85,11 @@ class QRScannerBorder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color color;
-    switch (status) {
-      case ScanStatus.error:
-        color = Colors.red.shade400;
-      case ScanStatus.success:
-        color = Colors.green.shade400;
-      case ScanStatus.scanning:
-        color = primaryColor;
-    }
+    final color = switch (status) {
+      ScanStatus.error => Colors.red.shade400,
+      ScanStatus.success => Colors.green.shade400,
+      ScanStatus.scanning => primaryColor,
+    };
 
     return CustomPaint(
       painter: _BorderPainter(color),
