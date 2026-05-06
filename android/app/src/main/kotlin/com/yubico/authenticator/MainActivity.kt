@@ -82,6 +82,7 @@ import java.security.Security
 import java.util.concurrent.Executors
 import javax.crypto.Mac
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -100,6 +101,7 @@ class MainActivity : FlutterFragmentActivity() {
     private val nfcConfiguration = NfcConfiguration().timeout(5000)
 
     private var hasNfc: Boolean = false
+    private var nfcRetryJob: Job? = null
 
     private lateinit var yubikit: YubiKitManager
 
@@ -170,11 +172,11 @@ class MainActivity : FlutterFragmentActivity() {
             hasNfc = true
         } catch (_: NfcNotAvailable) {
             hasNfc = false
-        } catch (e: Exception) {
-            logger.error("Start NFC discovery failed (attempt {}): {}", retryCount + 1, e.message)
+        } catch (e: RuntimeException) {
+            logger.error("Start NFC discovery failed (attempt {})", retryCount + 1, e)
             hasNfc = false
             if (retryCount < NFC_DISCOVERY_MAX_RETRIES) {
-                lifecycleScope.launch(Dispatchers.Main) {
+                nfcRetryJob = lifecycleScope.launch(Dispatchers.Main) {
                     delay(NFC_DISCOVERY_RETRY_DELAY_MS)
                     startNfcDiscovery(retryCount + 1)
                 }
@@ -188,6 +190,8 @@ class MainActivity : FlutterFragmentActivity() {
     }
 
     private fun stopNfcDiscovery() {
+        nfcRetryJob?.cancel()
+        nfcRetryJob = null
         if (hasNfc) {
             yubikit.stopNfcDiscovery(this)
             logger.debug("Stopped nfc discovery")
