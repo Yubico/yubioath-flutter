@@ -137,16 +137,25 @@ impl RpcNode for DevicesNode {
                                     || !d.usb_interfaces().contains(UsbInterface::CCID)
                                     || d.reader_name().is_some()
                             });
-                            if expected == usb_count && all_ccid_ok {
-                                *list_state = state;
-                                log::debug!("State updated: {state}");
+                            if !all_ccid_ok {
+                                // A CCID-capable device is present but its
+                                // PC/SC reader isn't ready yet (e.g. pcscd
+                                // starting up). Keep list_state=0 so we
+                                // retry on the next poll.
+                                log::warn!("Not all devices have CCID access");
+                                *list_state = 0;
                             } else {
-                                if !all_ccid_ok {
-                                    log::warn!("Not all devices have CCID access");
-                                } else {
+                                // Accept the current enumeration result —
+                                // even if some PIDs are unaccounted for
+                                // (e.g. blocked FIDO-only devices). Those
+                                // won't become accessible without a replug,
+                                // so there is no benefit in re-enumerating
+                                // until the device set actually changes.
+                                if expected != usb_count {
                                     log::warn!("Not all devices identified");
                                 }
-                                *list_state = 0;
+                                *list_state = state;
+                                log::debug!("State updated: {state}");
                             }
                         }
                         Err(e) => {
