@@ -47,13 +47,12 @@ final _devicesProvider =
 class DevicesNotifier extends StateNotifier<List<YubiKeyDeviceNode>> {
   final RpcSession? _rpc;
   Timer? _pollTimer;
-  int _devicesState = -1;
-  bool _unaccountedRetry = false;
+  Set<String> _lastChildrenKeys = {};
   DevicesNotifier(this._rpc) : super([]);
 
   void refresh() {
     _log.debug('Refreshing all devices');
-    _devicesState = -1;
+    _lastChildrenKeys = {};
     _pollDevices();
   }
 
@@ -81,23 +80,22 @@ class DevicesNotifier extends StateNotifier<List<YubiKeyDeviceNode>> {
     }
 
     try {
-      var scan = await rpc.command('scan', ['devices']);
+      var devicesResult = await rpc.command('get', ['devices']);
 
       if (!mounted) {
         return;
       }
 
-      if (_devicesState != scan['state'] || _unaccountedRetry) {
-        var devicesResult = await rpc.command('get', ['devices']);
+      final childrenKeys =
+          (devicesResult['children'] as Map).keys.toSet().cast<String>();
+
+      if (!_lastChildrenKeys.containsAll(childrenKeys) ||
+          !childrenKeys.containsAll(_lastChildrenKeys)) {
         _log.info('Devices state change', jsonEncode(devicesResult));
-        _devicesState = devicesResult['data']['state'];
-        final pids = {
-          for (var e in ((devicesResult['data']['pids'] as Map?) ?? {}).entries)
-            UsbPid.fromValue(int.parse(e.key)): e.value as int,
-        };
+        _lastChildrenKeys = childrenKeys;
         List<YubiKeyDeviceNode> devices = [];
 
-        for (String id in (devicesResult['children'] as Map).keys) {
+        for (String id in childrenKeys) {
           final path = ['devices', id];
           final deviceResult = await rpc.command('get', path);
           final deviceData = deviceResult['data'];
@@ -117,34 +115,9 @@ class DevicesNotifier extends StateNotifier<List<YubiKeyDeviceNode>> {
                 )
                 as YubiKeyDeviceNode,
           );
-          if (transport == Transport.usb && pid != null) {
-            pids.update(pid, (value) => value - 1, ifAbsent: () => 0);
-          }
-        }
-        pids.removeWhere((_, value) => value <= 0);
-
-        if (pids.isNotEmpty) {
-          pids.forEach((pid, count) {
-            for (var i = 0; i < count; i++) {
-              devices.add(
-                DeviceNode.yubiKey(
-                      DevicePath(
-                          ['pid', pid.value.toString(), i.toString()]),
-                      pid.displayName,
-                      pid,
-                      Transport.usb,
-                      null,
-                    )
-                    as YubiKeyDeviceNode,
-              );
-            }
-          });
-          _unaccountedRetry = !_unaccountedRetry;
-        } else {
-          _unaccountedRetry = false;
         }
 
-        _log.info('Devices state updated, unaccounted for: $pids');
+        _log.info('Devices state updated: $childrenKeys');
         if (mounted) {
           state = devices;
         }

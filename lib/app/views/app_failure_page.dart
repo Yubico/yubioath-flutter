@@ -24,6 +24,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../../desktop/models.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
+import 'elevate_fido_buttons.dart';
 import 'message_page.dart';
 
 class AppFailurePage extends ConsumerWidget {
@@ -68,8 +69,11 @@ class AppFailurePage extends ConsumerWidget {
           }
           break;
         case 'fido-blocked-error':
-          header = l10n.l_open_connection_failed;
-          message = l10n.p_try_reinsert_yk;
+          if (Platform.isWindows) {
+            header = l10n.l_admin_privileges_required;
+            message = l10n.p_elevated_permissions_required;
+            actions = [const ElevateFidoButtons()];
+          }
           break;
       }
     }
