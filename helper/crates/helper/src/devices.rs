@@ -1,4 +1,6 @@
+use std::cell::RefCell;
 use std::collections::BTreeMap;
+use std::rc::Rc;
 use std::sync::atomic::AtomicBool;
 
 use der::Decode;
@@ -28,7 +30,7 @@ enum DeviceSource {
         device_mapping: BTreeMap<String, LocalYubiKeyDevice>,
     },
     /// Connected to the ykman-svc service (pipe/socket).
-    Service(RpcClient),
+    Service(Rc<RefCell<RpcClient>>),
 }
 
 pub struct DevicesNode {
@@ -42,7 +44,7 @@ impl DevicesNode {
         let source = match RpcClient::connect_pipe() {
             Ok(client) => {
                 log::info!("Connected to ykman-svc service for USB device access");
-                DeviceSource::Service(client)
+                DeviceSource::Service(Rc::new(RefCell::new(client)))
             }
             Err(e) => {
                 log::debug!(
@@ -155,11 +157,15 @@ impl RpcNode for DevicesNode {
                 self.devices.clone()
             }
             DeviceSource::Service(client) => {
+                // Reset to root prefix before scanning.
+                client.borrow_mut().set_target_prefix(vec![]);
                 // Ask the service to refresh its device list.
-                let _ = client.call("update_children", &[], json!({}), None, false);
+                let _ = client
+                    .borrow_mut()
+                    .call("update_children", &[], json!({}), None, false);
 
                 // Get the root node info which includes children.
-                let root = match client.get(&[]) {
+                let root = match client.borrow_mut().get(&[]) {
                     Ok(r) => r,
                     Err(e) => {
                         log::warn!("Failed to get service root: {e}");
@@ -240,9 +246,14 @@ impl RpcNode for DevicesNode {
 
                 Ok(Box::new(LocalDeviceNode::new(dev.clone())))
             }
-            DeviceSource::Service(_) => {
-                // Open a new service connection for this device.
-                let device = connect_service_device(name)?;
+            DeviceSource::Service(client) => {
+                // Reuse the existing pipe, targeting this device by name.
+                let device = RpcDevice::from_shared_at(client.clone(), name).map_err(|e| {
+                    RpcError::new(
+                        "connection-error",
+                        format!("Failed to open device: {}", e.0),
+                    )
+                })?;
                 Ok(Box::new(ServiceDeviceNode::new(device)))
             }
         }
@@ -293,18 +304,6 @@ impl RpcNode for DevicesNode {
             response.flags.retain(|f| f != "device_closed");
         }
     }
-}
-
-/// Connect to the service and target a specific device by name.
-fn connect_service_device(name: &str) -> Result<RpcDevice, RpcError> {
-    let client = RpcClient::connect_pipe()
-        .map_err(|e| RpcError::new("connection-error", format!("Service unavailable: {}", e.0)))?;
-    RpcDevice::from_client_at(client, name).map_err(|e| {
-        RpcError::new(
-            "connection-error",
-            format!("Failed to open device: {}", e.0),
-        )
-    })
 }
 
 /// A YubiKey device node backed by the ykman-svc service.
