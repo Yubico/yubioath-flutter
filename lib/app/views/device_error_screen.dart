@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -22,6 +24,7 @@ import '../../core/models.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../home/views/home_message_page.dart';
 import '../models.dart';
+import 'elevate_fido_buttons.dart';
 
 class DeviceErrorScreen extends ConsumerWidget {
   final DeviceNode node;
@@ -38,7 +41,14 @@ class DeviceErrorScreen extends ConsumerWidget {
         scale: 3,
         color: Theme.of(context).colorScheme.error,
       ),
-      header: l10n.l_yk_no_access,
+      header: Platform.isWindows
+          ? l10n.l_admin_privileges_required
+          : l10n.l_yk_no_access,
+      message:
+          Platform.isWindows ? l10n.p_elevated_permissions_required : null,
+      actionsBuilder: Platform.isWindows
+          ? (context, _) => [const ElevateFidoButtons()]
+          : null,
     );
   }
 

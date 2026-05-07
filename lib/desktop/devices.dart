@@ -31,6 +31,9 @@ import 'models.dart';
 import 'rpc.dart';
 import 'state.dart';
 
+// Key prefix used for phantom device entries (PIDs detected but not enumerated).
+const _phantomKeyPrefix = 'pid_';
+
 const _pollDelay = Duration(milliseconds: 500);
 
 final _log = Logger('desktop.devices');
@@ -86,13 +89,43 @@ class DevicesNotifier extends StateNotifier<List<YubiKeyDeviceNode>> {
         return;
       }
 
-      final childrenKeys =
-          (devicesResult['children'] as Map).keys.toSet().cast<String>();
+      final childrenMap = (devicesResult['children'] as Map? ?? {});
+      final childrenKeys = childrenMap.keys.toSet().cast<String>();
 
-      if (!_lastChildrenKeys.containsAll(childrenKeys) ||
-          !childrenKeys.containsAll(_lastChildrenKeys)) {
+      // Detect PIDs that the OS can see but the helper could not enumerate
+      // (e.g. FIDO-only devices without admin on Windows). The 'pids' field
+      // is populated in local mode; it is always empty in service mode.
+      final pidsData = (devicesResult['data']?['pids'] as Map?) ?? {};
+
+      // Count how many of each PID are already covered by real children.
+      final Map<int, int> childPidCounts = {};
+      for (final key in childrenKeys) {
+        final pidVal = childrenMap[key]?['pid'];
+        if (pidVal != null) {
+          final pid = int.tryParse(pidVal.toString()) ?? (pidVal as int);
+          childPidCounts[pid] = (childPidCounts[pid] ?? 0) + 1;
+        }
+      }
+
+      // Build phantom keys for PIDs not covered by real children.
+      final Map<String, int> phantomPids = {}; // key -> raw pid int
+      for (final entry in pidsData.entries) {
+        final pid = int.tryParse(entry.key.toString());
+        if (pid == null) continue;
+        final total = (entry.value as int?) ?? 0;
+        final known = childPidCounts[pid] ?? 0;
+        for (int i = known; i < total; i++) {
+          final key = i == 0 ? '$_phantomKeyPrefix$pid' : '$_phantomKeyPrefix${pid}_$i';
+          phantomPids[key] = pid;
+        }
+      }
+
+      final effectiveKeys = childrenKeys.union(phantomPids.keys.toSet());
+
+      if (!_lastChildrenKeys.containsAll(effectiveKeys) ||
+          !effectiveKeys.containsAll(_lastChildrenKeys)) {
         _log.info('Devices state change', jsonEncode(devicesResult));
-        _lastChildrenKeys = childrenKeys;
+        _lastChildrenKeys = effectiveKeys;
         List<YubiKeyDeviceNode> devices = [];
 
         for (String id in childrenKeys) {
@@ -117,7 +150,28 @@ class DevicesNotifier extends StateNotifier<List<YubiKeyDeviceNode>> {
           );
         }
 
-        _log.info('Devices state updated: $childrenKeys');
+        // Add phantom entries for unaccounted PIDs.
+        for (final entry in phantomPids.entries) {
+          final key = entry.key;
+          final rawPid = entry.value;
+          UsbPid? usbPid;
+          try {
+            usbPid = UsbPid.fromValue(rawPid);
+          } catch (_) {}
+          final name = usbPid?.displayName ?? 'YubiKey';
+          devices.add(
+            DeviceNode.yubiKey(
+                  DevicePath(['devices', key]),
+                  name,
+                  usbPid,
+                  Transport.usb,
+                  null,
+                )
+                as YubiKeyDeviceNode,
+          );
+        }
+
+        _log.info('Devices state updated: $effectiveKeys');
         if (mounted) {
           state = devices;
         }
@@ -190,6 +244,8 @@ class CurrentDeviceDataNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
   void _refreshDevice() async {
     final node = _deviceNode;
     if (node == null) return;
+    // Phantom devices have no RPC node; nothing to refresh.
+    if (node is YubiKeyDeviceNode && node.info == null) return;
     var result = await _rpc?.command('get', node.path.segments);
     if (mounted && result != null) {
       final newState = YubiKeyData(
