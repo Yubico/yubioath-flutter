@@ -83,6 +83,8 @@
             android:theme="@style/NdefActivityTheme">
         </activity>
 
+        <!-- NFC tag dispatch on Android 15 and below, and as a fallback for
+             builds whose App Links are not verified. -->
         <activity-alias
             android:name=".AliasNdefActivity"
             android:exported="true"
@@ -91,22 +93,35 @@
             android:theme="@style/NdefActivityTheme"
             android:targetActivity=".NdefActivity">
 
-            <intent-filter android:autoVerify="true">
-                <action android:name="android.intent.action.VIEW" />
-                <data
-                    android:host="my.yubico.com"
-                    android:scheme="https" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-            </intent-filter>
-
             <intent-filter>
                 <action android:name="android.nfc.action.NDEF_DISCOVERED" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data
                     android:host="my.yubico.com"
                     android:scheme="https" />
+            </intent-filter>
 
+        </activity-alias>
+
+        <!-- App Link handler — required by Android 16+ for NFC URL dispatch.
+             Verified via Digital Asset Links (assetlinks.json). The app does
+             not handle browser visits to my.yubico.com beyond what Android 16
+             requires for the NFC code path. -->
+        <activity-alias
+            android:name=".AliasNdefAppLinkActivity"
+            android:exported="true"
+            android:enabled="true"
+            android:launchMode="singleTop"
+            android:theme="@style/NdefActivityTheme"
+            android:targetActivity=".NdefActivity">
+
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="my.yubico.com"
+                    android:scheme="https" />
             </intent-filter>
 
         </activity-alias>
