@@ -36,6 +36,9 @@ enum DeviceSource {
 pub struct DevicesNode {
     source: DeviceSource,
     devices: BTreeMap<String, Value>,
+    /// Set when `device_closed` flag invalidates the current child.
+    /// Ensures the child is recreated even after `list_children` repopulates the mapping.
+    child_invalidated: bool,
 }
 
 impl DevicesNode {
@@ -60,6 +63,7 @@ impl DevicesNode {
         Self {
             source,
             devices: BTreeMap::new(),
+            child_invalidated: false,
         }
     }
 }
@@ -235,6 +239,7 @@ impl RpcNode for DevicesNode {
     }
 
     fn create_child(&mut self, name: &str) -> Result<Box<dyn RpcNode>, RpcError> {
+        self.child_invalidated = false;
         match &mut self.source {
             DeviceSource::Local {
                 list_state,
@@ -273,6 +278,9 @@ impl RpcNode for DevicesNode {
     }
 
     fn is_child_valid(&self, name: &str) -> bool {
+        if self.child_invalidated {
+            return false;
+        }
         match &self.source {
             DeviceSource::Local {
                 list_state,
@@ -298,6 +306,7 @@ impl RpcNode for DevicesNode {
     fn handle_child_response(&mut self, response: &mut RpcResponse) {
         if response.flags.iter().any(|f| f == "device_closed") {
             log::debug!("Device closed flag received, invalidating state");
+            self.child_invalidated = true;
             match &mut self.source {
                 DeviceSource::Local {
                     list_state,
@@ -528,7 +537,9 @@ impl RpcNode for LocalDeviceNode {
     }
 
     fn handle_child_response(&mut self, response: &mut RpcResponse) {
-        if response.flags.iter().any(|f| f == "device_info") {
+        if response.flags.iter().any(|f| f == "device_info")
+            && !response.flags.iter().any(|f| f == "device_closed")
+        {
             log::debug!("Device info flag received, refreshing data");
             let old_info = self.device.info().clone();
             if self.device.refresh_info() {
