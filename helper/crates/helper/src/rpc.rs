@@ -1,4 +1,4 @@
-use std::io::{BufRead, BufReader, Write};
+use std::io::{BufRead, Write};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex, mpsc};
 
@@ -27,54 +27,6 @@ pub fn run(root: Box<dyn RpcNode>) {
         let stdin = std::io::stdin();
         let mut line = String::new();
         match stdin.lock().read_line(&mut line) {
-            Ok(0) | Err(_) => None,
-            Ok(_) => {
-                let trimmed = line.trim().to_string();
-                if trimmed.is_empty() {
-                    None
-                } else {
-                    Some(trimmed)
-                }
-            }
-        }
-    });
-
-    run_rpc_loop(root, send, recv);
-}
-
-/// Run the RPC server loop over a TCP connection.
-/// Sends the nonce first, then processes commands.
-pub fn run_tcp(root: Box<dyn RpcNode>, port: u16, nonce: &str) {
-    use std::net::TcpListener;
-
-    log::debug!("Starting RPC server on TCP port {port}");
-    let listener = TcpListener::bind(("127.0.0.1", port)).expect("Failed to bind TCP port");
-    let (stream, _) = listener.accept().expect("Failed to accept TCP connection");
-    let writer = Arc::new(Mutex::new(
-        stream.try_clone().expect("Failed to clone TCP stream"),
-    ));
-
-    // Send nonce as first message
-    {
-        let mut w = writer.lock().unwrap();
-        writeln!(w, "{nonce}").expect("Failed to send nonce");
-        w.flush().expect("Failed to flush nonce");
-    }
-
-    let send: SendFn = {
-        let writer = writer.clone();
-        Arc::new(move |data: Value| {
-            let mut w = writer.lock().unwrap();
-            serde_json::to_writer(&mut *w, &data).unwrap();
-            w.write_all(b"\n").unwrap();
-            w.flush().unwrap();
-        })
-    };
-
-    let mut reader = BufReader::new(stream);
-    let recv: Box<dyn FnMut() -> Option<String> + Send> = Box::new(move || {
-        let mut line = String::new();
-        match reader.read_line(&mut line) {
             Ok(0) | Err(_) => None,
             Ok(_) => {
                 let trimmed = line.trim().to_string();

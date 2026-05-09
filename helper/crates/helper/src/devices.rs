@@ -170,15 +170,14 @@ impl RpcNode for DevicesNode {
                 self.devices.clone()
             }
             DeviceSource::Service(client) => {
-                // Reset to root prefix before scanning.
-                client.borrow_mut().set_target_prefix(vec![]);
+                let empty: &[&str] = &[];
                 // Ask the service to refresh its device list.
                 let _ = client
                     .borrow_mut()
-                    .call("update_children", &[], json!({}), None, false);
+                    .call("update_children", empty, json!({}), None, false);
 
                 // Get the root node info which includes children.
-                let root = match client.borrow_mut().get(&[]) {
+                let root = match client.borrow_mut().get(empty) {
                     Ok(r) => r,
                     Err(e) => {
                         log::warn!("Failed to get service root: {e}");
@@ -391,11 +390,12 @@ impl RpcNode for ServiceDeviceNode {
                     RpcError::connection_error(&self.device.name(), "ccid", &format!("{e:?}"))
                 })?;
                 let dev: Box<dyn YubiKeyDevice> = Box::new(self.device.clone());
-                Ok(Box::new(ConnectionNode::new_service_smartcard(
+                Ok(Box::new(ConnectionNode::new_smartcard(
                     dev,
                     conn,
                     info,
                     Transport::Usb,
+                    None,
                 )))
             }
             "otp" => {
@@ -403,14 +403,14 @@ impl RpcNode for ServiceDeviceNode {
                     RpcError::connection_error(&self.device.name(), "otp", &format!("{e:?}"))
                 })?;
                 let dev: Box<dyn YubiKeyDevice> = Box::new(self.device.clone());
-                Ok(Box::new(ConnectionNode::new_service_otp(dev, conn, info)))
+                Ok(Box::new(ConnectionNode::new_otp(dev, conn, info)))
             }
             "fido" => {
                 let conn = self.device.open_fido().map_err(|e| {
                     RpcError::connection_error(&self.device.name(), "fido", &format!("{e:?}"))
                 })?;
                 let dev: Box<dyn YubiKeyDevice> = Box::new(self.device.clone());
-                Ok(Box::new(ConnectionNode::new_service_fido(dev, conn, info)))
+                Ok(Box::new(ConnectionNode::new_fido(dev, conn, info)))
             }
             _ => Err(RpcError::no_such_node(name)),
         }
@@ -494,12 +494,11 @@ impl RpcNode for LocalDeviceNode {
                     None
                 };
 
+                let transport = self.device.transport();
                 let conn: Box<dyn yubikit::smartcard::SmartCardConnection + Send> = Box::new(conn);
+                let dev: Box<dyn YubiKeyDevice> = Box::new(self.device.clone());
                 Ok(Box::new(ConnectionNode::new_smartcard(
-                    self.device.clone(),
-                    conn,
-                    info,
-                    scp_params,
+                    dev, conn, info, transport, scp_params,
                 )))
             }
             "otp" => {
@@ -507,11 +506,8 @@ impl RpcNode for LocalDeviceNode {
                     RpcError::connection_error(&self.device.name(), "otp", &format!("{e:?}"))
                 })?;
                 let conn: Box<dyn yubikit::otp::OtpConnection + Send> = Box::new(conn);
-                Ok(Box::new(ConnectionNode::new_otp(
-                    self.device.clone(),
-                    conn,
-                    info,
-                )))
+                let dev: Box<dyn YubiKeyDevice> = Box::new(self.device.clone());
+                Ok(Box::new(ConnectionNode::new_otp(dev, conn, info)))
             }
             "fido" => {
                 let conn = self.device.open_fido().map_err(|e| {
@@ -526,11 +522,8 @@ impl RpcNode for LocalDeviceNode {
                     RpcError::connection_error(&self.device.name(), "fido", &format!("{e:?}"))
                 })?;
                 let conn: Box<dyn yubikit::fido::FidoConnection + Send> = Box::new(conn);
-                Ok(Box::new(ConnectionNode::new_fido(
-                    self.device.clone(),
-                    conn,
-                    info,
-                )))
+                let dev: Box<dyn YubiKeyDevice> = Box::new(self.device.clone());
+                Ok(Box::new(ConnectionNode::new_fido(dev, conn, info)))
             }
             _ => Err(RpcError::no_such_node(name)),
         }
