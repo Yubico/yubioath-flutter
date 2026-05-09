@@ -5,7 +5,7 @@ use std::sync::{Arc, Mutex};
 use serde_json::{Value, json};
 
 use yubikit::core::{Connection, Transport};
-use yubikit::device::{LocalYubiKeyDevice, YubiKeyDevice};
+use yubikit::device::YubiKeyDevice;
 use yubikit::fido::FidoConnection;
 use yubikit::management::{Capability, DeviceInfo};
 use yubikit::otp::OtpConnection;
@@ -38,23 +38,23 @@ enum ConnType {
 
 impl ConnectionNode {
     pub fn new_smartcard(
-        device: LocalYubiKeyDevice,
+        device: Box<dyn YubiKeyDevice>,
         conn: Box<dyn SmartCardConnection + Send>,
         info: DeviceInfo,
+        transport: Transport,
         scp_params: Option<ScpKeyParams>,
     ) -> Self {
-        let transport = device.transport();
         Self {
             conn_type: ConnType::SmartCard(Arc::new(Mutex::new(Some(conn)))),
             transport,
             info,
-            device: Some(Box::new(device)),
+            device: Some(device),
             scp_params,
         }
     }
 
     pub fn new_otp(
-        device: LocalYubiKeyDevice,
+        device: Box<dyn YubiKeyDevice>,
         conn: Box<dyn OtpConnection + Send>,
         info: DeviceInfo,
     ) -> Self {
@@ -62,58 +62,12 @@ impl ConnectionNode {
             conn_type: ConnType::Otp(Arc::new(Mutex::new(Some(conn)))),
             transport: Transport::Usb,
             info,
-            device: Some(Box::new(device)),
+            device: Some(device),
             scp_params: None,
         }
     }
 
     pub fn new_fido(
-        device: LocalYubiKeyDevice,
-        conn: Box<dyn FidoConnection + Send>,
-        info: DeviceInfo,
-    ) -> Self {
-        Self {
-            conn_type: ConnType::Fido(Arc::new(Mutex::new(Some(conn)))),
-            transport: Transport::Usb,
-            info,
-            device: Some(Box::new(device)),
-            scp_params: None,
-        }
-    }
-
-    /// Create a SmartCard connection node backed by a service proxy.
-    pub fn new_service_smartcard(
-        device: Box<dyn YubiKeyDevice>,
-        conn: Box<dyn SmartCardConnection + Send>,
-        info: DeviceInfo,
-        transport: Transport,
-    ) -> Self {
-        Self {
-            conn_type: ConnType::SmartCard(Arc::new(Mutex::new(Some(conn)))),
-            transport,
-            info,
-            device: Some(device),
-            scp_params: None,
-        }
-    }
-
-    /// Create an OTP connection node backed by a service proxy.
-    pub fn new_service_otp(
-        device: Box<dyn YubiKeyDevice>,
-        conn: Box<dyn OtpConnection + Send>,
-        info: DeviceInfo,
-    ) -> Self {
-        Self {
-            conn_type: ConnType::Otp(Arc::new(Mutex::new(Some(conn)))),
-            transport: Transport::Usb,
-            info,
-            device: Some(device),
-            scp_params: None,
-        }
-    }
-
-    /// Create a FIDO connection node backed by a service proxy.
-    pub fn new_service_fido(
         device: Box<dyn YubiKeyDevice>,
         conn: Box<dyn FidoConnection + Send>,
         info: DeviceInfo,

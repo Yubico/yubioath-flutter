@@ -50,17 +50,5 @@ fn main() {
     log::set_max_level(log::LevelFilter::Warn);
 
     let root: Box<dyn rpc::RpcNode> = Box::new(root::RootNode::new());
-
-    let args: Vec<String> = std::env::args().collect();
-    if let Some(idx) = args.iter().position(|a| a == "--tcp") {
-        let port: u16 = args
-            .get(idx + 1)
-            .expect("Missing PORT argument for --tcp")
-            .parse()
-            .expect("Invalid PORT for --tcp");
-        let nonce = args.get(idx + 2).expect("Missing NONCE argument for --tcp");
-        rpc::run_tcp(root, port, nonce);
-    } else {
-        rpc::run(root);
-    }
+    rpc::run(root);
 }
