@@ -44,8 +44,7 @@ class DeviceErrorScreen extends ConsumerWidget {
       header: Platform.isWindows
           ? l10n.l_admin_privileges_required
           : l10n.l_yk_no_access,
-      message:
-          Platform.isWindows ? l10n.p_elevated_permissions_required : null,
+      message: Platform.isWindows ? l10n.p_elevated_permissions_required : null,
       actionsBuilder: Platform.isWindows
           ? (context, _) => [const ElevateFidoButtons()]
           : null,

@@ -186,11 +186,11 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
         _resetting && (!Platform.isAndroid || usbTransport);
 
     if (widget.data.info.config.enabledCapabilities[widget
-                    .data
-                    .node
-                    .transport]! &
-                Capability.fido2.value !=
-            0) {
+                .data
+                .node
+                .transport]! &
+            Capability.fido2.value !=
+        0) {
       if (isDesktop) {
         // on desktop we have direct access to the ctap info
         final ctapInfo =

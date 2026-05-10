@@ -115,7 +115,9 @@ class DevicesNotifier extends StateNotifier<List<YubiKeyDeviceNode>> {
         final total = (entry.value as int?) ?? 0;
         final known = childPidCounts[pid] ?? 0;
         for (int i = known; i < total; i++) {
-          final key = i == 0 ? '$_phantomKeyPrefix$pid' : '$_phantomKeyPrefix${pid}_$i';
+          final key = i == 0
+              ? '$_phantomKeyPrefix$pid'
+              : '$_phantomKeyPrefix${pid}_$i';
           phantomPids[key] = pid;
         }
       }
@@ -133,8 +135,9 @@ class DevicesNotifier extends StateNotifier<List<YubiKeyDeviceNode>> {
           final deviceResult = await rpc.command('get', path);
           final deviceData = deviceResult['data'];
           final pidValue = deviceData['pid'];
-          final pid =
-              pidValue != null ? UsbPid.fromValue(pidValue as int) : null;
+          final pid = pidValue != null
+              ? UsbPid.fromValue(pidValue as int)
+              : null;
           final transport = deviceData['transport'] == 'nfc'
               ? Transport.nfc
               : Transport.usb;
