@@ -51,8 +51,7 @@ impl DevicesNode {
             }
             Err(e) => {
                 log::debug!(
-                    "ykman-svc not available ({}), using direct device access",
-                    e.0
+                    "ykman-svc not available ({e}), using direct device access",
                 );
                 DeviceSource::Local {
                     list_state: 0,
@@ -264,7 +263,7 @@ impl RpcNode for DevicesNode {
                 let device = RpcDevice::from_shared_at(client.clone(), name).map_err(|e| {
                     RpcError::new(
                         "connection-error",
-                        format!("Failed to open device: {}", e.0),
+                        format!("Failed to open device: {e}"),
                     )
                 })?;
                 Ok(Box::new(ServiceDeviceNode::new(device)))
