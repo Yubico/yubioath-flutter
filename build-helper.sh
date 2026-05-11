@@ -48,6 +48,9 @@ else
 	fi
 fi
 
+echo "Generating license files..."
+cargo about generate about.hbs --config about.toml -o ../assets/licenses/helper.txt
+
 cd ..
 
 echo "All done, output in $OUTPUT/"
