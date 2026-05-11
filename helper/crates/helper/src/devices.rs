@@ -170,11 +170,6 @@ impl RpcNode for DevicesNode {
             }
             DeviceSource::Service(client) => {
                 let empty: &[&str] = &[];
-                // Ask the service to refresh its device list.
-                let _ = client
-                    .borrow_mut()
-                    .call("update_children", empty, json!({}), None, false);
-
                 // Get the root node info which includes children.
                 let root = match client.borrow_mut().get(empty) {
                     Ok(r) => r,
