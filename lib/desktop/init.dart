@@ -367,23 +367,27 @@ void _initLogging(ArgResults args) {
 
 void _initLicenses() async {
   LicenseRegistry.addLicense(() async* {
-    final python = await rootBundle.loadString(
-      'assets/licenses/raw/python.txt',
-    );
-    yield LicenseEntryWithLineBreaks(['Python'], python);
+    final helper = await rootBundle.loadString('assets/licenses/helper.txt');
 
-    final zxingcpp = await rootBundle.loadString(
-      'assets/licenses/raw/apache-2.0.txt',
-    );
-    yield LicenseEntryWithLineBreaks(['zxing-cpp'], zxingcpp);
+    for (final entry in helper.split('==LICENSE_END==')) {
+      final trimmed = entry.trim();
+      if (!trimmed.startsWith('==LICENSE_START==')) continue;
+      final content = trimmed.substring('==LICENSE_START=='.length).trim();
 
-    final helper = await rootBundle.loadStructuredData<List>(
-      'assets/licenses/helper.json',
-      (value) async => jsonDecode(value),
-    );
+      final packagesIdx = content.indexOf('--PACKAGES--');
+      final textIdx = content.indexOf('--TEXT--');
+      if (packagesIdx == -1 || textIdx == -1) continue;
 
-    for (final e in helper) {
-      yield LicenseEntryWithLineBreaks([e['Name']], e['LicenseText']);
+      final packages = content
+          .substring(packagesIdx + '--PACKAGES--'.length, textIdx)
+          .trim()
+          .split('\n')
+          .map((s) => s.trim())
+          .where((s) => s.isNotEmpty)
+          .toList();
+      final text = content.substring(textIdx + '--TEXT--'.length).trim();
+
+      yield LicenseEntryWithLineBreaks(packages, text);
     }
   });
 }
