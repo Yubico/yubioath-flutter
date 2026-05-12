@@ -84,6 +84,45 @@ class NamedPipeStream:
         self._pipe.close()
 
 
+class UnixSocketStream:
+    """Bidirectional text stream backed by a Unix domain socket.
+
+    Used as both the *stdin* and *stdout* arguments to :class:`RpcShell`
+    so that a single socket connection handles both send and receive.
+    """
+
+    def __init__(self, path: str) -> None:
+        import socket
+
+        self._sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        self._sock.connect(path)
+        self._buf = b""
+
+    # ---- write-side (stdin interface) --------------------------------
+
+    def write(self, text: str) -> None:
+        self._sock.sendall(text.encode("utf-8"))
+
+    def flush(self) -> None:
+        pass  # Socket sends immediately; nothing to flush.
+
+    # ---- read-side (stdout interface) --------------------------------
+
+    def readline(self) -> str:
+        """Block until a newline-terminated line is available and return it."""
+        while b"\n" not in self._buf:
+            chunk = self._sock.recv(4096)
+            if not chunk:
+                return ""
+            self._buf += chunk
+        idx = self._buf.index(b"\n")
+        line, self._buf = self._buf[: idx + 1], self._buf[idx + 1 :]
+        return line.decode("utf-8")
+
+    def close(self) -> None:
+        self._sock.close()
+
+
 class RpcShell(cmd.Cmd):
     def __init__(self, stdin, stdout):
         super().__init__()
@@ -304,11 +343,32 @@ def log_stderr(stderr):
             logger.exception(f"Failed to parse error: {line}")
 
 
+def _is_unix_socket(path: str) -> bool:
+    """Return True if *path* is an existing Unix domain socket."""
+    import os
+    import stat
+
+    try:
+        return stat.S_ISSOCK(os.stat(path).st_mode)
+    except OSError:
+        return False
+
+
 def main():
     if len(sys.argv) == 2 and _is_named_pipe(sys.argv[1]):
         pipe_path = sys.argv[1]
         print(f"Connecting to {pipe_path}...")
         stream = NamedPipeStream(pipe_path)
+        try:
+            shell = RpcShell(stream, stream)
+            shell.cmdloop()
+        finally:
+            stream.close()
+        print("Stopping...")
+    elif len(sys.argv) == 2 and _is_unix_socket(sys.argv[1]):
+        sock_path = sys.argv[1]
+        print(f"Connecting to {sock_path}...")
+        stream = UnixSocketStream(sock_path)
         try:
             shell = RpcShell(stream, stream)
             shell.cmdloop()
