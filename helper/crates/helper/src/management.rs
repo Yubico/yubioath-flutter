@@ -47,7 +47,7 @@ fn await_reboot(serial: Option<u32>, usb_enabled: Option<Capability>) {
         thread::sleep(Duration::from_millis(200));
         match list_devices(interfaces) {
             Ok(devs) => {
-                if devs.iter().any(|d| d.serial() == serial) {
+                if devs.iter().any(|d| d.info().serial == serial) {
                     log::debug!("Device found after {} ms", (i + 1) * 200);
                     return;
                 }
