@@ -1,66 +1,51 @@
-use std::cell::RefCell;
 use std::collections::BTreeMap;
-use std::rc::Rc;
 use std::sync::atomic::AtomicBool;
 
 use der::Decode;
 use serde_json::{Value, json};
 
 use yubikit::core::Transport;
-use yubikit::device::{
-    LocalYubiKeyDevice, YubiKeyDevice, get_name, list_devices, scan_usb_devices,
-};
+use yubikit::device::{YubiKeyDevice, get_name, scan_usb_devices};
 use yubikit::management::{Capability, UsbInterface};
 use yubikit::securitydomain::{KeyRef, SecurityDomainSession};
 use yubikit::smartcard::ScpKeyParams;
 
-use ykman::rpc::client::RpcClient;
-use ykman::rpc::proxy::RpcDevice;
+use ykman::device::{DeviceSource, get_device_source};
 
 use crate::connection::ConnectionNode;
 use crate::error::{RpcError, RpcResponse};
 use crate::rpc::{RpcNode, SignalFn};
 use crate::util::{id_from_fingerprint, version_to_json};
 
-/// Source of device data — either local enumeration or the ykman-svc service.
-enum DeviceSource {
-    /// Direct local device access (scan_usb_devices + list_devices).
-    Local {
-        list_state: u64,
-        device_mapping: BTreeMap<String, LocalYubiKeyDevice>,
-    },
-    /// Connected to the ykman-svc service (pipe/socket).
-    Service(Rc<RefCell<RpcClient>>),
+/// Internal state for tracking device changes.
+enum ListState {
+    /// Direct local device access — tracks USB state fingerprint.
+    Local { state: u64 },
+    /// Connected to the ykman-svc service — no local state tracking needed.
+    Service,
 }
 
 pub struct DevicesNode {
-    source: DeviceSource,
+    source: Box<dyn DeviceSource>,
+    list_state: ListState,
+    device_mapping: BTreeMap<String, Box<dyn YubiKeyDevice>>,
     devices: BTreeMap<String, Value>,
-    /// Set when `device_closed` flag invalidates the current child.
-    /// Ensures the child is recreated even after `list_children` repopulates the mapping.
     child_invalidated: bool,
 }
 
 impl DevicesNode {
     pub fn new() -> Self {
-        // Try to connect to the service; fall back to local access.
-        let source = match RpcClient::connect_pipe() {
-            Ok(client) => {
-                log::info!("Connected to ykman-svc service for USB device access");
-                DeviceSource::Service(Rc::new(RefCell::new(client)))
-            }
-            Err(e) => {
-                log::debug!(
-                    "ykman-svc not available ({e}), using direct device access",
-                );
-                DeviceSource::Local {
-                    list_state: 0,
-                    device_mapping: BTreeMap::new(),
-                }
-            }
+        let source = get_device_source();
+        let list_state = if source.is_service() {
+            log::info!("Connected to ykman-svc service for USB device access");
+            ListState::Service
+        } else {
+            ListState::Local { state: 0 }
         };
         Self {
             source,
+            list_state,
+            device_mapping: BTreeMap::new(),
             devices: BTreeMap::new(),
             child_invalidated: false,
         }
@@ -69,96 +54,75 @@ impl DevicesNode {
 
 impl RpcNode for DevicesNode {
     fn get_data(&self) -> Value {
-        match &self.source {
-            DeviceSource::Local { .. } => {
+        match &self.list_state {
+            ListState::Local { .. } => {
                 let (pids, state) = scan_usb_devices();
                 json!({
                     "state": state as i64,
                     "pids": pids,
                 })
             }
-            DeviceSource::Service(_) => {
-                // For service mode, state and pid accounting are managed by the service.
+            ListState::Service => {
                 json!({"state": 0, "pids": {}})
             }
         }
     }
+
     fn list_actions(&self) -> Vec<&'static str> {
         vec!["scan"]
     }
 
     fn list_children(&mut self) -> BTreeMap<String, Value> {
-        match &mut self.source {
-            DeviceSource::Local {
-                list_state,
-                device_mapping,
-            } => {
-                let (_, state) = scan_usb_devices();
-                if state != *list_state {
-                    log::debug!("State changed (was={}, now={state})", *list_state);
+        match &mut self.list_state {
+            ListState::Local { state } => {
+                let (_, current_state) = scan_usb_devices();
+                if current_state != *state {
+                    log::debug!("State changed (was={}, now={current_state})", *state);
                     self.devices.clear();
-                    device_mapping.clear();
+                    self.device_mapping.clear();
 
-                    let interfaces = UsbInterface::CCID | UsbInterface::OTP | UsbInterface::FIDO;
-                    match list_devices(interfaces) {
+                    match self.source.list_devices() {
                         Ok(devs) => {
                             for dev in devs {
-                                let dev_id = if let Some(serial) = dev.serial() {
+                                let dev_id = if let Some(serial) = dev.info().serial {
                                     serial.to_string()
-                                } else if let Some(reader) = dev.reader_name() {
-                                    id_from_fingerprint(reader)
-                                } else if let Some(path) = dev.hid_path() {
-                                    id_from_fingerprint(path)
-                                } else if let Some(path) = dev.fido_path() {
-                                    id_from_fingerprint(path)
                                 } else {
-                                    continue;
+                                    id_from_fingerprint(&dev.name())
                                 };
-
                                 let name = get_name(dev.info());
-                                let transport_str = transport_to_str(dev.transport());
                                 self.devices.insert(
                                     dev_id.clone(),
                                     json!({
-                                        "pid": dev.pid(),
                                         "name": name,
-                                        "serial": dev.serial(),
-                                        "transport": transport_str,
+                                        "serial": dev.info().serial,
+                                        "transport": transport_to_str(dev.transport()),
                                     }),
                                 );
-                                device_mapping.insert(dev_id, dev);
+                                self.device_mapping.insert(dev_id, dev);
                             }
 
                             let (pids, _) = scan_usb_devices();
                             let expected: usize = pids.values().sum();
-                            let usb_count = device_mapping
+                            let usb_count = self
+                                .device_mapping
                                 .values()
                                 .filter(|d| d.transport() == Transport::Usb)
                                 .count();
-                            let all_ccid_ok = device_mapping.values().all(|d| {
+                            // Check that all CCID-capable devices are accessible
+                            let all_ccid_ok = self.device_mapping.values().all(|d| {
                                 d.transport() == Transport::Nfc
                                     || !d.usb_interfaces().contains(UsbInterface::CCID)
-                                    || d.reader_name().is_some()
+                                    || d.open_smartcard().is_ok()
                             });
                             if !all_ccid_ok {
-                                // A CCID-capable device is present but its
-                                // PC/SC reader isn't ready yet (e.g. pcscd
-                                // starting up). Keep list_state=0 so we
-                                // retry on the next poll.
                                 log::warn!("Not all devices have CCID access");
-                                *list_state = 0;
+                                *state = 0;
                             } else {
-                                // Accept the current enumeration result —
-                                // even if some PIDs are unaccounted for
-                                // (e.g. blocked FIDO-only devices). Those
-                                // won't become accessible without a replug,
-                                // so there is no benefit in re-enumerating
-                                // until the device set actually changes.
                                 if expected != usb_count {
                                     log::warn!("Not all devices identified");
                                 }
-                                *list_state = state;
-                                log::debug!("State updated: {state}");
+                                *state = current_state;
+                                log::debug!("State updated: {current_state}");
                             }
                         }
                         Err(e) => {
@@ -168,51 +132,36 @@ impl RpcNode for DevicesNode {
                 }
                 self.devices.clone()
             }
-            DeviceSource::Service(client) => {
-                let empty: &[&str] = &[];
-                // Get the root node info which includes children.
-                let root = match client.borrow_mut().get(empty) {
-                    Ok(r) => r,
+            ListState::Service => {
+                match self.source.list_devices() {
+                    Ok(devs) => {
+                        self.devices.clear();
+                        self.device_mapping.clear();
+                        for dev in devs {
+                            if dev.transport() == Transport::Nfc {
+                                continue;
+                            }
+                            let dev_id = if let Some(serial) = dev.info().serial {
+                                serial.to_string()
+                            } else {
+                                id_from_fingerprint(&dev.name())
+                            };
+                            let name = get_name(dev.info());
+                            self.devices.insert(
+                                dev_id.clone(),
+                                json!({
+                                    "name": name,
+                                    "serial": dev.info().serial,
+                                    "transport": transport_to_str(dev.transport()),
+                                }),
+                            );
+                            self.device_mapping.insert(dev_id, dev);
+                        }
+                    }
                     Err(e) => {
-                        log::warn!("Failed to get service root: {e}");
-                        return self.devices.clone();
+                        log::warn!("Failed to get service devices: {e}");
                     }
-                };
-
-                let children = root
-                    .body
-                    .get("children")
-                    .and_then(|v| v.as_object())
-                    .cloned()
-                    .unwrap_or_default();
-
-                // Filter to USB-only devices.
-                self.devices.clear();
-                for (name, info) in children {
-                    let transport = info.get("transport").and_then(|v| v.as_str());
-                    if transport == Some("nfc") {
-                        continue; // Skip NFC devices from the service
-                    }
-                    let serial = info
-                        .get("serial")
-                        .and_then(|v| v.as_u64())
-                        .map(|s| s as u32);
-                    let pid = info.get("pid").and_then(|v| v.as_u64()).map(|p| p as u16);
-                    let dev_name = info
-                        .get("name")
-                        .and_then(|v| v.as_str())
-                        .unwrap_or("YubiKey");
-                    self.devices.insert(
-                        name,
-                        json!({
-                            "pid": pid,
-                            "name": dev_name,
-                            "serial": serial,
-                            "transport": transport.unwrap_or("usb"),
-                        }),
-                    );
                 }
-
                 self.devices.clone()
             }
         }
@@ -233,37 +182,21 @@ impl RpcNode for DevicesNode {
 
     fn create_child(&mut self, name: &str) -> Result<Box<dyn RpcNode>, RpcError> {
         self.child_invalidated = false;
-        match &mut self.source {
-            DeviceSource::Local {
-                list_state,
-                device_mapping,
-            } => {
-                // Refresh if needed
-                if !device_mapping.contains_key(name) || *list_state == 0 {
-                    self.list_children();
-                }
-                // Re-borrow after list_children
-                let DeviceSource::Local { device_mapping, .. } = &self.source else {
-                    unreachable!()
-                };
 
-                let dev = device_mapping
-                    .get(name)
-                    .ok_or_else(|| RpcError::no_such_node(name))?;
-
-                Ok(Box::new(LocalDeviceNode::new(dev.clone())))
-            }
-            DeviceSource::Service(client) => {
-                // Reuse the existing pipe, targeting this device by name.
-                let device = RpcDevice::from_shared_at(client.clone(), name).map_err(|e| {
-                    RpcError::new(
-                        "connection-error",
-                        format!("Failed to open device: {e}"),
-                    )
-                })?;
-                Ok(Box::new(ServiceDeviceNode::new(device)))
-            }
+        let needs_refresh = match &self.list_state {
+            ListState::Local { state } => !self.device_mapping.contains_key(name) || *state == 0,
+            ListState::Service => !self.device_mapping.contains_key(name),
+        };
+        if needs_refresh {
+            self.list_children();
         }
+
+        let dev = self
+            .device_mapping
+            .get(name)
+            .ok_or_else(|| RpcError::no_such_node(name))?;
+
+        Ok(Box::new(DeviceNode::new(dev.as_ref())))
     }
 
     fn action_closes_child(&self, action: &str) -> bool {
@@ -274,93 +207,71 @@ impl RpcNode for DevicesNode {
         if self.child_invalidated {
             return false;
         }
-        match &self.source {
-            DeviceSource::Local {
-                list_state,
-                device_mapping,
-            } => *list_state != 0 && device_mapping.contains_key(name),
-            DeviceSource::Service(_) => self.devices.contains_key(name),
+        match &self.list_state {
+            ListState::Local { state } => *state != 0 && self.device_mapping.contains_key(name),
+            ListState::Service => self.devices.contains_key(name),
         }
     }
 
     fn close(&mut self) {
-        match &mut self.source {
-            DeviceSource::Local {
-                list_state,
-                device_mapping,
-            } => {
-                *list_state = 0;
-                device_mapping.clear();
-            }
-            DeviceSource::Service(_) => {}
+        if let ListState::Local { state } = &mut self.list_state {
+            *state = 0;
         }
+        self.device_mapping.clear();
     }
 
     fn handle_child_response(&mut self, response: &mut RpcResponse) {
         if response.flags.iter().any(|f| f == "device_closed") {
             log::debug!("Device closed flag received, invalidating state");
             self.child_invalidated = true;
-            match &mut self.source {
-                DeviceSource::Local {
-                    list_state,
-                    device_mapping,
-                } => {
-                    *list_state = 0;
-                    device_mapping.clear();
-                }
-                DeviceSource::Service(_) => {
-                    self.devices.clear();
-                }
+            if let ListState::Local { state } = &mut self.list_state {
+                *state = 0;
             }
+            self.device_mapping.clear();
+            self.devices.clear();
             response.flags.retain(|f| f != "device_closed");
         }
     }
 }
 
-/// A YubiKey device node backed by the ykman-svc service.
-///
-/// Uses an `RpcDevice` (which proxies all connections through the service)
-/// to provide the same interface as `LocalDeviceNode`.
-struct ServiceDeviceNode {
-    device: RpcDevice,
+/// A YubiKey device node — works with both local and service-backed devices.
+pub struct DeviceNode {
+    device: Box<dyn YubiKeyDevice>,
     data: Value,
 }
 
-impl ServiceDeviceNode {
-    fn new(device: RpcDevice) -> Self {
+impl DeviceNode {
+    pub fn new(device: &dyn YubiKeyDevice) -> Self {
         let info = device.info();
-        let name = device.name();
-        let pid = device.pid();
-        // The OTP/CCID applet SELECT response returns version 0.0.1 for dev firmware.
-        // patch_version() replaces that with the override, but only if it's been set.
-        // In service mode the helper never opens a local device, so we set it here
-        // from the real firmware version read from the service.
-        yubikit::core::set_override_version(info.version);
+        let name = get_name(info);
+        let transport = device.transport();
         let data = json!({
-            "pid": pid,
             "name": name,
-            "transport": "usb",
+            "transport": transport_to_str(transport),
             "info": info_to_json(info),
         });
-        Self { device, data }
+        Self {
+            device: device.clone_box(),
+            data,
+        }
     }
 }
 
-impl RpcNode for ServiceDeviceNode {
+impl RpcNode for DeviceNode {
     fn get_data(&self) -> Value {
         self.data.clone()
     }
 
     fn list_children(&mut self) -> BTreeMap<String, Value> {
         let mut children = BTreeMap::new();
-        // The RpcDevice knows what connections are available from the service.
-        if self.device.has_ccid() {
+        let ifaces = self.device.usb_interfaces();
+        if ifaces.contains(UsbInterface::CCID) {
             children.insert("ccid".to_string(), json!({}));
         }
-        if self.device.has_otp() {
+        if ifaces.contains(UsbInterface::OTP) {
             children.insert("otp".to_string(), json!({}));
         }
-        if self.device.has_ctap() {
+        if ifaces.contains(UsbInterface::FIDO) {
             children.insert("fido".to_string(), json!({}));
         }
         children
@@ -378,103 +289,8 @@ impl RpcNode for ServiceDeviceNode {
 
     fn create_child(&mut self, name: &str) -> Result<Box<dyn RpcNode>, RpcError> {
         let info = self.device.info().clone();
-        match name {
-            "ccid" => {
-                let conn = self.device.open_smartcard().map_err(|e| {
-                    RpcError::connection_error(&self.device.name(), "ccid", &format!("{e:?}"))
-                })?;
-                let dev: Box<dyn YubiKeyDevice> = Box::new(self.device.clone());
-                Ok(Box::new(ConnectionNode::new_smartcard(
-                    dev,
-                    conn,
-                    info,
-                    Transport::Usb,
-                    None,
-                )))
-            }
-            "otp" => {
-                let conn = self.device.open_otp().map_err(|e| {
-                    RpcError::connection_error(&self.device.name(), "otp", &format!("{e:?}"))
-                })?;
-                let dev: Box<dyn YubiKeyDevice> = Box::new(self.device.clone());
-                Ok(Box::new(ConnectionNode::new_otp(dev, conn, info)))
-            }
-            "fido" => {
-                let conn = self.device.open_fido().map_err(|e| {
-                    RpcError::connection_error(&self.device.name(), "fido", &format!("{e:?}"))
-                })?;
-                let dev: Box<dyn YubiKeyDevice> = Box::new(self.device.clone());
-                Ok(Box::new(ConnectionNode::new_fido(dev, conn, info)))
-            }
-            _ => Err(RpcError::no_such_node(name)),
-        }
-    }
-}
-
-/// A locally-connected YubiKey device node (USB or NFC, direct access).
-pub struct LocalDeviceNode {
-    device: LocalYubiKeyDevice,
-    data: Option<Value>,
-}
-
-impl LocalDeviceNode {
-    pub fn new(device: LocalYubiKeyDevice) -> Self {
-        let data = Self::read_data(&device);
-        Self { device, data }
-    }
-
-    fn read_data(dev: &LocalYubiKeyDevice) -> Option<Value> {
-        let info = dev.info();
-        let name = get_name(info);
-        let transport_str = transport_to_str(dev.transport());
-        Some(json!({
-            "pid": dev.pid(),
-            "name": name,
-            "transport": transport_str,
-            "info": info_to_json(info),
-        }))
-    }
-}
-
-impl RpcNode for LocalDeviceNode {
-    fn get_data(&self) -> Value {
-        self.data.clone().unwrap_or_else(|| json!(null))
-    }
-
-    fn list_children(&mut self) -> BTreeMap<String, Value> {
-        let mut children = BTreeMap::new();
-        let info = self.device.info();
-        let _usb_caps = info
-            .config
-            .enabled_capabilities
-            .get(&Transport::Usb)
-            .copied();
-
-        if self.device.reader_name().is_some() {
-            children.insert("ccid".to_string(), json!({}));
-        }
-        if self.device.hid_path().is_some() {
-            children.insert("otp".to_string(), json!({}));
-        }
-        if self.device.fido_path().is_some() {
-            children.insert("fido".to_string(), json!({}));
-        }
-        children
-    }
-
-    fn call_action(
-        &mut self,
-        action: &str,
-        _params: Value,
-        _signal: SignalFn,
-        _cancel: &AtomicBool,
-    ) -> Result<RpcResponse, RpcError> {
-        Err(RpcError::no_such_action(action))
-    }
-
-    fn create_child(&mut self, name: &str) -> Result<Box<dyn RpcNode>, RpcError> {
-        let info = self.device.info().clone();
-        let is_nfc = self.device.transport() == Transport::Nfc;
+        let transport = self.device.transport();
+        let is_nfc = transport == Transport::Nfc;
         match name {
             "ccid" => {
                 let conn = self.device.open_smartcard().map_err(|e| {
@@ -483,14 +299,12 @@ impl RpcNode for LocalDeviceNode {
 
                 // Negotiate SCP11b for FIPS-capable devices over NFC
                 let scp_params = if is_nfc && info.fips_capable != Capability::NONE {
-                    negotiate_scp11b(&self.device)
+                    negotiate_scp11b(self.device.as_ref())
                 } else {
                     None
                 };
 
-                let transport = self.device.transport();
-                let conn: Box<dyn yubikit::smartcard::SmartCardConnection + Send> = Box::new(conn);
-                let dev: Box<dyn YubiKeyDevice> = Box::new(self.device.clone());
+                let dev = self.device.clone_box();
                 Ok(Box::new(ConnectionNode::new_smartcard(
                     dev, conn, info, transport, scp_params,
                 )))
@@ -499,8 +313,7 @@ impl RpcNode for LocalDeviceNode {
                 let conn = self.device.open_otp().map_err(|e| {
                     RpcError::connection_error(&self.device.name(), "otp", &format!("{e:?}"))
                 })?;
-                let conn: Box<dyn yubikit::otp::OtpConnection + Send> = Box::new(conn);
-                let dev: Box<dyn YubiKeyDevice> = Box::new(self.device.clone());
+                let dev = self.device.clone_box();
                 Ok(Box::new(ConnectionNode::new_otp(dev, conn, info)))
             }
             "fido" => {
@@ -515,27 +328,10 @@ impl RpcNode for LocalDeviceNode {
                     }
                     RpcError::connection_error(&self.device.name(), "fido", &format!("{e:?}"))
                 })?;
-                let conn: Box<dyn yubikit::fido::FidoConnection + Send> = Box::new(conn);
-                let dev: Box<dyn YubiKeyDevice> = Box::new(self.device.clone());
+                let dev = self.device.clone_box();
                 Ok(Box::new(ConnectionNode::new_fido(dev, conn, info)))
             }
             _ => Err(RpcError::no_such_node(name)),
-        }
-    }
-
-    fn handle_child_response(&mut self, response: &mut RpcResponse) {
-        if response.flags.iter().any(|f| f == "device_info")
-            && !response.flags.iter().any(|f| f == "device_closed")
-        {
-            log::debug!("Device info flag received, refreshing data");
-            let old_info = self.device.info().clone();
-            if self.device.refresh_info() {
-                self.data = Self::read_data(&self.device);
-            }
-            if *self.device.info() == old_info {
-                // No change to DeviceInfo, further propagation not needed.
-                response.flags.retain(|f| f != "device_info");
-            }
         }
     }
 }

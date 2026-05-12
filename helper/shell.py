@@ -189,6 +189,27 @@ class RpcShell(cmd.Cmd):
             self._path = target
             logger.debug("set path %r", target)
 
+    def do_close(self, args):
+        if not self._path:
+            print(red("Cannot close: already at root"))
+            return
+        child = self._path[-1]
+        parent = self._path[:-1]
+        self._send(
+            {
+                "kind": "command",
+                "action": "close",
+                "target": parent,
+                "body": {"child": child},
+            }
+        )
+        result = self._recv()
+        if result["kind"] == "success":
+            self._path = parent
+            print(f"Closed '{child}'")
+        else:
+            print(red(f"{result.get('status', 'error')}: {result.get('message', '')}"))
+
     def complete_cd(self, cmd, text, *args):
         return self.completepath(text[3:], True)
 
@@ -210,7 +231,8 @@ class RpcShell(cmd.Cmd):
                         print(yellow(f"  {k}: {v}"))
 
             for name in self._node.get("actions", []):
-                if name != "get":  # Don't show get, always available
+                # Don't show get or close, always available
+                if name not in ("get", "close"):
                     print(cyan(f"{name}"))
         elif kind == "error":
             status = result["status"]
