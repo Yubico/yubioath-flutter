@@ -1087,6 +1087,8 @@
     "l_launch_app_on_usb_off": "แอปอื่น ๆ สามารถใช้ ยูบิคีย์ ผ่าน ยูเอสบี ได้",
     "s_allow_screenshots": "อนุญาตให้ถ่ายภาพหน้าจอ",
     "l_allow_screenshots_desc": "อนุญาตให้แอปอื่นถ่ายภาพหน้าจอ",
+    "s_link_my_yubico": null,
+    "p_link_my_yubico_desc": null,
     "@_nfc": {},
 
     "s_nfc_ready_to_scan": "พร้อมสแกน",

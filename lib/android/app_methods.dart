@@ -51,6 +51,47 @@ Future<void> openNfcSettings() async {
   await appMethodsChannel.invokeMethod('openNfcSettings');
 }
 
+/// System-level association status of the my.yubico.com domain with this app.
+///
+/// On Android 16 (API 36+), NFC taps on a YubiKey route through ACTION_VIEW
+/// for https://my.yubico.com instead of NDEF_DISCOVERED. Unless the domain is
+/// auto-verified via Digital Asset Links or the user enabled "Open by default"
+/// for the app, ACTION_VIEW falls back to a browser.
+enum DomainVerificationStatus {
+  /// Pre-Android 12, or API not available.
+  unsupported,
+
+  /// Domain is auto-verified — no user action required.
+  verified,
+
+  /// User has opted the app in — no user action required.
+  selected,
+
+  /// No association — the user should be prompted to enable it.
+  none;
+
+  bool get isAssociated => this == verified || this == selected;
+}
+
+Future<DomainVerificationStatus> getDomainVerificationStatus() async {
+  final value = await appMethodsChannel.invokeMethod<String>(
+    'getDomainVerificationStatus',
+  );
+  return switch (value) {
+    'verified' => DomainVerificationStatus.verified,
+    'selected' => DomainVerificationStatus.selected,
+    'none' => DomainVerificationStatus.none,
+    _ => DomainVerificationStatus.unsupported,
+  };
+}
+
+Future<bool> openDomainVerificationSettings() async {
+  final result = await appMethodsChannel.invokeMethod<bool>(
+    'openDomainVerificationSettings',
+  );
+  return result ?? false;
+}
+
 Future<int> getAndroidSdkVersion() async {
   return await appMethodsChannel.invokeMethod('getAndroidSdkVersion');
 }

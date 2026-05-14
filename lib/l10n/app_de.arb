@@ -1087,6 +1087,8 @@
     "l_launch_app_on_usb_off": "Andere Anwendungen können den YubiKey über USB nutzen",
     "s_allow_screenshots": "Bildschirmfotos erlauben",
     "l_allow_screenshots_desc": "Erlaube anderen Apps Screenshots zu erstellen",
+    "s_link_my_yubico": null,
+    "p_link_my_yubico_desc": null,
     "@_nfc": {},
 
     "s_nfc_ready_to_scan": "Bereit zum Scannen",
