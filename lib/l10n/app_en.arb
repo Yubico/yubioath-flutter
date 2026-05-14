@@ -1087,6 +1087,8 @@
     "l_launch_app_on_usb_off": "Other apps can use the YubiKey over USB",
     "s_allow_screenshots": "Allow screenshots",
     "l_allow_screenshots_desc": "Allow other apps to take screenshots",
+    "s_link_my_yubico": "Open NFC links",
+    "p_link_my_yubico_desc": "On Android 16, NFC taps on a YubiKey open my.yubico.com links instead of using the legacy NDEF event. To launch Yubico Authenticator on tap, allow this app to handle my.yubico.com links in the system \"Open by default\" settings.",
     "@_nfc": {},
 
     "s_nfc_ready_to_scan": "Ready to scan",

@@ -39,6 +39,7 @@ import 'app_methods.dart';
 import 'fido/state.dart';
 import 'logger.dart';
 import 'management/state.dart';
+import 'models.dart';
 import 'oath/otp_auth_link_handler.dart';
 import 'oath/state.dart';
 import 'overlay/nfc/nfc_event_notifier.dart';
@@ -46,6 +47,7 @@ import 'overlay/nfc/nfc_overlay.dart';
 import 'piv/state.dart';
 import 'qr_scanner/qr_scanner_provider.dart';
 import 'state.dart';
+import 'views/domain_association_prompt.dart';
 import 'window_state_provider.dart';
 
 Future<Widget> initialize({Level? level}) async {
@@ -146,6 +148,21 @@ Future<Widget> initialize({Level? level}) async {
             setupOtpAuthLinkHandler(context);
 
             setupAppMethodsChannel(ref);
+
+            // Once per install/update, prompt the user to associate
+            // my.yubico.com with the app if they have a launch action
+            // enabled. Required for NFC tap to launch the app on
+            // Android 16 where NDEF_DISCOVERED is no longer delivered.
+            final tapAction = ref.read(androidNfcTapActionProvider);
+            if (tapAction == NfcTapAction.launch ||
+                tapAction == NfcTapAction.launchAndCopy) {
+              final prefs = ref.read(prefProvider);
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (context.mounted) {
+                  maybePromptDomainAssociationOnStartup(context, prefs);
+                }
+              });
+            }
 
             return const MainPage();
           },

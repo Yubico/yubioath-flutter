@@ -753,6 +753,14 @@ class MainActivity : FlutterFragmentActivity() {
                         result.success(true)
                     }
 
+                    "getDomainVerificationStatus" -> result.success(
+                        DomainVerificationHelper.getStatus(this@MainActivity)
+                    )
+
+                    "openDomainVerificationSettings" -> result.success(
+                        DomainVerificationHelper.openSettings(this@MainActivity)
+                    )
+
                     else -> logger.warn("Unknown app method: {}", methodCall.method)
                 }
             }

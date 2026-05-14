@@ -26,6 +26,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../../android/app_methods.dart';
 import '../../android/models.dart';
 import '../../android/state.dart';
+import '../../android/views/domain_association_prompt.dart';
 import '../../core/models.dart';
 import '../../core/state.dart';
 import '../../desktop/state.dart';
@@ -927,6 +928,14 @@ class _NfcTapActionView extends ConsumerWidget {
       onChanged: (mode) {
         if (mode != null) {
           ref.read(androidNfcTapActionProvider.notifier).setTapAction(mode);
+          // On Android 16, NFC taps go through ACTION_VIEW for
+          // my.yubico.com instead of NDEF_DISCOVERED. Selecting a launch
+          // action is useless if the domain isn't associated with the
+          // app, so prompt the user to enable it.
+          if (mode == NfcTapAction.launch ||
+              mode == NfcTapAction.launchAndCopy) {
+            promptDomainAssociation(context);
+          }
         }
       },
       child: Column(

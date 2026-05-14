@@ -1087,6 +1087,8 @@
     "l_launch_app_on_usb_off": "Más alkalmazások használhatják a YubiKey-t USB-n keresztül",
     "s_allow_screenshots": "Képernyőmentés engedélyezése",
     "l_allow_screenshots_desc": "Más alkalmazások készíthetnek képernyőmentést",
+    "s_link_my_yubico": null,
+    "p_link_my_yubico_desc": null,
     "@_nfc": {},
 
     "s_nfc_ready_to_scan": "Szkennelésre kész",
