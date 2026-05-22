@@ -5,12 +5,15 @@ use der::Decode;
 use serde_json::{Value, json};
 
 use yubikit::core::Transport;
-use yubikit::device::{YubiKeyDevice, get_name, scan_usb_devices};
+use yubikit::device::YubiKeyDevice;
 use yubikit::management::{Capability, UsbInterface};
+use yubikit::platform::device::{get_name, scan_usb_devices};
 use yubikit::securitydomain::{KeyRef, SecurityDomainSession};
 use yubikit::smartcard::ScpKeyParams;
 
-use ykman::device::{DeviceSource, get_device_source};
+use yubikit::device::DeviceSource;
+
+use ykman::device::get_device_source;
 
 use crate::connection::ConnectionNode;
 use crate::error::{RpcError, RpcResponse};
