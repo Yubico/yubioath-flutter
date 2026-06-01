@@ -290,7 +290,8 @@ class _DeviceContent extends ConsumerWidget {
                                             _ColorButton(
                                               isDefault: true,
                                               color: defaultColor,
-                                              colorName: l10n.s_system_default,
+                                              colorName:
+                                                  '${l10n.s_color_green} / ${l10n.s_system_default}',
                                               isSelected: customColor == null,
                                               onPressed: () {
                                                 _updateColor(null, ref, serial);
