@@ -79,7 +79,7 @@ class AppTheme {
         ),
         side: WidgetStateBorderSide.resolveWith((states) {
           if (!isAndroid && states.contains(WidgetState.focused)) {
-            return BorderSide(color: colorScheme.primary);
+            return BorderSide(color: colorScheme.primary, width: 1.4);
           }
           if (states.contains(WidgetState.disabled)) {
             return BorderSide(
