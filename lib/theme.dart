@@ -89,7 +89,7 @@ class AppTheme {
           if (states.contains(WidgetState.selected)) {
             return BorderSide(color: Colors.transparent);
           }
-          return BorderSide(color: colorScheme.outline);
+          return BorderSide(color: colorScheme.outline, width: 1.4);
         }),
       ),
       listTileTheme: const ListTileThemeData(
