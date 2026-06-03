@@ -96,7 +96,7 @@ class AppInputDecoration extends InputDecoration {
   Widget? get suffixIcon {
     final icons = [
       if (super.suffixIcon != null) super.suffixIcon!,
-      if (suffixIcons != null) ...suffixIcons!,
+      ...?suffixIcons,
       if (errorText != null) const Icon(Symbols.error, fill: 1),
     ];
 
