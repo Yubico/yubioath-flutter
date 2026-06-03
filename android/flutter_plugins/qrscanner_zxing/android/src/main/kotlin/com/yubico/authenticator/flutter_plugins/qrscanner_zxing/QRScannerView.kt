@@ -296,11 +296,12 @@ internal class QRScannerView(
 
             cameraController = controller
 
-            // Observe camera state
-            controller.cameraInfo?.cameraState?.let {
-                it.removeObservers(owner)
-                it.observe(owner, stateChangeObserver)
-            }
+            controller.initializationFuture.addListener({
+                controller.cameraInfo?.cameraState?.let {
+                    it.removeObservers(owner)
+                    it.observe(owner, stateChangeObserver)
+                }
+            }, ContextCompat.getMainExecutor(context))
 
             reportViewInitialized(true)
         } catch (e: IllegalArgumentException) {
