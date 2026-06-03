@@ -30,10 +30,10 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   FlutterMacOS: d0db08ddef1a9af05a5ec4b724367152bb0500b1
-  local_notifier: ebf072651e35ae5e47280ad52e2707375cb2ae4e
-  screen_retriever_macos: 452e51764a9e1cdb74b3c541238795849f21557f
-  tray_manager: a104b5c81b578d83f3c3d0f40a997c8b10810166
-  window_manager: 1d01fa7ac65a6e6f83b965471b1a7fdd3f06166c
+  local_notifier: e9506bc66fc70311e8bc7291fb70f743c081e4ff
+  screen_retriever_macos: 776e0fa5d42c6163d2bf772d22478df4b302b161
+  tray_manager: 9064e219c56d75c476e46b9a21182087930baf90
+  window_manager: 3a1844359a6295ab1e47659b1a777e36773cd6e8
 
 PODFILE CHECKSUM: 0d3963a09fc94f580682bd88480486da345dc3f0
 
