@@ -79,7 +79,7 @@ class AppTheme {
         ),
         side: WidgetStateBorderSide.resolveWith((states) {
           if (!isAndroid && states.contains(WidgetState.focused)) {
-            return BorderSide(color: colorScheme.primary);
+            return BorderSide(color: colorScheme.primary, width: 1.4);
           }
           if (states.contains(WidgetState.disabled)) {
             return BorderSide(
@@ -89,7 +89,7 @@ class AppTheme {
           if (states.contains(WidgetState.selected)) {
             return BorderSide(color: Colors.transparent);
           }
-          return BorderSide(color: colorScheme.outline);
+          return BorderSide(color: colorScheme.outline, width: 1.4);
         }),
       ),
       listTileTheme: const ListTileThemeData(
