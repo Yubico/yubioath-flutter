@@ -59,7 +59,6 @@ Future<T?> showBlurDialog<T>({
     scopesRoute: true,
     explicitChildNodes: true,
     namesRoute: true,
-    role: SemanticsRole.dialog,
     child: builder(ctx),
   ),
   transitionDuration: const Duration(milliseconds: 150),
