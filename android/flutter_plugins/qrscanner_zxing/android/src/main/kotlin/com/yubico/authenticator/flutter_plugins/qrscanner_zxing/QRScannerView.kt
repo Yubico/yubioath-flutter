@@ -32,7 +32,11 @@ import android.view.ViewTreeObserver
 import androidx.annotation.OptIn
 import androidx.camera.camera2.interop.Camera2Interop
 import androidx.camera.camera2.interop.ExperimentalCamera2Interop
-import androidx.camera.core.*
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.CameraState
+import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.ImageProxy
+import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
@@ -105,10 +109,7 @@ internal class QRScannerView
 
         // permission related
         const val PERMISSION_REQUEST_CODE = 1
-        private val PERMISSIONS_TO_REQUEST =
-            mutableListOf(
-                Manifest.permission.CAMERA,
-            ).toTypedArray()
+        private val PERMISSIONS_TO_REQUEST = arrayOf(Manifest.permission.CAMERA)
 
         // communication channel
         private const val CHANNEL_NAME =
@@ -213,10 +214,10 @@ internal class QRScannerView
         permissionsResultRegistrar.setListener(null)
         orientationEventListener.disable()
         previewView.viewTreeObserver.removeOnGlobalLayoutListener(layoutListener)
-        // Mirror what bindUseCases() does before its own unbindAll(): reset the observer so
-        // the CLOSED event triggered by unbindAll() doesn't send a spurious CameraClosed
-        // broadcast that causes NFC to restart during view teardown.
-        stateChangeObserver.reset()
+        // Do NOT call stateChangeObserver.reset() here. When the QR scanner is dismissed,
+        // the CLOSED event from unbindAll() is the intended trigger for the CameraClosed
+        // broadcast that restarts NFC. reset() is only called inside bindUseCases() to
+        // suppress the spurious CLOSED fired during a rebind, not on final teardown.
         cameraProvider?.unbindAll()
         preview = null
         imageAnalysis?.clearAnalyzer()
@@ -321,23 +322,34 @@ internal class QRScannerView
     }
 
     private fun bindUseCases(context: Context) {
+        // If the ProcessCameraProvider is already resolved, rebind directly instead of
+        // registering another addListener(). This prevents multiple pending listeners from
+        // queuing up when bindUseCases() is called repeatedly (e.g. recheckPermissions),
+        // which would each independently unbind/rebind and cause spurious state transitions.
+        val resolvedProvider = cameraProvider
+        if (resolvedProvider != null) {
+            doBind(context, resolvedProvider)
+            return
+        }
         cameraProviderFuture.addListener({
-            // Guard: dispose() may have been called before this async callback fired.
             if (viewDisposed) return@addListener
+            doBind(context, cameraProviderFuture.get() ?: return@addListener)
+        }, ContextCompat.getMainExecutor(context))
+    }
 
-            // Fix 8: safe cast with fallback — context is always Activity at call sites
-            // (guarded by `context is Activity` in init and recheckPermissions), but we
-            // handle the impossible case gracefully rather than crashing.
-            val lifecycleOwner = context as? LifecycleOwner ?: run {
-                Log.e(TAG, "Context is not a LifecycleOwner, cannot bind camera")
-                previewView.visibility = View.GONE
-                reportViewInitialized(false)
-                return@addListener
-            }
+    private fun doBind(context: Context, provider: ProcessCameraProvider) {
+        if (viewDisposed) return
 
-            try {
-                previewView.visibility = View.VISIBLE
-                cameraProvider = cameraProviderFuture.get()
+        val lifecycleOwner = context as? LifecycleOwner ?: run {
+            Log.e(TAG, "Context is not a LifecycleOwner, cannot bind camera")
+            previewView.visibility = View.GONE
+            reportViewInitialized(false)
+            return
+        }
+
+        try {
+            previewView.visibility = View.VISIBLE
+            cameraProvider = provider
 
                 // Reset StateChangeObserver so a CLOSED event from unbindAll() during
                 // rebind does not send a spurious CameraClosed broadcast.
@@ -401,12 +413,11 @@ internal class QRScannerView
                 }
 
                 reportViewInitialized(true)
-            } catch (e: Exception) {
-                Log.e(TAG, "Failed to bind camera use cases: ${e.message}", e)
-                previewView.visibility = View.GONE
-                reportViewInitialized(false)
-            }
-        }, ContextCompat.getMainExecutor(context))
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to bind camera use cases: ${e.message}", e)
+            previewView.visibility = View.GONE
+            reportViewInitialized(false)
+        }
     }
 
     private class BarcodeAnalyzer(
