@@ -58,6 +58,8 @@ files: [
         "tr": "tr",
         "pt-BR": "pt",
         "hu": "hu",
+        "bg": "bg",
+        "he": "he"
       }
     }
 

@@ -1,0 +1,1155 @@
+{
+    "@@locale": "he",
+
+    "app_name": "מאמת Yubico",
+    "native_language_name": "עברית",
+    "@native_language_name": {
+        "description": "IMPORTANT: This is the name of YOUR language written in YOUR language. For example: 'Deutsch' for German, 'Français' for French. DO NOT translate the word 'English'."
+    },
+    "s_translated": "מתורגמים: {percentage}%",
+    "@s_translated": {
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "s_proofread": "נבדקו: {percentage}%",
+    "@s_proofread": {
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "l_incomplete_translation": "תרגום חלקי",
+    "p_translation_progress_desc": "מחווני ההתקדמות משקפים את בשלות התרגום.",
+    "s_community": "קהילה",
+    "l_localization_project": "מיזם תרגום",
+
+    "s_save": "שמירה",
+    "s_cancel": "ביטול",
+    "s_close": "סגירה",
+    "s_delete": "מחיקה",
+    "s_move": "העברה",
+    "s_quit": "יציאה",
+    "s_enable": "הפעלה",
+    "s_enabled": "פעיל",
+    "s_disabled": "מושבת",
+    "s_status": "מצב",
+    "s_unlock": "שחרור",
+    "s_calculate": "חישוב",
+    "s_import": "ייבוא",
+    "s_overwrite": "שכתוב",
+    "s_done": "סיום",
+    "s_success": "הצלחה",
+    "s_loading": "בטעינה\u2026",
+    "s_more": "עוד",
+    "s_label": "תווית",
+    "s_name": "שם",
+    "s_usb": "USB",
+    "s_nfc": "NFC",
+    "s_options": "אפשרויות",
+    "s_details": "פרטים",
+    "s_required": "חובה",
+    "s_show_window": "הצגת חלון",
+    "s_hide_window": "הסתרת חלון",
+    "s_show_navigation": "הצגת ניווט",
+    "s_expand_navigation": "הרחבת סרגל הניווט",
+    "s_collapse_navigation": "צמצום סרגל הניווט",
+    "s_expand_collapse_navigation": "הרחבת/צמצום סרגל הניווט",
+    "s_expanded": "מורחב",
+    "s_collapsed": "מצומצם",
+    "s_show_menu": "הצגת תפריט",
+    "s_menu": "תפריט",
+    "s_expand_menu_bar": "הרחבת סרגל התפריטים",
+    "s_collapse_menu_bar": "צמצום סרגל התפריטים",
+    "s_toggle_menu_bar": "החלפת מצב סרגל תפריטים",
+    "s_more_info": "פרטים נוספים",
+    "l_bullet": "• {item}",
+    "@l_bullet": {
+        "placeholders": {
+            "item": {
+                "type": "String"
+            }
+        }
+    },
+    "s_none": "<ללא>",
+
+    "s_about": "על אודות",
+    "s_algorithm": "אלגוריתם",
+    "s_appearance": "מראה",
+    "s_actions": "פעולות",
+    "s_manage": "ניהול",
+    "s_setup": "הגדרה",
+    "s_device": "התקן",
+    "s_application": "יישום",
+    "s_settings": "הגדרות",
+    "s_reset_settings": "איפוס הגדרות",
+    "l_reset_settings_desc": "שחזור ההגדרות לברירת המחדל",
+    "q_reset_settings": "לאפס את ההגדרות?",
+    "p_reset_settings_confirmation_desc": "הפעולה הזאת תשחזר את כל ההגדרות לערכי ברירת המחדל שלהן.",
+    "s_support": "תמיכה",
+    "s_certificates": "אישורים",
+    "s_security_key": "מפתח אבטחה",
+    "s_slots": "משבצות",
+    "s_help_and_about": "עזרה ועל אודות",
+    "s_help": "עזרה",
+    "s_app_information": "פרטי היישום",
+    "s_home": "בית",
+    "s_user_guide": "מדריך למשתמשים",
+    "s_i_need_help": "אשמח לעזרה",
+    "s_terms_of_use": "תנאי השימוש",
+    "s_privacy_policy": "מדיניות פרטיות",
+    "s_open_src_licenses": "רישיונות קוד פתוח",
+    "s_please_wait": "נא להמתין\u2026",
+    "s_secret_key": "מפתח סודי",
+    "s_show_secret_key": "הצגת מפתח סודי",
+    "s_hide_secret_key": "הסתרת מפתח סודי",
+    "s_private_key": "מפתח פרטי",
+    "s_public_key": "מפתח ציבורי",
+    "s_invalid_length": "אורך שגוי",
+    "l_invalid_format_allowed_chars": "תבנית שגויה, תווים מורשים: {characters}",
+    "@l_invalid_format_allowed_chars": {
+        "placeholders": {
+            "characters": {
+                "type": "String"
+            }
+        }
+    },
+    "l_invalid_keyboard_character": "תווים שגויים למקלדת הנבחרת",
+    "s_require_touch": "לדרוש נגיעה",
+    "q_have_account_info": "יש לך את פרטי החשבון?",
+    "s_debugging_tools": "כלי ניפוי שגיאות",
+    "s_run_diagnostics": "הרצת אבחונים",
+    "l_run_diagnostics_desc": "הרצת אבחונים כדי לאתר בעיות",
+    "s_logging_level": "רמת תיעוד ביומן",
+    "s_current_log_level": "רמת תיעוד ביומן: {level}",
+    "@s_current_log_level": {
+        "placeholders": {
+            "level": {
+                "type": "String"
+            }
+        }
+    },
+    "s_character_count": "כמות תווים",
+    "l_characters_used": "{used} מתוך {max} תווים בשימוש",
+    "@l_characters_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "max": {
+                "type": "int"
+            }
+        }
+    },
+    "@_language": {},
+
+    "s_language": "שפה",
+    "@_theme": {},
+
+    "s_app_theme": "ערכת העיצוב של היישום",
+    "s_system_default": "ברירת המחדל של המערכת",
+    "s_light_mode": "מצב בהיר",
+    "s_dark_mode": "מצב כהה",
+    "@_layout": {},
+
+    "s_list_layout": "פריסת רשימה",
+    "s_grid_layout": "פריסת רשת",
+    "s_mixed_layout": "פריסה מעורבת",
+    "s_select_layout": "בחירת פריסה",
+    "@_yubikey_selection": {},
+
+    "s_select_to_scan": "יש לבחור כדי לסרוק",
+    "s_hide_reader": "הסתרת קורא",
+    "s_show_hidden_readers": "הצגת קוראים מוסתרים",
+    "s_toggle_readers": "החלפת מצב קוראים",
+    "l_toggle_readers_desc": "הצגת או הסתרת קוראים",
+    "s_sn_serial": "מס׳ סידורי: {serial}",
+    "@s_sn_serial": {
+        "placeholders": {
+            "serial": {
+                "type": "int"
+            }
+        }
+    },
+    "s_fw_version": "קושחה: {version}",
+    "@s_fw_version": {
+        "placeholders": {
+            "version": {
+                "type": "Object"
+            }
+        }
+    },
+    "l_serial_number": "מספר סידורי: {serial}",
+    "@l_serial_number": {
+        "placeholders": {
+            "serial": {
+                "type": "int"
+            }
+        }
+    },
+    "l_firmware_version": "גרסת קושחה: {version}",
+    "@l_firmware_version": {
+        "placeholders": {
+            "version": {
+                "type": "Object"
+            }
+        }
+    },
+    "l_fips_capable": "תואם FIPS",
+    "l_fips_approved": "מאושר FIPS",
+    "@_yubikey_interactions": {},
+
+    "l_insert_yk": "נא לחבר את ה־YubiKey שלך",
+    "l_insert_or_tap_yk": "נא לחבר או לגעת ב־YubiKey",
+    "l_unplug_yk": "נא לנתק את ה־YubiKey שלך",
+    "l_reinsert_yk": "נא לחבר את ה־YubiKey שלך מחדש",
+    "l_place_on_nfc_reader": "נא להניח את ה־YubiKey שלך על קורא ה־NFC",
+    "l_replace_yk_on_reader": "יש להציב את ה־YubiKey שלך בקורא בחזרה",
+    "l_remove_yk_from_reader": "יש להסיר את ה־YubiKey שלך מקורא ה־NFC",
+    "p_try_reinsert_yk": "נא לנסות לנתק ולחבר את ה־YubiKey שלך מחדש.",
+    "s_touch_required": "צריך לגעת",
+    "l_touch_button_now": "נא לגעת בכפתור שעל ה־YubiKey שלך כעת",
+    "l_long_touch_button_now": "יש ללחוץ ולהחזיק את הכפתור שב־YubiKey שלך למשך 5 שניות מעתה",
+    "l_keep_touching_yk": "יש להמשיך לגעת ב־YubiKey שלך שוב ושוב\u2026",
+    "@_capabilities": {},
+
+    "s_capability_otp": "סיסמה חד־פעמית של Yubico",
+    "s_capability_u2f": "FIDO U2F",
+    "s_capability_fido2": "FIDO2",
+    "s_capability_oath": "OATH",
+    "s_capability_piv": "PIV",
+    "s_capability_openpgp": "OpenPGP",
+    "s_capability_hsmauth": "אימות YubiHSM",
+    "@_app_configuration": {},
+
+    "s_toggle_applications": "החלפת מצב יישומים",
+    "s_toggle_interfaces": "החלפת מצב ממשקים",
+    "p_toggle_applications_desc": "הפעלת או השבתת יישומים על גבי תעבורות זמינות.",
+    "p_toggle_interfaces_desc": "להפעיל או להשבית ממשקי USB.",
+    "l_toggle_applications_desc": "הפעלת/השבתת יישומים",
+    "l_toggle_interfaces_desc": "הפעלת/השבתת ממשקים",
+    "s_reconfiguring_yk": "YubiKey מוגדר מחדש\u2026",
+    "s_config_updated": "ההגדרות עודכנו",
+    "l_config_updated_reinsert": "ההגדרות עודכנו, יש לנתק ולחבר את ה־YubiKey שלך מחדש",
+    "s_fido_disabled": "FIDO2 מושבת",
+    "l_webauthn_req_fido2": "WebAuthn דורש את הפעלת יישום FIDO2 ב־YubiKey שלך",
+    "s_lock_code": "קוד נעילה",
+    "l_wrong_lock_code": "קוד נעילה שגוי",
+    "s_show_lock_code": "הצגת קוד נעילה",
+    "s_hide_lock_code": "הסתרת קוד נעילה",
+    "p_lock_code_required_desc": "הפעולה שמיועדת לביצוע דורשת מילוי קוד נעילה.",
+    "@_connectivity_issues": {},
+
+    "l_helper_not_responding": "תהליך העזר לא מגיב",
+    "l_yk_no_access": "אי אפשר לגשת ל־YubiKey הזה",
+    "s_yk_inaccessible": "חוסר נגישות להתקן",
+    "l_open_connection_failed": "פתיחת החיבור נכשלה",
+    "l_ccid_connection_failed": "פתיחת החיבור לכרטיס החכם נכשלה",
+    "p_ccid_service_unavailable": "נא לוודא ששירות הכרטיס החכם שלך מתפקד.",
+    "p_pcscd_unavailable": "נא לוודא ש־pcscd מותקן ופעיל.",
+    "l_no_yk_present": "אין YubiKey",
+    "s_unknown_type": "סוג לא ידוע",
+    "s_unknown_device": "התקן לא מוכר",
+    "s_restricted_nfc": "הפעלת NFC",
+    "l_deactivate_restricted_nfc": "איך להפעיל NFC",
+    "p_deactivate_restricted_nfc_desc": "נא לחבר את ה־YubiKey שלך למקור חשמל USB, כגון מחשב למשך 3 שניות לפחות.\n\nלאחר החיבור לחשמל, NFC יופעל ויהיה מוכן לשימוש.",
+    "p_deactivate_restricted_nfc_footer": "ה־YubiKey שלך מצויד ב־NFC מוגבל, היכולת הזאת תוכננה להגן עליך מפני חבלה אלחוטית במהלך השילוח. המשמעות היא שפעולות ה־NFC מושבתות זמנית עד שתופעלה.",
+    "s_unsupported_yk": "YubiKey לא נתמך",
+    "p_operation_failed_try_again": "הפעולה נכשלה, נא לנסות שוב.",
+    "l_configuration_unsupported": "ההגדרות לא נתמכות",
+    "p_scp_unsupported": "כדי לתקשר דרך NFC, ה־YubiKey דורש טכנולוגיה שהטלפון הזה לא תומך בה. נא לחבר את ה־YubiKey לשקע ה־USB של הטלפון.",
+    "@_general_errors": {},
+
+    "l_error_occurred": "אירעה שגיאה",
+    "s_application_error": "שגיאת יישום",
+    "l_import_error": "שגיאת ייבוא",
+    "l_file_not_found": "קובץ לא נמצא",
+    "l_file_too_big": "קובץ הגודל גדול מדי",
+    "l_filesystem_error": "שגיאת פעולה במערכת הקבצים",
+    "@_pins": {},
+
+    "s_pin": "קוד אישי/PIN",
+    "s_puk": "PUK",
+    "s_set_pin": "הגדרת קוד אישי/PIN",
+    "s_change_pin": "החלפת קוד אישי/PIN",
+    "s_change_puk": "החלפת PUK",
+    "s_show_pin": "הצגת הקוד האישי/PIN",
+    "s_hide_pin": "הסתרת הקוד האישי/PIN",
+    "s_show_puk": "הצגת PUK",
+    "s_hide_puk": "הסתרת PUK",
+    "s_current_pin": "הקוד האישי/PIN הנוכחי",
+    "s_current_puk": "ה־PUK הנוכחי",
+    "s_new_pin": "קוד אישי/PIN חדש",
+    "s_new_puk": "PUK חדש",
+    "s_confirm_pin": "אימות קוד אישי/PIN",
+    "s_confirm_puk": "אימות PUK",
+    "s_unblock_pin": "איפוס קוד אישי (PIN)",
+    "l_pin_mismatch": "הקודים האישיים (PINs) לא תואמים",
+    "l_puk_mismatch": "הקודים שסופקו כ־PUK לא תואמים",
+    "s_pin_set": "הקוד האישי/PIN הוגדר",
+    "s_puk_set": "PUK הוגדר",
+    "l_set_pin_failed": "הגדרת קוד אישי (PIN) נכשלה: {message}",
+    "@l_set_pin_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_attempts_remaining": "{retries, plural, =1{{retries} attempt remaining}other{{retries} attempts remaining}}",
+    "@l_attempts_remaining": {
+        "placeholders": {
+            "retries": {
+                "type": "int"
+            }
+        }
+    },
+    "l_wrong_pin_attempts_remaining": "Wrong PIN, {retries, plural, =1{{retries} attempt remaining}other{{retries} attempts remaining}}",
+    "@l_wrong_pin_attempts_remaining": {
+        "placeholders": {
+            "retries": {
+                "type": "int"
+            }
+        }
+    },
+    "l_wrong_puk_attempts_remaining": "Wrong PUK, {retries, plural, =1{{retries} attempt remaining}other{{retries} attempts remaining}}",
+    "@l_wrong_puk_attempts_remaining": {
+        "placeholders": {
+            "retries": {
+                "type": "int"
+            }
+        }
+    },
+    "s_fido_pin_protection": "הגנת FIDO בקוד אישי/PIN",
+    "s_pin_change_required": "יש לשנות קוד אישי (PIN)",
+    "l_enter_fido2_pin": "נא למלא את הקוד האישי/PIN של FIDO2 עבור ה־YubiKey שלך",
+    "p_fido2_pin_required": "הפעולה שמיועדת לביצוע דורשת את הקוד האישי (PIN) של ה־FIDO2.",
+    "l_pin_blocked_reset": "הקוד האישי/PIN נחסם; יש לאפס את יישום ה־FIDO להגדרות היצרן",
+    "l_pin_blocked": "קוד אישי/PIN חסום",
+    "l_set_pin_first": "נדרש קוד אישי/PIN",
+    "l_unlock_pin_first": "שחרור נעילה עם קוד אישי (PIN)",
+    "l_pin_soft_locked": "הקוד האישי/PIN נחסם עד לניתוק וחיבור של ה־YubiKey מחדש",
+    "l_pin_change_required_desc": "יש להגדיר קוד אישי/PIN חדש לפני שאפשר יהיה להשתמש ביישום הזה",
+    "p_new_fido2_pin_requirements": "קוד אישי/PIN חייב להיות באורך של {min_length}-{max_length} תווים והוא יכול להכיל אותיות, מספרים ותווים מיוחדים.",
+    "@p_new_fido2_pin_requirements": {
+        "placeholders": {
+            "min_length": {
+                "type": "int"
+            },
+            "max_length": {
+                "type": "int"
+            }
+        }
+    },
+    "p_new_fido2_pin_complexity_active_requirements": "קוד אישי/PIN חייב להיות באורך של {min_length}-{max_length} תווים ועליו להכיל לפחות {unique_characters} תווים ייחודיים ולא יכול להיות קוד אישי נפוץ כגון „{common_pin}”. הוא יכול להיות מורכב מאותיות, ספרות ותווים מיוחדים.",
+    "@p_new_fido2_pin_complexity_active_requirements": {
+        "placeholders": {
+            "min_length": {
+                "type": "int"
+            },
+            "max_length": {
+                "type": "int"
+            },
+            "unique_characters": {
+                "type": "int"
+            },
+            "common_pin": {
+                "type": "String"
+            }
+        }
+    },
+    "s_persist_read_only_access": "שמירה על גישה לקריאה בלבד",
+    "s_ep_attestation": "אימות ארגוני",
+    "s_ep_attestation_enabled": "אימות ארגוני פעיל",
+    "q_enable_ep_attestation": "להפעיל אימות ארגוני?",
+    "p_enable_ep_attestation_desc": "הפעולה הזאת תפעיל את האימות הארגוני, מה שיאפשר לשמות תחום מורשים לזהות את ה־YubiKey שלך באופן ייחודי.",
+    "p_enable_ep_attestation_disable_with_factory_reset": "לאחר ההפעלה, ניתן להשבית את האימות הארגוני רק על ידי איפוס להגדרות יצרן של FIDO.",
+    "s_pin_required": "נדרש קוד אישי (PIN)",
+    "p_pin_required_desc": "הפעולה שמיועדת לביצוע דורשת את הקוד האישי (PIN) של ה־PIV.",
+    "l_piv_pin_blocked": "חסום, יש להשתמש ב־PUK כדי לאפס",
+    "p_piv_pin_blocked_desc": "הקוד האישי/PIN חסום. יש להשתמש ב־PUK כדי לאפס אותו.",
+    "p_piv_pin_blocked_bio_desc": "הקוד האישי/PIN חסום. צריך לאפס להגדרות יצרן.",
+    "l_piv_pin_puk_blocked": "חסום, צריך לאפס להגדרות יצרן",
+    "p_piv_pin_puk_blocked_desc": "גם הקוד האישי (PIN) וגם ה־PUK חסומים. יש לאפס את יישום ה־PIV להגדרות יצרן.",
+    "p_new_piv_pin_puk_requirements": "{name} חייב להיות באורך של {length} תווים לפחות.",
+    "@p_new_piv_pin_puk_requirements": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "length": {
+                "type": "int"
+            }
+        }
+    },
+    "p_new_piv_pin_puk_complexity_active_requirements": "{name} חייב להיות באורך של {length} תווים לפחות, להכיל לפחות 2 תווים ייחודיים ולא יכול להיות {name} נפוץ, כגון „{common}”.",
+    "@p_new_piv_pin_puk_complexity_active_requirements": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "length": {
+                "type": "int"
+            },
+            "common": {
+                "type": "String"
+            }
+        }
+    },
+    "p_pin_puk_complexity_failure": "{name} החדש לא עומד בדרישות המורכבות.",
+    "@p_pin_puk_complexity_failure": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "s_dismiss": "סילוק",
+    "p_default_pin_puk_key_desc": "מומלץ לשנות את הקוד האישי/PIN, את ה־PUK ואת מפתח הניהול שמוגדרים כברירת מחדל.",
+    "p_default_pin_puk_key_fips_desc": "לצורך תאימות FIPS צריך לשנות את הקוד האישי/PIN, ה־PUK ומפתח הניהול שהוגדרו כברירת מחדל.",
+    "l_warning_default_pin": "אזהרה: שימוש בקוד האישי/PIN כברירת המחדל",
+    "l_warning_default_puk": "אזהרה: שימוש ב־PUK כברירת המחדל",
+    "l_default_pin_used": "נעשה שימוש בקוד האישי/PIN כברירת המחדל",
+    "l_default_puk_used": "נעשה שימוש ב־PUK כברירת המחדל",
+    "l_pin_complexity": "נאכפה מורכבות קוד אישי (PIN)",
+    "@_passwords": {},
+
+    "s_password": "סיסמה",
+    "s_manage_password": "ניהול סיסמה",
+    "s_set_password": "הגדרת סיסמה",
+    "s_password_set": "הסיסמה הוגדרה",
+    "s_show_password": "הצגת סיסמה",
+    "s_hide_password": "הסתרת סיסמה",
+    "l_password_protection": "הגנה על חשבונות בסיסמה",
+    "s_new_password": "סיסמה חדשה",
+    "s_current_password": "סיסמה נוכחית",
+    "s_confirm_password": "אישור סיסמה",
+    "l_password_mismatch": "הסיסמאות לא תואמות",
+    "s_wrong_password": "סיסמה שגויה",
+    "p_wrong_password": "הסיסמה שגויה. אם לא ידוע לך מה הסיסמה שלך, יש לאפס את ה־YubiKey.",
+    "s_remove_password": "הסרת סיסמה",
+    "s_password_removed": "סיסמה הוסרה",
+    "s_remember_password": "לזכור סיסמה",
+    "s_clear_saved_password": "איפוס סיסמה שנשמרה",
+    "s_password_forgotten": "סיסמה שנשכחה",
+    "l_keystore_unavailable": "מאגר המפתחות של מערכת ההפעלה אינו זמין",
+    "l_remember_pw_failed": "זכירת הסיסמה נכשלה",
+    "l_unlock_first": "שחרור נעילה עם סיסמה",
+    "l_set_password_first": "הגדרת סיסמה",
+    "l_enter_oath_pw": "נא למלא את סיסמת ה־OATH ל־YubiKey שלך",
+    "p_new_password_requirements": "סיסמה יכולה להיות מורכבת מאותיות, מספרים ותווים מיוחדים.",
+    "@_management_key": {},
+
+    "s_management_key": "מפתח ניהול",
+    "s_current_management_key": "מפתח הניהול הנוכחי",
+    "s_new_management_key": "מפתח ניהול חדש",
+    "l_change_management_key": "החלפת מפתח ניהול",
+    "l_management_key_changed": "מפתח הניהול הוחלף",
+    "l_default_key_used": "נעשה שימוש במפתח ניהול ברירת המחדל",
+    "s_generate_random": "יצירת אקראי",
+    "s_use_default": "להשתמש בברירת מחדל",
+    "l_warning_default_key": "אזהרה: שימוש במפתח ברירת המחדל",
+    "s_protect_key": "הגנה עם קוד אישי (PIN)",
+    "p_protect_key_desc": "להשתמש בקוד אישי/PIN במקום מפתח הניהול במהלך פעולות שדורשות אימות עם מפתח ניהול.",
+    "s_management_key_algorithm": "אלגוריתם מפתח ניהול",
+    "p_management_key_algorithm_desc": "האלגוריתם לבחירה למפתח הניהול.",
+    "l_pin_protected_key": "אפשר להשתמש בקוד אישי (PIN) במקום",
+    "l_wrong_key": "מפתח שגוי",
+    "l_unlock_piv_management": "שחרור נעילת ניהול PIV",
+    "p_unlock_piv_management_desc": "הפעולה שמיועדת לביצוע דורשת את מפתח ניהול ה־PIV.",
+    "@_oath_accounts": {},
+
+    "l_account": "חשבון: {label}",
+    "@l_account": {
+        "placeholders": {
+            "label": {
+                "type": "String"
+            }
+        }
+    },
+    "s_accounts": "חשבונות",
+    "s_no_accounts": "אין חשבונות",
+    "l_results_for": "תוצאות לחיפוש אחר „{query}”",
+    "@l_results_for": {
+        "placeholders": {
+            "query": {
+                "type": "String"
+            }
+        }
+    },
+    "l_authenticator_get_started": "התחלת שימוש בחשבונות סיסמה חד־פעמית",
+    "l_no_accounts_desc": "הוספת חשבונות ל־YubiKey שלך מכל ספק שירות שתומך ב־OATH TOTP/HOTP",
+    "s_add_account": "הוספת חשבון",
+    "p_add_account_desc": "יש לסרוק קוד QR או למלא פרטי גישה ידנית.",
+    "s_add_accounts": "הוספת חשבונות",
+    "l_drop_qr_description": "אפשר לגרור קוד QR כדי להוסיף חשבונות",
+    "p_add_account_three_ways": "יש שלוש דרכים להוסיף חשבונות.",
+    "s_scanning": "סריקה (מומלץ)",
+    "p_scanning_desc": "לפני סריקת קוד QR, חשוב לוודא שהקוד המלא גלוי על המסך.",
+    "s_drag_and_drop": "גרירה",
+    "p_drag_and_drop_desc": "אפשר לגרור תמונה שמכילה קוד QR לכל מקום שהוא בתצוגת החשבונות.",
+    "s_manually": "ידנית",
+    "p_manually_desc": "אפשר למלא פרטי גישה לחשבון ידנית בטופס.",
+    "s_account_added": "נוסף חשבון",
+    "l_account_add_failed": "הוספת חשבון נכשלה: {message}",
+    "@l_account_add_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_add_account_password_required": "דרושה סיסמה",
+    "l_add_account_unlock_required": "נדרש שחרור נעילה",
+    "l_add_account_func_missing": "היכולת חסרה או מושבתת",
+    "l_account_name_required": "לחשבון שלך חייב להיות שם",
+    "l_field_required": "זה שדה חובה",
+    "l_name_already_exists": "השם הזה כבר קיים למנפיק",
+    "l_account_already_exists": "החשבון הזה כבר קיים ב־YubiKey",
+    "l_invalid_character_issuer": "תו שגוי: ‚:’ אסור בשם המנפיק",
+    "l_select_accounts": "נא לבחור חשבונות להוספה ל־YubiKey",
+    "s_pin_account": "נעיצת חשבון",
+    "s_unpin_account": "שחרור נעיצת חשבון",
+    "s_no_pinned_accounts": "אין חשבונות נעוצים",
+    "s_pinned": "נעוץ",
+    "l_pin_account_desc": "לרכז את החשבונות החשובים שלך יחד",
+    "s_rename_account": "שינוי שם חשבון",
+    "l_rename_account_desc": "עריכת מנפיק/שם החשבון",
+    "s_account_renamed": "שם החשבון התחלף",
+    "l_rename_account_failed": "שינוי שם החשבון נכשל: {message}",
+    "@l_rename_account_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "p_rename_will_change_account_displayed": "הפעולה הזאת תשנה את איך שהחשבון מופיע ברשימה.",
+    "s_delete_account": "מחיקת חשבון",
+    "q_delete_account": "למחוק את החשבון?",
+    "l_delete_account_desc": "הסרת החשבון מה־YubiKey שלך",
+    "s_account_deleted": "החשבון נמחק",
+    "p_warning_delete_account": "אזהרה! הפעולה הזאת תמחק את החשבון מה־YubiKey שלך.",
+    "p_warning_disable_credential": "רצוי לוודא שהחשבון הזה מושבת בשירות שבו הוא רשום כדי להימנע מנעילה מחוץ לחשבון.",
+    "s_account_name": "שם חשבון",
+    "s_search_accounts": "חיפוש חשבונות",
+    "s_clear_search": "איפוס החיפוש",
+    "l_accounts_used": "{used} מתוך {capacity} חשבונות בשימוש",
+    "@l_accounts_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "capacity": {
+                "type": "int"
+            }
+        }
+    },
+    "s_num_digits": "{num} ספרות",
+    "@s_num_digits": {
+        "placeholders": {
+            "num": {
+                "type": "int"
+            }
+        }
+    },
+    "s_num_sec": "{num} שניות",
+    "@s_num_sec": {
+        "placeholders": {
+            "num": {
+                "type": "int"
+            }
+        }
+    },
+    "s_counter_based": "מבוסס מונה",
+    "s_time_based": "מבוסס זמן",
+    "l_copy_code_desc": "להדביק את הקוד ביישום אחר",
+    "l_calculate_code_desc": "משיכת קוד חדש מה־YubiKey שלך",
+    "s_account_type": "סוג חשבון",
+    "s_period": "נקודה",
+    "s_digits": "ספרות",
+    "@_fido_credentials": {},
+
+    "s_rp_id": "מזהה גוף סמך (RP)",
+    "s_user_id": "מזהה משתמש",
+    "s_credential_id": "מזהה פרטי גישה",
+    "s_display_name": "שם תצוגה",
+    "s_user_name": "שם משתמש",
+    "s_passkeys": "מפתחות גישה",
+    "s_no_passkeys": "אין מפתחות גישה",
+    "l_ready_to_use": "מוכן לשימוש",
+    "l_register_sk_on_websites": "רישום כמפתח אבטחה באתרים",
+    "l_no_discoverable_accounts": "לא מאוחסנים מפתחות גישה",
+    "p_non_passkeys_note": "יכול להיות שיש פרטי גישה שאינם מפתחות גישה, אך לא ניתן להציג אותם.",
+    "s_delete_passkey": "מחיקת מפתח גישה",
+    "q_delete_passkey": "למחוק מפתח גישה?",
+    "l_delete_passkey_desc": "הסרת מפתח הגישה מה־YubiKey",
+    "s_passkey_deleted": "מפתח הגישה נמחק",
+    "p_warning_delete_passkey": "אזהרה! הפעולה הזאת תמחק את מפתח הגישה מה־YubiKey שלך.",
+    "p_warning_delete_passkey_desc": "לא תהיה לך יותר אפשרות להשתמש במפתח הגישה הזה לשירות בו הוא רשום.",
+    "l_do_not_remove_yk_delete": "לא להסיר את ה־YubiKey במהלך המחיקה",
+    "s_search_passkeys": "חיפוש מפתחות גישה",
+    "p_passkeys_used": "{used} מתוך {max} מפתחות גישה נוצלו.",
+    "@p_passkeys_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            },
+            "max": {
+                "type": "int"
+            }
+        }
+    },
+    "@_fingerprints": {},
+    "s_biometrics": "זיהוי ביומטרי",
+    "l_fingerprint": "טביעת אצבע: {label}",
+    "@l_fingerprint": {
+        "placeholders": {
+            "label": {
+                "type": "String"
+            }
+        }
+    },
+    "s_fingerprints": "טביעות אצבעות",
+    "l_fingerprint_captured": "טביעת האצבע נקלטה בהצלחה!",
+    "s_fingerprint_added": "נוספה טביעת אצבע",
+    "l_adding_fingerprint_failed": "שגיאה בהוספת טביעת אצבע: {message}",
+    "@l_adding_fingerprint_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_setting_name_failed": "שגיאה בהגדרת שם: {message}",
+    "@l_setting_name_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "s_setup_fingerprints": "הגדרת טביעות אצבע",
+    "p_setup_fingerprints_desc": "יש להגדיר טביעות אצבע לפני שאפשר יהיה להשתמש במפתח.",
+    "s_add_fingerprint": "הוספת טביעת אצבע",
+    "s_delete_fingerprint": "מחיקת טביעת אצבע",
+    "q_delete_fingerprint": "למחוק טביעת אצבע?",
+    "l_delete_fingerprint_desc": "הסרת טביעת האצבע מה־YubiKey",
+    "s_fingerprint_deleted": "טביעת האצבע נמחקה",
+    "p_warning_delete_fingerprint": "הפעולה הזאת תמחק את טביעת האצבע מה־YubiKey שלך.",
+    "s_fingerprints_get_started": "התחלת שימוש בטביעות אצבע",
+    "p_set_fingerprints_desc": "לפני שניתן לרשום טביעות אצבע, יש להגדיר קוד אישי/PIN.",
+    "l_no_fps_added": "לא נוספו טביעות אצבע",
+    "s_rename_fp": "שינוי שם טביעת אצבע",
+    "l_rename_fp_desc": "שינוי השם",
+    "s_fingerprint_renamed": "שם טביעת האצבע השתנה",
+    "l_rename_fp_failed": "שגיאה בשינוי שם: {message}",
+    "@l_rename_fp_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_add_one_or_more_fps": "יש להוסיף טביעת אצבע אחת או יותר (עד חמש)",
+    "l_fingerprints_used": "{used}/5 טביעות אצבע נקלטו",
+    "@l_fingerprints_used": {
+        "placeholders": {
+            "used": {
+                "type": "int"
+            }
+        }
+    },
+    "p_press_fingerprint_begin": "יש ללחוץ את האצבע כנגד מפתח ה־YubiKey שלך כדי להתחיל.",
+    "l_name_fingerprint": "מתן שם לטביעת האצבע הזאת",
+    "@_fido_errors": {},
+
+    "l_user_action_timeout_error": "נכשל עקב חוסר פעילות משתמש",
+    "l_wrong_inserted_yk_error": "ה־YubiKey שחובר מחדש אינו תואם להתקן המקורי",
+    "l_failed_connecting_to_fido": "החיבור לממשק FIDO נכשל",
+    "@_certificates": {},
+
+    "l_self_signed_certificate": "אישור בחתימה עצמית",
+    "l_certificate_signing_request": "בקשת חתימת אישור (CSR)",
+    "s_certificate": "אישור",
+    "s_subject": "נושא",
+    "l_export_csr_file": "שמירת בקשת חתימת אישור (CSR) בקובץ",
+    "l_export_public_key": "ייצוא מפתח ציבורי",
+    "l_export_public_key_file": "שמירת מפתח ציבורי לקובץ",
+    "l_export_public_key_desc": "ייצוא המפתח הציבור לקובץ",
+    "l_public_key_exported": "המפתח הציבורי יוצא",
+    "l_export_certificate": "ייצוא אישור",
+    "l_export_certificate_file": "ייצוא אישור לקובץ",
+    "l_export_certificate_desc": "ייצוא האישור לקובץ",
+    "l_certificate_exported": "האישור יוצא",
+    "l_select_import_file": "בחירת קובץ לייבוא",
+    "l_import_file": "ייבוא קובץ",
+    "l_import_desc": "ייבוא מפתח ו/או אישור",
+    "l_import_nothing": "אין מה לייבא",
+    "l_importing_file": "קובץ מיובא\u2026",
+    "s_file_imported": "קובץ יובא",
+    "l_unsupported_key_type": "סוג המפתח לא נתמך",
+    "l_delete_certificate": "מחיקת אישור",
+    "q_delete_certificate": "למחוק את האישור?",
+    "l_delete_certificate_desc": "הסרת האישור מה־YubiKey שלך",
+    "l_delete_key": "מחיקת מפתח",
+    "q_delete_key": "למחוק מפתח?",
+    "l_delete_key_desc": "הסרת המפתח מה־YubiKey שלך",
+    "l_delete_certificate_or_key": "מחיקת אישור/מפתח",
+    "q_delete_certificate_or_key": "למחוק אישור/מפתח?",
+    "l_delete_certificate_or_key_desc": "הסרת האישור או המפתח מה־YubiKey שלך",
+    "l_move_key": "העברת מפתח",
+    "l_move_key_desc": "העברת מפתח ממשבצת PIV אחת לאחרת",
+    "l_change_defaults": "החלפת הקודים לגישה כברירת מחדל",
+    "s_issuer": "הנפקה",
+    "s_serial": "סידורי",
+    "s_certificate_fingerprint": "טביעת אצבע",
+    "s_valid_from": "תקף מ־",
+    "s_valid_to": "תקף עד",
+    "l_no_certificate": "לא נטען אישור",
+    "l_key_no_certificate": "נטען מפתח ללא אישור",
+    "s_generate_key": "יצירת מפתח",
+    "l_generate_desc": "יצירת אישור או בקשת חתימת אישור (CSR) חדשים",
+    "p_generate_desc": "הפעולה הזאת תיצור מפתח חדש ב־YubiKey במשבצת PIV‏ {slot}.",
+    "@p_generate_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "s_private_key_generated": "נוצר מפתח פרטי",
+    "p_select_what_to_delete": "נא לבחור מה למחוק מהמשבצת.",
+    "p_warning_delete_certificate": "אזהרה! הפעולה הזאת תמחק את האישור מה־YubiKey שלך.",
+    "p_warning_delete_key": "אזהרה! הפעולה הזאת תמחק את המפתח הפרטי מה־YubiKey שלך.",
+    "p_warning_delete_certificate_and_key": "אזהרה! הפעולה הזאת תמחק את האישור ואת המפתח הפרטי מה־YubiKey שלך.",
+    "p_warning_usb_preferred": "עדיף להשתמש ב־USB למפתחות RSA.‏ NFC עלול לגרום לשגיאות.",
+    "p_delete_certificate_desc": "הפעולה הזאת תמחק את האישור במשבצת PIV‏ {slot}.",
+    "@p_delete_certificate_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "p_delete_key_desc": "הפעולה הזאת תמחק את המפתח הפרטי במשבצת PIV‏ {slot}.",
+    "@p_delete_key_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "p_delete_certificate_and_key_desc": "הפעולה הזאת תמחק את האישור והמפתח הפרטי במשבצת PIV‏ {slot}.",
+    "@p_delete_certificate_and_key_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "l_certificate_deleted": "האישור נמחק",
+    "l_key_deleted": "המפתח נמחק",
+    "l_certificate_and_key_deleted": "האישור והמפתח נמחקו",
+    "l_include_certificate": "כולל אישור",
+    "s_destination_slot": "משבצת יעד",
+    "l_select_destination_slot": "בחירת משבצת יעד",
+    "q_move_key_confirm": "להעביר את המפתח הפרטי ממשבצת PIV‏ {from_slot}?",
+    "@q_move_key_confirm": {
+        "placeholders": {
+            "from_slot": {
+                "type": "String"
+            }
+        }
+    },
+    "q_move_key_to_slot_confirm": "להעביר את המפתח הפרטי ממשבצת PIV‏ {from_slot} למשבצת {to_slot}?",
+    "@q_move_key_to_slot_confirm": {
+        "placeholders": {
+            "from_slot": {
+                "type": "String"
+            },
+            "to_slot": {
+                "type": "String"
+            }
+        }
+    },
+    "q_move_key_and_certificate_to_slot_confirm": "להעביר את המפתח הפרטי והאישור ממשבצת PIV‏ {from_slot} למשבצת {to_slot}?",
+    "@q_move_key_and_certificate_to_slot_confirm": {
+        "placeholders": {
+            "from_slot": {
+                "type": "String"
+            },
+            "to_slot": {
+                "type": "String"
+            }
+        }
+    },
+    "p_password_protected_file": "הקובץ הנבחר מוגן בסיסמה.",
+    "p_import_items_desc": "הפריטים הבאים ייובאו למשבצת PIV‏ {slot}.",
+    "@p_import_items_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "l_warning_public_key_mismatch": "המפתח הציבורי של האישור לא תואם למפתח הפרטי במשבצת",
+    "l_key_moved": "המפתח הועבר",
+    "l_key_and_certificate_moved": "המפתח והאישור הועברו",
+    "p_subject_desc": "שם מובחן (DN) בתבנית לפי מפרט RFC 4514.",
+    "l_rfc4514_invalid": "תסדיר RFC 4514 שגוי",
+    "rfc4514_examples": "דוגמאות:\nCN=שם לדוגמה\nCN=jsmith,DC=example,DC=net",
+    "s_allow_fingerprint": "לאפשר טביעת אצבע",
+    "s_pin_policy": "מדיניות קוד אישי (PIN)",
+    "s_output_format": "תסדיר פלט",
+    "s_expiration_date": "תאריך תפוגה",
+    "p_algorithm_desc": "אלגוריתם מפתח לשימוש.",
+    "p_expiration_date_desc": "תאריך התפוגה של האישור, ברירת המחדל היא שנה (אישור בלבד).",
+    "p_key_options_bio_desc": "לאפשר שימוש בזיהוי ביומטרי במקום קוד אישי/PIN.",
+    "q_overwrite_slot": "לדרוס משבצת?",
+    "p_overwrite_slot_desc": "הפעולה הזאת תדרוס את התוכן שבמשבצת {slot} לצמיתות.",
+    "@p_overwrite_slot_desc": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "l_overwrite_cert": "האישור ישוכתב",
+    "l_overwrite_key": "המפתח הפרטי ישוכתב",
+    "l_overwrite_key_maybe": "מפתחות פרטיים כלשהם במשבצת ישוכתבו",
+    "@_piv_slots": {},
+
+    "s_slot_display_name": "{name} ({hexid})",
+    "@s_slot_display_name": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "hexid": {
+                "type": "String"
+            }
+        }
+    },
+    "s_slot_9a": "אימות",
+    "s_slot_9c": "חתימה דיגיטלית",
+    "s_slot_9d": "ניהול מפתחות",
+    "s_slot_9e": "אימות כרטיס",
+    "s_retired_slot": "ניהול מפתחות שהוחלף",
+    "@_otp_slots": {},
+
+    "s_otp_slot_one": "נגיעה קצרה",
+    "s_otp_slot_two": "נגיעה ארוכה",
+    "l_otp_slot_empty": "המשבצת ריקה",
+    "l_otp_slot_configured": "המשבצת מוגדרת",
+    "@_otp_slot_configurations": {},
+
+    "l_yubiotp_desc": "צריבת פרטי גישה לסיסמה חד־פעמית/OTP של Yubico",
+    "s_challenge_response": "אתגר-תגובה",
+    "l_challenge_response_desc": "תכנות פרטי גישה ברמת אתגר-תגובה",
+    "s_static_password": "סיסמה קבועה",
+    "l_static_password_desc": "הגדרת סיסמה קבועה",
+    "s_hotp": "OATH-HOTP",
+    "l_hotp_desc": "תכנות פרטי גישה מבוססי HMAC-SHA1",
+    "s_public_id": "מזהה ציבורי",
+    "s_private_id": "מזהה פרטי",
+    "s_use_serial": "להשתמש במספר הסידורי",
+    "l_select_file": "בחירת קובץ",
+    "l_no_export_file": "אין קובץ ייצוא",
+    "s_no_export": "אין ייצוא",
+    "s_export": "ייצוא",
+    "l_export_configuration_file": "ייצוא הגדרות לקובץ",
+    "l_exported_can_be_uploaded_at": "אפשר להעלות פרטי גישה שיוצאו דרך {url}",
+    "@l_exported_can_be_uploaded_at": {
+        "placeholders": {
+            "url": {
+                "type": "String"
+            }
+        }
+    },
+    "s_keyboard_layout": "פריסת מקלדת",
+    "l_keyboard_layout": "מקלדת {layout}",
+    "@l_keyboard_layout": {
+        "placeholders": {
+            "layout": {
+                "type": "Object"
+            }
+        }
+    },
+    "@_otp_slot_actions": {},
+
+    "s_delete_slot": "מחיקת פרטי גישה",
+    "q_delete_slot": "למחוק פרטי גישה?",
+    "l_delete_slot_desc": "הסרת פרטי גישה במשבצת",
+    "p_warning_delete_slot_configuration": "אזהרה! הפעולה הזאת תסיר לצמיתות את פרטי הגישה מהמשבצת {slot_id}.",
+    "@p_warning_delete_slot_configuration": {
+        "placeholders": {
+            "slot_id": {
+                "type": "int"
+            }
+        }
+    },
+    "l_slot_deleted": "פרטי הגישה נמחקו",
+    "s_swap": "החלפה",
+    "s_swap_slots": "החלפת משבצות",
+    "q_swap_slots": "להחליף משבצות?",
+    "l_swap_slots_desc": "החלפה בין נגיעה קצרה/ארוכה",
+    "p_swap_slots_desc": "הפעולה הזאת תחליף את הגדרות שתי המשבצות.",
+    "l_slots_swapped": "הגדרות המשבצות הוחלפו",
+    "l_slot_credential_configured": "הוגדרו פרטי גישה {type}",
+    "@l_slot_credential_configured": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "l_slot_credential_configured_and_exported": "הוגדרו פרטי גישה {type} ויוצאו אל {file}",
+    "@l_slot_credential_configured_and_exported": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            },
+            "file": {
+                "type": "String"
+            }
+        }
+    },
+    "s_append_enter": "הוספת ⏎",
+    "l_append_enter_desc": "הוספת הקשה על Enter לאחר פליטת הסיסמה החד־פעמית",
+    "@_otp_errors": {},
+
+    "p_otp_swap_error": "החלפת המשבצות נכשלה! יש לוודא שאין גישה מוגבלת ל־YubiKey.",
+    "l_wrong_access_code": "קוד גישה שגוי",
+    "@_otp_access_code": {},
+
+    "s_access_code": "קוד גישה",
+    "s_show_access_code": "הצגת קוד גישה",
+    "s_hide_access_code": "הסתרת קוד גישה",
+    "p_enter_access_code": "נא למלא קוד גישה למשבצת {slot}.",
+    "@p_enter_access_code": {
+        "placeholders": {
+            "slot": {
+                "type": "String"
+            }
+        }
+    },
+    "@_permissions": {},
+
+
+    "s_enable_nfc": "הפעלת NFC",
+    "s_request_access": "בקשת גישה",
+    "s_permission_denied": "הרשאה נדחתה",
+    "l_elevating_permissions": "ההרשאות מסלימות\u2026",
+    "s_review_permissions": "סקירת ההרשאות",
+    "s_open_windows_settings": "פתיחת ההגדרות של Windows",
+    "l_admin_privileges_required": "דרושות הרשאות ניהול",
+    "p_elevated_permissions_required": "ניהול ההתקן הזה דורש הרשאות גבוהות יותר. לחלופין, אפשר להשתמש בהגדרות של Windows כדי לנהל תצורת FIDO.",
+    "p_webauthn_elevated_permissions_required": "ניהול WebAuthn דורש הרשאות גבוהות יותר. לחלופין, אפשר להשתמש בהגדרות של Windows כדי לנהל תצורת FIDO.",
+    "p_ms_store_permission_note": "גרסת היישום בחנות היישומים Microsoft Store לא מצליחה, באופן כללי, להרים את רמת ההרשאות עקב מגבלות בידוד של Windows. מומלץ להתקין את מאמת Yubico מהתקנת ה־‎.msi הרשמית שלנו.",
+    "p_need_camera_permission": "מאמת Yubico צריך גישה למצלמה כדי לסרוק קודים מסוג QR.",
+    "@_qr_codes": {},
+
+    "s_qr_scan": "סריקת קוד QR",
+    "l_invalid_qr": "קוד QR שגוי",
+    "l_qr_not_found": "לא נמצא קוד QR",
+    "l_qr_scanned": "קוד QR נסרק",
+    "l_qr_file_too_large": "הקובץ גדול מדי ({max} לכל היותר)",
+    "@l_qr_file_too_large": {
+        "placeholders": {
+            "max": {
+                "type": "String"
+            }
+        }
+    },
+    "l_qr_invalid_image_file": "קובץ תמונה שגוי",
+    "l_qr_select_file": "נא לבחור קובץ עם קוד QR",
+    "l_qr_not_read": "קריאת קוד QR נכשלה: {message}",
+    "@l_qr_not_read": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_point_camera_scan": "נא לכוון את המצלמה שלך לקוד QR ולסרוק אותו",
+    "q_want_to_scan": "רוצה לסרוק?",
+    "q_no_qr": "אין קוד QR?",
+    "s_enter_manually": "למלא באופן ידני",
+    "s_read_from_file": "קריאה מקובץ",
+    "@_factory_reset": {},
+
+    "s_reset": "איפוס",
+    "s_factory_reset": "איפוס להגדרות היצרן",
+    "l_factory_reset_desc": "שחזור ברירות המחדל של YubiKey",
+    "l_factory_reset_required": "יש לבצע איפוס להגדרות היצרן",
+    "l_oath_application_reset": "איפוס יישום OATH",
+    "l_fido_app_reset": "איפוס יישום FIDO",
+    "l_reset_failed": "שגיאה בביצוע האיפוס: {message}",
+    "@l_reset_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_piv_app_reset": "איפוס יישום PIV",
+    "p_factory_reset_an_app": "איפוס להגדרות יצרן של יישום ב־YubiKey שלך.",
+    "p_factory_reset_desc": "הנתונים מאוחסנים במגוון יישומים ב־YubiKey, את חלקם ניתן לאפס להגדרות יצרן בנפרד מהאחרים.\n\nיש לבחור יישום לעיל כדי לאפס.",
+    "p_warning_factory_reset": "אזהרה! הפעולה הזאת תמחק את כל חשבונות ה־OATH TOTP/HOTP מה־YubiKey שלך לצמיתות.",
+    "p_warning_disable_credentials": "פרטי הגישה שלך ב־OAUTH, לרבות סיסמאות כלשהן שהוגדרו, יוסרו מה־YubiKey. נא לוודא שאלו יושבתו באתרים שהם משויכים אליהם כדי למנוע נעילה מחוץ לחשבונות.",
+    "p_warning_deletes_accounts": "אזהרה! הפעולה הזאת תמחק את כל חשבונות ה־U2F וה־FIDO2 שלך, כולל מפתחות גישה, מה־YubiKey שלך לצמיתות.",
+    "p_warning_disable_accounts": "פרטי הגישה שלך, לרבות קודים אישיים (PIN) כלשהם שהוגדרו, יוסרו מה־YubiKey. נא לוודא שאלו יושבתו באתרים שהם משויכים אליהם כדי למנוע נעילה מחוץ לחשבונות.",
+    "l_reset_not_allowed_over": "איפוס FIDO מושבת דרך {transport}",
+    "@l_reset_not_allowed_over": {
+        "placeholders": {
+            "transport": {
+                "type": "String"
+            }
+        }
+    },
+    "p_warning_piv_reset": "אזהרה! כל הנתונים שמאוחסנים ל־PIV יימחקו באופן בלתי הפיך מה־YubiKey שלך.",
+    "p_warning_piv_reset_desc": "כולל מפתחות פרטיים ואישורים. הקוד האישי (PIN), מפתח השחרור האישי (PUK) ומפתח הניהול יאופסו לברירת המחדל שלהם לפי הגדרות היצרן.",
+    "p_warning_global_reset": "אזהרה! הפעולה הזאת תמחק את כל הנתונים השמורים, לרבות פרטי גישה, מה־YubiKey שלך.",
+    "p_warning_global_reset_desc": "איפוס היישומים שב־YubiKey שלך להגדרות יצרן. הקוד האישי/PIN יאופס לערך ברירת המחדל של היצרן וטביעות האצבעות שנקלטו יוסרו. מפתחות, אישורים או פרטי גישה באשר הם יוסרו לצמיתות.",
+    "@_copy_to_clipboard": {},
+
+    "l_copy_to_clipboard": "העתקה ללוח הגזירים",
+    "s_code_copied": "הקוד הועתק",
+    "l_code_copied_clipboard": "הקוד הועתק ללוח הגזירים",
+    "s_copy_log": "העתקת יומן",
+    "l_copy_log_clipboard": "העתקת יומן ללוח הגזירים",
+    "l_log_copied": "היומן הועתק ללוח הגזירים",
+    "l_diagnostics_copied": "נתוני האבחון הועתקו ללוח הגזירים",
+    "p_target_copied_clipboard": "{label} הועתק ללוח הגזירים.",
+    "@p_target_copied_clipboard": {
+        "placeholders": {
+            "label": {
+                "type": "String"
+            }
+        }
+    },
+    "@_custom_icons": {},
+
+    "s_custom_icons": "סמלים מותאמים אישית",
+    "l_set_icons_for_accounts": "הגדרת סמלים לחשבונות",
+    "p_custom_icons_description": "חבילות סמלים יכולות להפוך את החשבונות שלך ליותר נבדלים בזכות לוגואים מוכרים וצבעים.",
+    "p_custom_icons_format_desc": "חבילות סמלים משתמשות בתבנית {aegis_icon_pack}. אפשר להוריד חבילת סמלים שנוצרה מראש או שאפשר ליצור חבילות משלך.",
+    "@p_custom_icons_format_desc": {
+        "placeholders": {
+            "aegis_icon_pack": {
+                "type": "String"
+            }
+        }
+    },
+    "s_replace_icon_pack": "החלפת חבילת סמלים",
+    "l_loading_icon_pack": "חבילת סמלים נטענת\u2026",
+    "s_load_icon_pack": "טעינת חבילת סמלים",
+    "l_load_icon_pack_desc": "טעינת חבילת סמלים מקובץ",
+    "s_remove_icon_pack": "הסרת חבילת סמלים",
+    "l_remove_icon_pack_desc": "מחיקת חבילת הסמלים הפעילה",
+    "l_icon_pack_removed": "חבילת הסמלים הוסרה",
+    "l_remove_icon_pack_failed": "שגיאה בהסרת חבילת סמלים",
+    "s_choose_icon_pack": "בחירת חבילת סמלים",
+    "l_icon_pack_imported": "חבילת סמלים יובאה",
+    "l_import_icon_pack_failed": "שגיאה בייבוא חבילת סמלים: {message}",
+    "@l_import_icon_pack_failed": {
+        "placeholders": {
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "l_invalid_icon_pack": "חבילת סמלים שגויה",
+    "l_icon_pack_copy_failed": "העתקת קובצי חבילות סמלים נכשלה",
+    "@_android_settings": {},
+
+    "s_nfc_and_usb_options": "אפשרויות NFC ו־USB",
+    "l_nfc_and_usb_options_desc": "הגדרת פעולה ל־YubiKey",
+    "l_on_yk_nfc_tap": "בהנחה על NFC",
+    "l_on_yk_usb_insert": "בחיבור USB",
+    "l_do_nothing": "לא לעשות כלום",
+    "l_launch_ya": "לפתוח את מאמת Yubico",
+    "l_copy_otp_clipboard": "להעתיק סיסמה חד־פעמית ללוח הגזירים",
+    "l_launch_and_copy_otp": "להפעיל את היישום ולהעתיק את הסיסמה החד־פעמית",
+    "l_kbd_layout_for_static": "פריסת מקלדת (לסיסמה קבועה)",
+    "s_choose_kbd_layout": "בחירת פריסת מקלדת",
+    "l_bypass_touch_requirement": "עקיפת בקשת הנגיעה",
+    "l_bypass_touch_requirement_on": "חשבונות שדורשים נגיעה מופיעים אוטומטית על גבי NFC",
+    "l_bypass_touch_requirement_off": "לחשבונות שדורשים נגיעה צריך להניח על ה־NFC",
+    "s_silence_nfc_sounds": "השתקת צלילי NFC",
+    "l_silence_nfc_sounds_on": "לא יושמעו צלילים עם הנחה על ה־NFC",
+    "l_silence_nfc_sounds_off": "יושמע צליל בעת הנחה על ה־NFC",
+    "l_launch_app_on_usb_on": "מונע מיישומים אחרים להשתמש ב־YubiKey דרך USB",
+    "l_launch_app_on_usb_off": "יישומים אחרים יכולים להשתמש ב־YubiKey דרך USB",
+    "s_allow_screenshots": "לאפשר צילום מסך",
+    "l_allow_screenshots_desc": "לאפשר ליישומים אחרים לצלם את המסך",
+    "@_nfc": {},
+
+    "s_nfc_ready_to_scan": "מוכן לסריקה",
+    "s_nfc_hold_still": "לא לזוז\u2026",
+    "s_nfc_tap_your_yubikey": "להניח על ה־YubiKey",
+    "s_nfc_remove_key": "הסרת YubiKey",
+    "l_nfc_failed_to_scan": "הסריקה נכשלה, נא לנסות שוב",
+    "@_usb": {},
+
+    "s_usb_processing": "נקראים נתונים מה־YubiKey",
+    "s_usb_dont_remove": "לא להסיר את המפתח\u2026",
+    "l_usb_read_error": "קריאת נתונים מה־YubiKey נכשלה",
+    "@_ndef": {},
+
+    "p_ndef_set_otp": "קוד הסיסמה החד־פעמית הועתק בהצלחה מה־YubiKey ללוח הגזירים.",
+    "p_ndef_set_password": "הסיסמה הועתקה מה־YubiKey ללוח הגזירים בהצלחה.",
+    "p_ndef_parse_failure": "פיענוח קוד הסיסמה החד־פעמית מה־YubiKey נכשל.",
+    "p_ndef_set_clip_failure": "הגישה ללוח הגזירים נכשלה בעת הניסיון להעתיק את קוד הסיסמה החד־פעמית מ־YubiKey.",
+    "@_key_customization": {},
+
+    "s_set_label": "הגדרת תווית",
+    "s_set_color": "הגדרת צבע",
+    "s_color_teal": "תכלת",
+    "s_color_cyan": "ציאן",
+    "s_color_blue": "כחול",
+    "s_color_purple": "סגול",
+    "s_color_red": "אדום",
+    "s_color_orange": "כתום",
+    "s_color_yellow": "צהוב",
+    "s_color_green": "ירוק",
+    "s_change_label": "החלפת תווית",
+    "p_set_will_add_custom_name": "הפעולה הזאת תקנה ל־YubiKey שלך שם משלו.",
+    "p_rename_will_change_custom_name": "הפעולה הזאת תשנה את תווית ה־YubiKey שלך.",
+    "@_shortcuts": {},
+
+    "s_keyboard_shortcuts": "קיצורי מקלדת",
+    "s_global_shortcuts": "קיצורים מקיפים",
+    "s_application_shortcuts": "קיצורי יישום",
+    "@s_quit_app": {
+        "placeholders": {
+            "app": {
+                "type": "String"
+            }
+        }
+    },
+    "s_quit_app": "יציאה מ־ {app}",
+    "@s_hide_app": {
+        "placeholders": {
+            "app": {
+                "type": "String"
+            }
+        }
+    },
+    "s_hide_app": "הסתרת {app}",
+    "s_search": "חיפוש",
+    "s_next_device": "ההתקן הבא",
+    "s_previous_device": "ההתקן הקודם",
+    "s_open_settings": "פתיחת ההגדרות",
+    "s_open_item": "פתיחת פריט",
+    "s_edit_item": "עריכת פריט",
+    "s_delete_item": "מחיקת פריט",
+    "s_calculate_oath_code": "חישוב קוד OATH",
+    "s_open_keyboard_shortcuts": "פתיחת קיצורי מקלדת",
+    "@_eof": {}
+
+}

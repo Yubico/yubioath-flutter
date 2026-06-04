@@ -23,7 +23,7 @@
         }
     },
     "l_incomplete_translation": "Hiányos fordítás",
-    "p_translation_progress_desc": "A haladásjelző a fordítás előrehaladását jelzi",
+    "p_translation_progress_desc": "A haladásjelző a fordítás előrehaladását jelzi.",
     "s_community": "Közösség",
     "l_localization_project": "Fordítási projekt",
 
@@ -51,17 +51,17 @@
     "s_nfc": "NFC",
     "s_options": "Opciók",
     "s_details": "Részletek",
-    "s_required": null,
+    "s_required": "Kötelező",
     "s_show_window": "Ablak megjelenítése",
     "s_hide_window": "Ablak elrejtése",
     "s_show_navigation": "Navigáció mutatása",
     "s_expand_navigation": "Navigációs sáv kibontása",
     "s_collapse_navigation": "Navigációs sáv összecsukása",
     "s_expand_collapse_navigation": "Navigációs sáv kibontása/összecsukása",
-    "s_expanded": null,
-    "s_collapsed": null,
+    "s_expanded": "Kibontva",
+    "s_collapsed": "Összecsukva",
     "s_show_menu": "Menü megjelenítése",
-    "s_menu": null,
+    "s_menu": "Menü",
     "s_expand_menu_bar": "Menüsor kibontása",
     "s_collapse_menu_bar": "Menüsor összecsukása",
     "s_toggle_menu_bar": "Menüsor elrejtése",
@@ -133,7 +133,7 @@
         }
     },
     "s_character_count": "Karakterek száma",
-    "l_characters_used": null,
+    "l_characters_used": "{used}/{max} karakter felhasználva",
     "@l_characters_used": {
         "placeholders": {
             "used": {
@@ -506,7 +506,7 @@
     "l_add_account_unlock_required": "Feloldás szükséges",
     "l_add_account_func_missing": "Hiányzó vagy letiltott funkció",
     "l_account_name_required": "Adjon nevet a fióknak",
-    "l_field_required": null,
+    "l_field_required": "Ez a mező kötelező",
     "l_name_already_exists": "Ez a név már létezik a kibocsátó számára",
     "l_account_already_exists": "Ez a fiók már létezik a YubiKey-n.",
     "l_invalid_character_issuer": "Érvénytelen karakter: ':' nem megengedett a kibocsátó nevében",
@@ -536,7 +536,7 @@
     "p_warning_disable_credential": "Győződjön meg róla, hogy letiltotta ezt a fiókot a szolgáltatásból, amelyhez regisztrálták, hogy elkerülje a hozzáférés elvesztését.",
     "s_account_name": "Fiók neve",
     "s_search_accounts": "Fiók keresése",
-    "s_clear_search": null,
+    "s_clear_search": "Keresés törlése",
     "l_accounts_used": "{capacity}/{used} fiók használatban",
     "@l_accounts_used": {
         "placeholders": {
@@ -568,9 +568,9 @@
     "s_time_based": "Időalapú",
     "l_copy_code_desc": "Kód beillesztése másik alkalmazásba",
     "l_calculate_code_desc": "Új kód kérése a YubiKey-től",
-    "s_account_type": null,
-    "s_period": null,
-    "s_digits": null,
+    "s_account_type": "Fiók típusa",
+    "s_period": "Pont",
+    "s_digits": "Számjegyek",
     "@_fido_credentials": {},
 
     "s_rp_id": "RP ID",
@@ -755,7 +755,7 @@
     "l_key_deleted": "Kulcs törölve",
     "l_certificate_and_key_deleted": "Tanúsítvány és kulcs törölve",
     "l_include_certificate": "Tanúsítvány tartalmazása",
-    "s_destination_slot": null,
+    "s_destination_slot": "Célhely",
     "l_select_destination_slot": "Célhely kiválasztása",
     "q_move_key_confirm": "Áthelyezi a privát kulcsot a(z) {from_slot}. PIV-helyről?",
     "@q_move_key_confirm": {
@@ -870,7 +870,7 @@
             }
         }
     },
-    "s_keyboard_layout": null,
+    "s_keyboard_layout": "Billentyűzetkiosztás",
     "l_keyboard_layout": "{layout} billentyűzet",
     "@l_keyboard_layout": {
         "placeholders": {
@@ -1109,14 +1109,14 @@
 
     "s_set_label": "Címke beállítása",
     "s_set_color": "Szín beállítása",
-    "s_color_teal": null,
-    "s_color_cyan": null,
-    "s_color_blue": null,
-    "s_color_purple": null,
-    "s_color_red": null,
-    "s_color_orange": null,
-    "s_color_yellow": null,
-    "s_color_green": null,
+    "s_color_teal": "Türkiz",
+    "s_color_cyan": "Ciánkék",
+    "s_color_blue": "Kék",
+    "s_color_purple": "Lila",
+    "s_color_red": "Piros",
+    "s_color_orange": "Narancs",
+    "s_color_yellow": "Sárga",
+    "s_color_green": "Zöld",
     "s_change_label": "Címke módosítása",
     "p_set_will_add_custom_name": "Ezáltal a YubiKey-nek egy egyéni nevet ad.",
     "p_rename_will_change_custom_name": "Ez megváltoztatja a YubiKey címkéjét.",

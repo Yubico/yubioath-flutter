@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="p_ndef_set_otp">Успешно копиран OTP код от YubiKey в клипборда.</string>
+    <string name="p_ndef_set_password">Паролата е успешно копирана от YubiKey в клипборда.</string>
+    <string name="p_ndef_parse_failure">Неуспешно разчитане на OTP код от YubiKey.</string>
+    <string name="p_ndef_set_clip_failure">Неуспешен достъп до клипборда при опит за копиране на OTP код от YubiKey.</string>
+</resources>

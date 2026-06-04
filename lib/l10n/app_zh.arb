@@ -592,7 +592,7 @@
     "p_warning_delete_passkey_desc": "您将不能使用由此密钥注册的服务。",
     "l_do_not_remove_yk_delete": "删除时不要移除 YubiKey",
     "s_search_passkeys": "搜索通行密钥",
-    "p_passkeys_used": "{used} {max} 使用的通行秘钥。",
+    "p_passkeys_used": "{used}/{max} 使用的通行秘钥。",
     "@p_passkeys_used": {
         "placeholders": {
             "used": {
