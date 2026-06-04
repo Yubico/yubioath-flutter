@@ -21,18 +21,23 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.hardware.camera2.CaptureRequest
 import android.provider.Settings
 import android.util.Log
 import android.util.Size
+import android.view.OrientationEventListener
+import android.view.Surface
 import android.view.View
+import android.view.ViewTreeObserver
+import androidx.annotation.OptIn
+import androidx.camera.camera2.interop.Camera2Interop
+import androidx.camera.camera2.interop.ExperimentalCamera2Interop
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.CameraState
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
-import androidx.camera.core.resolutionselector.ResolutionSelector
-import androidx.camera.core.resolutionselector.ResolutionStrategy
-import androidx.camera.view.CameraController
-import androidx.camera.view.LifecycleCameraController
+import androidx.camera.core.Preview
+import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -40,7 +45,6 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.core.net.toUri
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
 import com.google.zxing.BinaryBitmap
 import com.google.zxing.NotFoundException
 import com.google.zxing.RGBLuminanceSource
@@ -51,7 +55,10 @@ import io.flutter.plugin.common.PluginRegistry
 import io.flutter.plugin.common.StandardMessageCodec
 import io.flutter.plugin.platform.PlatformView
 import io.flutter.plugin.platform.PlatformViewFactory
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.nio.ByteBuffer
@@ -80,7 +87,9 @@ class QRScannerViewFactory(
 
 typealias BarcodeAnalyzerListener = (Result<String>) -> Unit
 
-internal class QRScannerView(
+@OptIn(ExperimentalCamera2Interop::class)
+internal class QRScannerView
+    (
     context: Context,
     @Suppress("UNUSED_PARAMETER") id: Int,
     binaryMessenger: BinaryMessenger,
@@ -89,6 +98,11 @@ internal class QRScannerView(
 ) : PlatformView {
 
     private val stateChangeObserver = StateChangeObserver(context)
+    // SupervisorJob lets child coroutines (reportCodeFound, reportViewInitialized) fail
+    // independently; cancelled in dispose() so no calls reach a detached methodChannel.
+    private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+    // Prevents the async cameraProviderFuture listener from rebinding after dispose().
+    @Volatile private var viewDisposed = false
 
     companion object {
         const val TAG = "QRScannerView"
@@ -127,18 +141,66 @@ internal class QRScannerView(
     }
 
     private val cameraExecutor: ExecutorService = Executors.newSingleThreadExecutor()
-    private var cameraController: LifecycleCameraController? = null
+    private val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
+    private var cameraProvider: ProcessCameraProvider? = null
+    private val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+
+    // Stable view dimensions — pre-seeded from creationParams so the very first frame has
+    // non-zero values (avoids full-buffer scan before the layout listener fires).
+    // Updated via OnGlobalLayoutListener whenever the layout settles.
+    @Volatile private var stableViewWidth =
+        (creationParams?.get("viewWidth") as? Number)?.toDouble() ?: 0.0
+    @Volatile private var stableViewHeight =
+        (creationParams?.get("viewHeight") as? Number)?.toDouble() ?: 0.0
+
+    private val layoutListener = ViewTreeObserver.OnGlobalLayoutListener {
+        // Guard against early layout passes where the view hasn't been measured yet.
+        // Without this, a zero value clobbers the non-zero creationParams seed and causes
+        // the analyzer to fall back to full-buffer scanning until the next layout event.
+        val w = previewView.width.toDouble()
+        val h = previewView.height.toDouble()
+        if (w > 0 && h > 0) {
+            stableViewWidth = w
+            stableViewHeight = h
+            barcodeAnalyzer.viewWidth = w
+            barcodeAnalyzer.viewHeight = h
+        }
+    }
+
+    // CameraX docs: PreviewView handles Preview use case rotation automatically.
+    // Only ImageAnalysis needs manual targetRotation updates via OrientationEventListener.
+    // No camera rebind is needed on rotation — just updating targetRotation is sufficient.
+    // Mapping from the official CameraX rotation documentation:
+    //   45–135° → ROTATION_270, 135–225° → ROTATION_180, 225–315° → ROTATION_90, else → ROTATION_0
+    private val orientationEventListener = object : OrientationEventListener(context) {
+        override fun onOrientationChanged(orientation: Int) {
+            if (orientation == ORIENTATION_UNKNOWN) return
+            val rotation = when (orientation) {
+                in 45 until 135 -> Surface.ROTATION_270
+                in 135 until 225 -> Surface.ROTATION_180
+                in 225 until 315 -> Surface.ROTATION_90
+                else -> Surface.ROTATION_0
+            }
+            imageAnalysis?.targetRotation = rotation
+        }
+    }
+
+    private var imageAnalysis: ImageAnalysis? = null
+    private var preview: Preview? = null
     private val barcodeAnalyzer = with(creationParams) {
         val overlaySizeFraction = (this?.get("overlaySizeFraction") as? Number)?.toDouble() ?: 0.65
-        val viewWidth = (this?.get("viewWidth") as? Number)?.toDouble() ?: 0.0
-        val viewHeight = (this?.get("viewHeight") as? Number)?.toDouble() ?: 0.0
 
-        BarcodeAnalyzer(overlaySizeFraction, viewWidth, viewHeight) { analyzeResult ->
+        BarcodeAnalyzer(overlaySizeFraction) { analyzeResult ->
             if (analyzeResult.isSuccess) {
                 analyzeResult.getOrNull()?.let { result ->
                     reportCodeFound(result)
                 }
             }
+        }.also {
+            // Pre-seed with values from creationParams so the first frame has non-zero
+            // dimensions (stableViewWidth/Height were already initialized from creationParams).
+            it.viewWidth = stableViewWidth
+            it.viewHeight = stableViewHeight
         }
     }
 
@@ -148,24 +210,25 @@ internal class QRScannerView(
     }
 
     override fun dispose() {
+        viewDisposed = true
         permissionsResultRegistrar.setListener(null)
-        releaseCamera()
+        orientationEventListener.disable()
+        previewView.viewTreeObserver.removeOnGlobalLayoutListener(layoutListener)
+        // Do NOT call stateChangeObserver.reset() here. When the QR scanner is dismissed,
+        // the CLOSED event from unbindAll() is the intended trigger for the CameraClosed
+        // broadcast that restarts NFC. reset() is only called inside bindUseCases() to
+        // suppress the spurious CLOSED fired during a rebind, not on final teardown.
+        cameraProvider?.unbindAll()
+        preview = null
+        imageAnalysis?.clearAnalyzer()
+        imageAnalysis = null
         cameraExecutor.shutdown()
         methodChannel.setMethodCallHandler(null)
+        coroutineScope.cancel()
         Log.v(TAG, "dispose()")
     }
 
-    private fun releaseCamera() {
-        lifecycleOwner?.let { owner ->
-            cameraController?.cameraInfo?.cameraState?.removeObservers(owner)
-        }
-        previewView.controller = null
-        cameraController?.unbind()
-        cameraController = null
-    }
-
     private val methodChannel: MethodChannel = MethodChannel(binaryMessenger, CHANNEL_NAME)
-    private val lifecycleOwner = context as? LifecycleOwner
     private var permissionsGranted = false
 
     init {
@@ -240,14 +303,16 @@ internal class QRScannerView(
     }
 
     private fun reportViewInitialized(permissionsGranted: Boolean) {
-        methodChannel.invokeMethod(
-            "viewInitialized",
-            JSONObject(mapOf("permissionsGranted" to permissionsGranted)).toString()
-        )
+        coroutineScope.launch {
+            methodChannel.invokeMethod(
+                "viewInitialized",
+                JSONObject(mapOf("permissionsGranted" to permissionsGranted)).toString()
+            )
+        }
     }
 
     private fun reportCodeFound(code: String) {
-        lifecycleOwner?.lifecycleScope?.launch(Dispatchers.Main) {
+        coroutineScope.launch {
             methodChannel.invokeMethod(
                 "codeFound", JSONObject(
                     mapOf("value" to code)
@@ -257,59 +322,99 @@ internal class QRScannerView(
     }
 
     private fun bindUseCases(context: Context) {
-        val owner = lifecycleOwner
-        if (owner == null) {
+        // If the ProcessCameraProvider is already resolved, rebind directly instead of
+        // registering another addListener(). This prevents multiple pending listeners from
+        // queuing up when bindUseCases() is called repeatedly (e.g. recheckPermissions),
+        // which would each independently unbind/rebind and cause spurious state transitions.
+        val resolvedProvider = cameraProvider
+        if (resolvedProvider != null) {
+            doBind(context, resolvedProvider)
+            return
+        }
+        cameraProviderFuture.addListener({
+            if (viewDisposed) return@addListener
+            doBind(context, cameraProviderFuture.get() ?: return@addListener)
+        }, ContextCompat.getMainExecutor(context))
+    }
+
+    private fun doBind(context: Context, provider: ProcessCameraProvider) {
+        if (viewDisposed) return
+
+        val lifecycleOwner = context as? LifecycleOwner ?: run {
             Log.e(TAG, "Context is not a LifecycleOwner, cannot bind camera")
             previewView.visibility = View.GONE
             reportViewInitialized(false)
             return
         }
 
-        // Clean up any previously bound controller
-        releaseCamera()
-
         try {
             previewView.visibility = View.VISIBLE
+            cameraProvider = provider
 
-            val controller = LifecycleCameraController(context).apply {
-                // Only enable image analysis (preview is handled automatically)
-                setEnabledUseCases(CameraController.IMAGE_ANALYSIS)
+                // Reset StateChangeObserver so a CLOSED event from unbindAll() during
+                // rebind does not send a spurious CameraClosed broadcast.
+                stateChangeObserver.reset()
+                cameraProvider?.unbindAll()
 
-                // Use back camera
-                cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+                // Resume scanning on rebind (e.g. recheckPermissions after a successful scan).
+                // Without this, analysisPaused stays true from the previous scan and every
+                // frame is silently dropped — the preview looks live but never finds a code.
+                barcodeAnalyzer.analysisPaused = false
 
-                // Configure image analysis
-                imageAnalysisResolutionSelector = ResolutionSelector.Builder()
-                    .setResolutionStrategy(
-                        ResolutionStrategy(
-                            Size(768, 1024),
-                            ResolutionStrategy.FALLBACK_RULE_CLOSEST_LOWER_THEN_HIGHER
-                        )
-                    )
+                val analysisResolution = Size(768, 1024)
+
+                imageAnalysis = ImageAnalysis.Builder()
+                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                    .setTargetResolution(analysisResolution)
                     .build()
-                imageAnalysisBackpressureStrategy = ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST
-                setImageAnalysisAnalyzer(cameraExecutor, barcodeAnalyzer)
-            }
+                    .also {
+                        it.setAnalyzer(cameraExecutor, barcodeAnalyzer)
+                    }
 
-            previewView.controller = controller
-            controller.bindToLifecycle(owner)
+                // Explicitly request continuous-picture AF via Camera2Interop.
+                val previewBuilder = Preview.Builder()
+                    .setTargetResolution(analysisResolution)
+                    .also { builder ->
+                        Camera2Interop.Extender(builder)
+                            .setCaptureRequestOption(
+                                CaptureRequest.CONTROL_AF_MODE,
+                                CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE
+                            )
+                    }
 
-            cameraController = controller
+                preview = previewBuilder.build()
+                    .also {
+                        it.surfaceProvider = previewView.surfaceProvider
+                    }
 
-            controller.initializationFuture.addListener({
-                controller.cameraInfo?.cameraState?.let {
-                    it.removeObservers(owner)
-                    it.observe(owner, stateChangeObserver)
+                val camera = cameraProvider?.bindToLifecycle(
+                    lifecycleOwner,
+                    cameraSelector,
+                    preview, imageAnalysis
+                )
+
+                // Update stable dimensions from the current layout, then keep them fresh.
+                // Remove before adding to avoid duplicate registrations on repeated binds.
+                stableViewWidth = previewView.width.toDouble().takeIf { it > 0 } ?: stableViewWidth
+                stableViewHeight = previewView.height.toDouble().takeIf { it > 0 } ?: stableViewHeight
+                barcodeAnalyzer.viewWidth = stableViewWidth
+                barcodeAnalyzer.viewHeight = stableViewHeight
+                previewView.viewTreeObserver.removeOnGlobalLayoutListener(layoutListener)
+                previewView.viewTreeObserver.addOnGlobalLayoutListener(layoutListener)
+
+                // Disable before enable to avoid accumulating duplicate sensor registrations
+                // on repeated bindUseCases() calls (e.g. recheckPermissions).
+                orientationEventListener.disable()
+                orientationEventListener.enable()
+
+                camera?.cameraInfo?.cameraState?.let {
+                    it.removeObservers(lifecycleOwner)
+                    it.observe(lifecycleOwner, stateChangeObserver)
                 }
-            }, ContextCompat.getMainExecutor(context))
 
-            reportViewInitialized(true)
-        } catch (e: IllegalArgumentException) {
-            Log.e(TAG, "Failed to bind camera use cases: ${e.message}", e)
-            previewView.visibility = View.GONE
-            reportViewInitialized(false)
+                reportViewInitialized(true)
         } catch (e: Exception) {
-            Log.e(TAG, "Unexpected error binding camera use cases: ${e.message}", e)
+            Log.e(TAG, "Failed to bind camera use cases: ${e.message}", e)
             previewView.visibility = View.GONE
             reportViewInitialized(false)
         }
@@ -317,15 +422,15 @@ internal class QRScannerView(
 
     private class BarcodeAnalyzer(
         private val overlaySizeFraction: Double,
-        private val viewWidth: Double,
-        private val viewHeight: Double,
         private val listener: BarcodeAnalyzerListener
     ) : ImageAnalysis.Analyzer {
 
-        @Volatile
-        var analysisPaused = false
-        @Volatile
-        var analyzedImagesCount = 0
+        @Volatile var analysisPaused = false
+        @Volatile var analyzedImagesCount = 0
+        // Written from the main thread (layoutListener / bindUseCases), read from the camera
+        // executor thread. @Volatile ensures visibility without boxing or lambda allocation.
+        @Volatile var viewWidth = 0.0
+        @Volatile var viewHeight = 0.0
 
         private fun ByteBuffer.toByteArray(lastRowPadding: Int): ByteArray {
             rewind()
@@ -384,7 +489,7 @@ internal class QRScannerView(
                     if (rowStride > imageProxy.width && planeLuminanceSource.isCropSupported) {
                         if (analyzedImagesCount == 0) {
                             Log.v(
-                                TAG, "  row stride greater than image -> "+
+                                TAG, "  row stride greater than image -> " +
                                         "cropping luminance source of size " +
                                         "${plane0.rowStride}x${imageProxy.height} to " +
                                         "${imageProxy.width}x${imageProxy.height}"
@@ -397,50 +502,36 @@ internal class QRScannerView(
 
                 val fullSize = BinaryBitmap(HybridBinarizer(luminanceSource))
 
+                // Read @Volatile fields directly — no lambda call, no boxing, no allocation.
+                val viewWidth = viewWidth
+                val viewHeight = viewHeight
+
                 val bitmapToProcess = if (overlaySizeFraction > 0 && fullSize.isCropSupported
                     && viewWidth > 0 && viewHeight > 0) {
-                    // The PreviewView uses FILL_CENTER: it scales the image uniformly
-                    // to fill the view, then centers it (cropping overflow).
-                    // We compute which portion of the camera image corresponds to the
-                    // overlay square shown on screen.
+                    // The PreviewView uses FILL_CENTER: scale uniformly to fill the view,
+                    // center, and crop the overflow. Compute which buffer region corresponds
+                    // to the overlay square shown on screen.
                     val isRotated = imageProxy.imageInfo.rotationDegrees.let {
                         it == 90 || it == 270
                     }
-                    // Image dimensions as displayed (after rotation)
                     val displayedW = if (isRotated) imageProxy.height.toDouble() else imageProxy.width.toDouble()
                     val displayedH = if (isRotated) imageProxy.width.toDouble() else imageProxy.height.toDouble()
-
-                    // FILL_CENTER scale factor
                     val scale = maxOf(viewWidth / displayedW, viewHeight / displayedH)
-
-                    // The overlay square side in screen pixels (matches Flutter's
-                    // min(screenW, screenH) * overlaySizeFraction), then mapped to image coords
                     val overlaySidePx = min(viewWidth, viewHeight) * overlaySizeFraction
                     val cropWH = (overlaySidePx / scale)
                         .coerceAtMost(min(imageProxy.width.toDouble(), imageProxy.height.toDouble()))
-
-                    // Centered crop in buffer coordinates
                     val cropL = ((imageProxy.width - cropWH) / 2.0).coerceAtLeast(0.0)
                     val cropT = ((imageProxy.height - cropWH) / 2.0).coerceAtLeast(0.0)
-
-                    if(analyzedImagesCount == 0) {
+                    if (analyzedImagesCount == 0) {
                         Log.v(TAG, "  rotation: ${imageProxy.imageInfo.rotationDegrees}")
                         Log.v(TAG, "  view: ${viewWidth}x${viewHeight}, displayed: ${displayedW}x${displayedH}")
                         Log.v(TAG, "  scale: $scale, overlaySide: $overlaySidePx, cropWH: $cropWH")
                         Log.v(TAG, "  buffer crop l:t:w:h $cropL:$cropT:$cropWH:$cropWH")
                     }
-                    fullSize.crop(
-                        cropL.toInt(),
-                        cropT.toInt(),
-                        cropWH.toInt(),
-                        cropWH.toInt()
-                    )
+                    fullSize.crop(cropL.toInt(), cropT.toInt(), cropWH.toInt(), cropWH.toInt())
                 } else {
-                    if(analyzedImagesCount == 0) {
-                        Log.v(
-                            TAG,
-                            "  bitmap l:t:w:h 0:0:${imageProxy.width}:${imageProxy.height} (full size)"
-                        )
+                    if (analyzedImagesCount == 0) {
+                        Log.v(TAG, "  bitmap l:t:w:h 0:0:${imageProxy.width}:${imageProxy.height} (full)")
                     }
                     fullSize
                 }
@@ -471,6 +562,10 @@ internal class QRScannerView(
 
     private class StateChangeObserver(val context: Context) : Observer<CameraState> {
         private var cameraOpened: Boolean = false
+
+        // Call before re-observing on a new camera session so that the CLOSED event
+        // emitted by unbindAll() during rebind does not trigger a spurious broadcast.
+        fun reset() { cameraOpened = false }
 
         override fun onChanged(value: CameraState) {
             Log.v(TAG, "Camera state changed to ${value.type}")
