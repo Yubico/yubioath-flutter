@@ -15,7 +15,7 @@ use x509_cert::serial_number::SerialNumber;
 use x509_cert::spki::SubjectPublicKeyInfoOwned;
 use x509_cert::time::Validity;
 
-use yubikit::keys::PrivateKey;
+use yubikit::keys::{PrivateKey, PublicKey};
 use yubikit::piv::{
     HashAlgorithm, KeyType, ManagementKey, ManagementKeyType, ObjectId, PinPolicy, PivError,
     PivPin, PivSession, PivSignature, PivSigner, Slot, TouchPolicy,
@@ -555,7 +555,9 @@ fn parse_cert_info(cert_der: &[u8]) -> Option<Value> {
     let not_after = tbs.validity.not_after.to_string();
 
     let key_type =
-        KeyType::from_public_key_der(&tbs.subject_public_key_info.to_der().unwrap_or_default())
+        PublicKey::from_spki(&tbs.subject_public_key_info.to_der().unwrap_or_default())
+            .ok()
+            .and_then(|pk| KeyType::from_public_key(&pk).ok())
             .map(|kt| json!(kt as u8))
             .unwrap_or(json!(null));
 
@@ -666,7 +668,7 @@ fn parse_file(data: &[u8], password: Option<&str>) -> ParsedFile {
     }
 
     // Try as DER private key (PKCS#8)
-    if KeyType::from_private_key_der(data).is_ok() {
+    if PrivateKey::from_pkcs8(data).is_ok() {
         private_key = Some(data.to_vec());
     }
 
@@ -989,8 +991,9 @@ impl SlotNode {
 
                 // Determine key type from private key
                 let key_type = parsed.private_key.as_ref().and_then(|der| {
-                    KeyType::from_private_key_der(der)
+                    PrivateKey::from_pkcs8(der)
                         .ok()
+                        .and_then(|pk| KeyType::try_from(&pk.algorithm()).ok())
                         .map(|kt| json!(kt as u8))
                 });
 
