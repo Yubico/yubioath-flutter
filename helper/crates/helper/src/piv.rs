@@ -17,7 +17,7 @@ use x509_cert::time::Validity;
 
 use yubikit::piv::{
     HashAlgorithm, KeyType, ManagementKey, ManagementKeyType, ObjectId, PinPolicy, PivError,
-    PivPin, PivSession, PivSignature, PivSigner, Slot, TouchPolicy,
+    PivPin, PivPrivateKey, PivSession, PivSignature, PivSigner, Slot, TouchPolicy,
 };
 use yubikit::smartcard::ScpKeyParams;
 use yubikit::smartcard::SmartCardConnection;
@@ -1033,13 +1033,9 @@ impl SlotNode {
 
                     let mut public_key_pem: Option<String> = None;
                     if let Some(ref key_der) = private_key_der {
-                        let key_type = KeyType::from_private_key_der(key_der).map_err(|_| {
-                            RpcError::new("parse-error", "Could not determine key type")
+                        let private_key = PivPrivateKey::from_pkcs8(key_der).map_err(|e| {
+                            RpcError::new("parse-error", format!("Failed to parse key: {e}"))
                         })?;
-                        let inner_key =
-                            KeyType::extract_private_key_from_pkcs8(key_der).map_err(|e| {
-                                RpcError::new("parse-error", format!("Failed to extract key: {e}"))
-                            })?;
 
                         let pin_policy_val = params
                             .get("pin_policy")
@@ -1055,7 +1051,7 @@ impl SlotNode {
                             .ok_or_else(|| RpcError::invalid_params("Invalid touch_policy"))?;
 
                         session
-                            .put_key(self.slot, key_type, &inner_key, pin_policy, touch_policy)
+                            .put_key(self.slot, &private_key, pin_policy, touch_policy)
                             .map_err(|e| {
                                 RpcError::new("device-error", format!("Failed to import key: {e}"))
                             })?;
