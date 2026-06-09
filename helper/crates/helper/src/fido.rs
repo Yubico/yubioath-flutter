@@ -8,8 +8,8 @@ use yubikit::cbor::Value as CborValue;
 use yubikit::core::Transport;
 use yubikit::ctap::CtapSession;
 use yubikit::ctap2::{
-    BioEnrollment, ClientPin, Config, CredentialManagement, Ctap2Error, Ctap2Session, CtapStatus,
-    Info, Permissions, PinProtocol, PublicKeyCredentialDescriptor,
+    BioEnrollment, ClientPin, Config, CredentialManagement, Ctap2Error, Ctap2Pin, Ctap2Session,
+    CtapStatus, Info, Permissions, PinProtocol, PublicKeyCredentialDescriptor,
 };
 use yubikit::device::{ReinsertStatus, YubiKeyDevice};
 use yubikit::fido::FidoConnection;
@@ -715,8 +715,11 @@ impl Ctap2Node {
                                     // If remember requested, get a persistent PPUAT first
                                     let ppuat_data =
                                         if remember && self.ppuat.is_none() && supports_readonly {
+                                            let ctap2_pin = Ctap2Pin::new(&pin).map_err(|e| {
+                                                RpcError::invalid_params(e.to_string())
+                                            })?;
                                             match client_pin.get_pin_token(
-                                                &pin,
+                                                &ctap2_pin,
                                                 Some(Permissions::PERSISTENT_CREDENTIAL_MGMT),
                                                 None,
                                             ) {
@@ -731,7 +734,9 @@ impl Ctap2Node {
                                         };
 
                                     // Get the regular token
-                                    match client_pin.get_pin_token(&pin, perms, rpid) {
+                                    let ctap2_pin = Ctap2Pin::new(&pin)
+                                        .map_err(|e| RpcError::invalid_params(e.to_string()))?;
+                                    match client_pin.get_pin_token(&ctap2_pin, perms, rpid) {
                                         Ok(token) => {
                                             let protocol = client_pin.protocol();
                                             let conn = client_pin
@@ -808,9 +813,13 @@ impl Ctap2Node {
                                         (Err(RpcError::invalid_params("Missing pin")), conn)
                                     } else {
                                         let result = if has_pin {
-                                            client_pin.change_pin(pin.as_deref().unwrap(), &new_pin)
+                                            let old_pin =
+                                                Ctap2Pin::new(pin.as_deref().unwrap()).unwrap();
+                                            let new_p = Ctap2Pin::new(&new_pin).unwrap();
+                                            client_pin.change_pin(&old_pin, &new_p)
                                         } else {
-                                            client_pin.set_pin(&new_pin)
+                                            let new_p = Ctap2Pin::new(&new_pin).unwrap();
+                                            client_pin.set_pin(&new_p)
                                         };
 
                                         match result {

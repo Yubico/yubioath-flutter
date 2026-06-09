@@ -7,7 +7,7 @@ use yubikit::otp::OtpConnection;
 use yubikit::otp::{modhex_decode, modhex_encode};
 use yubikit::smartcard::ScpKeyParams;
 use yubikit::smartcard::SmartCardConnection;
-use yubikit::yubiotp::{ConfigState, Slot, SlotConfiguration, YubiOtpSession};
+use yubikit::yubiotp::{AccessCode, ConfigState, HmacKey, Slot, SlotConfiguration, YubiOtpSession};
 
 use crate::connection::SharedConn;
 use crate::error::{RpcError, RpcResponse};
@@ -314,7 +314,7 @@ impl RpcNode for OtpCcidSlotNode {
             "delete" => {
                 let cur_acc_code = get_acc_code(&params, "curr_acc_code")?;
                 session
-                    .delete_slot(self.slot, cur_acc_code.as_deref())
+                    .delete_slot(self.slot, cur_acc_code.as_ref())
                     .map_err(otp_error)?;
                 Ok(RpcResponse::new(json!({})))
             }
@@ -347,8 +347,8 @@ impl RpcNode for OtpCcidSlotNode {
                     .put_configuration(
                         self.slot,
                         &config,
-                        cur_acc_code.as_deref(),
-                        cur_acc_code.as_deref(),
+                        cur_acc_code.as_ref(),
+                        cur_acc_code.as_ref(),
                     )
                     .map_err(otp_error)?;
                 Ok(RpcResponse::new(json!({})))
@@ -365,8 +365,8 @@ impl RpcNode for OtpCcidSlotNode {
                     .update_configuration(
                         self.slot,
                         &config,
-                        acc_code.as_deref(),
-                        cur_acc_code.as_deref(),
+                        acc_code.as_ref(),
+                        cur_acc_code.as_ref(),
                     )
                     .map_err(otp_error)?;
                 Ok(RpcResponse::new(json!({})))
@@ -444,7 +444,7 @@ impl RpcNode for OtpOtpSlotNode {
             "delete" => {
                 let cur_acc_code = get_acc_code(&params, "curr_acc_code")?;
                 session
-                    .delete_slot(self.slot, cur_acc_code.as_deref())
+                    .delete_slot(self.slot, cur_acc_code.as_ref())
                     .map_err(otp_error)?;
                 Ok(RpcResponse::new(json!({})))
             }
@@ -483,8 +483,8 @@ impl RpcNode for OtpOtpSlotNode {
                     .put_configuration(
                         self.slot,
                         &config,
-                        cur_acc_code.as_deref(),
-                        cur_acc_code.as_deref(),
+                        cur_acc_code.as_ref(),
+                        cur_acc_code.as_ref(),
                     )
                     .map_err(otp_error)?;
                 Ok(RpcResponse::new(json!({})))
@@ -501,8 +501,8 @@ impl RpcNode for OtpOtpSlotNode {
                     .update_configuration(
                         self.slot,
                         &config,
-                        acc_code.as_deref(),
-                        cur_acc_code.as_deref(),
+                        acc_code.as_ref(),
+                        cur_acc_code.as_ref(),
                     )
                     .map_err(otp_error)?;
                 Ok(RpcResponse::new(json!({})))
@@ -649,7 +649,7 @@ fn otp_error(e: impl std::fmt::Display) -> RpcError {
     RpcError::new("device-error", format!("{e}"))
 }
 
-fn get_acc_code(params: &Value, key: &str) -> Result<Option<Vec<u8>>, RpcError> {
+fn get_acc_code(params: &Value, key: &str) -> Result<Option<AccessCode>, RpcError> {
     match params.get(key) {
         Some(v) if !v.is_null() => {
             let hex_str = v
@@ -657,7 +657,9 @@ fn get_acc_code(params: &Value, key: &str) -> Result<Option<Vec<u8>>, RpcError> 
                 .ok_or_else(|| RpcError::invalid_params(format!("{key} must be a hex string")))?;
             let bytes = hex::decode(hex_str)
                 .map_err(|_| RpcError::invalid_params(format!("Invalid hex for {key}")))?;
-            Ok(Some(bytes))
+            let code = AccessCode::new(&bytes)
+                .map_err(|e| RpcError::invalid_params(format!("Invalid access code: {e}")))?;
+            Ok(Some(code))
         }
         _ => Ok(None),
     }
@@ -674,7 +676,9 @@ fn decode_bytes_param(params: &Value, key: &str) -> Result<Vec<u8>, RpcError> {
 fn build_config(cfg_type: &str, params: &Value) -> Result<SlotConfiguration, RpcError> {
     match cfg_type {
         "hmac_sha1" => {
-            let key = decode_bytes_param(params, "key")?;
+            let key_bytes = decode_bytes_param(params, "key")?;
+            let key =
+                HmacKey::new(&key_bytes).map_err(|e| RpcError::invalid_params(format!("{e}")))?;
             SlotConfiguration::hmac_sha1(&key).map_err(|e| RpcError::invalid_params(format!("{e}")))
         }
         "hotp" => {
@@ -683,8 +687,10 @@ fn build_config(cfg_type: &str, params: &Value) -> Result<SlotConfiguration, Rpc
                 .and_then(|v| v.as_str())
                 .ok_or_else(|| RpcError::invalid_params("Missing key"))?;
             // key comes as base32 for HOTP
-            let key = base32::decode(base32::Alphabet::Rfc4648 { padding: false }, key_str)
+            let key_bytes = base32::decode(base32::Alphabet::Rfc4648 { padding: false }, key_str)
                 .ok_or_else(|| RpcError::invalid_params("Invalid base32 key"))?;
+            let key =
+                HmacKey::new(&key_bytes).map_err(|e| RpcError::invalid_params(format!("{e}")))?;
             SlotConfiguration::hotp(&key).map_err(|e| RpcError::invalid_params(format!("{e}")))
         }
         "static_password" => {

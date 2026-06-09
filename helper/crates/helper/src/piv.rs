@@ -16,8 +16,8 @@ use x509_cert::spki::SubjectPublicKeyInfoOwned;
 use x509_cert::time::Validity;
 
 use yubikit::piv::{
-    HashAlgorithm, KeyType, ManagementKeyType, ObjectId, PinPolicy, PivError, PivSession,
-    PivSignature, PivSigner, Slot, TouchPolicy,
+    HashAlgorithm, KeyType, ManagementKey, ManagementKeyType, ObjectId, PinPolicy, PivError,
+    PivPin, PivSession, PivSignature, PivSigner, Slot, TouchPolicy,
 };
 use yubikit::smartcard::ScpKeyParams;
 use yubikit::smartcard::SmartCardConnection;
@@ -201,18 +201,23 @@ impl PivNode {
                     .ok_or_else(|| RpcError::invalid_params("Missing pin"))?;
                 let mut session_guard = self.session.lock().unwrap();
                 let session = session_guard.as_mut().unwrap();
-                session.verify_pin(pin).map_err(handle_pin_error)?;
+                let piv_pin =
+                    PivPin::new(pin).map_err(|e| RpcError::invalid_params(format!("{e}")))?;
+                session.verify_pin(&piv_pin).map_err(handle_pin_error)?;
 
                 // Try to auto-authenticate with stored management key
                 let pivman = get_pivman_data(session);
                 if has_stored_key(&pivman) {
                     let prot = get_pivman_protected_data(session);
                     if let Some((_, key)) = prot.iter().find(|(t, _)| *t == TAG_PIVMAN_KEY) {
-                        if session.authenticate(key).is_ok() {
+                        let mgmt_key = ManagementKey::new(session.management_key_type(), key);
+                        if let Ok(mgmt_key) = mgmt_key
+                            && session.authenticate(&mgmt_key).is_ok()
+                        {
                             self.authenticated = true;
                         }
                         // Re-verify PIN so it was the last operation
-                        let _ = session.verify_pin(pin);
+                        let _ = session.verify_pin(&piv_pin);
                     }
                 }
 
@@ -226,12 +231,14 @@ impl PivNode {
                     .get("key")
                     .and_then(|v| v.as_str())
                     .ok_or_else(|| RpcError::invalid_params("Missing key"))?;
-                let key = hex::decode(key_hex)
+                let key_bytes = hex::decode(key_hex)
                     .map_err(|_| RpcError::invalid_params("Invalid hex key"))?;
                 let mut session_guard = self.session.lock().unwrap();
                 let session = session_guard.as_mut().unwrap();
 
-                match session.authenticate(&key) {
+                let mgmt_key = ManagementKey::new(session.management_key_type(), &key_bytes)
+                    .map_err(|e| RpcError::invalid_params(format!("{e}")))?;
+                match session.authenticate(&mgmt_key) {
                     Ok(()) => {
                         self.authenticated = true;
                         Ok(RpcResponse::new(json!({ "status": true })))
@@ -275,7 +282,13 @@ impl PivNode {
                     .ok_or_else(|| RpcError::invalid_params("Missing new_pin"))?;
                 let mut session_guard = self.session.lock().unwrap();
                 let session = session_guard.as_mut().unwrap();
-                session.change_pin(pin, new_pin).map_err(handle_pin_error)?;
+                let old_piv_pin =
+                    PivPin::new(pin).map_err(|e| RpcError::invalid_params(format!("{e}")))?;
+                let new_piv_pin =
+                    PivPin::new(new_pin).map_err(|e| RpcError::invalid_params(format!("{e}")))?;
+                session
+                    .change_pin(&old_piv_pin, &new_piv_pin)
+                    .map_err(handle_pin_error)?;
                 Ok(RpcResponse::with_flags(json!({}), vec!["device_info"]))
             }
             "change_puk" => {
@@ -289,7 +302,13 @@ impl PivNode {
                     .ok_or_else(|| RpcError::invalid_params("Missing new_puk"))?;
                 let mut session_guard = self.session.lock().unwrap();
                 let session = session_guard.as_mut().unwrap();
-                session.change_puk(puk, new_puk).map_err(handle_pin_error)?;
+                let old_piv_puk =
+                    PivPin::new(puk).map_err(|e| RpcError::invalid_params(format!("{e}")))?;
+                let new_piv_puk =
+                    PivPin::new(new_puk).map_err(|e| RpcError::invalid_params(format!("{e}")))?;
+                session
+                    .change_puk(&old_piv_puk, &new_piv_puk)
+                    .map_err(handle_pin_error)?;
                 Ok(RpcResponse::with_flags(json!({}), vec!["device_info"]))
             }
             "unblock_pin" => {
@@ -303,8 +322,12 @@ impl PivNode {
                     .ok_or_else(|| RpcError::invalid_params("Missing new_pin"))?;
                 let mut session_guard = self.session.lock().unwrap();
                 let session = session_guard.as_mut().unwrap();
+                let piv_puk =
+                    PivPin::new(puk).map_err(|e| RpcError::invalid_params(format!("{e}")))?;
+                let piv_new_pin =
+                    PivPin::new(new_pin).map_err(|e| RpcError::invalid_params(format!("{e}")))?;
                 session
-                    .unblock_pin(puk, new_pin)
+                    .unblock_pin(&piv_puk, &piv_new_pin)
                     .map_err(handle_pin_error)?;
                 Ok(RpcResponse::with_flags(json!({}), vec!["device_info"]))
             }
@@ -451,8 +474,10 @@ fn pivman_set_mgm_key(
     };
 
     // Set the actual management key on the device
+    let mgmt_key = ManagementKey::new(key_type, new_key)
+        .map_err(|e| format!("Invalid management key: {e}"))?;
     session
-        .set_management_key(key_type, new_key, false)
+        .set_management_key(&mgmt_key, false)
         .map_err(|e| format!("Failed to set management key: {e}"))?;
 
     // Update the stored-key flag
@@ -1134,7 +1159,9 @@ impl SlotNode {
                         && pin_policy != PinPolicy::Never
                         && let Some(pin) = params.get("pin").and_then(|v| v.as_str())
                     {
-                        session.verify_pin(pin).map_err(handle_pin_error)?;
+                        let piv_pin = PivPin::new(pin)
+                            .map_err(|e| RpcError::invalid_params(format!("{e}")))?;
+                        session.verify_pin(&piv_pin).map_err(handle_pin_error)?;
                     }
 
                     if touch_policy == TouchPolicy::Always || touch_policy == TouchPolicy::Cached {
