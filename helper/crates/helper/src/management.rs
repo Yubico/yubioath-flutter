@@ -9,8 +9,8 @@ use yubikit::fido::FidoConnection;
 use yubikit::management::{
     Capability, DeviceConfig, DeviceFlag, DeviceInfo, ManagementSession, UsbInterface,
 };
-use yubikit::platform::device::list_devices;
 use yubikit::otp::OtpConnection;
+use yubikit::platform::device::list_devices;
 use yubikit::smartcard::SmartCardConnection;
 
 use crate::connection::SharedConn;

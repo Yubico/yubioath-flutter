@@ -3,7 +3,9 @@ use std::sync::atomic::AtomicBool;
 
 use serde_json::{Value, json};
 
-use yubikit::oath::{Code, Credential, CredentialData, HashAlgorithm, OathSession, OathType};
+use yubikit::oath::{
+    Code, Credential, CredentialData, HashAlgorithm, OathAccessKey, OathSession, OathType,
+};
 use yubikit::smartcard::ScpKeyParams;
 use yubikit::smartcard::SmartCardConnection;
 
@@ -92,11 +94,13 @@ impl OathNode {
         }
         match state.keys.get_secret(&device_id) {
             Ok(hex_key) => {
-                if let Ok(key) = hex::decode(&hex_key) {
+                if let Ok(key_bytes) = hex::decode(&hex_key)
+                    && let Ok(key) = OathAccessKey::new(&key_bytes)
+                {
                     match session.validate(&key) {
                         Ok(()) => {
                             drop(state); // release lock before calling self method
-                            self.set_key_verifier(&key);
+                            self.set_key_verifier(key.expose_secret());
                         }
                         Err(e) => {
                             log::warn!("Auto-unlock failed: {e}");
@@ -134,7 +138,7 @@ impl OathNode {
             }
             (None, Some(p)) => {
                 let session = self.session.as_ref().unwrap();
-                Ok(session.derive_key(p).to_vec())
+                Ok(session.derive_key(p).expose_secret().to_vec())
             }
             (None, None) => Err(RpcError::invalid_params(
                 "One of 'key' and 'password' must be provided",
@@ -297,7 +301,9 @@ impl OathNode {
                     .ok_or_else(|| RpcError::invalid_params("Missing password"))?;
                 let session = self.session.as_ref().unwrap();
                 let key = session.derive_key(password);
-                Ok(RpcResponse::new(json!({ "key": hex::encode(key) })))
+                Ok(RpcResponse::new(
+                    json!({ "key": hex::encode(key.expose_secret()) }),
+                ))
             }
             "forget" => {
                 let session = self.session.as_ref().unwrap();
@@ -313,7 +319,7 @@ impl OathNode {
                 Ok(RpcResponse::new(json!({})))
             }
             "validate" => {
-                let access_key = self.get_key(&params)?;
+                let access_key_bytes = self.get_key(&params)?;
                 let remember = params
                     .get("remember")
                     .and_then(|v| v.as_bool())
@@ -321,9 +327,11 @@ impl OathNode {
 
                 let session = self.session.as_mut().unwrap();
                 let valid = if session.locked() {
-                    match session.validate(&access_key) {
+                    let key = OathAccessKey::new(&access_key_bytes)
+                        .map_err(|e| RpcError::new("device-error", format!("{e}")))?;
+                    match session.validate(&key) {
                         Ok(()) => {
-                            self.set_key_verifier(&access_key);
+                            self.set_key_verifier(&access_key_bytes);
                             true
                         }
                         Err(_) => false,
@@ -332,7 +340,7 @@ impl OathNode {
                     use hmac::{Hmac, Mac};
                     use sha2::Sha256;
                     let mut mac = Hmac::<Sha256>::new_from_slice(salt).unwrap();
-                    mac.update(&access_key);
+                    mac.update(&access_key_bytes);
                     let verify: [u8; 32] = mac.finalize().into_bytes().into();
                     verify == *digest
                 } else {
@@ -340,7 +348,7 @@ impl OathNode {
                 };
 
                 let remembered = if valid && remember {
-                    self.remember_key(Some(&access_key))
+                    self.remember_key(Some(&access_key_bytes))
                 } else {
                     false
                 };
@@ -351,20 +359,22 @@ impl OathNode {
                 })))
             }
             "set_key" => {
-                let access_key = self.get_key(&params)?;
+                let access_key_bytes = self.get_key(&params)?;
                 let remember = params
                     .get("remember")
                     .and_then(|v| v.as_bool())
                     .unwrap_or(false);
 
+                let key = OathAccessKey::new(&access_key_bytes)
+                    .map_err(|e| RpcError::new("device-error", format!("{e}")))?;
                 let session = self.session.as_mut().unwrap();
                 session
-                    .set_key(&access_key)
+                    .set_key(&key)
                     .map_err(|e| RpcError::new("device-error", format!("{e}")))?;
-                self.set_key_verifier(&access_key);
+                self.set_key_verifier(&access_key_bytes);
 
                 let remembered = if remember {
-                    self.remember_key(Some(&access_key))
+                    self.remember_key(Some(&access_key_bytes))
                 } else {
                     self.remember_key(None);
                     false
