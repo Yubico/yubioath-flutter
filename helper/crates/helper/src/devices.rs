@@ -99,6 +99,7 @@ impl RpcNode for DevicesNode {
                                         "name": name,
                                         "serial": dev.info().serial,
                                         "transport": transport_to_str(dev.transport()),
+                                        "pid": dev.pid(),
                                     }),
                                 );
                                 self.device_mapping.insert(dev_id, dev);
@@ -156,6 +157,7 @@ impl RpcNode for DevicesNode {
                                     "name": name,
                                     "serial": dev.info().serial,
                                     "transport": transport_to_str(dev.transport()),
+                                    "pid": dev.pid(),
                                 }),
                             );
                             self.device_mapping.insert(dev_id, dev);
@@ -251,6 +253,7 @@ impl DeviceNode {
         let data = json!({
             "name": name,
             "transport": transport_to_str(transport),
+            "pid": device.pid(),
             "info": info_to_json(info),
         });
         Self {
