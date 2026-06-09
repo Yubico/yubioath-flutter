@@ -15,9 +15,10 @@ use x509_cert::serial_number::SerialNumber;
 use x509_cert::spki::SubjectPublicKeyInfoOwned;
 use x509_cert::time::Validity;
 
+use yubikit::keys::PrivateKey;
 use yubikit::piv::{
     HashAlgorithm, KeyType, ManagementKey, ManagementKeyType, ObjectId, PinPolicy, PivError,
-    PivPin, PivPrivateKey, PivSession, PivSignature, PivSigner, Slot, TouchPolicy,
+    PivPin, PivSession, PivSignature, PivSigner, Slot, TouchPolicy,
 };
 use yubikit::smartcard::ScpKeyParams;
 use yubikit::smartcard::SmartCardConnection;
@@ -1033,7 +1034,7 @@ impl SlotNode {
 
                     let mut public_key_pem: Option<String> = None;
                     if let Some(ref key_der) = private_key_der {
-                        let private_key = PivPrivateKey::from_pkcs8(key_der).map_err(|e| {
+                        let private_key = PrivateKey::from_pkcs8(key_der).map_err(|e| {
                             RpcError::new("parse-error", format!("Failed to parse key: {e}"))
                         })?;
 
@@ -1058,8 +1059,8 @@ impl SlotNode {
 
                         // Try to get the public key in SPKI PEM form
                         if let Ok(metadata) = session.get_slot_metadata(self.slot)
-                            && let Ok(spki) =
-                                SubjectPublicKeyInfoOwned::from_der(&metadata.public_key_der)
+                            && let Ok(spki_der) = metadata.public_key.to_spki_der()
+                            && let Ok(spki) = SubjectPublicKeyInfoOwned::from_der(&spki_der)
                             && let Ok(pem) = spki.to_pem(LineEnding::LF)
                         {
                             public_key_pem = Some(pem);
@@ -1132,10 +1133,14 @@ impl SlotNode {
                     let mut session_guard = self.session.lock().unwrap();
                     let session = session_guard.as_mut().unwrap();
 
-                    // Generate the key (returns SPKI DER directly)
-                    let spki_der = session
+                    // Generate the key (returns PublicKey)
+                    let public_key = session
                         .generate_key(self.slot, key_type, pin_policy, touch_policy)
                         .map_err(|e| RpcError::new("device-error", format!("{e}")))?;
+
+                    let spki_der = public_key.to_spki_der().map_err(|e| {
+                        RpcError::new("device-error", format!("Failed to encode SPKI: {e}"))
+                    })?;
 
                     // Encode as PEM for the response
                     let spki = SubjectPublicKeyInfoOwned::from_der(&spki_der).map_err(|e| {
@@ -1397,8 +1402,11 @@ fn slot_name(slot: Slot) -> &'static str {
 
 /// Convert SlotMetadata to JSON with integer enum values and public_key PEM.
 fn metadata_to_json(metadata: &yubikit::piv::SlotMetadata) -> Value {
-    let public_key_pem = SubjectPublicKeyInfoOwned::from_der(&metadata.public_key_der)
+    let public_key_pem = metadata
+        .public_key
+        .to_spki_der()
         .ok()
+        .and_then(|der| SubjectPublicKeyInfoOwned::from_der(&der).ok())
         .and_then(|spki| spki.to_pem(LineEnding::LF).ok());
 
     json!({
@@ -1412,7 +1420,10 @@ fn metadata_to_json(metadata: &yubikit::piv::SlotMetadata) -> Value {
 
 /// Check if a certificate's public key matches the slot metadata's public key.
 fn public_key_match(cert_der: &[u8], metadata: &yubikit::piv::SlotMetadata) -> bool {
-    let slot_spki = &metadata.public_key_der;
+    let slot_spki = match metadata.public_key.to_spki_der() {
+        Ok(der) => der,
+        Err(_) => return false,
+    };
 
     // Get SPKI DER from certificate
     let cert = match Certificate::from_der(cert_der) {
@@ -1424,5 +1435,5 @@ fn public_key_match(cert_der: &[u8], metadata: &yubikit::piv::SlotMetadata) -> b
         Err(_) => return false,
     };
 
-    slot_spki == &cert_spki
+    slot_spki == cert_spki
 }
