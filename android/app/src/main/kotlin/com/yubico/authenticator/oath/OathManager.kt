@@ -64,6 +64,7 @@ import java.net.URI
 import java.util.concurrent.CancellationException
 import java.util.concurrent.RejectedExecutionException
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -138,7 +139,7 @@ class OathManager(
                     val delayMs = earliest - now
                     logger.debug("Will execute refresh in {}ms", delayMs)
                     if (delayMs > 0) {
-                        delay(delayMs)
+                        delay(delayMs.milliseconds)
                     }
                     val currentState = lifecycleOwner.lifecycle.currentState
                     if (currentState.isAtLeast(Lifecycle.State.STARTED)) {
@@ -245,6 +246,9 @@ class OathManager(
         try {
             device.withConnection<SmartCardConnection, Unit> { connection ->
                 val session = getOathSession(connection)
+                if (unlockOnConnect.getAndSet(true)) {
+                    tryToUnlockOathSession(session)
+                }
                 val previousId = oathViewModel.currentSession()?.deviceId
                 // only run pending action over NFC
                 // when the device is still the same
@@ -497,7 +501,7 @@ class OathManager(
                     throw Exception("Must provide current password to be able to change it")
                 }
                 // test current password sent by the user
-                if (!session.unlock(currentPassword.toCharArray())) {
+                if (!verifyCurrentPassword(session, currentPassword)) {
                     throw Exception("Provided current password is invalid")
                 }
             }
@@ -513,7 +517,7 @@ class OathManager(
         useOathSession(unlock = false) { session ->
             if (session.isAccessKeySet) {
                 // test current password sent by the user
-                if (session.unlock(currentPassword.toCharArray())) {
+                if (verifyCurrentPassword(session, currentPassword)) {
                     session.deleteAccessKey()
                     keyManager.removeKey(session.deviceId)
                     oathViewModel.setSessionState(Session(session, false))
@@ -597,6 +601,7 @@ class OathManager(
         deviceManager.withKey { usbYubiKeyDevice ->
             try {
                 useSessionUsb(usbYubiKeyDevice) { session ->
+                    tryToUnlockOathSession(session)
                     try {
                         oathViewModel.updateCredentials(calculateOathCodes(session))
                     } catch (apduException: ApduException) {
@@ -677,10 +682,27 @@ class OathManager(
     }
 
     /**
-     * Tries to unlocks [session] with access key stored in [KeyManager]. On failure clears
+     * Verifies the user-supplied [currentPassword] against the access key set on [session].
+     *
+     * This must only be trusted on a *locked* session: [com.yubico.yubikit.oath.OathSession.unlock]
+     * performs a real VALIDATE against the key only when the session is locked - on an
+     * already-unlocked session it returns true without checking the password.
+     * Sensitive operations (set/unset password) call this so a concurrently auto-unlocked session
+     * can never let a wrong password pass; if the session is unexpectedly already unlocked,
+     * verification fails closed.
+     *
+     * @return true only if the session is locked and [currentPassword] is valid
+     */
+    private fun verifyCurrentPassword(
+        session: YubiKitOathSession,
+        currentPassword: String
+    ): Boolean = session.isLocked && session.unlock(currentPassword.toCharArray())
+
+    /**
+     * Tries to unlock [session] with access key stored in [KeyManager]. On failure clears
      * relevant access keys from [KeyManager]
      *
-     * @return true if the session is not locked or it was successfully unlocked, false otherwise
+     * @return true if the session is not locked, or it was successfully unlocked, false otherwise
      */
     private fun tryToUnlockOathSession(session: YubiKitOathSession): Boolean {
         if (!session.isLocked) {
@@ -702,27 +724,22 @@ class OathManager(
     }
 
     /**
-     * Returns a [YubiKitOathSession] for the [connection].
-     * The session will be unlocked if [unlockOnConnect] is true.
+     * Returns a freshly selected (locked, if an access key is set) [YubiKitOathSession] for the
+     * [connection].
      *
-     * Generally we always want to try to unlock the session and that is why the variable
-     * [unlockOnConnect] is also reset to true.
-     *
-     * Currently, only setPassword and unsetPassword will not unlock the session.
+     * Unlocking is the caller's responsibility: it is decided per-operation by the captured
+     * `unlock` intent (see [useOathSession]) or, for connect/tap, by [unlockOnConnect] in
+     * [processYubiKey]. Keeping this method unlock-free avoids reading shared state across the
+     * connection-callback suspension point, which previously let concurrent operations clobber each
+     * other's unlock intent.
      *
      * @param connection the device SmartCard connection
-     * @return a [YubiKitOathSession]  which is unlocked or locked based on an internal parameter
+     * @return a newly created [YubiKitOathSession]
      */
     private fun getOathSession(connection: SmartCardConnection): YubiKitOathSession {
         // If OATH is FIPS capable, and we have scpKeyParams, we should use them
         val fips = (deviceManager.deviceInfo?.fipsCapable ?: 0) and Capability.OATH.bit != 0
-        val session = YubiKitOathSession(connection, if (fips) deviceManager.scpKeyParams else null)
-
-        if (!unlockOnConnect.compareAndSet(false, true)) {
-            tryToUnlockOathSession(session)
-        }
-
-        return session
+        return YubiKitOathSession(connection, if (fips) deviceManager.scpKeyParams else null)
     }
 
     private fun getAccounts(session: YubiKitOathSession): Map<Credential, Code?> =
@@ -776,13 +793,26 @@ class OathManager(
         updateDeviceInfo: Boolean = false,
         block: (YubiKitOathSession) -> T
     ): T {
-        // callers can decide whether the session should be unlocked first
-        unlockOnConnect.set(unlock)
         // callers can request whether device info should be updated after session operation
         this@OathManager.updateDeviceInfo.set(updateDeviceInfo)
         return deviceManager.withKey(
-            onUsb = { useSessionUsb(it, updateDeviceInfo, block) },
-            onNfc = { useSessionNfc(block) },
+            // For USB the unlock intent is captured here as a local, so concurrent operations
+            // cannot clobber each other's intent (which a shared field read after the connection
+            // callback suspension would allow).
+            onUsb = {
+                useSessionUsb(it, updateDeviceInfo) { session ->
+                    if (unlock) {
+                        tryToUnlockOathSession(session)
+                    }
+                    block(session)
+                }
+            },
+            // For NFC the session is created later in [processYubiKey], so carry the intent over via
+            // [unlockOnConnect]. NFC operations are serialized by physical taps.
+            onNfc = {
+                unlockOnConnect.set(unlock)
+                useSessionNfc(block)
+            },
             onCancelled = {
                 pendingAction?.invoke(Result.failure(CancellationException()))
                 pendingAction = null
