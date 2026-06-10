@@ -105,6 +105,8 @@ class OathManager(
             logger.error("Pending action failure: ", e)
             action.invoke(Result.failure(e))
             pendingAction = null
+            // don't let a cancelled NFC unlock=false op suppress auto-unlock on the next connect
+            unlockOnConnect.set(true)
         }
     }
 
@@ -121,6 +123,8 @@ class OathManager(
                     nfcOverlayManager.close()
                 }
                 pendingAction = null
+                // don't let a cancelled NFC unlock=false op suppress auto-unlock on the next connect
+                unlockOnConnect.set(true)
             }
         }
     }
@@ -246,7 +250,13 @@ class OathManager(
         try {
             device.withConnection<SmartCardConnection, Unit> { connection ->
                 val session = getOathSession(connection)
-                if (unlockOnConnect.getAndSet(true)) {
+                // unlockOnConnect carries per-operation intent only for NFC (the session is created
+                // here, after the tap). USB connects should always attempt auto-unlock.
+                if (device is NfcYubiKeyDevice) {
+                    if (unlockOnConnect.getAndSet(true)) {
+                        tryToUnlockOathSession(session)
+                    }
+                } else {
                     tryToUnlockOathSession(session)
                 }
                 val previousId = oathViewModel.currentSession()?.deviceId
@@ -816,6 +826,8 @@ class OathManager(
             onCancelled = {
                 pendingAction?.invoke(Result.failure(CancellationException()))
                 pendingAction = null
+                // don't let a cancelled NFC unlock=false op suppress auto-unlock on the next connect
+                unlockOnConnect.set(true)
             }
         )
     }
