@@ -105,7 +105,7 @@ class OathManager(
             logger.error("Pending action failure: ", e)
             action.invoke(Result.failure(e))
             pendingAction = null
-            // don't let a cancelled NFC unlock=false op suppress auto-unlock on the next connect
+            // a failed/cancelled NFC unlock=false op must not suppress auto-unlock on next connect
             unlockOnConnect.set(true)
         }
     }
