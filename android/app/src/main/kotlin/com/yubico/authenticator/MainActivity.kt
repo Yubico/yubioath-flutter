@@ -318,26 +318,19 @@ class MainActivity : FlutterFragmentActivity() {
             }
 
             val usbManager = getSystemService(USB_SERVICE) as UsbManager
-            if (UsbManager.ACTION_USB_DEVICE_ATTACHED == intent.action) {
-                val device = intent.parcelableExtra<UsbDevice>(UsbManager.EXTRA_DEVICE)
-                if (device != null) {
-                    // start the USB discover only if the user approved the app to use the device
-                    if (usbManager.hasPermission(device)) {
-                        startUsbDiscovery()
-                    }
-                }
+            val attachedDevice = if (UsbManager.ACTION_USB_DEVICE_ATTACHED == intent.action) {
+                intent.parcelableExtra<UsbDevice>(UsbManager.EXTRA_DEVICE)
             } else {
-                // if any YubiKeys are connected, use them directly
-                val deviceIterator = usbManager.deviceList.values.iterator()
-                while (deviceIterator.hasNext()) {
-                    val device = deviceIterator.next()
-                    if (device.vendorId == YUBICO_VENDOR_ID) {
-                        // the device might not have a USB permission
-                        // it will be requested during the UsbDiscovery
-                        startUsbDiscovery()
-                        break
-                    }
-                }
+                null
+            }
+
+            // Start discovery if launched via USB attach with permission, or if any YubiKey
+            // is present. The latter also handles a key re-enumerating with a new product id
+            // after an interface change, where the attach intent may reference a stale device.
+            if ((attachedDevice != null && usbManager.hasPermission(attachedDevice)) ||
+                usbManager.deviceList.values.any { it.vendorId == YUBICO_VENDOR_ID }
+            ) {
+                startUsbDiscovery()
             }
         } else {
             logger.debug("Resume with preserved connection")
