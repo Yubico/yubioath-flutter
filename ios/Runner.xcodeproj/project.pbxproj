@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -18,6 +18,15 @@
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		FCD3C2142FDAD25F004D981F /* YubiKit in Frameworks */ = {isa = PBXBuildFile; productRef = FCD3C2132FDAD25F004D981F /* YubiKit */; };
 		FCD3C2162FDADA62004D981F /* YubiKitChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCD3C2152FDADA62004D981F /* YubiKitChannel.swift */; };
+		FCE830552FE0047D00F68DA9 /* ConnectionHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCE830512FE0047D00F68DA9 /* ConnectionHelper.swift */; };
+		FCE830562FE0047D00F68DA9 /* DeviceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCE830532FE0047D00F68DA9 /* DeviceManager.swift */; };
+		FCE830572FE0047D00F68DA9 /* DeviceInfoHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCE830522FE0047D00F68DA9 /* DeviceInfoHelper.swift */; };
+		FCE8305A2FE0049400F68DA9 /* OathManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCE830582FE0049400F68DA9 /* OathManager.swift */; };
+		FCE8305D2FE004A600F68DA9 /* FidoManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCE8305B2FE004A600F68DA9 /* FidoManager.swift */; };
+		FCE830602FE004BB00F68DA9 /* PivManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCE8305E2FE004BB00F68DA9 /* PivManager.swift */; };
+		FCE830632FE004DA00F68DA9 /* ManagementManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCE830612FE004DA00F68DA9 /* ManagementManager.swift */; };
+		FCE830652FE0050F00F68DA9 /* AppContextManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCE830642FE0050F00F68DA9 /* AppContextManager.swift */; };
+		FCE830672FE02D8800F68DA9 /* DeviceInfoSerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCE830662FE02D8800F68DA9 /* DeviceInfoSerializer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -63,6 +72,15 @@
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FCD3C2112FDAD078004D981F /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
 		FCD3C2152FDADA62004D981F /* YubiKitChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YubiKitChannel.swift; sourceTree = "<group>"; };
+		FCE830512FE0047D00F68DA9 /* ConnectionHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionHelper.swift; sourceTree = "<group>"; };
+		FCE830522FE0047D00F68DA9 /* DeviceInfoHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceInfoHelper.swift; sourceTree = "<group>"; };
+		FCE830532FE0047D00F68DA9 /* DeviceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceManager.swift; sourceTree = "<group>"; };
+		FCE830582FE0049400F68DA9 /* OathManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OathManager.swift; sourceTree = "<group>"; };
+		FCE8305B2FE004A600F68DA9 /* FidoManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FidoManager.swift; sourceTree = "<group>"; };
+		FCE8305E2FE004BB00F68DA9 /* PivManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PivManager.swift; sourceTree = "<group>"; };
+		FCE830612FE004DA00F68DA9 /* ManagementManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagementManager.swift; sourceTree = "<group>"; };
+		FCE830642FE0050F00F68DA9 /* AppContextManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppContextManager.swift; sourceTree = "<group>"; };
+		FCE830662FE02D8800F68DA9 /* DeviceInfoSerializer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceInfoSerializer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,6 +119,13 @@
 		97C146E51CF9000F007C117D = {
 			isa = PBXGroup;
 			children = (
+				FCE830662FE02D8800F68DA9 /* DeviceInfoSerializer.swift */,
+				FCE830642FE0050F00F68DA9 /* AppContextManager.swift */,
+				FCE830622FE004DA00F68DA9 /* Management */,
+				FCE8305F2FE004BB00F68DA9 /* Piv */,
+				FCE8305C2FE004A600F68DA9 /* Fido */,
+				FCE830592FE0049400F68DA9 /* Oath */,
+				FCE830542FE0047D00F68DA9 /* Yubikit */,
 				9740EEB11CF90186004384FC /* Flutter */,
 				97C146F01CF9000F007C117D /* Runner */,
 				97C146EF1CF9000F007C117D /* Products */,
@@ -133,6 +158,48 @@
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
 			);
 			path = Runner;
+			sourceTree = "<group>";
+		};
+		FCE830542FE0047D00F68DA9 /* Yubikit */ = {
+			isa = PBXGroup;
+			children = (
+				FCE830512FE0047D00F68DA9 /* ConnectionHelper.swift */,
+				FCE830522FE0047D00F68DA9 /* DeviceInfoHelper.swift */,
+				FCE830532FE0047D00F68DA9 /* DeviceManager.swift */,
+			);
+			path = Yubikit;
+			sourceTree = "<group>";
+		};
+		FCE830592FE0049400F68DA9 /* Oath */ = {
+			isa = PBXGroup;
+			children = (
+				FCE830582FE0049400F68DA9 /* OathManager.swift */,
+			);
+			path = Oath;
+			sourceTree = "<group>";
+		};
+		FCE8305C2FE004A600F68DA9 /* Fido */ = {
+			isa = PBXGroup;
+			children = (
+				FCE8305B2FE004A600F68DA9 /* FidoManager.swift */,
+			);
+			path = Fido;
+			sourceTree = "<group>";
+		};
+		FCE8305F2FE004BB00F68DA9 /* Piv */ = {
+			isa = PBXGroup;
+			children = (
+				FCE8305E2FE004BB00F68DA9 /* PivManager.swift */,
+			);
+			path = Piv;
+			sourceTree = "<group>";
+		};
+		FCE830622FE004DA00F68DA9 /* Management */ = {
+			isa = PBXGroup;
+			children = (
+				FCE830612FE004DA00F68DA9 /* ManagementManager.swift */,
+			);
+			path = Management;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -290,10 +357,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FCE8305D2FE004A600F68DA9 /* FidoManager.swift in Sources */,
+				FCE830632FE004DA00F68DA9 /* ManagementManager.swift in Sources */,
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
 				FCD3C2162FDADA62004D981F /* YubiKitChannel.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
+				FCE830672FE02D8800F68DA9 /* DeviceInfoSerializer.swift in Sources */,
+				FCE8305A2FE0049400F68DA9 /* OathManager.swift in Sources */,
+				FCE830552FE0047D00F68DA9 /* ConnectionHelper.swift in Sources */,
+				FCE830652FE0050F00F68DA9 /* AppContextManager.swift in Sources */,
+				FCE830562FE0047D00F68DA9 /* DeviceManager.swift in Sources */,
+				FCE830572FE0047D00F68DA9 /* DeviceInfoHelper.swift in Sources */,
 				7884E8682EC3CC0700C636F2 /* SceneDelegate.swift in Sources */,
+				FCE830602FE004BB00F68DA9 /* PivManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
