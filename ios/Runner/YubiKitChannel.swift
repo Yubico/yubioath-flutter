@@ -1,6 +1,21 @@
+/*
+ * Copyright (C) 2026 Yubico.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ */
+
 import Flutter
 import YubiKit
 
+/// Top-level "placeholder" channel used by the iOS bring-up UI.
+///
+/// Once `DeviceManager` + per-app managers (`OathManager`, `FidoManager`,
+/// `PivManager`, `ManagementManager`) are in place this can be retired —
+/// `currentDeviceProvider` will be driven by `ManagementManager` instead.
 final class YubiKitChannel {
     static let channelName = "com.yubico.authenticator/yubikit"
 
@@ -20,7 +35,7 @@ final class YubiKitChannel {
             let via = (args?["via"] as? String) ?? "nfc"
             Task {
                 do {
-                    let serial = try await readSerial(via: via)
+                    let serial = try await DeviceInfoHelper.readSerial(via: via)
                     NSLog("[YubiKitChannel] success: \(serial)")
                     await MainActor.run { result(serial) }
                 } catch {
@@ -36,41 +51,6 @@ final class YubiKitChannel {
             }
         default:
             result(FlutterMethodNotImplemented)
-        }
-    }
-
-    private func readSerial(via: String) async throws -> String {
-        switch via {
-        case "usb":
-            NSLog("[YubiKitChannel] starting USB connection…")
-            let connection = try await WiredSmartCardConnection.makeConnection()
-            NSLog("[YubiKitChannel] USB connection established")
-            do {
-                let session = try await ManagementSession.makeSession(connection: connection)
-                let info = try await session.getDeviceInfo()
-                let serialString = "\(info.serialNumber)"
-                await connection.close(error: nil)
-                return serialString
-            } catch {
-                await connection.close(error: error)
-                throw error
-            }
-        default:
-            NSLog("[YubiKitChannel] starting NFC connection…")
-            let connection = try await NFCSmartCardConnection.makeConnection(
-                alertMessage: "Hold your YubiKey near the top of the phone"
-            )
-            NSLog("[YubiKitChannel] NFC connection established")
-            do {
-                let session = try await ManagementSession.makeSession(connection: connection)
-                let info = try await session.getDeviceInfo()
-                let serialString = "\(info.serialNumber)"
-                await connection.close(message: "Serial: \(serialString)")
-                return serialString
-            } catch {
-                await connection.close(message: "Error: \(error)")
-                throw error
-            }
         }
     }
 }
