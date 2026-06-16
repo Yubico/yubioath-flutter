@@ -24,7 +24,6 @@ import 'package:flutter_riverpod/legacy.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../app/logging.dart';
 import '../app/models.dart';
 import '../app/state.dart';
 import '../core/models.dart';
@@ -53,9 +52,13 @@ class _IosYubikeyNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
   late final StreamSubscription _sub;
 
   _IosYubikeyNotifier() : super(const AsyncValue.loading()) {
+    // ignore: avoid_print
+    print('[ios.state] _IosYubikeyNotifier subscribing to device events');
     _sub = _deviceEventsChannel.receiveBroadcastStream().listen(
       _onEvent,
       onError: (Object error, StackTrace stack) {
+        // ignore: avoid_print
+        print('[ios.state] device event stream error: $error');
         _log.warning('device event error', error);
         state = AsyncValue.error(error, stack);
       },
@@ -71,18 +74,39 @@ class _IosYubikeyNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
   Map<String, dynamic>? _decode(Object? event) {
     if (event == null) return null;
     if (event is String) {
-      return Map<String, dynamic>.from(jsonDecode(event) as Map);
+      return _deepCast(jsonDecode(event)) as Map<String, dynamic>;
     }
     if (event is Map) {
-      return Map<String, dynamic>.from(event);
+      return _deepCast(event) as Map<String, dynamic>;
     }
     return null;
   }
 
+  /// Recursively re-types `Map<Object?, Object?>` (the shape the iOS platform
+  /// channel uses for nested dictionaries) into `Map<String, dynamic>` so
+  /// generated `fromJson` factories can do their `as Map<String, dynamic>`
+  /// casts.
+  Object? _deepCast(Object? value) {
+    if (value is Map) {
+      return value.map<String, dynamic>(
+        (k, v) => MapEntry(k as String, _deepCast(v)),
+      );
+    }
+    if (value is List) {
+      return value.map(_deepCast).toList();
+    }
+    return value;
+  }
+
   Future<void> _onEvent(Object? event) async {
+    // ignore: avoid_print
+    print(
+      '[ios.state] _onEvent type=${event.runtimeType} isNull=${event == null}',
+    );
     final json = _decode(event);
     if (json == null) {
-      _log.debug('YubiKey detached');
+      // ignore: avoid_print
+      print('[ios.state] YubiKey detached -> AsyncLoading');
       state = const AsyncValue.loading();
       return;
     }
@@ -101,8 +125,19 @@ class _IosYubikeyNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
               usbPid != null ? UsbPid.fromValue(usbPid) : UsbPid.yk4OtpFidoCcid,
               info,
             );
+      // ignore: avoid_print
+      print('[ios.state] decoded YubiKey name=$name nfc=$isNfc');
       return YubiKeyData(node, name, info);
     });
+    // ignore: avoid_print
+    print(
+      '[ios.state] new state isError=${next is AsyncError} mounted=$mounted',
+    );
+    if (next is AsyncError) {
+      // ignore: avoid_print
+      print('[ios.state] decode error: ${(next).error}');
+      _log.warning('failed to decode YubiKey event', next.error);
+    }
     if (mounted) state = next;
   }
 }
@@ -122,8 +157,14 @@ class IosAttachedDevicesNotifier extends AttachedDevicesNotifier {
 
 class IosCurrentDeviceNotifier extends CurrentDeviceNotifier {
   @override
-  DeviceNode? build() =>
-      ref.watch(iosYubikeyProvider).whenOrNull(data: (data) => data.node);
+  DeviceNode? build() {
+    final node = ref
+        .watch(iosYubikeyProvider)
+        .whenOrNull(data: (data) => data.node);
+    // ignore: avoid_print
+    print('[ios.state] IosCurrentDeviceNotifier.build -> ${node != null}');
+    return node;
+  }
 
   @override
   void setCurrentDevice(DeviceNode? device) {

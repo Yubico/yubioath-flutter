@@ -71,6 +71,7 @@ void main(List<String> argv) async {
 }
 
 void _initializeDebugLogging() {
+  Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen((record) {
     developer.log(
       '${record.level}: ${record.message}',

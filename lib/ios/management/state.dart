@@ -10,8 +10,67 @@
 
 // iOS Management state providers. Mirrors `lib/android/management/state.dart`.
 //
-// Will provide:
-//  - IosManagementStateNotifier     (overrides managementStateProvider)
-//
 // Delegates to `com.yubico.authenticator/management` →
-// `ios/Runner/Management/ManagementManager.swift`.
+// `ios/Management/ManagementManager.swift`.
+
+import 'dart:async';
+
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../app/state.dart';
+import '../../management/models.dart';
+import '../../management/state.dart';
+import '../state.dart';
+
+class IosManagementStateNotifier extends ManagementStateNotifier {
+  IosManagementStateNotifier(super.devicePath);
+
+  @override
+  FutureOr<DeviceInfo> build() {
+    // Rebuild whenever the active device changes.
+    ref.watch(currentDeviceProvider);
+
+    final info = ref.watch(
+      currentDeviceDataProvider.select((s) => s.value?.info),
+    );
+    if (info != null) {
+      return info;
+    }
+    throw 'Failed getting device info';
+  }
+
+  @override
+  Future<void> writeConfig(
+    DeviceConfig config, {
+    String? currentLockCode,
+    String? newLockCode,
+    bool reboot = false,
+  }) async {
+    await managementChannel.invokeMethod('configure', {
+      'config': config.toJson(),
+      'currentLockCode': currentLockCode,
+      'newLockCode': newLockCode,
+      'reboot': reboot,
+    });
+    ref.read(attachedDevicesProvider.notifier).refresh();
+  }
+
+  @override
+  Future<void> setMode({
+    required int interfaces,
+    int challengeResponseTimeout = 0,
+    int? autoEjectTimeout,
+  }) async {
+    await managementChannel.invokeMethod('setMode', {
+      'interfaces': interfaces,
+      'challengeResponseTimeout': challengeResponseTimeout,
+      'autoEjectTimeout': autoEjectTimeout,
+    });
+    ref.read(attachedDevicesProvider.notifier).refresh();
+  }
+
+  @override
+  Future<void> deviceReset() async {
+    await managementChannel.invokeMethod('deviceReset');
+  }
+}
