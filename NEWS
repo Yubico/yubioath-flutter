@@ -1,4 +1,4 @@
-* Version 7.4.0
+* Version 7.4.0 (2026-06-16)
    ** Accessibility: comprehensive improvements for screen reader support and visual accessibility
    ** New translations: Bulgarian and Hebrew.
    ** Fix(OTP): character counter now counts bytes for multi-byte characters.
