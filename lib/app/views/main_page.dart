@@ -27,6 +27,7 @@ import '../../fido/views/webauthn_page.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../home/views/home_message_page.dart';
 import '../../home/views/home_screen.dart';
+import '../../ios/state.dart' as ios;
 import '../../oath/views/oath_screen.dart';
 import '../../oath/views/utils.dart';
 import '../../otp/views/otp_screen.dart';
@@ -142,7 +143,22 @@ class MainPage extends ConsumerWidget {
           centered: true,
           delayedContent: false,
           graphic: noKeyImage,
-          header: l10n.l_insert_yk,
+          header: isIOS ? l10n.l_insert_or_tap_yk : l10n.l_insert_yk,
+          actionsBuilder: isIOS
+              ? (context, expanded) => [
+                  ElevatedButton.icon(
+                    label: Text(l10n.s_nfc_tap_your_yubikey),
+                    icon: const Icon(Symbols.contactless),
+                    onPressed: () async {
+                      try {
+                        await ios.triggerNfcDeviceInfoScan();
+                      } catch (_) {
+                        // user cancelled or NFC unavailable; ignore
+                      }
+                    },
+                  ),
+                ]
+              : null,
         );
       }
     } else {

@@ -11,7 +11,8 @@
 // iOS app bootstrap. Mirrors `lib/android/init.dart`.
 //
 // Tier 1 scope: render `MainPage` driven by `ManagementManager` events.
-// Per-application state (oath/fido/piv/management) ships in later tiers.
+// Tier 2 scope: wire `managementStateProvider` so the home tab key actions
+// (toggle applications / device reset) work over USB and NFC.
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,6 +23,8 @@ import '../app/models.dart';
 import '../app/state.dart';
 import '../app/views/main_page.dart';
 import '../core/state.dart';
+import '../management/state.dart';
+import 'management/state.dart';
 import 'state.dart';
 
 Future<Widget> initialize() async {
@@ -49,6 +52,7 @@ Future<Widget> initialize() async {
         (ref) => iosCurrentSectionNotifier(ref),
       ),
       clipboardProvider.overrideWith((ref) => ref.watch(iosClipboardProvider)),
+      managementStateProvider.overrideWith2(IosManagementStateNotifier.new),
     ],
     child: const YubicoAuthenticatorApp(page: MainPage()),
   );

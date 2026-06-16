@@ -33,6 +33,8 @@ bool get isDesktop => const [
 
 bool get isAndroid => defaultTargetPlatform == TargetPlatform.android;
 
+bool get isIOS => defaultTargetPlatform == TargetPlatform.iOS;
+
 bool get isMicrosoftStore =>
     Platform.isWindows &&
     Platform.resolvedExecutable.contains('\\WindowsApps\\');
