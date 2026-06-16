@@ -478,6 +478,11 @@ class _AppPageState extends ConsumerState<AppPage> {
                   context,
                 ).copyWith(scrollbars: false),
                 child: SingleChildScrollView(
+                  padding: isAndroid
+                      ? EdgeInsets.only(
+                          bottom: MediaQuery.of(context).viewInsets.bottom,
+                        )
+                      : null,
                   physics: isAndroid
                       ? const ClampingScrollPhysics(
                           parent: AlwaysScrollableScrollPhysics(),
@@ -584,6 +589,9 @@ class _AppPageState extends ConsumerState<AppPage> {
     }
 
     return SingleChildScrollView(
+      padding: isAndroid
+          ? EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom)
+          : null,
       physics: isAndroid
           ? const ClampingScrollPhysics(parent: AlwaysScrollableScrollPhysics())
           : null,
@@ -778,6 +786,10 @@ class _AppPageState extends ConsumerState<AppPage> {
           policy: OrderedTraversalPolicy(),
           child: Scaffold(
             key: scaffoldGlobalKey,
+            // On Android, prevent the outer Scaffold from resizing for the
+            // keyboard. The navigation rail must keep its full height; inner
+            // content (dialogs, pages) handles keyboard insets on its own.
+            resizeToAvoidBottomInset: !isAndroid,
             appBar: AppBar(
               bottom: PreferredSize(
                 preferredSize: const Size.fromHeight(1.0),

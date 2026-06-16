@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2025 Yubico.
+ * Copyright (C) 2022-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import '../../exception/cancellation_exception.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../oath/views/add_account_page.dart';
 import '../../oath/views/utils.dart';
-import '../../theme.dart';
 import '../app_methods.dart';
 import 'qr_scanner_view.dart';
 
@@ -46,10 +45,7 @@ class AndroidQrScanner implements QrScanner {
       var scannedCode = await _withContext(
         (context) async => await Navigator.of(context).push(
           PageRouteBuilder(
-            pageBuilder: (_, _, _) => Theme(
-              data: AppTheme.getDarkTheme(defaultPrimaryColor),
-              child: const QrScannerView(),
-            ),
+            pageBuilder: (_, _, _) => const QrScannerView(),
             settings: const RouteSettings(name: 'android_qr_scanner_view'),
             transitionDuration: const Duration(seconds: 0),
             reverseTransitionDuration: const Duration(seconds: 0),

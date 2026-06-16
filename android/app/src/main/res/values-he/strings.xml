@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="p_ndef_set_otp">קוד הסיסמה החד־פעמית הועתק בהצלחה מה־YubiKey ללוח הגזירים.</string>
+    <string name="p_ndef_set_password">הסיסמה הועתקה מה־YubiKey ללוח הגזירים בהצלחה.</string>
+    <string name="p_ndef_parse_failure">פיענוח קוד הסיסמה החד־פעמית מה־YubiKey נכשל.</string>
+    <string name="p_ndef_set_clip_failure">הגישה ללוח הגזירים נכשלה בעת הניסיון להעתיק את קוד הסיסמה החד־פעמית מ־YubiKey.</string>
+</resources>

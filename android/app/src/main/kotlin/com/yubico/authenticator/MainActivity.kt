@@ -82,6 +82,8 @@ import java.security.Security
 import java.util.concurrent.Executors
 import javax.crypto.Mac
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.bouncycastle.jce.provider.BouncyCastleProvider
@@ -99,6 +101,7 @@ class MainActivity : FlutterFragmentActivity() {
     private val nfcConfiguration = NfcConfiguration().timeout(5000)
 
     private var hasNfc: Boolean = false
+    private var nfcRetryJob: Job? = null
 
     private lateinit var yubikit: YubiKitManager
 
@@ -154,23 +157,41 @@ class MainActivity : FlutterFragmentActivity() {
         setIntent(intent)
     }
 
-    private fun startNfcDiscovery() = try {
-        logger.debug("Starting nfc discovery")
-        yubikit.startNfcDiscovery(
-            nfcConfiguration.disableNfcDiscoverySound(appPreferences.silenceNfcSounds),
-            this
-        ) { nfcYubiKeyDevice ->
-            if (!deviceManager.isUsbKeyConnected()) {
-                launchProcessYubiKey(nfcYubiKeyDevice)
+    private fun startNfcDiscovery(retryCount: Int = 0) {
+        try {
+            logger.debug("Starting nfc discovery")
+            yubikit.startNfcDiscovery(
+                nfcConfiguration.disableNfcDiscoverySound(appPreferences.silenceNfcSounds),
+                this
+            ) { nfcYubiKeyDevice ->
+                if (!deviceManager.isUsbKeyConnected()) {
+                    launchProcessYubiKey(nfcYubiKeyDevice)
+                }
+            }
+
+            hasNfc = true
+        } catch (_: NfcNotAvailable) {
+            hasNfc = false
+        } catch (e: RuntimeException) {
+            logger.error("Start NFC discovery failed (attempt {})", retryCount + 1, e)
+            hasNfc = false
+            if (retryCount < NFC_DISCOVERY_MAX_RETRIES) {
+                nfcRetryJob = lifecycleScope.launch(Dispatchers.Main) {
+                    delay(NFC_DISCOVERY_RETRY_DELAY_MS)
+                    startNfcDiscovery(retryCount + 1)
+                }
+            } else {
+                logger.error(
+                    "Start NFC discovery failed after {} attempts, giving up",
+                    NFC_DISCOVERY_MAX_RETRIES + 1
+                )
             }
         }
-
-        hasNfc = true
-    } catch (_: NfcNotAvailable) {
-        hasNfc = false
     }
 
     private fun stopNfcDiscovery() {
+        nfcRetryJob?.cancel()
+        nfcRetryJob = null
         if (hasNfc) {
             yubikit.stopNfcDiscovery(this)
             logger.debug("Stopped nfc discovery")
@@ -297,26 +318,19 @@ class MainActivity : FlutterFragmentActivity() {
             }
 
             val usbManager = getSystemService(USB_SERVICE) as UsbManager
-            if (UsbManager.ACTION_USB_DEVICE_ATTACHED == intent.action) {
-                val device = intent.parcelableExtra<UsbDevice>(UsbManager.EXTRA_DEVICE)
-                if (device != null) {
-                    // start the USB discover only if the user approved the app to use the device
-                    if (usbManager.hasPermission(device)) {
-                        startUsbDiscovery()
-                    }
-                }
+            val attachedDevice = if (UsbManager.ACTION_USB_DEVICE_ATTACHED == intent.action) {
+                intent.parcelableExtra<UsbDevice>(UsbManager.EXTRA_DEVICE)
             } else {
-                // if any YubiKeys are connected, use them directly
-                val deviceIterator = usbManager.deviceList.values.iterator()
-                while (deviceIterator.hasNext()) {
-                    val device = deviceIterator.next()
-                    if (device.vendorId == YUBICO_VENDOR_ID) {
-                        // the device might not have a USB permission
-                        // it will be requested during the UsbDiscovery
-                        startUsbDiscovery()
-                        break
-                    }
-                }
+                null
+            }
+
+            // Start discovery if launched via USB attach with permission, or if any YubiKey
+            // is present. The latter also handles a key re-enumerating with a new product id
+            // after an interface change, where the attach intent may reference a stale device.
+            if ((attachedDevice != null && usbManager.hasPermission(attachedDevice)) ||
+                usbManager.deviceList.values.any { it.vendorId == YUBICO_VENDOR_ID }
+            ) {
+                startUsbDiscovery()
             }
         } else {
             logger.debug("Resume with preserved connection")
@@ -629,6 +643,8 @@ class MainActivity : FlutterFragmentActivity() {
     companion object {
         const val YUBICO_VENDOR_ID = 4176
         const val FLAG_SECURE = WindowManager.LayoutParams.FLAG_SECURE
+        private const val NFC_DISCOVERY_MAX_RETRIES = 3
+        private const val NFC_DISCOVERY_RETRY_DELAY_MS = 2000L
         val supportsScp11b = try {
             Mac.getInstance("AESCMAC")
             true

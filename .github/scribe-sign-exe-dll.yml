@@ -17,5 +17,6 @@ jobs:
           - yubioath-desktop-windows/*/tray_manager_plugin.dll
           - yubioath-desktop-windows/*/url_launcher_windows_plugin.dll
           - yubioath-desktop-windows/*/window_manager_plugin.dll
+          - yubioath-desktop-windows/*/dartjni.dll
           - yubioath-desktop-windows/*/helper/_internal/pywin32_system32/pythoncom314.dll
           - yubioath-desktop-windows/*/helper/_internal/pywin32_system32/pywintypes314.dll

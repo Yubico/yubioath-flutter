@@ -3,25 +3,33 @@
     "translated": 100,
     "proofread": 100
   },
+  "bg": {
+    "translated": 100,
+    "proofread": 0
+  },
   "cs": {
     "translated": 100,
     "proofread": 100
   },
   "de": {
     "translated": 100,
-    "proofread": 99
+    "proofread": 98
   },
   "el": {
-    "translated": 100,
+    "translated": 98,
     "proofread": 0
   },
   "es": {
-    "translated": 93,
-    "proofread": 93
+    "translated": 92,
+    "proofread": 92
   },
   "fr": {
+    "translated": 98,
+    "proofread": 87
+  },
+  "he": {
     "translated": 100,
-    "proofread": 88
+    "proofread": 0
   },
   "hu": {
     "translated": 100,
@@ -32,8 +40,8 @@
     "proofread": 100
   },
   "ja": {
-    "translated": 100,
-    "proofread": 64
+    "translated": 98,
+    "proofread": 63
   },
   "nl": {
     "translated": 100,
@@ -44,43 +52,43 @@
     "proofread": 99
   },
   "pt": {
-    "translated": 100,
+    "translated": 99,
     "proofread": 0
   },
   "ru": {
-    "translated": 100,
-    "proofread": 53
+    "translated": 99,
+    "proofread": 52
   },
   "sk": {
     "translated": 100,
     "proofread": 100
   },
   "sv": {
-    "translated": 100,
-    "proofread": 13
+    "translated": 98,
+    "proofread": 12
   },
   "th": {
-    "translated": 99,
+    "translated": 98,
     "proofread": 0
   },
   "tr": {
-    "translated": 100,
+    "translated": 98,
     "proofread": 0
   },
   "uk": {
-    "translated": 100,
+    "translated": 98,
     "proofread": 0
   },
   "vi": {
-    "translated": 80,
+    "translated": 79,
     "proofread": 0
   },
   "zh": {
-    "translated": 99,
+    "translated": 98,
     "proofread": 0
   },
   "zh_TW": {
-    "translated": 99,
+    "translated": 98,
     "proofread": 0
   }
 }

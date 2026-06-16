@@ -6,7 +6,7 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
 
       - name: Read variables from repo
         shell: bash
@@ -101,7 +101,7 @@ jobs:
     steps:
     - name: Check tag format
       run: |
-        if [[ "${GITHUB_REF}" =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+-RC[0-9]+$ ]]; then
+        if [[ "${GITHUB_REF}" =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$ ]]; then
           echo "Tag matches format"
         else
           echo "Invalid tag format"
@@ -109,7 +109,7 @@ jobs:
         fi
 
     - name: checkout repo
-      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
 
     - name: download artifacts
       uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
@@ -117,7 +117,7 @@ jobs:
         path: yubioath-desktop-windows
 
     - name: docker login
-      uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
+      uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
       with:
         registry: ghcr.io
         username: ci@yubico.com
@@ -162,6 +162,7 @@ jobs:
         cp signed/tray_manager_plugin.dll yubioath-desktop-windows/*/tray_manager_plugin.dll
         cp signed/url_launcher_windows_plugin.dll yubioath-desktop-windows/*/url_launcher_windows_plugin.dll
         cp signed/window_manager_plugin.dll yubioath-desktop-windows/*/window_manager_plugin.dll
+        cp signed/dartjni.dll yubioath-desktop-windows/*/dartjni.dll
         cp signed/pythoncom314.dll yubioath-desktop-windows/*/helper/_internal/pywin32_system32/pythoncom314.dll
         cp signed/pywintypes314.dll yubioath-desktop-windows/*/helper/_internal/pywin32_system32/pywintypes314.dll
 
@@ -181,14 +182,14 @@ jobs:
       - name: Check tag format
         shell: bash
         run: |
-          if [[ "${GITHUB_REF}" =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+-RC[0-9]+$ ]]; then
+          if [[ "${GITHUB_REF}" =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$ ]]; then
             echo "Tag matches format"
           else
             echo "Invalid tag format"
             exit 1
           fi
 
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
 
       - name: Download /signed dir
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
@@ -228,7 +229,7 @@ jobs:
     steps:
     - name: Check tag
       run: |
-        if [[ "${GITHUB_REF}" =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+-RC[0-9]+$ ]]; then
+        if [[ "${GITHUB_REF}" =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$ ]]; then
           echo "Tag matches format"
         else
           echo "Invalid tag format"
@@ -236,13 +237,13 @@ jobs:
         fi
 
     - name: checkout repo
-      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
 
     - name: download artifacts
       uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
 
     - name: docker login
-      uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
+      uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
       with:
         registry: ghcr.io
         username: ci@yubico.com

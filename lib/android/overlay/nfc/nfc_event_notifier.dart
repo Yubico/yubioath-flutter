@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Yubico.
+ * Copyright (C) 2024-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -106,11 +106,28 @@ class _NfcEventNotifierListener {
         context: context,
         isDismissible: isDismissible,
         enableDrag: isDismissible,
+        // Use isScrollControlled to remove the default 9/16 landscape height
+        // cap. The sheet still sizes to its content (mainAxisSize: min).
+        isScrollControlled: true,
         routeSettings: RouteSettings(name: 'android_nfc_activity_overlay'),
         builder: (BuildContext context) {
-          return PopScope(
+          // Read MediaQuery inside the builder so constraints update on
+          // orientation changes while the sheet is visible.
+          final mediaQuery = MediaQuery.of(context);
+          final isLandscape = mediaQuery.orientation == Orientation.landscape;
+          final sheet = PopScope(
             canPop: isDismissible,
             child: const NfcOverlayWidget(),
+          );
+          if (!isLandscape) return sheet;
+          // In landscape, constrain the width to 50 % of the screen
+          // (clamped to a sensible range) so the sheet doesn't span the
+          // full width.
+          return ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: (mediaQuery.size.width * 0.5).clamp(280.0, 480.0),
+            ),
+            child: sheet,
           );
         },
       );
