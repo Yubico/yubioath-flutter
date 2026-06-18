@@ -90,7 +90,7 @@ These do not require a YubiKey, and are relatively quick to run.
 The integration tests are slower but cover more end-to-end functionality. The
 require an attached YubiKey to run, and will make modifications to the data
 stored on that YubiKey. For instructions on running these tests, see
-link:../integration_test/testdoc.adoc[these instructions].
+link:Integration_Testing.adoc[these instructions].
 
 
 === Packaging for MacOS
