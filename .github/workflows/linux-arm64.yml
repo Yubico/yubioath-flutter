@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-22.04-arm
 
     steps:
-    - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       with:
         sparse-checkout: .github/workflows/env
 
@@ -44,7 +44,7 @@ jobs:
         echo "Expected: $PYVER"
         exit 1
 
-    - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
     - name: Check app versions
       run: |
@@ -52,7 +52,7 @@ jobs:
         git diff --exit-code
 
     - name: Install uv
-      uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+      uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
       with:
         enable-cache: true
 
