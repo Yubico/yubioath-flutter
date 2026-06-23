@@ -41,7 +41,7 @@ impl RpcNode for RootNode {
     fn call_action(
         &mut self,
         action: &str,
-        params: Value,
+        params: &Value,
         _signal: SignalFn,
         _cancel: &AtomicBool,
     ) -> Result<RpcResponse, RpcError> {

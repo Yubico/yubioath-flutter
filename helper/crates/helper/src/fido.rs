@@ -39,7 +39,7 @@ impl PpuatStore {
     fn new() -> Self {
         Self {
             keystore_state: SecretStore::Unknown,
-            ppuats: AppData::new("ppuats"),
+            ppuats: AppData::new("ppuats").expect("failed to open PPUAT app data"),
         }
     }
 
@@ -122,6 +122,7 @@ fn cbor_to_json(v: &CborValue) -> Value {
             }
             Value::Object(map)
         }
+        _ => Value::Null,
     }
 }
 
@@ -603,7 +604,7 @@ impl RpcNode for Ctap2Node {
     fn call_action(
         &mut self,
         action: &str,
-        params: Value,
+        params: &Value,
         signal: SignalFn,
         cancel: &AtomicBool,
     ) -> Result<RpcResponse, RpcError> {
@@ -650,7 +651,7 @@ impl Ctap2Node {
     fn do_call_action(
         &mut self,
         action: &str,
-        params: Value,
+        params: &Value,
         signal: SignalFn,
         cancel: &AtomicBool,
     ) -> Result<RpcResponse, RpcError> {
@@ -1131,7 +1132,7 @@ impl RpcNode for CredentialsRpsNode {
     fn call_action(
         &mut self,
         action: &str,
-        _params: Value,
+        _params: &Value,
         _signal: SignalFn,
         _cancel: &AtomicBool,
     ) -> Result<RpcResponse, RpcError> {
@@ -1226,7 +1227,7 @@ impl RpcNode for CredentialsRpNode {
     fn call_action(
         &mut self,
         action: &str,
-        _params: Value,
+        _params: &Value,
         _signal: SignalFn,
         _cancel: &AtomicBool,
     ) -> Result<RpcResponse, RpcError> {
@@ -1285,7 +1286,7 @@ impl RpcNode for CredentialNode {
     fn call_action(
         &mut self,
         action: &str,
-        _params: Value,
+        _params: &Value,
         _signal: SignalFn,
         _cancel: &AtomicBool,
     ) -> Result<RpcResponse, RpcError> {
@@ -1436,7 +1437,7 @@ impl RpcNode for FingerprintsNode {
     fn call_action(
         &mut self,
         action: &str,
-        params: Value,
+        params: &Value,
         signal: SignalFn,
         cancel: &AtomicBool,
     ) -> Result<RpcResponse, RpcError> {
@@ -1538,7 +1539,7 @@ impl RpcNode for FingerprintNode {
     fn call_action(
         &mut self,
         action: &str,
-        params: Value,
+        params: &Value,
         _signal: SignalFn,
         _cancel: &AtomicBool,
     ) -> Result<RpcResponse, RpcError> {

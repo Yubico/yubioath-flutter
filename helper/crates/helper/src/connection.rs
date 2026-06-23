@@ -165,7 +165,7 @@ impl RpcNode for ConnectionNode {
     fn call_action(
         &mut self,
         action: &str,
-        _params: Value,
+        _params: &Value,
         _signal: SignalFn,
         _cancel: &AtomicBool,
     ) -> Result<RpcResponse, RpcError> {

@@ -29,7 +29,7 @@ impl OathGlobalState {
     fn new() -> Self {
         Self {
             keystore_state: SecretStore::Unknown,
-            keys: AppData::new("oath_keys"),
+            keys: AppData::new("oath_keys").expect("failed to open OATH app data"),
         }
     }
 
@@ -208,7 +208,7 @@ impl RpcNode for OathNode {
     fn call_action(
         &mut self,
         action: &str,
-        params: Value,
+        params: &Value,
         _signal: SignalFn,
         _cancel: &AtomicBool,
     ) -> Result<RpcResponse, RpcError> {
@@ -292,7 +292,7 @@ impl OathNode {
         }
     }
 
-    fn call_action_inner(&mut self, action: &str, params: Value) -> Result<RpcResponse, RpcError> {
+    fn call_action_inner(&mut self, action: &str, params: &Value) -> Result<RpcResponse, RpcError> {
         match action {
             "derive" => {
                 let password = params
@@ -463,7 +463,7 @@ impl RpcNode for CredentialsNode {
     fn call_action(
         &mut self,
         action: &str,
-        params: Value,
+        params: &Value,
         _signal: SignalFn,
         _cancel: &AtomicBool,
     ) -> Result<RpcResponse, RpcError> {
@@ -626,7 +626,7 @@ impl RpcNode for CredentialNode {
     fn call_action(
         &mut self,
         action: &str,
-        params: Value,
+        params: &Value,
         signal: SignalFn,
         _cancel: &AtomicBool,
     ) -> Result<RpcResponse, RpcError> {

@@ -15,6 +15,10 @@ use x509_cert::serial_number::SerialNumber;
 use x509_cert::spki::SubjectPublicKeyInfoOwned;
 use x509_cert::time::Validity;
 
+use ykman::piv::{
+    TAG_PIVMAN_KEY, TAG_PIVMAN_SALT, get_pivman_data, get_pivman_protected_data, has_stored_key,
+    pivman_set_mgm_key,
+};
 use yubikit::keys::{PrivateKey, PublicKey};
 use yubikit::piv::{
     HashAlgorithm, KeyType, ManagementKey, ManagementKeyType, ObjectId, PinPolicy, PivError,
@@ -22,7 +26,6 @@ use yubikit::piv::{
 };
 use yubikit::smartcard::ScpKeyParams;
 use yubikit::smartcard::SmartCardConnection;
-use yubikit::tlv::{parse_tlv_list, tlv_encode, tlv_unpack};
 
 use crate::connection::SharedConn;
 use crate::error::{RpcError, RpcResponse};
@@ -157,7 +160,7 @@ impl RpcNode for PivNode {
     fn call_action(
         &mut self,
         action: &str,
-        params: Value,
+        params: &Value,
         _signal: SignalFn,
         _cancel: &AtomicBool,
     ) -> Result<RpcResponse, RpcError> {
@@ -193,7 +196,7 @@ impl RpcNode for PivNode {
 }
 
 impl PivNode {
-    fn _call_action(&mut self, action: &str, params: Value) -> Result<RpcResponse, RpcError> {
+    fn _call_action(&mut self, action: &str, params: &Value) -> Result<RpcResponse, RpcError> {
         match action {
             "verify_pin" => {
                 let pin = params
@@ -267,7 +270,7 @@ impl PivNode {
 
                 let mut session_guard = self.session.lock().unwrap();
                 let session = session_guard.as_mut().unwrap();
-                pivman_set_mgm_key(session, key_type, &key, store_key)
+                pivman_set_mgm_key(session, key_type, &key, false, store_key)
                     .map_err(|e| RpcError::new("device-error", e.to_string()))?;
                 self.authenticated = true;
                 Ok(RpcResponse::with_flags(json!({}), vec!["device_info"]))
@@ -370,151 +373,6 @@ fn handle_pin_error(e: PivError) -> RpcError {
     }
 }
 
-// --- Pivman data helpers ---
-
-const PIVMAN_OBJ_ID: u32 = 0x5FFF00;
-const PIVMAN_PROTECTED_OBJ_ID: u32 = ObjectId::Printed as u32;
-
-const TAG_PIVMAN_DATA: u32 = 0x80;
-const TAG_PIVMAN_FLAGS: u32 = 0x81;
-const TAG_PIVMAN_SALT: u32 = 0x82;
-const TAG_PIVMAN_PROTECTED: u32 = 0x88;
-const TAG_PIVMAN_KEY: u32 = 0x89;
-
-const PIVMAN_FLAG_KEY_PROTECTED: u8 = 0x02;
-
-fn get_pivman_data(session: &mut PivSession<impl SmartCardConnection>) -> Vec<(u32, Vec<u8>)> {
-    session
-        .get_object_raw(PIVMAN_OBJ_ID)
-        .ok()
-        .and_then(|raw| {
-            let inner = tlv_unpack(TAG_PIVMAN_DATA, &raw).ok()?;
-            parse_tlv_list(&inner).ok()
-        })
-        .unwrap_or_default()
-}
-
-fn has_stored_key(pivman: &[(u32, Vec<u8>)]) -> bool {
-    pivman
-        .iter()
-        .find(|(t, _)| *t == TAG_PIVMAN_FLAGS)
-        .is_some_and(|(_, v)| !v.is_empty() && (v[0] & PIVMAN_FLAG_KEY_PROTECTED) != 0)
-}
-
-fn put_pivman_data(
-    session: &mut PivSession<impl SmartCardConnection>,
-    entries: &[(u32, Vec<u8>)],
-) -> Result<(), String> {
-    let mut inner = Vec::new();
-    for (tag, val) in entries {
-        inner.extend_from_slice(&tlv_encode(*tag, val));
-    }
-    let outer = if inner.is_empty() {
-        vec![]
-    } else {
-        tlv_encode(TAG_PIVMAN_DATA, &inner)
-    };
-    session
-        .put_object_raw(PIVMAN_OBJ_ID, Some(&outer))
-        .map_err(|e| format!("Failed to write pivman data: {e}"))
-}
-
-fn get_pivman_protected_data(
-    session: &mut PivSession<impl SmartCardConnection>,
-) -> Vec<(u32, Vec<u8>)> {
-    session
-        .get_object_raw(PIVMAN_PROTECTED_OBJ_ID)
-        .ok()
-        .and_then(|raw| {
-            let inner = tlv_unpack(TAG_PIVMAN_PROTECTED, &raw).ok()?;
-            parse_tlv_list(&inner).ok()
-        })
-        .unwrap_or_default()
-}
-
-fn put_pivman_protected_data(
-    session: &mut PivSession<impl SmartCardConnection>,
-    entries: &[(u32, Vec<u8>)],
-) -> Result<(), String> {
-    let mut inner = Vec::new();
-    for (tag, val) in entries {
-        inner.extend_from_slice(&tlv_encode(*tag, val));
-    }
-    let outer = if inner.is_empty() {
-        vec![]
-    } else {
-        tlv_encode(TAG_PIVMAN_PROTECTED, &inner)
-    };
-    session
-        .put_object_raw(PIVMAN_PROTECTED_OBJ_ID, Some(&outer))
-        .map_err(|e| format!("Failed to write pivman protected data: {e}"))
-}
-
-fn set_tlv_entry(entries: &mut Vec<(u32, Vec<u8>)>, tag: u32, value: Option<Vec<u8>>) {
-    entries.retain(|(t, _)| *t != tag);
-    if let Some(v) = value {
-        entries.push((tag, v));
-    }
-}
-
-/// Set the management key and keep pivman data in sync.
-fn pivman_set_mgm_key(
-    session: &mut PivSession<impl SmartCardConnection>,
-    key_type: ManagementKeyType,
-    new_key: &[u8],
-    store_on_device: bool,
-) -> Result<(), String> {
-    let mut pivman = get_pivman_data(session);
-    let was_stored = has_stored_key(&pivman);
-
-    // If we need to read/clear protected data, get it now (while PIN is still verified)
-    let mut prot = if store_on_device || was_stored {
-        Some(get_pivman_protected_data(session))
-    } else {
-        None
-    };
-
-    // Set the actual management key on the device
-    let mgmt_key = ManagementKey::new(key_type, new_key)
-        .map_err(|e| format!("Invalid management key: {e}"))?;
-    session
-        .set_management_key(&mgmt_key, false)
-        .map_err(|e| format!("Failed to set management key: {e}"))?;
-
-    // Update the stored-key flag
-    let current_flags = pivman
-        .iter()
-        .find(|(t, _)| *t == TAG_PIVMAN_FLAGS)
-        .map(|(_, v)| if v.is_empty() { 0u8 } else { v[0] })
-        .unwrap_or(0);
-
-    let new_flags = if store_on_device {
-        current_flags | PIVMAN_FLAG_KEY_PROTECTED
-    } else {
-        current_flags & !PIVMAN_FLAG_KEY_PROTECTED
-    };
-
-    if new_flags != 0 {
-        set_tlv_entry(&mut pivman, TAG_PIVMAN_FLAGS, Some(vec![new_flags]));
-    } else {
-        set_tlv_entry(&mut pivman, TAG_PIVMAN_FLAGS, None);
-    }
-
-    put_pivman_data(session, &pivman)?;
-
-    // Update protected data
-    if let Some(ref mut prot_entries) = prot {
-        if store_on_device {
-            set_tlv_entry(prot_entries, TAG_PIVMAN_KEY, Some(new_key.to_vec()));
-        } else {
-            set_tlv_entry(prot_entries, TAG_PIVMAN_KEY, None);
-        }
-        put_pivman_protected_data(session, prot_entries)?;
-    }
-
-    Ok(())
-}
-
 /// Generate and write a new CHUID to the device.
 fn generate_chuid(session: &mut PivSession<impl SmartCardConnection>) -> Result<(), RpcError> {
     let mut chuid = Vec::new();
@@ -554,12 +412,11 @@ fn parse_cert_info(cert_der: &[u8]) -> Option<Value> {
     let not_before = tbs.validity.not_before.to_string();
     let not_after = tbs.validity.not_after.to_string();
 
-    let key_type =
-        PublicKey::from_spki(&tbs.subject_public_key_info.to_der().unwrap_or_default())
-            .ok()
-            .and_then(|pk| KeyType::from_public_key(&pk).ok())
-            .map(|kt| json!(kt as u8))
-            .unwrap_or(json!(null));
+    let key_type = PublicKey::from_spki(&tbs.subject_public_key_info.to_der().unwrap_or_default())
+        .ok()
+        .and_then(|pk| KeyType::from_public_key(&pk).ok())
+        .map(|kt| json!(kt as u8))
+        .unwrap_or(json!(null));
 
     Some(json!({
         "key_type": key_type,
@@ -781,7 +638,7 @@ impl RpcNode for SlotsNode {
     fn call_action(
         &mut self,
         action: &str,
-        _params: Value,
+        _params: &Value,
         _signal: SignalFn,
         _cancel: &AtomicBool,
     ) -> Result<RpcResponse, RpcError> {
@@ -862,7 +719,7 @@ impl RpcNode for SlotNode {
     fn call_action(
         &mut self,
         action: &str,
-        params: Value,
+        params: &Value,
         signal: SignalFn,
         _cancel: &AtomicBool,
     ) -> Result<RpcResponse, RpcError> {
@@ -880,7 +737,7 @@ impl SlotNode {
     fn _call_action(
         &mut self,
         action: &str,
-        params: Value,
+        params: &Value,
         signal: SignalFn,
     ) -> Result<RpcResponse, RpcError> {
         match action {
@@ -1062,7 +919,7 @@ impl SlotNode {
 
                         // Try to get the public key in SPKI PEM form
                         if let Ok(metadata) = session.get_slot_metadata(self.slot)
-                            && let Ok(spki_der) = metadata.public_key.to_spki_der()
+                            && let Ok(spki_der) = metadata.public_key.to_spki()
                             && let Ok(spki) = SubjectPublicKeyInfoOwned::from_der(&spki_der)
                             && let Ok(pem) = spki.to_pem(LineEnding::LF)
                         {
@@ -1141,7 +998,7 @@ impl SlotNode {
                         .generate_key(self.slot, key_type, pin_policy, touch_policy)
                         .map_err(|e| RpcError::new("device-error", format!("{e}")))?;
 
-                    let spki_der = public_key.to_spki_der().map_err(|e| {
+                    let spki_der = public_key.to_spki().map_err(|e| {
                         RpcError::new("device-error", format!("Failed to encode SPKI: {e}"))
                     })?;
 
@@ -1400,6 +1257,7 @@ fn slot_name(slot: Slot) -> &'static str {
         Slot::Retired19 => "RETIRED19",
         Slot::Retired20 => "RETIRED20",
         Slot::Attestation => "ATTESTATION",
+        _ => "UNKNOWN",
     }
 }
 
@@ -1407,7 +1265,7 @@ fn slot_name(slot: Slot) -> &'static str {
 fn metadata_to_json(metadata: &yubikit::piv::SlotMetadata) -> Value {
     let public_key_pem = metadata
         .public_key
-        .to_spki_der()
+        .to_spki()
         .ok()
         .and_then(|der| SubjectPublicKeyInfoOwned::from_der(&der).ok())
         .and_then(|spki| spki.to_pem(LineEnding::LF).ok());
@@ -1423,7 +1281,7 @@ fn metadata_to_json(metadata: &yubikit::piv::SlotMetadata) -> Value {
 
 /// Check if a certificate's public key matches the slot metadata's public key.
 fn public_key_match(cert_der: &[u8], metadata: &yubikit::piv::SlotMetadata) -> bool {
-    let slot_spki = match metadata.public_key.to_spki_der() {
+    let slot_spki = match metadata.public_key.to_spki() {
         Ok(der) => der,
         Err(_) => return false,
     };

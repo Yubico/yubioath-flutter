@@ -110,7 +110,7 @@ impl RpcNode for ManagementCcidNode {
     fn call_action(
         &mut self,
         action: &str,
-        params: Value,
+        params: &Value,
         _signal: SignalFn,
         _cancel: &AtomicBool,
     ) -> Result<RpcResponse, RpcError> {
@@ -252,7 +252,7 @@ impl RpcNode for ManagementOtpNode {
     fn call_action(
         &mut self,
         action: &str,
-        params: Value,
+        params: &Value,
         _signal: SignalFn,
         _cancel: &AtomicBool,
     ) -> Result<RpcResponse, RpcError> {
@@ -381,7 +381,7 @@ impl RpcNode for ManagementFidoNode {
     fn call_action(
         &mut self,
         action: &str,
-        params: Value,
+        params: &Value,
         _signal: SignalFn,
         _cancel: &AtomicBool,
     ) -> Result<RpcResponse, RpcError> {

@@ -108,7 +108,7 @@ fn run_rpc_loop(
             }
         };
 
-        let response_json = match host.call(&action, &target, params, &signal_fn, &cancel) {
+        let response_json = match host.call(&action, &target, &params, &signal_fn, &cancel) {
             Ok(response) => {
                 json!({"kind": "success", "body": response.body, "flags": response.flags})
             }

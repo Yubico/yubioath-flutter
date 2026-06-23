@@ -11,9 +11,7 @@ use yubikit::platform::device::{get_name, scan_usb_devices};
 use yubikit::securitydomain::{KeyRef, SecurityDomainSession};
 use yubikit::smartcard::ScpKeyParams;
 
-use yubikit::device::DeviceSource;
-
-use ykman::device::get_device_source;
+use ykman::device::{DeviceSource, get_device_source};
 
 use crate::connection::ConnectionNode;
 use crate::error::{RpcError, RpcResponse};
@@ -131,6 +129,9 @@ impl RpcNode for DevicesNode {
                         }
                         Err(e) => {
                             log::warn!("Failed to list devices: {e}");
+                            self.devices.clear();
+                            self.device_mapping.clear();
+                            *state = 0;
                         }
                     }
                 }
@@ -165,6 +166,8 @@ impl RpcNode for DevicesNode {
                     }
                     Err(e) => {
                         log::warn!("Failed to get service devices: {e}");
+                        self.devices.clear();
+                        self.device_mapping.clear();
                     }
                 }
                 self.devices.clone()
@@ -175,7 +178,7 @@ impl RpcNode for DevicesNode {
     fn call_action(
         &mut self,
         action: &str,
-        _params: Value,
+        _params: &Value,
         _signal: SignalFn,
         _cancel: &AtomicBool,
     ) -> Result<RpcResponse, RpcError> {
@@ -286,7 +289,7 @@ impl RpcNode for DeviceNode {
     fn call_action(
         &mut self,
         action: &str,
-        _params: Value,
+        _params: &Value,
         _signal: SignalFn,
         _cancel: &AtomicBool,
     ) -> Result<RpcResponse, RpcError> {
