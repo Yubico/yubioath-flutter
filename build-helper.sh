@@ -23,7 +23,7 @@ uv sync --locked
 
 # Create a universal binary on MacOS
 if [ "$OS" = "macos" ]; then
-	PYTHON=`uv run python -c "import sys; print(sys.executable)"`
+	PYTHON=`uv run --no-sync python -c "import sys; print(sys.executable)"`
 	echo "Using Python: $PYTHON"
 	if [ $(lipo -archs $PYTHON | grep -c 'x86_64 arm64') -ne 0 ]; then
 		echo "Fixing single-arch dependencies..."
@@ -34,6 +34,9 @@ if [ "$OS" = "macos" ]; then
 		HELPER="../$OUTPUT/helper"
 		rm -rf $HELPER
 		mkdir -p $HELPER
+
+		# Cryptography 49 drops support for Intel Macs
+		uv pip install "cryptography<49"
 
 		# Export exact versions
 		uv pip freeze  > $HELPER/requirements.txt
@@ -51,7 +54,7 @@ if [ "$OS" = "macos" ]; then
 		# Combine wheels of pillow to get universal build
 		pip download -r $HELPER/pillow.txt --platform macosx_10_15_x86_64 --only-binary :all: --no-deps --dest $HELPER
 		pip download -r $HELPER/pillow.txt --platform macosx_11_0_arm64 --only-binary :all: --no-deps --dest $HELPER
-		uv run delocate-merge $HELPER/pillow*.whl
+		uv run --no-sync delocate-merge $HELPER/pillow*.whl
 		UNIVERSAL_WHL=$(ls $HELPER/pillow*universal2.whl)
 		uv pip install --upgrade $UNIVERSAL_WHL
 		# Build zxing-cpp from source to get universal build
@@ -77,7 +80,7 @@ cd helper
 uv build
 VENV="../$OUTPUT/helper-license-venv"
 rm -rf $VENV
-uv run python -m venv $VENV
+uv run --no-sync python -m venv $VENV
 $VENV/bin/pip install --upgrade pip wheel
 $VENV/bin/pip install dist/authenticator_helper-0.1.0-py3-none-any.whl pip-licenses
 $VENV/bin/pip-licenses --format=json --no-license-path --with-license-file --ignore-packages authenticator-helper zxing-cpp --output-file ../assets/licenses/helper.json
