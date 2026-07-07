@@ -299,7 +299,7 @@
             }
         }
     },
-    "l_attempts_remaining": "{retries, plural, =1{{retries} attempt remaining}other{{retries} attempts remaining}}",
+    "l_attempts_remaining": "{retries, plural, =1{ניסיון {retries} שנותר}other{שנותרו {retries} ניסיונות}}",
     "@l_attempts_remaining": {
         "placeholders": {
             "retries": {
@@ -307,7 +307,7 @@
             }
         }
     },
-    "l_wrong_pin_attempts_remaining": "Wrong PIN, {retries, plural, =1{{retries} attempt remaining}other{{retries} attempts remaining}}",
+    "l_wrong_pin_attempts_remaining": "PIN שגוי, {retries, plural, =1{ניסיון {retries} שנותר}other{שנותרו {retries} ניסיונות}}",
     "@l_wrong_pin_attempts_remaining": {
         "placeholders": {
             "retries": {
@@ -315,7 +315,7 @@
             }
         }
     },
-    "l_wrong_puk_attempts_remaining": "Wrong PUK, {retries, plural, =1{{retries} attempt remaining}other{{retries} attempts remaining}}",
+    "l_wrong_puk_attempts_remaining": "PUK שגוי, {retries, plural, =1{ניסיון {retries} שנותר}other{שנותרו {retries} ניסיונות}}",
     "@l_wrong_puk_attempts_remaining": {
         "placeholders": {
             "retries": {
