@@ -17,6 +17,12 @@ jobs:
         with:
           path: 'app'
 
+      # Caches ~/.gradle (dependencies + build cache) across runs. Gradle is
+      # invoked through Flutter here, but the cache is home-dir based so both the
+      # `flutter build apk` and `./gradlew test` steps benefit.
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@50e97c2cd7a37755bbfafc9c5b7cafaece252f6e # v6.1.0
+
       - name: Read variables from repo
         run: cat .github/workflows/env >> $GITHUB_ENV
         working-directory: ./app
@@ -26,6 +32,7 @@ jobs:
         with:
           channel: 'stable'
           flutter-version: ${{ env.FLUTTER }}
+          cache: true
       - run: |
           flutter config
           flutter --version
