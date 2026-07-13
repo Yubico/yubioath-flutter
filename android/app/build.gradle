@@ -83,6 +83,17 @@ android {
         }
     }
 
+    // Emit per-ABI and universal APKs from a single assemble, so the release
+    // build needs one `flutter build apk` instead of two.
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'armeabi-v7a', 'arm64-v8a', 'x86_64'
+            universalApk true
+        }
+    }
+
     ndkVersion = flutter.ndkVersion
 }
 
