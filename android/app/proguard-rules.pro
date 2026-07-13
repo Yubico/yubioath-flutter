@@ -5,54 +5,24 @@
 # For more details, see
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
+# kotlinx.serialization keep rules are intentionally NOT declared here.
+# kotlinx-serialization-core ships them inside the jar
+# (META-INF/com.android.tools/r8/*.pro, including the R8 full-mode rules) and R8
+# applies them automatically.
+
+# yubikit keep rules are intentionally NOT declared here. The
+# com.yubico.yubikit:android AAR ships them as consumer rules, including
+# `-keepnames class com.yubico.yubikit.**`, which already preserves exception
+# class names so they are not obfuscated in log output.
+
 -dontwarn edu.umd.cs.findbugs.annotations.SuppressFBWarnings
-
-
-# Keep `Companion` object fields of serializable classes.
-# This avoids serializer lookup through `getDeclaredClasses` as done for named companion objects.
--if @kotlinx.serialization.Serializable class **
--keepclassmembers class <1> {
-    static <1>$Companion Companion;
-}
-
-# Keep `serializer()` on companion objects (both default and named) of serializable classes.
--if @kotlinx.serialization.Serializable class ** {
-    static **$* *;
-}
--keepclassmembers class <2>$<3> {
-    kotlinx.serialization.KSerializer serializer(...);
-}
-
-# Keep `INSTANCE.serializer()` of serializable objects.
--if @kotlinx.serialization.Serializable class ** {
-    public static ** INSTANCE;
-}
--keepclassmembers class <1> {
-    public static <1> INSTANCE;
-    kotlinx.serialization.KSerializer serializer(...);
-}
-
-# @Serializable and @Polymorphic are used at runtime for polymorphic serialization.
--keepattributes RuntimeVisibleAnnotations,AnnotationDefault
-
-# Serializer for classes with named companion objects are retrieved using `getDeclaredClasses`.
-# If you have any, uncomment and replace classes with those containing named companion objects.
-#-keepattributes InnerClasses # Needed for `getDeclaredClasses`.
-#-if @kotlinx.serialization.Serializable class
-#com.example.myapplication.HasNamedCompanion, # <-- List serializable classes with named companions.
-#com.example.myapplication.HasNamedCompanion2
-#{
-#    static **$* *;
-#}
-#-keepnames class <1>$$serializer { # -keepnames suffices; class is kept when serializer() is kept.
-#    static <1>$$serializer INSTANCE;
-#}
 
 # app specific rules
 -keep public class com.yubico.authenticator.logging.BufferAppender
 -keepclassmembers class com.yubico.authenticator.logging.BufferAppender { *; }
 
-# consumer rules for logcat-android
+# consumer rules for logback-android
+# The logback-android AAR ships no proguard.txt, so we carry its rules here.
 # see: https://github.com/tony19/logback-android/blob/v_3.0.0/logback-android/consumer-rules.pro
 -keepclassmembers class ch.qos.logback.classic.pattern.* { <init>(); }
 
@@ -65,7 +35,7 @@
 
 -keep class org.bouncycastle.** { *; }
 
-# these are not part of Android SDK
+# these are not part of Android SDK (referenced by logback via JNDI)
 -dontwarn javax.naming.Binding
 -dontwarn javax.naming.NamingEnumeration
 -dontwarn javax.naming.NamingException
@@ -75,6 +45,3 @@
 -dontwarn javax.naming.directory.InitialDirContext
 -dontwarn javax.naming.directory.SearchControls
 -dontwarn javax.naming.directory.SearchResult
-
-# don't ubfuscate exception names
--keep class com.yubico.yubikit.core.** extends java.lang.Exception { *; }
