@@ -325,7 +325,11 @@ class NavigationContent extends ConsumerWidget {
                               .read(currentSectionProvider.notifier)
                               .setCurrentSection(app);
                           if (shouldPop) {
-                            Navigator.of(context).pop();
+                            // Use closeDrawer() (idempotent) rather than
+                            // Navigator.pop(); a rapid double tap with pop()
+                            // closes the drawer then pops the page route,
+                            // leaving a black screen.
+                            scaffoldGlobalKey.currentState?.closeDrawer();
                           }
                         }
                       : null,
@@ -361,7 +365,9 @@ class NavigationContent extends ConsumerWidget {
                   .read(currentSectionProvider.notifier)
                   .setCurrentSection(settingsSection);
               if (shouldPop) {
-                Navigator.of(context).pop();
+                // See note above: closeDrawer() is idempotent, so a double tap
+                // won't pop the underlying page route.
+                scaffoldGlobalKey.currentState?.closeDrawer();
               }
             },
           ),
