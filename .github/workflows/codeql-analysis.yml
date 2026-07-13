@@ -43,6 +43,11 @@ jobs:
         with:
           path: 'app'
 
+      # Caches Gradle dependencies. The Gradle build cache is deliberately kept
+      # off for the build step below so CodeQL's tracer sees full compilation.
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@50e97c2cd7a37755bbfafc9c5b7cafaece252f6e # v6.1.0
+
       - name: Read variables from repo
         run: cat .github/workflows/env >> $GITHUB_ENV
         working-directory: ./app
@@ -52,6 +57,7 @@ jobs:
         with:
           channel: 'stable'
           flutter-version: ${{ env.FLUTTER }}
+          cache: true
       - run: |
           flutter config
           flutter --version
@@ -74,6 +80,9 @@ jobs:
         name: Build the App
         run: android/scripts/build.sh
         env:
+          # Disable the Gradle build cache so CodeQL always traces a real
+          # compilation; a cached KotlinCompile would drop classes from the DB.
+          GRADLE_OPTS: -Dorg.gradle.caching=false
           YUBIOATH_STORE_BASE64: ${{ secrets.YUBIOATH_STORE_BASE64 }}
           YUBIOATH_KEY_ALIAS: ${{ secrets.YUBIOATH_KEY_ALIAS }}
           YUBIOATH_KEY_PASSWORD: ${{ secrets.YUBIOATH_KEY_PASSWORD }}
