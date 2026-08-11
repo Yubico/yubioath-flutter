@@ -253,8 +253,11 @@ jobs:
           cp -Recurse signed-files\yubioath-desktop-$branch-windows\* $pkg\
           cp -Recurse resources\win\msix\Assets $pkg\Assets
           (Get-Content resources\win\msix\AppxManifest.xml) -replace '\$VERSION\$', $version | Set-Content $pkg\AppxManifest.xml -Encoding utf8
-          $makeappx = Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin\10.*\x64\makeappx.exe" | Sort-Object FullName -Descending | Select-Object -First 1
-          & $makeappx.FullName pack /d $pkg /p yubioath-desktop.msix /o
+          $sdkBin = (Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin\10.*\x64\makeappx.exe" | Sort-Object FullName -Descending | Select-Object -First 1).DirectoryName
+          # Index the scale-qualified logo assets so the manifest references resolve
+          & "$sdkBin\makepri.exe" createconfig /cf priconfig.xml /dq en-US /o
+          & "$sdkBin\makepri.exe" new /pr $pkg /cf priconfig.xml /mn $pkg\AppxManifest.xml /of $pkg\Resources.pri /o
+          & "$sdkBin\makeappx.exe" pack /d $pkg /p yubioath-desktop.msix /o /l
           mkdir msix-installer
           mv yubioath-desktop.msix msix-installer
 
