@@ -10,14 +10,23 @@ use yubikit::otp::OtpConnection;
 use yubikit::smartcard::SmartCardConnection;
 
 use crate::connection::SharedConn;
-use crate::devices::info_to_json;
+use crate::devices::{info_to_json, is_service_mode};
 use crate::error::{RpcError, RpcResponse};
 use crate::monitor;
 use crate::rpc::{RpcNode, SignalFn};
 
 /// After a reboot-triggering configure, wait for the device to reappear.
 /// Matches the Python `_await_reboot` behavior: poll for up to ~2s.
+///
+/// When device access is backed by the ykman-svc service, this is a no-op:
+/// the service runs its own device monitor, and starting the helper's local
+/// monitor here would mean two independent monitors racing for the same
+/// USB/PC-SC hardware.
 fn await_reboot(serial: Option<u32>, _usb_enabled: Option<Capability>) {
+    if is_service_mode() {
+        log::debug!("Service mode: not waiting locally for device to re-appear");
+        return;
+    }
     log::debug!("Waiting for device to re-appear (serial={serial:?})...");
     if monitor::wait_for_serial(serial, Duration::from_millis(2000)) {
         log::debug!("Device found");

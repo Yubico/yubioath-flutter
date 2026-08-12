@@ -1,4 +1,5 @@
 use std::collections::BTreeMap;
+use std::sync::OnceLock;
 use std::sync::atomic::AtomicBool;
 
 use der::Decode;
@@ -19,6 +20,21 @@ use crate::monitor;
 use crate::rpc::{RpcNode, SignalFn};
 use crate::util::{id_from_fingerprint, version_to_json};
 
+/// Cached process-wide answer to "are we backed by the ykman-svc service?".
+///
+/// Set the first time a [`DevicesNode`] is constructed (at helper startup).
+/// Consulted elsewhere (e.g. [`crate::management::await_reboot`]) so the
+/// local [`monitor`] is never started when the service is doing device
+/// enumeration instead.
+static IS_SERVICE: OnceLock<bool> = OnceLock::new();
+
+/// Whether device access is backed by the ykman-svc service (RPC) rather
+/// than direct local access. `false` until the first [`DevicesNode`] has
+/// been constructed.
+pub fn is_service_mode() -> bool {
+    IS_SERVICE.get().copied().unwrap_or(false)
+}
+
 pub struct DevicesNode {
     source: Box<dyn DeviceSource>,
     /// Whether `source` is backed by the ykman-svc service (RPC) rather than
@@ -33,6 +49,7 @@ impl DevicesNode {
     pub fn new() -> Self {
         let source = get_device_source();
         let is_service = source.is_service();
+        IS_SERVICE.get_or_init(|| is_service);
         if is_service {
             log::info!("Connected to ykman-svc service for USB device access");
         }
