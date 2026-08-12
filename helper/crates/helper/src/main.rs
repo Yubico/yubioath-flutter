@@ -4,6 +4,7 @@ mod devices;
 mod error;
 mod fido;
 mod management;
+mod monitor;
 mod oath;
 mod piv;
 mod qr;

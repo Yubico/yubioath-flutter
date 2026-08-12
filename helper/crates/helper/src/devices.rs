@@ -7,7 +7,7 @@ use serde_json::{Value, json};
 use yubikit::core::Transport;
 use yubikit::device::YubiKeyDevice;
 use yubikit::management::{Capability, UsbInterface};
-use yubikit::platform::device::{get_name, scan_usb_devices};
+use yubikit::platform::device::get_name;
 use yubikit::securitydomain::{KeyRef, SecurityDomainSession};
 use yubikit::smartcard::ScpKeyParams;
 
@@ -15,20 +15,15 @@ use ykman::device::{DeviceSource, get_device_source};
 
 use crate::connection::ConnectionNode;
 use crate::error::{RpcError, RpcResponse};
+use crate::monitor;
 use crate::rpc::{RpcNode, SignalFn};
 use crate::util::{id_from_fingerprint, version_to_json};
 
-/// Internal state for tracking device changes.
-enum ListState {
-    /// Direct local device access — tracks USB state fingerprint.
-    Local { state: u64 },
-    /// Connected to the ykman-svc service — no local state tracking needed.
-    Service,
-}
-
 pub struct DevicesNode {
     source: Box<dyn DeviceSource>,
-    list_state: ListState,
+    /// Whether `source` is backed by the ykman-svc service (RPC) rather than
+    /// direct local device access.
+    is_service: bool,
     device_mapping: BTreeMap<String, Box<dyn YubiKeyDevice>>,
     devices: BTreeMap<String, Value>,
     child_invalidated: bool,
@@ -37,36 +32,46 @@ pub struct DevicesNode {
 impl DevicesNode {
     pub fn new() -> Self {
         let source = get_device_source();
-        let list_state = if source.is_service() {
+        let is_service = source.is_service();
+        if is_service {
             log::info!("Connected to ykman-svc service for USB device access");
-            ListState::Service
-        } else {
-            ListState::Local { state: 0 }
-        };
+        }
         Self {
             source,
-            list_state,
+            is_service,
             device_mapping: BTreeMap::new(),
             devices: BTreeMap::new(),
             child_invalidated: false,
+        }
+    }
+
+    /// Enumerate currently connected devices, using the ykman-svc service
+    /// (via RPC) when available, or the local [`monitor`]'s live inventory
+    /// otherwise. The monitor runs continuously in the background for the
+    /// lifetime of the helper process, so this is always up to date and
+    /// never needs to trigger a fresh USB/PC-SC scan.
+    fn list_devices(
+        &mut self,
+    ) -> Result<Vec<Box<dyn YubiKeyDevice>>, yubikit::device::DeviceError> {
+        if self.is_service {
+            self.source.list_devices()
+        } else {
+            Ok(monitor::devices()
+                .into_iter()
+                .map(|d| Box::new(d) as Box<dyn YubiKeyDevice>)
+                .collect())
         }
     }
 }
 
 impl RpcNode for DevicesNode {
     fn get_data(&self) -> Value {
-        match &self.list_state {
-            ListState::Local { .. } => {
-                let (pids, state) = scan_usb_devices();
-                json!({
-                    "state": state as i64,
-                    "pids": pids,
-                })
-            }
-            ListState::Service => {
-                json!({"state": 0, "pids": {}})
-            }
-        }
+        // Previously exposed a raw USB PID scan ("pids") so the frontend
+        // could detect devices the helper couldn't enumerate (e.g. FIDO-only
+        // devices without admin on Windows). The device monitor only tracks
+        // devices it can successfully read, so this is now always empty, as
+        // it already was in service mode.
+        json!({"state": 0, "pids": {}})
     }
 
     fn list_actions(&self) -> Vec<&'static str> {
@@ -74,105 +79,43 @@ impl RpcNode for DevicesNode {
     }
 
     fn list_children(&mut self) -> BTreeMap<String, Value> {
-        match &mut self.list_state {
-            ListState::Local { state } => {
-                let (_, current_state) = scan_usb_devices();
-                if current_state != *state {
-                    log::debug!("State changed (was={}, now={current_state})", *state);
-                    self.devices.clear();
-                    self.device_mapping.clear();
-
-                    match self.source.list_devices() {
-                        Ok(devs) => {
-                            for dev in devs {
-                                let dev_id = if let Some(serial) = dev.info().serial {
-                                    serial.to_string()
-                                } else {
-                                    id_from_fingerprint(&dev.name())
-                                };
-                                let name = get_name(dev.info());
-                                self.devices.insert(
-                                    dev_id.clone(),
-                                    json!({
-                                        "name": name,
-                                        "serial": dev.info().serial,
-                                        "transport": transport_to_str(dev.transport()),
-                                        "pid": dev.pid(),
-                                    }),
-                                );
-                                self.device_mapping.insert(dev_id, dev);
-                            }
-
-                            let (pids, _) = scan_usb_devices();
-                            let expected: usize = pids.values().sum();
-                            let usb_count = self
-                                .device_mapping
-                                .values()
-                                .filter(|d| d.transport() == Transport::Usb)
-                                .count();
-                            // Check that all CCID-capable devices are accessible
-                            let all_ccid_ok = self.device_mapping.values().all(|d| {
-                                d.transport() == Transport::Nfc
-                                    || !d.usb_interfaces().contains(UsbInterface::CCID)
-                                    || d.open_smartcard().is_ok()
-                            });
-                            if !all_ccid_ok {
-                                log::warn!("Not all devices have CCID access");
-                                *state = 0;
-                            } else {
-                                if expected != usb_count {
-                                    log::warn!("Not all devices identified");
-                                }
-                                *state = current_state;
-                                log::debug!("State updated: {current_state}");
-                            }
-                        }
-                        Err(e) => {
-                            log::warn!("Failed to list devices: {e}");
-                            self.devices.clear();
-                            self.device_mapping.clear();
-                            *state = 0;
-                        }
+        let is_service = self.is_service;
+        match self.list_devices() {
+            Ok(devs) => {
+                self.devices.clear();
+                self.device_mapping.clear();
+                for dev in devs {
+                    // The service source dedupes/excludes NFC readers on its
+                    // side; local (monitor-backed) enumeration still reports
+                    // them so a tapped NFC card shows up as a device.
+                    if is_service && dev.transport() == Transport::Nfc {
+                        continue;
                     }
+                    let dev_id = if let Some(serial) = dev.info().serial {
+                        serial.to_string()
+                    } else {
+                        id_from_fingerprint(&dev.name())
+                    };
+                    let name = get_name(dev.info());
+                    self.devices.insert(
+                        dev_id.clone(),
+                        json!({
+                            "name": name,
+                            "serial": dev.info().serial,
+                            "transport": transport_to_str(dev.transport()),
+                            "pid": dev.pid(),
+                        }),
+                    );
+                    self.device_mapping.insert(dev_id, dev);
                 }
-                self.devices.clone()
             }
-            ListState::Service => {
-                match self.source.list_devices() {
-                    Ok(devs) => {
-                        self.devices.clear();
-                        self.device_mapping.clear();
-                        for dev in devs {
-                            if dev.transport() == Transport::Nfc {
-                                continue;
-                            }
-                            let dev_id = if let Some(serial) = dev.info().serial {
-                                serial.to_string()
-                            } else {
-                                id_from_fingerprint(&dev.name())
-                            };
-                            let name = get_name(dev.info());
-                            self.devices.insert(
-                                dev_id.clone(),
-                                json!({
-                                    "name": name,
-                                    "serial": dev.info().serial,
-                                    "transport": transport_to_str(dev.transport()),
-                                    "pid": dev.pid(),
-                                }),
-                            );
-                            self.device_mapping.insert(dev_id, dev);
-                        }
-                    }
-                    Err(e) => {
-                        log::warn!("Failed to get service devices: {e}");
-                        self.devices.clear();
-                        self.device_mapping.clear();
-                    }
-                }
-                self.devices.clone()
+            Err(e) => {
+                log::warn!("Failed to list devices: {e}");
+                self.devices.clear();
+                self.device_mapping.clear();
             }
         }
+        self.devices.clone()
     }
 
     fn call_action(
@@ -191,11 +134,7 @@ impl RpcNode for DevicesNode {
     fn create_child(&mut self, name: &str) -> Result<Box<dyn RpcNode>, RpcError> {
         self.child_invalidated = false;
 
-        let needs_refresh = match &self.list_state {
-            ListState::Local { state } => !self.device_mapping.contains_key(name) || *state == 0,
-            ListState::Service => !self.device_mapping.contains_key(name),
-        };
-        if needs_refresh {
+        if !self.device_mapping.contains_key(name) {
             self.list_children();
         }
 
@@ -215,16 +154,10 @@ impl RpcNode for DevicesNode {
         if self.child_invalidated {
             return false;
         }
-        match &self.list_state {
-            ListState::Local { state } => *state != 0 && self.device_mapping.contains_key(name),
-            ListState::Service => self.devices.contains_key(name),
-        }
+        self.devices.contains_key(name)
     }
 
     fn close(&mut self) {
-        if let ListState::Local { state } = &mut self.list_state {
-            *state = 0;
-        }
         self.device_mapping.clear();
     }
 
@@ -232,9 +165,6 @@ impl RpcNode for DevicesNode {
         if response.flags.iter().any(|f| f == "device_closed") {
             log::debug!("Device closed flag received, invalidating state");
             self.child_invalidated = true;
-            if let ListState::Local { state } = &mut self.list_state {
-                *state = 0;
-            }
             self.device_mapping.clear();
             self.devices.clear();
             response.flags.retain(|f| f != "device_closed");

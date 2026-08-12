@@ -1,64 +1,29 @@
 use std::sync::atomic::AtomicBool;
-use std::thread;
 use std::time::Duration;
 
 use serde_json::{Value, json};
 
 use yubikit::core::Transport;
 use yubikit::fido::FidoConnection;
-use yubikit::management::{
-    Capability, DeviceConfig, DeviceFlag, DeviceInfo, ManagementSession, UsbInterface,
-};
+use yubikit::management::{Capability, DeviceConfig, DeviceFlag, DeviceInfo, ManagementSession};
 use yubikit::otp::OtpConnection;
-use yubikit::platform::device::list_devices;
 use yubikit::smartcard::SmartCardConnection;
 
 use crate::connection::SharedConn;
 use crate::devices::info_to_json;
 use crate::error::{RpcError, RpcResponse};
+use crate::monitor;
 use crate::rpc::{RpcNode, SignalFn};
 
 /// After a reboot-triggering configure, wait for the device to reappear.
-/// Matches the Python `_await_reboot` behavior: poll every 200ms for ~2s.
-fn await_reboot(serial: Option<u32>, usb_enabled: Option<Capability>) {
-    let interfaces = match usb_enabled {
-        Some(cap) => {
-            let mut ifaces = UsbInterface(0);
-            if cap.contains(Capability::OTP) {
-                ifaces = ifaces | UsbInterface::OTP;
-            }
-            if cap.contains(Capability::FIDO2) || cap.contains(Capability::U2F) {
-                ifaces = ifaces | UsbInterface::FIDO;
-            }
-            if cap.contains(Capability::PIV)
-                || cap.contains(Capability::OATH)
-                || cap.contains(Capability::OPENPGP)
-                || cap.contains(Capability::HSMAUTH)
-            {
-                ifaces = ifaces | UsbInterface::CCID;
-            }
-            ifaces
-        }
-        None => UsbInterface::CCID | UsbInterface::OTP | UsbInterface::FIDO,
-    };
-
+/// Matches the Python `_await_reboot` behavior: poll for up to ~2s.
+fn await_reboot(serial: Option<u32>, _usb_enabled: Option<Capability>) {
     log::debug!("Waiting for device to re-appear (serial={serial:?})...");
-    for i in 0..10 {
-        thread::sleep(Duration::from_millis(200));
-        match list_devices(interfaces) {
-            Ok(devs) => {
-                if devs.iter().any(|d| d.info().serial == serial) {
-                    log::debug!("Device found after {} ms", (i + 1) * 200);
-                    return;
-                }
-            }
-            Err(e) => {
-                log::debug!("Error listing devices: {e}");
-            }
-        }
-        log::debug!("Not found, sleep...");
+    if monitor::wait_for_serial(serial, Duration::from_millis(2000)) {
+        log::debug!("Device found");
+    } else {
+        log::warn!("Timed out waiting for device to re-appear");
     }
-    log::warn!("Timed out waiting for device to re-appear");
 }
 
 // --- ManagementCcidNode ---
