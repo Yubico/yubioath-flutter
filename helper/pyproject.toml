@@ -16,7 +16,7 @@ dependencies = [
 [dependency-groups]
 dev = [
   "pyinstaller (>=6.17, <7)",
-  "mypy (>=1.19.0, <2)",
+  "mypy (>=2.3.0, <3)",
   "delocate (>=0.13, <0.14) ; sys_platform == 'darwin'",
 ]
 
