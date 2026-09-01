@@ -182,6 +182,7 @@ class _DeviceMenuButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     return Theme(
       data: Theme.of(Navigator.of(context).context), // use app theme
       child: Opacity(
@@ -190,7 +191,7 @@ class _DeviceMenuButton extends ConsumerWidget {
           key: yubikeyPopupMenuButton,
           enabled: menuItems.isNotEmpty,
           icon: const Icon(Symbols.more_horiz),
-          tooltip: '',
+          tooltip: l10n.s_options,
           iconColor: Theme.of(context).listTileTheme.textColor,
           itemBuilder: (context) {
             return menuItems;
