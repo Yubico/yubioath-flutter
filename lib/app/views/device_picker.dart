@@ -28,7 +28,6 @@ import '../../widgets/focus_border.dart';
 import '../models.dart';
 import '../state.dart';
 import 'device_avatar.dart';
-import 'keys.dart' as keys;
 import 'keys.dart';
 
 class DevicePickerContent extends ConsumerWidget {
@@ -123,10 +122,13 @@ class DevicePickerContent extends ConsumerWidget {
                   extended,
                   borderRadius,
                 ),
-                NfcReaderNode() => NfcDeviceRow(
+                NfcReaderNode() => _buildDeviceRow(
+                  context,
+                  ref,
                   e,
-                  extended: extended,
-                  borderRadius: borderRadius,
+                  null,
+                  extended,
+                  borderRadius,
                 ),
               },
       ),
@@ -464,8 +466,10 @@ DeviceRow _buildCurrentDeviceRow(
   String displayName = keyCustomization?.name ?? title;
   Color? displayColor = keyCustomization?.color;
 
+  // Same key as the unselected row so the row's State (and its FocusNode)
+  // survives selection, keeping keyboard focus on the activated row.
   return DeviceRow(
-    key: keys.deviceInfoListTile,
+    key: ValueKey(node.path.key),
     borderRadius: borderRadius,
     leading: data.maybeWhen(
       data: (data) =>
@@ -480,21 +484,4 @@ DeviceRow _buildCurrentDeviceRow(
     node: node,
     onTap: () {},
   );
-}
-
-class NfcDeviceRow extends ConsumerWidget {
-  final DeviceNode node;
-  final bool extended;
-  final BorderRadiusGeometry? borderRadius;
-
-  const NfcDeviceRow(
-    this.node, {
-    super.key,
-    required this.extended,
-    this.borderRadius,
-  });
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) =>
-      _buildDeviceRow(context, ref, node, null, extended, borderRadius);
 }
