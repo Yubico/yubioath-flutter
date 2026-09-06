@@ -6,7 +6,7 @@ authors = [{ name = "Dain Nilsson", email = "dain@yubico.com" }]
 requires-python = ">=3.10, <4"
 dependencies = [
   "yubikey-manager (>=5.9.1, <6)",
-  "fido2 (>=2.2.0, <3)",
+  "fido2 (>=2.2.1, <3)",
   "mss (>=10.2.0, <11)",
   "pillow (>=12.2.0, <13)",
   "zxing-cpp (>=3.0.0, <4)",
