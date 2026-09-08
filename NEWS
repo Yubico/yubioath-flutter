@@ -1,3 +1,7 @@
+* Version 7.4.2 (unreleased) Windows-only release
+ ** Bug fixes and accessibility improvements.
+ ** Binaries compiled with Flutter 3.44.4 and Python 3.14.7 (desktop).
+
 * Version 7.4.1 (2026-07-08)
  ** Maintenance release with updated dependencies.
  ** Fix: double-tapping an item in the navigation drawer could leave a blank screen.
