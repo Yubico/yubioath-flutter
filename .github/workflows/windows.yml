@@ -222,6 +222,57 @@ jobs:
           name: installer
           path: installer
 
+  build-msix:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [sign-source]
+    runs-on: windows-latest
+    steps:
+      - name: Check tag format
+        shell: bash
+        run: |
+          if [[ "${GITHUB_REF}" =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$ ]]; then
+            echo "Tag matches format"
+          else
+            echo "Invalid tag format"
+            exit 1
+          fi
+
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Download /signed dir
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+
+      - name: Create an unsigned .msix package for the Microsoft Store
+        run: |
+          $arr = $env:GITHUB_REF -split '/'
+          $branch = $arr[2]
+          # The Store requires every uploaded package to have a unique version
+          # (x.y.z.0, 4th field reserved), so encode the rc number into the
+          # third field: x.y.(z*100+rcN).0. E.g. 7.4.2-rc.6 -> 7.4.206.0.
+          # This only affects the MSIX package identity, not the app itself.
+          $base, $rc = $branch -split '-rc\.'
+          $v = $base -split '\.'
+          $version = "$($v[0]).$($v[1]).$([int]$v[2] * 100 + [int]$rc).0"
+          $pkg = "msix-pkg"
+          mkdir $pkg
+          cp -Recurse signed-files\yubioath-desktop-$branch-windows\* $pkg\
+          cp -Recurse resources\win\msix\Assets $pkg\Assets
+          (Get-Content resources\win\msix\AppxManifest.xml) -replace '\$VERSION\$', $version | Set-Content $pkg\AppxManifest.xml -Encoding utf8
+          $sdkBin = (Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin\10.*\x64\makeappx.exe" | Sort-Object FullName -Descending | Select-Object -First 1).DirectoryName
+          # Index the scale-qualified logo assets so the manifest references resolve
+          & "$sdkBin\makepri.exe" createconfig /cf priconfig.xml /dq en-US /o
+          & "$sdkBin\makepri.exe" new /pr $pkg /cf priconfig.xml /mn $pkg\AppxManifest.xml /of $pkg\Resources.pri /o
+          & "$sdkBin\makeappx.exe" pack /d $pkg /p yubioath-desktop.msix /o /l
+          mkdir msix-installer
+          mv yubioath-desktop.msix msix-installer
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: store-msix
+          path: msix-installer
+          if-no-files-found: error
+
   sign-msi:
     if: startsWith(github.ref, 'refs/tags/')
     needs: [build-msi]
