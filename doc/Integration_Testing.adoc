@@ -1,0 +1,47 @@
+== Testing Yubico Authenticator
+
+Verifying the quality of Yubico Authenticator is made through multiple levels of tests, loosely
+defined in the following groups.
+
+* Automatic tests in CI pipeline
+* Unit tests
+* Automatic tests requiring a Yubikey
+* Manual tests
+
+The automated tests requiring a key and the manual tests are run by the developer team as part of
+regression tests for releasing new versions of the app. The manual tests are problematic to automate
+as they depend on other technology which are a bit to expensive to automate (camera, webauthn) in
+the flutter test framework.
+
+To run the tests you need to specify the serial number of a Yubikey which the tests are able to run
+on. IMPORTANT: this key will be reset by running the tests, so don't use one of your personal keys.
+The key should be passed to test runner as follows.
+
+    $ ./testrunner.sh --serial 123456
+
+=== Desktop
+Running the tests for the CI environment:
+
+    $ ./testrunner.sh --keyless
+
+Running automatic tests for desktop (requires a Yubikey):
+
+    $ ./testrunner.sh --serial 123456
+
+Running manual tests for desktop (requires a Yubikey):
+
+    $ ./testrunner.sh --serial 123456 --manual
+
+Running tests for NFC Reader on desktop (requires a Yubikey and NFC reader):
+
+    $ ./testrunner.sh --reader hid --serial 123456
+    $ ./testrunner.sh --reader hid --serial 123456 --manual
+
+=== Andorid
+
+You can run tests on an Android device connected via adb
+
+    $ ./testrunner.sh --target pixel --keyless
+    $ ./testrunner.sh --target pixel --serial 123456
+    $ ./testrunner.sh --target pixel --serial 123456 --manual
+
