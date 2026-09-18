@@ -100,7 +100,13 @@ class DesktopWindowStateNotifier extends StateNotifier<WindowState>
   void setWindowHidden(bool hidden) async {
     if (hidden) {
       await windowManager.hide();
+      if (Platform.isMacOS) {
+        await windowManager.setSkipTaskbar(true);
+      }
     } else {
+      if (Platform.isMacOS) {
+        await windowManager.setSkipTaskbar(false);
+      }
       await windowManager.show();
     }
     await _prefs.setBool(windowHidden, hidden);
