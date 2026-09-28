@@ -47,7 +47,7 @@ impl RpcNode for RootNode {
     ) -> Result<RpcResponse, RpcError> {
         match action {
             "diagnose" => {
-                let report = ykman::diagnostics::run_diagnostics();
+                let report = ykman::diagnostics::run_diagnostics(env!("CARGO_PKG_VERSION"));
                 let report_json = serde_json::to_value(&report)
                     .unwrap_or_else(|e| json!({ "error": format!("{e}") }));
                 Ok(RpcResponse::new(json!({
