@@ -748,7 +748,12 @@ fn build_config(cfg_type: &str, params: &Value) -> Result<SlotConfiguration, Rpc
                 .map_err(|e| RpcError::invalid_params(format!("{e}")))
         }
         "yubiotp" => {
-            let public_id = decode_bytes_param(params, "public_id")?;
+            let public_id = params
+                .get("public_id")
+                .and_then(|v| v.as_str())
+                .ok_or_else(|| RpcError::invalid_params("Missing public_id"))?;
+            let public_id = modhex_decode(public_id)
+                .map_err(|_| RpcError::invalid_params("Invalid modhex public_id"))?;
             let private_id = decode_bytes_param(params, "private_id")?;
             let key = decode_bytes_param(params, "key")?;
             let uid: [u8; 6] = private_id
@@ -763,6 +768,28 @@ fn build_config(cfg_type: &str, params: &Value) -> Result<SlotConfiguration, Rpc
         other => Err(RpcError::invalid_params(format!(
             "Unsupported configuration type: {other}"
         ))),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn yubiotp_public_id_uses_modhex() {
+        let params = json!({
+            "public_id": "vvcccccccccc",
+            "private_id": "010203040506",
+            "key": "000102030405060708090a0b0c0d0e0f",
+        });
+        assert!(build_config("yubiotp", &params).is_ok());
+
+        let invalid = json!({
+            "public_id": "aaaaaaaaaaaa",
+            "private_id": "010203040506",
+            "key": "000102030405060708090a0b0c0d0e0f",
+        });
+        assert!(build_config("yubiotp", &invalid).is_err());
     }
 }
 

@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:yubico_authenticator/app/models.dart';
 import 'package:yubico_authenticator/app/views/keys.dart';
+import 'package:yubico_authenticator/core/models.dart';
 import 'package:yubico_authenticator/core/state.dart';
 import 'package:yubico_authenticator/management/models.dart';
 import 'package:yubico_authenticator/otp/keys.dart';
@@ -93,8 +94,9 @@ void main() {
         // Program a challenge-response credential
         await $.itemAction(slot2, configureYubiOtp);
 
-        // Save is disabled from the start
-        expect($(saveButton).widget<TextButton>().enabled, isFalse);
+        // Missing IDs and key are reported when saving
+        await $(saveButton).tap();
+        expect($($.l10n.l_field_required), findsWidgets);
 
         // Use serial for public ID, if available
         if (data.info.serial != null) {
@@ -134,14 +136,14 @@ void main() {
         // Save is enabled from the start
         expect($(saveButton).widget<TextButton>().enabled, isTrue);
 
-        // Empty value shows an error and disables the save button
+        // Empty value shows a validation error
         await $(saveButton).tap();
-        expect($(saveButton).widget<TextButton>().enabled, isFalse);
+        expect($($.l10n.l_field_required), findsOneWidget);
 
-        // Odd-length values show an error and disable the save button
+        // Odd-length values show a validation error
         await $(secretField).enterText('b0b');
         await $(saveButton).tap();
-        expect($(saveButton).widget<TextButton>().enabled, isFalse);
+        expect($($.l10n.s_invalid_length), findsOneWidget);
 
         // Complete the programming successfully
         await $(secretField).enterText('cafed00d');
@@ -177,14 +179,14 @@ void main() {
         // Save is enabled from the start
         expect($(saveButton).widget<TextButton>().enabled, isTrue);
 
-        // Empty value shows an error and disables the save button
+        // Empty value shows a validation error
         await $(saveButton).tap();
-        expect($(saveButton).widget<TextButton>().enabled, isFalse);
+        expect($($.l10n.l_field_required), findsOneWidget);
 
-        // Invalid modhex shows an error and disables the save button
+        // Invalid modhex shows a validation error
         await $(secretField).enterText('invalid modhex');
         await $(saveButton).tap();
-        expect($(saveButton).widget<TextButton>().enabled, isFalse);
+        expect($($.l10n.l_invalid_keyboard_character), findsOneWidget);
 
         // Generate a random password and save
         await $(generateSecretKey).tap();
@@ -202,14 +204,21 @@ void main() {
         // Save is enabled from the start
         expect($(saveButton).widget<TextButton>().enabled, isTrue);
 
-        // Empty value shows an error and disables the save button
+        // Empty value shows a validation error
         await $(saveButton).tap();
-        expect($(saveButton).widget<TextButton>().enabled, isFalse);
+        expect($($.l10n.l_field_required), findsOneWidget);
 
-        // Invalid base32 shows an error and disables the save button
+        // Invalid base32 shows a validation error
         await $(secretField).enterText('11111111');
         await $(saveButton).tap();
-        expect($(saveButton).widget<TextButton>().enabled, isFalse);
+        expect(
+          $(
+            $.l10n.l_invalid_format_allowed_chars(
+              Format.base32.allowedCharacters,
+            ),
+          ),
+          findsOneWidget,
+        );
 
         // Complete the programming successfully, overwriting the previous
         await $(secretField).enterText('abba');
