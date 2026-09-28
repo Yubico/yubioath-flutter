@@ -334,9 +334,9 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
       await ref
           .read(managementStateProvider(widget.deviceData.node.path).notifier)
           .writeConfig(
-            widget.deviceData.info.config.copyWith(
-              enabledCapabilities: _enabled,
-            ),
+            // Only write the capabilities being toggled; other settings must
+            // not be resent as configuration tags.
+            DeviceConfig(_enabled, null, null, null),
             reboot: reboot,
             currentLockCode: isLocked ? _lockCodeController.text : null,
           );
