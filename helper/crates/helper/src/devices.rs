@@ -42,6 +42,9 @@ pub struct DevicesNode {
     is_service: bool,
     device_mapping: BTreeMap<String, Box<dyn YubiKeyDevice>>,
     devices: BTreeMap<String, Value>,
+    // Monitors (including ykman-svc's) do not emit changes for non-rebooting
+    // application toggles, so keep the freshly read info until removal.
+    refreshed_info: BTreeMap<String, Value>,
     child_invalidated: bool,
 }
 
@@ -58,6 +61,7 @@ impl DevicesNode {
             is_service,
             device_mapping: BTreeMap::new(),
             devices: BTreeMap::new(),
+            refreshed_info: BTreeMap::new(),
             child_invalidated: false,
         }
     }
@@ -97,9 +101,9 @@ impl RpcNode for DevicesNode {
 
     fn list_children(&mut self) -> BTreeMap<String, Value> {
         let is_service = self.is_service;
+        let previous = std::mem::take(&mut self.devices);
         match self.list_devices() {
             Ok(devs) => {
-                self.devices.clear();
                 self.device_mapping.clear();
                 for dev in devs {
                     // The service source dedupes/excludes NFC readers on its
@@ -121,16 +125,25 @@ impl RpcNode for DevicesNode {
                             "serial": dev.info().serial,
                             "transport": transport_to_str(dev.transport()),
                             "pid": dev.pid(),
+                            "enabled_capabilities": self.refreshed_info.get(&dev_id)
+                                .map(|info| info["config"]["enabled_capabilities"].clone())
+                                .unwrap_or_else(|| caps_to_json(&dev.info().config.enabled_capabilities)),
                         }),
                     );
                     self.device_mapping.insert(dev_id, dev);
                 }
+                self.refreshed_info
+                    .retain(|id, _| self.device_mapping.contains_key(id));
             }
             Err(e) => {
                 log::warn!("Failed to list devices: {e}");
                 self.devices.clear();
                 self.device_mapping.clear();
+                self.refreshed_info.clear();
             }
+        }
+        if self.devices != previous {
+            self.child_invalidated = true;
         }
         self.devices.clone()
     }
@@ -160,7 +173,11 @@ impl RpcNode for DevicesNode {
             .get(name)
             .ok_or_else(|| RpcError::no_such_node(name))?;
 
-        Ok(Box::new(DeviceNode::new(dev.as_ref())))
+        let mut node = DeviceNode::new(dev.as_ref());
+        if let Some(info) = self.refreshed_info.get(name) {
+            node.set_info(info.clone());
+        }
+        Ok(Box::new(node))
     }
 
     fn action_closes_child(&self, action: &str) -> bool {
@@ -179,11 +196,22 @@ impl RpcNode for DevicesNode {
     }
 
     fn handle_child_response(&mut self, response: &mut RpcResponse) {
+        if response.flags.iter().any(|f| f == "device_info")
+            && let Some(info) = response.body.get("info").filter(|v| !v.is_null())
+            && let Some(id) = response.body.get("device_id").and_then(Value::as_str)
+            && self.device_mapping.contains_key(id)
+        {
+            self.refreshed_info.insert(id.to_string(), info.clone());
+            if let Some(body) = response.body.as_object_mut() {
+                body.remove("device_id");
+            }
+        }
         if response.flags.iter().any(|f| f == "device_closed") {
             log::debug!("Device closed flag received, invalidating state");
             self.child_invalidated = true;
             self.device_mapping.clear();
             self.devices.clear();
+            self.refreshed_info.clear();
             response.flags.retain(|f| f != "device_closed");
         }
     }
@@ -193,6 +221,7 @@ impl RpcNode for DevicesNode {
 pub struct DeviceNode {
     device: Box<dyn YubiKeyDevice>,
     data: Value,
+    refreshed_info: Option<Value>,
 }
 
 impl DeviceNode {
@@ -209,7 +238,13 @@ impl DeviceNode {
         Self {
             device: device.clone_box(),
             data,
+            refreshed_info: None,
         }
+    }
+
+    fn set_info(&mut self, info: Value) {
+        self.data["info"] = info.clone();
+        self.refreshed_info = Some(info);
     }
 }
 
@@ -244,7 +279,11 @@ impl RpcNode for DeviceNode {
     }
 
     fn create_child(&mut self, name: &str) -> Result<Box<dyn RpcNode>, RpcError> {
-        let info = self.device.info().clone();
+        let mut info = self.device.info().clone();
+        if let Some(ref refreshed) = self.refreshed_info {
+            info.config.enabled_capabilities =
+                crate::management::parse_capabilities(&refreshed["config"]);
+        }
         let transport = self.device.transport();
         let is_nfc = transport == Transport::Nfc;
         match name {
@@ -290,6 +329,21 @@ impl RpcNode for DeviceNode {
             _ => Err(RpcError::no_such_node(name)),
         }
     }
+
+    fn handle_child_response(&mut self, response: &mut RpcResponse) {
+        if response.flags.iter().any(|f| f == "device_info")
+            && let Some(info) = response.body.get("info").filter(|v| !v.is_null())
+        {
+            self.set_info(info.clone());
+            response.body["device_id"] = json!(
+                self.device
+                    .info()
+                    .serial
+                    .map(|s| s.to_string())
+                    .unwrap_or_else(|| id_from_fingerprint(&self.device.name()))
+            );
+        }
+    }
 }
 
 fn transport_to_str(t: Transport) -> &'static str {
@@ -329,6 +383,7 @@ pub fn info_to_json(info: &yubikit::management::DeviceInfo) -> Value {
             "type": info.version_qualifier.release_type as u8,
             "iteration": info.version_qualifier.iteration,
         },
+        "name": info.name,
     })
 }
 

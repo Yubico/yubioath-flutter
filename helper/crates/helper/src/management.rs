@@ -3,7 +3,7 @@ use std::time::Duration;
 
 use serde_json::{Value, json};
 
-use yubikit::core::Transport;
+use yubikit::core::{Connection, Transport};
 use yubikit::fido::FidoConnection;
 use yubikit::management::{Capability, DeviceConfig, DeviceFlag, DeviceInfo, ManagementSession};
 use yubikit::otp::OtpConnection;
@@ -15,24 +15,43 @@ use crate::error::{RpcError, RpcResponse};
 use crate::monitor;
 use crate::rpc::{RpcNode, SignalFn};
 
-/// After a reboot-triggering configure, wait for the device to reappear.
-/// Matches the Python `_await_reboot` behavior: poll for up to ~2s.
-///
-/// When device access is backed by the ykman-svc service, this is a no-op:
-/// the service runs its own device monitor, and starting the helper's local
-/// monitor here would mean two independent monitors racing for the same
-/// USB/PC-SC hardware.
-fn await_reboot(serial: Option<u32>, _usb_enabled: Option<Capability>) {
+/// The service owns its own monitor; never start a local one in service mode.
+fn reboot_marker(reboot: bool) -> Option<u64> {
+    (reboot && !is_service_mode()).then(monitor::reboot_marker)
+}
+
+fn await_reboot(serial: Option<u32>, usb_enabled: Option<Capability>, marker: Option<u64>) {
     if is_service_mode() {
-        log::debug!("Service mode: not waiting locally for device to re-appear");
+        log::debug!("Service mode: deferring reboot detection to ykman-svc");
         return;
     }
     log::debug!("Waiting for device to re-appear (serial={serial:?})...");
-    if monitor::wait_for_serial(serial, Duration::from_millis(2000)) {
+    let found = if let Some(marker) = marker {
+        monitor::wait_for_serial(serial, usb_enabled, marker, Duration::from_secs(10))
+    } else {
+        false
+    };
+    if found {
         log::debug!("Device found");
     } else {
         log::warn!("Timed out waiting for device to re-appear");
     }
+}
+
+fn refreshed_info<C: Connection + 'static>(
+    session: &mut ManagementSession<C>,
+    has_changes: bool,
+    reboot: bool,
+) -> Result<Option<DeviceInfo>, RpcError> {
+    if !has_changes || reboot {
+        return Ok(None);
+    }
+    session.read_device_info().map(Some).map_err(|e| {
+        RpcError::new(
+            "device-error",
+            format!("Configuration written, but failed to refresh device info: {e}"),
+        )
+    })
 }
 
 // --- ManagementCcidNode ---
@@ -138,6 +157,7 @@ impl RpcNode for ManagementCcidNode {
                     || new_lock_code.is_some()
                     || reboot;
 
+                let marker = reboot_marker(reboot);
                 session
                     .write_device_config(
                         &config,
@@ -147,6 +167,10 @@ impl RpcNode for ManagementCcidNode {
                     )
                     .map_err(|e| RpcError::new("device-error", format!("{e}")))?;
 
+                let info = refreshed_info(session, has_changes, reboot)?;
+                if let Some(ref info) = info {
+                    self.info = info.clone();
+                }
                 let mut flags = Vec::new();
                 if has_changes {
                     flags.push("device_info");
@@ -156,10 +180,13 @@ impl RpcNode for ManagementCcidNode {
                     let usb_enabled = config.enabled_capabilities.get(&Transport::Usb).copied();
                     // Drop the session to release the connection before waiting
                     drop(self.session.take());
-                    await_reboot(serial, usb_enabled);
+                    await_reboot(serial, usb_enabled, marker);
                     flags.push("device_closed");
                 }
-                Ok(RpcResponse::with_flags(json!({}), flags))
+                Ok(RpcResponse::with_flags(
+                    json!({"info": info.as_ref().map(info_to_json)}),
+                    flags,
+                ))
             }
             "device_reset" => {
                 session
@@ -277,6 +304,7 @@ impl RpcNode for ManagementOtpNode {
                     || new_lock_code.is_some()
                     || reboot;
 
+                let marker = reboot_marker(reboot);
                 session
                     .write_device_config(
                         &config,
@@ -285,6 +313,10 @@ impl RpcNode for ManagementOtpNode {
                         new_lock_code.as_deref(),
                     )
                     .map_err(|e| RpcError::new("device-error", format!("{e}")))?;
+                let info = refreshed_info(session, has_changes, reboot)?;
+                if let Some(ref info) = info {
+                    self.cached_info = info_to_json(info);
+                }
                 let mut flags = Vec::new();
                 if has_changes {
                     flags.push("device_info");
@@ -292,10 +324,13 @@ impl RpcNode for ManagementOtpNode {
                 if reboot {
                     let usb_enabled = config.enabled_capabilities.get(&Transport::Usb).copied();
                     drop(self.session.take());
-                    await_reboot(self.serial, usb_enabled);
+                    await_reboot(self.serial, usb_enabled, marker);
                     flags.push("device_closed");
                 }
-                Ok(RpcResponse::with_flags(json!({}), flags))
+                Ok(RpcResponse::with_flags(
+                    json!({"info": info.as_ref().map(info_to_json)}),
+                    flags,
+                ))
             }
             _ => Err(RpcError::no_such_action(action)),
         }
@@ -406,6 +441,7 @@ impl RpcNode for ManagementFidoNode {
                     || new_lock_code.is_some()
                     || reboot;
 
+                let marker = reboot_marker(reboot);
                 session
                     .write_device_config(
                         &config,
@@ -414,6 +450,10 @@ impl RpcNode for ManagementFidoNode {
                         new_lock_code.as_deref(),
                     )
                     .map_err(|e| RpcError::new("device-error", format!("{e}")))?;
+                let info = refreshed_info(session, has_changes, reboot)?;
+                if let Some(ref info) = info {
+                    self.cached_info = info_to_json(info);
+                }
                 let mut flags = Vec::new();
                 if has_changes {
                     flags.push("device_info");
@@ -421,10 +461,13 @@ impl RpcNode for ManagementFidoNode {
                 if reboot {
                     let usb_enabled = config.enabled_capabilities.get(&Transport::Usb).copied();
                     drop(self.session.take());
-                    await_reboot(self.serial, usb_enabled);
+                    await_reboot(self.serial, usb_enabled, marker);
                     flags.push("device_closed");
                 }
-                Ok(RpcResponse::with_flags(json!({}), flags))
+                Ok(RpcResponse::with_flags(
+                    json!({"info": info.as_ref().map(info_to_json)}),
+                    flags,
+                ))
             }
             _ => Err(RpcError::no_such_action(action)),
         }
@@ -437,7 +480,9 @@ impl RpcNode for ManagementFidoNode {
     }
 }
 
-fn parse_capabilities(params: &Value) -> std::collections::HashMap<Transport, Capability> {
+pub(crate) fn parse_capabilities(
+    params: &Value,
+) -> std::collections::HashMap<Transport, Capability> {
     let mut caps = std::collections::HashMap::new();
     if let Some(obj) = params
         .get("enabled_capabilities")

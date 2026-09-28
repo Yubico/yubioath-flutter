@@ -282,6 +282,15 @@ impl RpcNode for ConnectionNode {
         }
     }
 
+    fn handle_child_response(&mut self, response: &mut RpcResponse) {
+        if response.flags.iter().any(|f| f == "device_info")
+            && let Some(info) = response.body.get("info").filter(|v| !v.is_null())
+        {
+            self.info.config.enabled_capabilities =
+                crate::management::parse_capabilities(&info["config"]);
+        }
+    }
+
     fn close(&mut self) {
         // Close the underlying connection by dropping it
         match &self.conn_type {

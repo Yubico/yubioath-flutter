@@ -17,6 +17,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 
@@ -50,12 +51,12 @@ final _devicesProvider =
 class DevicesNotifier extends StateNotifier<List<YubiKeyDeviceNode>> {
   final RpcSession? _rpc;
   Timer? _pollTimer;
-  Set<String> _lastChildrenKeys = {};
+  Map<String, String> _lastChildren = {};
   DevicesNotifier(this._rpc) : super([]);
 
   void refresh() {
     _log.debug('Refreshing all devices');
-    _lastChildrenKeys = {};
+    _lastChildren = {};
     _pollDevices();
   }
 
@@ -123,11 +124,18 @@ class DevicesNotifier extends StateNotifier<List<YubiKeyDeviceNode>> {
       }
 
       final effectiveKeys = childrenKeys.union(phantomPids.keys.toSet());
+      final children = <String, String>{
+        for (final id in childrenKeys) id: jsonEncode(childrenMap[id]),
+        for (final entry in phantomPids.entries)
+          entry.key: entry.value.toString(),
+      };
 
-      if (!_lastChildrenKeys.containsAll(effectiveKeys) ||
-          !effectiveKeys.containsAll(_lastChildrenKeys)) {
+      if (!const MapEquality<String, String>().equals(
+        _lastChildren,
+        children,
+      )) {
         _log.info('Devices state change', jsonEncode(devicesResult));
-        _lastChildrenKeys = effectiveKeys;
+        _lastChildren = children;
         List<YubiKeyDeviceNode> devices = [];
 
         for (String id in childrenKeys) {
