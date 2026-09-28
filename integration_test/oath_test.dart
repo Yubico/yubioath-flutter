@@ -1,5 +1,4 @@
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:patrol_finders/patrol_finders.dart';
@@ -236,7 +235,8 @@ void main() {
       await $.viewAction(setOrManagePasswordAction);
       await $(newPasswordField).enterText('foo');
       await $(confirmPasswordField).enterText('bar');
-      expect($(savePasswordButton).widget<TextButton>().enabled, isFalse);
+      await $(savePasswordButton).tap();
+      expect($($.l10n.l_password_mismatch), findsOneWidget);
 
       // Correct the password and save
       await $(confirmPasswordField).enterText('foo');
@@ -249,9 +249,9 @@ void main() {
       await $(newPasswordField).enterText('bar');
       await $(confirmPasswordField).enterText('bar');
       await $(savePasswordButton).tap();
-      // Ensure the dialog is still open, and the save button disabled
+      // Ensure the incorrect password leaves the dialog open
       expect($(currentPasswordField), findsOneWidget);
-      expect($(savePasswordButton).widget<TextButton>().enabled, isFalse);
+      expect($($.l10n.p_wrong_password), findsOneWidget);
 
       // Correct the password and save
       await $(currentPasswordField).enterText('foo');

@@ -51,6 +51,8 @@ pub struct OathNode {
     session: Option<OathSession<Box<dyn SmartCardConnection + Send>>>,
     conn: SharedConn<Box<dyn SmartCardConnection + Send>>,
     key_verifier: Option<([u8; 32], [u8; 32])>,
+    cached_data: Value,
+    cached_actions: Vec<&'static str>,
 }
 
 impl OathNode {
@@ -70,9 +72,13 @@ impl OathNode {
                     session: Some(session),
                     conn,
                     key_verifier: None,
+                    cached_data: json!({}),
+                    cached_actions: vec![],
                 };
                 // Try auto-unlock
                 node.try_auto_unlock();
+                node.cached_data = node.get_data();
+                node.cached_actions = node.list_actions();
                 Ok(node)
             }
             Err((e, c)) => {
@@ -183,7 +189,7 @@ impl RpcNode for OathNode {
                 "keystore": state.keystore_state,
             })
         } else {
-            json!({})
+            self.cached_data.clone()
         }
     }
 
@@ -195,7 +201,7 @@ impl RpcNode for OathNode {
             }
             actions
         } else {
-            vec![]
+            self.cached_actions.clone()
         }
     }
 
@@ -226,20 +232,14 @@ impl RpcNode for OathNode {
     fn create_child(&mut self, name: &str) -> Result<Box<dyn RpcNode>, RpcError> {
         match name {
             "accounts" => {
+                self.ensure_session()?;
                 let session = self.session.as_ref().unwrap();
                 if session.locked() {
                     return Err(RpcError::auth_required());
                 }
-                // We need to pass the session to the child, but we can't move it
-                // The child will share the session via the OATH session pattern
-                // For simplicity, create an AccountsNode that takes the connection
-                // Actually, CredentialsNode needs the session. Since only one child at a time,
-                // we can move the session out temporarily.
-                // But that complicates things. Let me just pass a reference via the shared conn.
-                // The CredentialsNode will open its own session.
+                self.cached_data = self.get_data();
+                self.cached_actions = self.list_actions();
                 let conn_arc = self.conn.clone();
-                // Put connection back from session
-                self.ensure_session()?;
                 let session = self.session.take().unwrap();
                 let conn = session.into_connection();
                 // Create new session for accounts node
@@ -446,6 +446,28 @@ impl CredentialsNode {
             }
         }
     }
+
+    fn ensure_session(&mut self) -> Result<(), RpcError> {
+        if self.session.is_some() {
+            return Ok(());
+        }
+        let conn = self
+            .conn
+            .lock()
+            .unwrap()
+            .take()
+            .ok_or_else(|| RpcError::new("session-error", "Connection not available"))?;
+        match OathSession::new(conn) {
+            Ok(session) => {
+                self.session = Some(session);
+                Ok(())
+            }
+            Err((e, conn)) => {
+                *self.conn.lock().unwrap() = Some(conn);
+                Err(RpcError::new("session-error", format!("{e}")))
+            }
+        }
+    }
 }
 
 impl RpcNode for CredentialsNode {
@@ -467,6 +489,7 @@ impl RpcNode for CredentialsNode {
         _signal: SignalFn,
         _cancel: &AtomicBool,
     ) -> Result<RpcResponse, RpcError> {
+        self.ensure_session()?;
         match action {
             "calculate_all" => {
                 let session = self.session.as_mut().unwrap();
@@ -576,7 +599,7 @@ impl RpcNode for CredentialsNode {
     fn create_child(&mut self, name: &str) -> Result<Box<dyn RpcNode>, RpcError> {
         let key = hex::decode(name).map_err(|_| RpcError::no_such_node(name))?;
         if let Some(cred) = self.creds.get(&key).cloned() {
-            // Move the session to the child
+            self.ensure_session()?;
             let session = self.session.take().unwrap();
             let conn = self.conn.clone();
             Ok(Box::new(CredentialNode {
@@ -587,6 +610,13 @@ impl RpcNode for CredentialsNode {
             }))
         } else {
             Err(RpcError::no_such_node(name))
+        }
+    }
+
+    fn on_child_closed(&mut self, _name: &str) {
+        match self.ensure_session() {
+            Ok(()) => self.refresh(),
+            Err(e) => log::warn!("Failed to refresh OATH accounts: {}", e.message),
         }
     }
 
@@ -858,4 +888,43 @@ fn percent_decode(s: &str) -> String {
         }
     }
     result
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::sync::{Arc, Mutex};
+
+    #[test]
+    fn returns_oath_state_while_accounts_owns_the_session() {
+        let data = json!({
+            "device_id": "test-id",
+            "version": [5, 7, 0],
+            "has_key": false,
+            "locked": false,
+            "remembered": false,
+            "keystore": "unknown",
+        });
+        let node = OathNode {
+            session: None,
+            conn: Arc::new(Mutex::new(None)),
+            key_verifier: None,
+            cached_data: data.clone(),
+            cached_actions: vec!["derive", "set_key"],
+        };
+
+        assert_eq!(node.get_data(), data);
+        assert_eq!(node.list_actions(), vec!["derive", "set_key"]);
+    }
+
+    #[test]
+    fn accounts_report_unavailable_session_instead_of_panicking() {
+        let mut node = CredentialsNode {
+            session: None,
+            conn: Arc::new(Mutex::new(None)),
+            creds: BTreeMap::new(),
+        };
+
+        assert_eq!(node.ensure_session().unwrap_err().status, "session-error");
+    }
 }
