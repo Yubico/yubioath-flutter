@@ -57,6 +57,7 @@ class MainPage extends ConsumerWidget {
       prev,
       next,
     ) {
+      if (ref.read(fidoResetInProgressProvider)) return;
       final serial = next.hasValue == true ? next.value?.info.serial : null;
       final prevSerial = prev?.hasValue == true
           ? prev?.value?.info.serial

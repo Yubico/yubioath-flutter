@@ -41,7 +41,10 @@ final _log = Logger('desktop.devices');
 
 final _devicesProvider =
     StateNotifierProvider<DevicesNotifier, List<YubiKeyDeviceNode>>((ref) {
-      final notifier = DevicesNotifier(ref.watch(rpcProvider).value);
+      final notifier = DevicesNotifier(
+        ref.watch(rpcProvider).value,
+        () => ref.read(fidoResetInProgressProvider),
+      );
       ref.listen<WindowState>(windowStateProvider, (_, windowState) {
         notifier._notifyWindowState(windowState);
       }, fireImmediately: true);
@@ -50,9 +53,10 @@ final _devicesProvider =
 
 class DevicesNotifier extends StateNotifier<List<YubiKeyDeviceNode>> {
   final RpcSession? _rpc;
+  final bool Function() _fidoResetInProgress;
   Timer? _pollTimer;
   Map<String, String> _lastChildren = {};
-  DevicesNotifier(this._rpc) : super([]);
+  DevicesNotifier(this._rpc, this._fidoResetInProgress) : super([]);
 
   void refresh() {
     _log.debug('Refreshing all devices');
@@ -66,7 +70,9 @@ class DevicesNotifier extends StateNotifier<List<YubiKeyDeviceNode>> {
     } else {
       _pollTimer?.cancel();
       // Release any held device
-      _rpc?.command('get', ['devices']);
+      if (!_fidoResetInProgress()) {
+        _rpc?.command('get', ['devices']);
+      }
     }
   }
 
@@ -78,6 +84,10 @@ class DevicesNotifier extends StateNotifier<List<YubiKeyDeviceNode>> {
 
   void _pollDevices() async {
     _pollTimer?.cancel();
+    if (_fidoResetInProgress()) {
+      _pollTimer = Timer(_pollDelay, _pollDevices);
+      return;
+    }
     final rpc = _rpc;
     if (rpc == null) {
       return;

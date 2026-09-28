@@ -14,6 +14,7 @@ import 'package:yubico_authenticator/oath/state.dart';
 import 'package:yubico_authenticator/oath/views/account_view.dart';
 import 'package:yubico_authenticator/widgets/responsive_dialog.dart';
 
+import 'controller.dart';
 import 'utils.dart';
 
 extension on PatrolTester {
@@ -300,7 +301,12 @@ void main() {
 
         // Wait for touch to be confirmed
         await $($.l10n.s_touch_required).waitUntilVisible();
-        await $.condition(() => !$($.l10n.s_touch_required).exists);
+        try {
+          await picoController?.touch();
+          await $.condition(() => !$($.l10n.s_touch_required).exists);
+        } finally {
+          await picoController?.release();
+        }
         expect($('755 224'), findsWidgets);
 
         // Calculate another code
@@ -308,7 +314,12 @@ void main() {
 
         // Wait for touch to be confirmed
         await $($.l10n.s_touch_required).waitUntilVisible();
-        await $.condition(() => !$($.l10n.s_touch_required).exists);
+        try {
+          await picoController?.touch();
+          await $.condition(() => !$($.l10n.s_touch_required).exists);
+        } finally {
+          await picoController?.release();
+        }
         expect($('287 082'), findsWidgets);
 
         // Delete the credential(s) programatically

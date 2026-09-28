@@ -83,6 +83,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
   InteractionEvent? _interaction;
   int _currentStep = -1;
   bool _resetting = false;
+  bool _fidoResetActive = false;
   late final int _totalSteps;
 
   @override
@@ -120,6 +121,9 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
   @override
   void dispose() {
     _subscription?.cancel();
+    if (_fidoResetActive) {
+      ref.read(fidoResetInProgressProvider.notifier).state = false;
+    }
     super.dispose();
   }
 
@@ -234,6 +238,13 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                     Capability.fido2 =>
                       !_fidoTransportDisabled
                           ? () async {
+                              _fidoResetActive = true;
+                              ref
+                                      .read(
+                                        fidoResetInProgressProvider.notifier,
+                                      )
+                                      .state =
+                                  true;
                               _subscription = ref
                                   .read(
                                     fidoStateProvider(
@@ -250,6 +261,14 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                                       });
                                     },
                                     onDone: () async {
+                                      _fidoResetActive = false;
+                                      ref
+                                              .read(
+                                                fidoResetInProgressProvider
+                                                    .notifier,
+                                              )
+                                              .state =
+                                          false;
                                       setState(() {
                                         _currentStep = _totalSteps;
                                       });
@@ -268,6 +287,14 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                                       }
                                     },
                                     onError: (e) {
+                                      _fidoResetActive = false;
+                                      ref
+                                              .read(
+                                                fidoResetInProgressProvider
+                                                    .notifier,
+                                              )
+                                              .state =
+                                          false;
                                       if (e is CancellationException) {
                                         setState(() {
                                           _resetting = false;
