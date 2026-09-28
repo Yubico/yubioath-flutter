@@ -236,14 +236,20 @@ extension PatrolTesterUtils on PatrolTester {
     FutureOr<bool> Function() condition, {
     Duration timeout = const Duration(seconds: 30),
     String reason = 'Condition not met within timeout',
+    bool settle = true,
   }) async {
     final start = DateTime.now();
     while (DateTime.now().difference(start) < timeout) {
       if (await condition()) {
-        await pumpAndSettle();
+        if (settle) await pumpAndSettle();
         return;
       }
-      await pumpAndSettle();
+      if (settle) {
+        await pumpAndSettle();
+      } else {
+        await Future.delayed(const Duration(milliseconds: 100));
+        await pump();
+      }
     }
     fail(reason);
   }

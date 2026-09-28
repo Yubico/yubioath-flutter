@@ -194,7 +194,6 @@ class DesktopFidoStateNotifier extends FidoStateNotifier {
       return unlock(newPin);
     } on RpcError catch (e) {
       if (e.status == 'pin-validation') {
-        ref.invalidate(_pinProvider);
         ref.invalidateSelf();
         return PinResult.failed(
           FidoPinFailureReason.invalidPin(
@@ -388,6 +387,8 @@ class DesktopFidoCredentialsNotifier extends FidoCredentialsNotifier {
       'delete',
       target: ['credentials', credential.rpId, credential.credentialId],
     );
+    await _session.command('close', params: {'child': 'credentials'});
     ref.invalidate(fidoStateProvider(_session.devicePath));
+    ref.invalidateSelf();
   }
 }

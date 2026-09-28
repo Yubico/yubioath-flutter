@@ -84,7 +84,11 @@ void main() {
       await $(confirmPin).enterText(changedPin);
       await $(saveButton).tap();
       await $(closeButton).tap();
-      await $.condition(() => !$(ResponsiveDialog).exists);
+      await $.condition(() => !$(ResponsiveDialog).exists, settle: false);
+      await $.condition(
+        () => $.read(fidoStateProvider(data.node.path)).value?.pinRetries == 7,
+        settle: false,
+      );
 
       state = $.read(fidoStateProvider(data.node.path)).value!;
       expect(state.pinRetries, 7);
@@ -162,11 +166,13 @@ void main() {
       }
       await $(deleteButton).tap();
 
-      expect(
-        $(AppListItem<FidoCredential>).which<AppListItem<FidoCredential>>(
-          (widget) => widget.item.credentialId == cred.credentialId,
-        ),
-        findsNothing,
+      await $.condition(
+        () => !$(AppListItem<FidoCredential>)
+            .which<AppListItem<FidoCredential>>(
+              (widget) => widget.item.credentialId == cred.credentialId,
+            )
+            .exists,
+        settle: false,
       );
     });
   }, condition: (info) => info.hasCapability(Capability.fido2));

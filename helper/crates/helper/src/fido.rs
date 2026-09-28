@@ -1,6 +1,7 @@
 use std::collections::BTreeMap;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
+use std::time::Duration;
 
 use serde_json::{Value, json};
 
@@ -11,8 +12,8 @@ use yubikit::ctap2::{
     BioEnrollment, ClientPin, Config, CredentialManagement, Ctap2Error, Ctap2Pin, Ctap2Session,
     CtapStatus, Info, Permissions, PinProtocol, PublicKeyCredentialDescriptor,
 };
-use yubikit::device::{ReinsertStatus, YubiKeyDevice};
-use yubikit::fido::FidoConnection;
+use yubikit::device::{DeviceError, ReinsertStatus, YubiKeyDevice};
+use yubikit::fido::{FidoConnection, FidoError};
 use yubikit::smartcard::SmartCardConnection;
 
 use crate::appdata::AppData;
@@ -101,6 +102,31 @@ fn handle_pin_error<E: std::error::Error + Send + Sync + 'static>(
         }
     }
     RpcError::new("device-error", format!("{e}"))
+}
+
+fn open_fido_after_reinsert(
+    device: &dyn YubiKeyDevice,
+) -> Result<Box<dyn FidoConnection + Send>, RpcError> {
+    let mut retries = 0;
+    loop {
+        match device.open_fido() {
+            Ok(conn) => return Ok(conn),
+            Err(e) => {
+                let wrong_nonce = matches!(
+                    &e,
+                    DeviceError::Transport(source)
+                        if matches!(source.downcast_ref::<FidoError>(), Some(FidoError::WrongNonce))
+                );
+                if wrong_nonce && retries < 2 {
+                    retries += 1;
+                    log::warn!("FIDO INIT collided after reinsertion; retrying ({retries}/2)");
+                    std::thread::sleep(Duration::from_millis(100));
+                } else {
+                    return Err(RpcError::new("connection-error", format!("{e}")));
+                }
+            }
+        }
+    }
 }
 
 fn cbor_to_json(v: &CborValue) -> Value {
@@ -482,9 +508,7 @@ impl Ctap2Node {
         // Re-open connection and perform reset based on type
         match &mut self.device_type {
             FidoDeviceType::Hid { conn, .. } => {
-                let new_conn = device
-                    .open_fido()
-                    .map_err(|e| RpcError::new("connection-error", format!("{e}")))?;
+                let new_conn = open_fido_after_reinsert(device.as_ref())?;
                 let ctap = CtapSession::new_fido(new_conn)
                     .map_err(|(e, _)| RpcError::new("device-error", format!("{e}")))?;
                 let mut ctap2 = Ctap2Session::new(ctap)
@@ -792,7 +816,7 @@ impl Ctap2Node {
                     .and_then(|v| v.as_str())
                     .map(|s| s.to_string());
 
-                with_ctap2_dev!(&mut self.device_type, |ctap2| {
+                let result = with_ctap2_dev!(&mut self.device_type, |ctap2| {
                     match ctap2.get_info() {
                         Err(e) => {
                             let conn = ctap2.into_session().into_connection();
@@ -848,7 +872,12 @@ impl Ctap2Node {
                             }
                         }
                     }
-                })?;
+                });
+                if matches!(&result, Err(e) if e.status == "pin-validation") {
+                    self.pin_token = None;
+                    self.refresh_data();
+                }
+                result?;
                 self.pin_token = None;
                 self.delete_ppuat();
                 self.refresh_data();
