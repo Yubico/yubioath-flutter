@@ -46,7 +46,7 @@ abstract class OtpStateNotifier extends ApplicationStateNotifier<OtpState> {
   final DevicePath devicePath;
   Future<String> generateStaticPassword(int length, String layout);
   Future<String> modhexEncodeSerial(int serial);
-  Future<Map<String, List<String>>> getKeyboardLayouts();
+  Future<Map<String, KeyboardLayout>> getKeyboardLayouts();
   Future<String> formatYubiOtpCsv(
     int serial,
     String publicId,

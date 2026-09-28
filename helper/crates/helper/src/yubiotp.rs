@@ -575,22 +575,47 @@ fn handle_utility_action(action: &str, params: &Value) -> Result<RpcResponse, Rp
             Ok(RpcResponse::new(json!({ "csv": csv })))
         }
         "keyboard_layouts" => {
-            use ykman::keyboard::{self, KeyboardLayout};
-            let mut result = serde_json::Map::new();
-            for &layout in KeyboardLayout::ALL {
-                let map = keyboard::scancodes(layout);
-                let mut chars: Vec<char> = map.keys().copied().collect();
+            use ykman::keyboard::{KeyboardLayout, LayoutSelection};
+            // Serialize the sorted character set for a resolved selection.
+            let chars_of = |sel: LayoutSelection| -> Value {
+                let mut chars: Vec<char> = sel.scancodes().keys().copied().collect();
                 chars.sort();
-                let char_strings: Vec<Value> = chars
-                    .into_iter()
-                    .map(|c| Value::String(c.to_string()))
-                    .collect();
-                result.insert(layout.name().to_string(), Value::Array(char_strings));
+                Value::Array(
+                    chars
+                        .into_iter()
+                        .map(|c| Value::String(c.to_string()))
+                        .collect(),
+                )
+            };
+            // Each base layout carries its human-readable description, its own
+            // character set, and a map of variant name -> character set. Modhex
+            // is first, matching `KeyboardLayout::all()`.
+            let mut result = serde_json::Map::new();
+            for layout in KeyboardLayout::all() {
+                let name = layout.name();
+                let Ok(base) = name.parse::<LayoutSelection>() else {
+                    continue;
+                };
+                let mut variants = serde_json::Map::new();
+                for variant in layout.variants() {
+                    let full = format!("{}:{}", name, variant.name());
+                    if let Ok(sel) = full.parse::<LayoutSelection>() {
+                        variants.insert(variant.name().to_string(), chars_of(sel));
+                    }
+                }
+                result.insert(
+                    name.to_string(),
+                    json!({
+                        "description": layout.description(),
+                        "characters": chars_of(base),
+                        "variants": Value::Object(variants),
+                    }),
+                );
             }
             Ok(RpcResponse::new(Value::Object(result)))
         }
         "generate_static" => {
-            use ykman::keyboard::{self, KeyboardLayout, MODHEX_CHARS};
+            use ykman::keyboard::LayoutSelection;
             let length = params
                 .get("length")
                 .and_then(|v| v.as_u64())
@@ -599,19 +624,18 @@ fn handle_utility_action(action: &str, params: &Value) -> Result<RpcResponse, Rp
             let layout_name = params
                 .get("layout")
                 .and_then(|v| v.as_str())
-                .unwrap_or("MODHEX");
-            let layout: KeyboardLayout = layout_name
+                .unwrap_or("modhex");
+            let layout: LayoutSelection = layout_name
                 .parse()
                 .map_err(|e: String| RpcError::invalid_params(e))?;
-            let chars: Vec<char> = if layout == KeyboardLayout::Modhex {
-                MODHEX_CHARS.chars().collect()
-            } else {
-                keyboard::scancodes(layout)
-                    .keys()
-                    .copied()
-                    .filter(|c| !"\t\n ".contains(*c))
-                    .collect()
-            };
+            // The scancode map for modhex now contains both upper- and
+            // lowercase characters, yielding mixed-case passwords.
+            let chars: Vec<char> = layout
+                .scancodes()
+                .keys()
+                .copied()
+                .filter(|c| !"\t\n ".contains(*c))
+                .collect();
             let mut rand_bytes = vec![0u8; length];
             getrandom::fill(&mut rand_bytes)
                 .map_err(|e| RpcError::new("rng-error", format!("{e}")))?;
@@ -706,11 +730,11 @@ fn build_config(cfg_type: &str, params: &Value) -> Result<SlotConfiguration, Rpc
                     let layout_name = params
                         .get("keyboard_layout")
                         .and_then(|v| v.as_str())
-                        .unwrap_or("MODHEX");
-                    let layout: ykman::keyboard::KeyboardLayout = layout_name
+                        .unwrap_or("modhex");
+                    let layout: ykman::keyboard::LayoutSelection = layout_name
                         .parse()
                         .map_err(|e: String| RpcError::invalid_params(e))?;
-                    let map = ykman::keyboard::scancodes(layout);
+                    let map = layout.scancodes();
                     password
                         .chars()
                         .map(|c| {

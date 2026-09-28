@@ -871,6 +871,8 @@
         }
     },
     "s_keyboard_layout": "Keyboard layout",
+    "s_keyboard_variant": "Variant",
+    "s_keyboard_variant_default": "Default",
     "l_keyboard_layout": "Keyboard {layout}",
     "@l_keyboard_layout": {
         "placeholders": {

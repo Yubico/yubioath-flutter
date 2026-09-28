@@ -41,7 +41,7 @@ final _log = Logger('otp.view.configure_static_dialog');
 class ConfigureStaticDialog extends ConsumerStatefulWidget {
   final DevicePath devicePath;
   final OtpSlot otpSlot;
-  final Map<String, List<String>> keyboardLayouts;
+  final Map<String, KeyboardLayout> keyboardLayouts;
 
   const ConfigureStaticDialog(
     this.devicePath,
@@ -62,14 +62,12 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
   String? _passwordError;
   bool _appendEnter = true;
   String _keyboardLayout = '';
-  String _defaultKeyboardLayout = '';
+  String _variant = '';
 
   @override
   void initState() {
     super.initState();
-    final modhexLayout = widget.keyboardLayouts.keys.toList()[0];
-    _keyboardLayout = modhexLayout;
-    _defaultKeyboardLayout = modhexLayout;
+    _keyboardLayout = widget.keyboardLayouts.keys.toList()[0];
   }
 
   @override
@@ -80,7 +78,8 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
   }
 
   RegExp generateFormatterPattern(String layout) {
-    final allowedCharacters = widget.keyboardLayouts[layout] ?? [];
+    final allowedCharacters =
+        widget.keyboardLayouts[layout]?.charactersFor(_variant) ?? [];
 
     final pattern = allowedCharacters
         .map((char) => RegExp.escape(char))
@@ -88,6 +87,20 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
 
     return RegExp('^[$pattern]+\$', caseSensitive: false);
   }
+
+  /// The helper selector string for the current layout + variant, e.g. `de` or
+  /// `de:dvorak`.
+  String get _layoutSelector =>
+      widget.keyboardLayouts[_keyboardLayout]?.selector(_variant) ??
+      _keyboardLayout;
+
+  Future<String?> _selectLayout(BuildContext context) => showBlurDialog<String>(
+    context: context,
+    builder: (context) => _LayoutPickerDialog(
+      layouts: widget.keyboardLayouts.values.toList(),
+      selected: _keyboardLayout,
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -129,7 +142,7 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
       );
       final configuration = SlotConfiguration.static(
         password: password,
-        keyboardLayout: _keyboardLayout,
+        keyboardLayout: _layoutSelector,
         options: SlotConfigurationOptions(appendCr: _appendEnter),
       );
 
@@ -218,7 +231,7 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
                                 )
                                 .generateStaticPassword(
                                   passwordMaxLength,
-                                  _keyboardLayout,
+                                  _layoutSelector,
                                 );
                             setState(() {
                               _passwordController.text = password;
@@ -266,21 +279,63 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
                                   });
                                 },
                               ),
-                              ChoiceFilterChip(
-                                items: widget.keyboardLayouts.keys.toList(),
-                                value: _keyboardLayout,
+                              ActionChip(
+                                avatar: const Icon(Symbols.keyboard),
+                                label: Text(
+                                  widget
+                                          .keyboardLayouts[_keyboardLayout]
+                                          ?.description ??
+                                      _keyboardLayout,
+                                ),
                                 tooltip: l10n.s_keyboard_layout,
-                                selected:
-                                    _keyboardLayout != _defaultKeyboardLayout,
-                                labelBuilder: (value) =>
-                                    Text(l10n.l_keyboard_layout(value)),
-                                itemBuilder: (value) => Text(value),
-                                onChanged: (layout) {
-                                  setState(() {
-                                    _keyboardLayout = layout;
-                                  });
+                                onPressed: () async {
+                                  final selected = await _selectLayout(context);
+                                  if (selected != null) {
+                                    setState(() {
+                                      _keyboardLayout = selected;
+                                      // Reset the variant when the layout
+                                      // changes; the previous variant may not
+                                      // exist in the new layout.
+                                      _variant = '';
+                                      _passwordError = null;
+                                    });
+                                  }
                                 },
                               ),
+                              if (widget
+                                      .keyboardLayouts[_keyboardLayout]
+                                      ?.variants
+                                      .isNotEmpty ??
+                                  false)
+                                ChoiceFilterChip<String>(
+                                  avatar: const Icon(Symbols.tune),
+                                  items: [
+                                    '',
+                                    ...widget
+                                        .keyboardLayouts[_keyboardLayout]!
+                                        .variants
+                                        .keys,
+                                  ],
+                                  value: _variant,
+                                  tooltip: l10n.s_keyboard_variant,
+                                  selected: _variant.isNotEmpty,
+                                  labelBuilder: (value) => Text(
+                                    value.isEmpty
+                                        ? l10n.s_keyboard_variant_default
+                                        : value,
+                                  ),
+                                  itemBuilder: (value) => Text(
+                                    value.isEmpty
+                                        ? l10n.s_keyboard_variant_default
+                                        : value,
+                                  ),
+                                  onChanged: (variant) {
+                                    setState(() {
+                                      _variant = variant;
+                                      _passwordError = null;
+                                    });
+                                  },
+                                ),
                             ],
                           ),
                         ),
@@ -296,6 +351,85 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
                   .toList(),
         ),
       ),
+    );
+  }
+}
+
+/// A searchable picker dialog for selecting a keyboard layout by its
+/// human-readable description. Used instead of a long, flat popup menu.
+class _LayoutPickerDialog extends StatefulWidget {
+  final List<KeyboardLayout> layouts;
+  final String selected;
+
+  const _LayoutPickerDialog({required this.layouts, required this.selected});
+
+  @override
+  State<_LayoutPickerDialog> createState() => _LayoutPickerDialogState();
+}
+
+class _LayoutPickerDialogState extends State<_LayoutPickerDialog> {
+  String _query = '';
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final query = _query.trim().toLowerCase();
+    final filtered = widget.layouts
+        .where(
+          (layout) =>
+              query.isEmpty ||
+              layout.description.toLowerCase().contains(query) ||
+              layout.name.toLowerCase().contains(query),
+        )
+        .toList();
+
+    return AlertDialog(
+      title: Text(l10n.s_keyboard_layout),
+      contentPadding: const EdgeInsets.symmetric(vertical: 16.0),
+      content: SizedBox(
+        width: 320,
+        height: 400,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: TextField(
+                autofocus: true,
+                decoration: AppInputDecoration(
+                  border: const OutlineInputBorder(),
+                  labelText: l10n.s_search,
+                  prefixIcon: const Icon(Symbols.search),
+                ),
+                onChanged: (value) => setState(() => _query = value),
+              ),
+            ),
+            const SizedBox(height: 8.0),
+            Expanded(
+              child: ListView.builder(
+                itemCount: filtered.length,
+                itemBuilder: (context, index) {
+                  final layout = filtered[index];
+                  final selected = layout.name == widget.selected;
+                  return ListTile(
+                    dense: true,
+                    selected: selected,
+                    title: Text(layout.description),
+                    trailing: selected ? const Icon(Symbols.check) : null,
+                    onTap: () => Navigator.of(context).pop(layout.name),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(l10n.s_cancel),
+        ),
+      ],
     );
   }
 }
