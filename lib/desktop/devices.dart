@@ -267,7 +267,17 @@ class CurrentDeviceDataNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
     if (node == null) return;
     // Phantom devices have no RPC node; nothing to refresh.
     if (node is YubiKeyDeviceNode && node.info == null) return;
-    var result = await _rpc?.command('get', node.path.segments);
+    Map<String, dynamic>? result;
+    try {
+      result = await _rpc?.command('get', node.path.segments);
+    } on RpcError catch (e) {
+      if (e.status == 'invalid-command' &&
+          e.message == 'No such node: ${node.path.segments.last}') {
+        _log.info('Device removed during info refresh');
+        return;
+      }
+      rethrow;
+    }
     if (mounted && result != null) {
       final newState = YubiKeyData(
         node,

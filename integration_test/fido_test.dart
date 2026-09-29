@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -239,6 +241,7 @@ void main() {
         }
       }
 
+      final reloadTimer = Stopwatch()..start();
       await $(closeButton).tap();
 
       // Check that the FIDO state has been reset
@@ -247,6 +250,13 @@ void main() {
         () => $.read(fidoStateProvider(data.node.path)).value != null,
         reason: 'FIDO state did not reload after reset',
       );
+      if (pico != null && Platform.isLinux) {
+        expect(
+          reloadTimer.elapsed,
+          lessThan(const Duration(seconds: 3)),
+          reason: 'Passkeys should load promptly after a Pico-assisted reset',
+        );
+      }
       final state = $.read(fidoStateProvider(data.node.path)).value!;
       expect(state.hasPin, isFalse);
     }, tags: 'manual');

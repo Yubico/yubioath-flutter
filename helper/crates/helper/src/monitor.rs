@@ -75,17 +75,20 @@ fn ensure_started() -> &'static Monitor {
     })
 }
 
-/// Returns a snapshot of the currently connected YubiKeys, ordered by stable
-/// monitor id for deterministic naming.
-pub fn devices() -> Vec<LocalYubiKeyDevice> {
+/// Returns devices with their monitor revisions, ordered by stable monitor id.
+/// Revisions distinguish reinsertions even when device metadata is unchanged.
+pub fn devices() -> Vec<(LocalYubiKeyDevice, u64)> {
     let monitor = ensure_started();
     let inv = recover_lock(monitor.inventory.lock());
-    let mut items: Vec<(YubiKeyId, LocalYubiKeyDevice)> = inv
+    let mut items: Vec<(YubiKeyId, LocalYubiKeyDevice, u64)> = inv
         .iter()
-        .map(|(id, (yk, _))| (*id, yk.device().clone()))
+        .map(|(id, (yk, revision))| (*id, yk.device().clone(), *revision))
         .collect();
-    items.sort_by_key(|(id, _)| *id);
-    items.into_iter().map(|(_, dev)| dev).collect()
+    items.sort_by_key(|(id, _, _)| *id);
+    items
+        .into_iter()
+        .map(|(_, dev, revision)| (dev, revision))
+        .collect()
 }
 
 /// Capture the monitor revision before writing a rebooting configuration.

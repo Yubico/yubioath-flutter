@@ -42,6 +42,8 @@ pub struct DevicesNode {
     is_service: bool,
     device_mapping: BTreeMap<String, Box<dyn YubiKeyDevice>>,
     devices: BTreeMap<String, Value>,
+    // A monitor change can replace interface paths without changing metadata.
+    revisions: BTreeMap<String, u64>,
     // Monitors (including ykman-svc's) do not emit changes for non-rebooting
     // application toggles, so keep the freshly read info until removal.
     refreshed_info: BTreeMap<String, Value>,
@@ -61,6 +63,7 @@ impl DevicesNode {
             is_service,
             device_mapping: BTreeMap::new(),
             devices: BTreeMap::new(),
+            revisions: BTreeMap::new(),
             refreshed_info: BTreeMap::new(),
             child_invalidated: false,
         }
@@ -73,13 +76,15 @@ impl DevicesNode {
     /// never needs to trigger a fresh USB/PC-SC scan.
     fn list_devices(
         &mut self,
-    ) -> Result<Vec<Box<dyn YubiKeyDevice>>, yubikit::device::DeviceError> {
+    ) -> Result<Vec<(Box<dyn YubiKeyDevice>, u64)>, yubikit::device::DeviceError> {
         if self.is_service {
-            self.source.list_devices()
+            self.source
+                .list_devices()
+                .map(|devices| devices.into_iter().map(|device| (device, 0)).collect())
         } else {
             Ok(monitor::devices()
                 .into_iter()
-                .map(|d| Box::new(d) as Box<dyn YubiKeyDevice>)
+                .map(|(device, revision)| (Box::new(device) as Box<dyn YubiKeyDevice>, revision))
                 .collect())
         }
     }
@@ -102,10 +107,11 @@ impl RpcNode for DevicesNode {
     fn list_children(&mut self) -> BTreeMap<String, Value> {
         let is_service = self.is_service;
         let previous = std::mem::take(&mut self.devices);
+        let previous_revisions = std::mem::take(&mut self.revisions);
         match self.list_devices() {
             Ok(devs) => {
                 self.device_mapping.clear();
-                for dev in devs {
+                for (dev, revision) in devs {
                     // The service source dedupes/excludes NFC readers on its
                     // side; local (monitor-backed) enumeration still reports
                     // them so a tapped NFC card shows up as a device.
@@ -130,7 +136,8 @@ impl RpcNode for DevicesNode {
                                 .unwrap_or_else(|| caps_to_json(&dev.info().config.enabled_capabilities)),
                         }),
                     );
-                    self.device_mapping.insert(dev_id, dev);
+                    self.device_mapping.insert(dev_id.clone(), dev);
+                    self.revisions.insert(dev_id, revision);
                 }
                 self.refreshed_info
                     .retain(|id, _| self.device_mapping.contains_key(id));
@@ -142,7 +149,12 @@ impl RpcNode for DevicesNode {
                 self.refreshed_info.clear();
             }
         }
-        if self.devices != previous {
+        if inventory_changed(
+            &previous,
+            &self.devices,
+            &previous_revisions,
+            &self.revisions,
+        ) {
             self.child_invalidated = true;
         }
         self.devices.clone()
@@ -193,6 +205,7 @@ impl RpcNode for DevicesNode {
 
     fn close(&mut self) {
         self.device_mapping.clear();
+        self.revisions.clear();
     }
 
     fn handle_child_response(&mut self, response: &mut RpcResponse) {
@@ -211,9 +224,34 @@ impl RpcNode for DevicesNode {
             self.child_invalidated = true;
             self.device_mapping.clear();
             self.devices.clear();
+            self.revisions.clear();
             self.refreshed_info.clear();
             response.flags.retain(|f| f != "device_closed");
         }
+    }
+}
+
+fn inventory_changed(
+    previous: &BTreeMap<String, Value>,
+    current: &BTreeMap<String, Value>,
+    previous_revisions: &BTreeMap<String, u64>,
+    current_revisions: &BTreeMap<String, u64>,
+) -> bool {
+    previous != current || previous_revisions != current_revisions
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn monitor_change_invalidates_cached_device_with_same_metadata() {
+        let devices = BTreeMap::from([("123".to_string(), json!({"name": "YubiKey"}))]);
+        let original = BTreeMap::from([("123".to_string(), 1)]);
+        let changed = BTreeMap::from([("123".to_string(), 2)]);
+
+        assert!(!inventory_changed(&devices, &devices, &original, &original));
+        assert!(inventory_changed(&devices, &devices, &original, &changed));
     }
 }
 
