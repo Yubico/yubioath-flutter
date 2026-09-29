@@ -105,7 +105,7 @@ class _ConfigureHotpDialogState extends ConsumerState<ConfigureHotpDialog> {
         otpStateProvider(widget.devicePath).notifier,
       );
       final configuration = SlotConfiguration.hotp(
-        key: secret,
+        key: secret.toUpperCase(),
         options: SlotConfigurationOptions(
           digits8: _digits == 8,
           appendCr: _appendEnter,

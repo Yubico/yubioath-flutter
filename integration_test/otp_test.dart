@@ -90,6 +90,10 @@ void main() {
         );
 
         final slot2 = $(getAppListItemKey(SlotId.two));
+        Future<void> waitForSave() => $.condition(
+          () => !$(saveButton).exists,
+          reason: 'OTP programming dialog did not close',
+        );
 
         // Program a challenge-response credential
         await $.itemAction(slot2, configureYubiOtp);
@@ -120,13 +124,17 @@ void main() {
               $.read(otpStateProvider(data.node.path)).value?.slot2Configured ==
               true,
         );
+        await waitForSave();
 
         // Close the slot details, if opened
         final close = $(closeButton);
         if (close.exists) {
           await close.tap();
-          expect(slot2, findsOneWidget);
         }
+        await $.condition(
+          () => slot2.exists,
+          reason: 'Slot 2 did not reappear after programming',
+        );
 
         // Program a challenge-response credential, using right-click
         await $.tester.tap(slot2, buttons: kSecondaryButton);
@@ -151,12 +159,16 @@ void main() {
 
         // Slot is configured, need overwrite
         await $(overwriteButton).tap();
+        await waitForSave();
 
         // Close the slot details, if opened
         if (close.exists) {
           await close.tap();
-          expect(slot2, findsOneWidget);
         }
+        await $.condition(
+          () => slot2.exists,
+          reason: 'Slot 2 did not reappear after overwriting',
+        );
 
         // Delete the slot 2 key
         await $.itemAction(slot2, deleteAction);
@@ -166,12 +178,19 @@ void main() {
               $.read(otpStateProvider(data.node.path)).value?.slot2Configured ==
               false,
         );
+        await $.condition(
+          () => !$(deleteButton).exists,
+          reason: 'OTP deletion dialog did not close',
+        );
 
         // Close the slot details, if opened
         if (close.exists) {
           await close.tap();
-          expect(slot2, findsWidgets);
         }
+        await $.condition(
+          () => slot2.exists,
+          reason: 'Slot 2 did not reappear after deletion',
+        );
 
         // Program a static password
         await $.itemAction(slot2, configureStatic);
@@ -191,12 +210,16 @@ void main() {
         // Generate a random password and save
         await $(generateSecretKey).tap();
         await $(saveButton).tap();
+        await waitForSave();
 
         // Close the slot details, if opened
         if (close.exists) {
           await close.tap();
-          expect(slot2, findsOneWidget);
         }
+        await $.condition(
+          () => slot2.exists,
+          reason: 'Slot 2 did not reappear after programming',
+        );
 
         // Program a HOTP credential
         await $.itemAction(slot2, configureHotp);
@@ -224,12 +247,16 @@ void main() {
         await $(secretField).enterText('abba');
         await $(saveButton).tap();
         await $(overwriteButton).tap();
+        await waitForSave();
 
         // Close the slot details, if opened
         if (close.exists) {
           await close.tap();
-          expect(slot2, findsOneWidget);
         }
+        await $.condition(
+          () => slot2.exists,
+          reason: 'Slot 2 did not reappear after overwriting',
+        );
 
         // Programatically delete the slot 2 credential
         await $
