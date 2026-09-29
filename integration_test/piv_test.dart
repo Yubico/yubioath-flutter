@@ -7,6 +7,7 @@ import 'package:yubico_authenticator/app/state.dart';
 import 'package:yubico_authenticator/app/views/app_list_item.dart';
 import 'package:yubico_authenticator/app/views/keys.dart';
 import 'package:yubico_authenticator/core/state.dart';
+import 'package:yubico_authenticator/desktop/models.dart';
 import 'package:yubico_authenticator/management/models.dart';
 import 'package:yubico_authenticator/piv/keys.dart';
 import 'package:yubico_authenticator/piv/models.dart';
@@ -260,6 +261,116 @@ void main() {
           expect($($.l10n.l_key_no_certificate), findsOneWidget);
         }
       });
+
+      testKey('Post-quantum keys and certificate', params, ($, data) async {
+        await $.navigate(Section.certificates);
+        final path = data.node.path;
+        final state = await $.read(pivStateProvider(path).future);
+        final existing = await $.read(pivSlotsProvider(path).future);
+        for (final slot in [SlotId.retired1, SlotId.retired2]) {
+          final current = existing.firstWhere((entry) => entry.slot == slot);
+          expect(current.metadata, isNull);
+          expect(current.certInfo, isNull);
+        }
+
+        final access = $.read(pivStateProvider(path).notifier);
+        expect(
+          await access.authenticate(
+            state.metadata?.managementKeyMetadata.defaultValue == true
+                ? defaultManagementKey
+                : changedManagementKey,
+          ),
+          isTrue,
+        );
+        expect(
+          await access.verifyPin(
+            state.metadata?.pinMetadata.defaultValue == true
+                ? defaultPin
+                : changedPin,
+          ),
+          isA<PinSuccess>(),
+        );
+
+        try {
+          final now = DateTime.now();
+          final dsa = await $
+              .read(pivSlotsProvider(path).notifier)
+              .generate(
+                SlotId.retired1,
+                KeyType.mlDsa87,
+                parameters: PivGenerateParameters.certificate(
+                  subject: 'CN=ML-DSA Test',
+                  validFrom: now.subtract(const Duration(days: 1)),
+                  validTo: now.add(const Duration(days: 365)),
+                ),
+              );
+          expect(dsa.generateType, GenerateType.certificate);
+          expect(dsa.publicKey, startsWith('-----BEGIN PUBLIC KEY-----'));
+          expect(dsa.result, startsWith('-----BEGIN CERTIFICATE-----'));
+
+          final (dsaMetadata, certificate) = await $
+              .read(pivSlotsProvider(path).notifier)
+              .read(SlotId.retired1);
+          expect(dsaMetadata?.keyType, KeyType.mlDsa87);
+          expect(dsaMetadata?.publicKey, dsa.publicKey);
+          expect(certificate, dsa.result);
+
+          await expectLater(
+            $
+                .read(pivSlotsProvider(path).notifier)
+                .generate(
+                  SlotId.retired2,
+                  KeyType.mlKem1024,
+                  parameters: PivGenerateParameters.csr(
+                    subject: 'CN=ML-KEM Test',
+                  ),
+                ),
+            throwsA(isA<RpcError>()),
+          );
+          final (emptyMetadata, emptyCertificate) = await $
+              .read(pivSlotsProvider(path).notifier)
+              .read(SlotId.retired2);
+          expect(emptyMetadata, isNull);
+          expect(emptyCertificate, isNull);
+
+          final kem = await $
+              .read(pivSlotsProvider(path).notifier)
+              .generate(
+                SlotId.retired2,
+                KeyType.mlKem1024,
+                parameters: PivGenerateParameters.publicKey(),
+              );
+          expect(kem.generateType, GenerateType.publicKey);
+          expect(kem.publicKey, startsWith('-----BEGIN PUBLIC KEY-----'));
+          expect(kem.result, kem.publicKey);
+
+          final (kemMetadata, kemCertificate) = await $
+              .read(pivSlotsProvider(path).notifier)
+              .read(SlotId.retired2);
+          expect(kemMetadata?.keyType, KeyType.mlKem1024);
+          expect(kemMetadata?.publicKey, kem.publicKey);
+          expect(kemCertificate, isNull);
+
+          final updated = await $.read(pivSlotsProvider(path).future);
+          final certSlot = updated.firstWhere(
+            (entry) => entry.slot == SlotId.retired1,
+          );
+          expect(certSlot.certInfo?.keyType, KeyType.mlDsa87);
+          expect(certSlot.certInfo?.subject, contains('ML-DSA Test'));
+          expect(
+            certSlot.certInfo?.fingerprint,
+            matches(RegExp(r'^[0-9a-f]{64}$')),
+          );
+          expect(certSlot.publicKeyMatch, isTrue);
+        } finally {
+          await $
+              .read(pivSlotsProvider(path).notifier)
+              .delete(SlotId.retired1, true, true);
+          await $
+              .read(pivSlotsProvider(path).notifier)
+              .delete(SlotId.retired2, true, true);
+        }
+      }, condition: (info) => info.version.isAtLeast(6, 0));
     },
     skip: isAndroid,
     condition: (info) => info.hasCapability(Capability.piv),

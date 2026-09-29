@@ -988,6 +988,28 @@ impl SlotNode {
                     .unwrap_or(TouchPolicy::Default as u64);
                 let touch_policy = TouchPolicy::from_u8(touch_policy_val as u8)
                     .ok_or_else(|| RpcError::invalid_params("Invalid touch_policy"))?;
+                let generate_type = params
+                    .get("generate_type")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("certificate");
+                if !matches!(generate_type, "publicKey" | "csr" | "certificate") {
+                    return Err(RpcError::invalid_params(format!(
+                        "Invalid generate_type: {generate_type}"
+                    )));
+                }
+                if generate_type != "publicKey"
+                    && matches!(
+                        key_type,
+                        KeyType::X25519
+                            | KeyType::MlKem512
+                            | KeyType::MlKem768
+                            | KeyType::MlKem1024
+                    )
+                {
+                    return Err(RpcError::invalid_params(
+                        "This key type cannot sign a certificate or CSR",
+                    ));
+                }
 
                 let (public_key_pem, result) = {
                     let mut session_guard = self.session.lock().unwrap();
@@ -1009,11 +1031,6 @@ impl SlotNode {
                     let public_key_pem = spki.to_pem(LineEnding::LF).map_err(|e| {
                         RpcError::new("device-error", format!("Failed to encode PEM: {e}"))
                     })?;
-
-                    let generate_type = params
-                        .get("generate_type")
-                        .and_then(|v| v.as_str())
-                        .unwrap_or("certificate");
 
                     // Verify PIN if needed (for signing operations)
                     if generate_type != "publicKey"

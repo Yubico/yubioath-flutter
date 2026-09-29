@@ -32,6 +32,16 @@ List<KeyType> getSupportedKeyTypes(
         (generateType == null || generateType == GenerateType.publicKey))
       KeyType.x25519,
   ],
+  if (version.isAtLeast(6, 0)) ...[
+    KeyType.mlDsa44,
+    KeyType.mlDsa65,
+    KeyType.mlDsa87,
+    if (generateType == null || generateType == GenerateType.publicKey) ...[
+      KeyType.mlKem512,
+      KeyType.mlKem768,
+      KeyType.mlKem1024,
+    ],
+  ],
   KeyType.eccp256,
   if (version.isAtLeast(4, 0)) ...[KeyType.eccp384],
 ];
