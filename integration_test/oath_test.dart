@@ -223,99 +223,92 @@ void main() {
       expect($(AccountView), findsNothing);
     });
 
-    testKey(
-      'Credential survives reconnect',
-      params,
-      ($, data) async {
-        final pico = picoController!;
-        const issuer = 'Reconnect';
-        const name = 'reconnect@example.com';
-        var removed = false;
-        var added = false;
-        try {
-          await $.navigate(Section.accounts);
-          await $.addCredential(
-            data,
-            CredentialData(
-              issuer: issuer,
-              name: name,
-              secret: 'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ',
-              oathType: OathType.hotp,
-              digits: 6,
-            ),
-          );
-          added = true;
+    testKey('Credential survives reconnect', params, ($, data) async {
+      final pico = picoController!;
+      const issuer = 'Reconnect';
+      const name = 'reconnect@example.com';
+      var removed = false;
+      var added = false;
+      try {
+        await $.navigate(Section.accounts);
+        await $.addCredential(
+          data,
+          CredentialData(
+            issuer: issuer,
+            name: name,
+            secret: 'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ',
+            oathType: OathType.hotp,
+            digits: 6,
+          ),
+        );
+        added = true;
 
-          removed = true;
-          await pico.remove();
-          await $.condition(
-            () => $.read(currentDeviceDataProvider).value == null,
-            settle: false,
-            reason: 'Device remained selected after disconnect',
-          );
-          await pico.insert();
-          removed = false;
+        removed = true;
+        await pico.remove();
+        await $.condition(
+          () => $.read(currentDeviceDataProvider).value == null,
+          settle: false,
+          reason: 'Device remained selected after disconnect',
+        );
+        await pico.insert();
+        removed = false;
 
+        await $.condition(
+          () =>
+              $.read(currentDeviceDataProvider).value?.info.serial ==
+              data.info.serial,
+          settle: false,
+          reason: 'YubiKey did not return after reconnect',
+        );
+        final reconnected = $.read(currentDeviceDataProvider).requireValue;
+        await $.navigate(Section.accounts);
+        await $.condition(
+          () => $(
+            AppListItem<OathCredential>,
+          ).which((widget) => $(widget).$(issuer).exists).exists,
+          reason: 'OATH credential missing after reconnect',
+          settle: false,
+        );
+        expect(reconnected.info.serial, data.info.serial);
+
+        final hotp = $(
+          AppListItem<OathCredential>,
+        ).which((widget) => $(widget).$(issuer).exists);
+        await $.selectOrOpenItem(hotp);
+        if (!$('755 224').exists) {
+          await $(calculateAction).tap();
+        }
+        expect($('755 224'), findsWidgets);
+        await $(calculateAction).tap();
+        expect($('287 082'), findsWidgets);
+      } finally {
+        if (removed) await pico.insert();
+        await pico.release();
+        if (added) {
           await $.condition(
             () =>
                 $.read(currentDeviceDataProvider).value?.info.serial ==
                 data.info.serial,
             settle: false,
-            reason: 'YubiKey did not return after reconnect',
+            reason: 'YubiKey did not return for credential cleanup',
           );
-          final reconnected = $.read(currentDeviceDataProvider).requireValue;
-          await $.navigate(Section.accounts);
+          final path = $.read(currentDeviceDataProvider).requireValue.node.path;
           await $.condition(
-            () => $(
-              AppListItem<OathCredential>,
-            ).which((widget) => $(widget).$(issuer).exists).exists,
-            reason: 'OATH credential missing after reconnect',
+            () => $.read(credentialListProvider(path)) != null,
             settle: false,
+            reason: 'OATH credentials unavailable for cleanup',
           );
-          expect(reconnected.info.serial, data.info.serial);
-
-          final hotp = $(
-            AppListItem<OathCredential>,
-          ).which((widget) => $(widget).$(issuer).exists);
-          await $.itemAction(hotp, calculateAction);
-          expect($('755 224'), findsWidgets);
-        } finally {
-          if (removed) await pico.insert();
-          await pico.release();
-          if (added) {
-            await $.condition(
-              () =>
-                  $.read(currentDeviceDataProvider).value?.info.serial ==
-                  data.info.serial,
-              settle: false,
-              reason: 'YubiKey did not return for credential cleanup',
-            );
-            final path = $
-                .read(currentDeviceDataProvider)
-                .requireValue
-                .node
-                .path;
-            await $.condition(
-              () => $.read(credentialListProvider(path)) != null,
-              settle: false,
-              reason: 'OATH credentials unavailable for cleanup',
-            );
-            for (final pair in $.read(credentialListProvider(path))!) {
-              if (pair.credential.issuer == issuer &&
-                  pair.credential.name == name) {
-                await $
-                    .read(credentialListProvider(path).notifier)
-                    .deleteAccount(pair.credential);
-              }
+          for (final pair in $.read(credentialListProvider(path))!) {
+            if (pair.credential.issuer == issuer &&
+                pair.credential.name == name) {
+              await $
+                  .read(credentialListProvider(path).notifier)
+                  .deleteAccount(pair.credential);
             }
           }
         }
-      },
-      skip:
-          params.windowSize != WindowSize.wide ||
-          picoController == null ||
-          isAndroid,
-    );
+      }
+    }, skip: picoController == null || isAndroid);
 
     testKey('Set/Change/Remove password', params, ($, data) async {
       bool hasLock() =>

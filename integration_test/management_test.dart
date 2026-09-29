@@ -88,7 +88,7 @@ void main() {
           original,
         );
       },
-      skip: params.windowSize != WindowSize.wide || isAndroid,
+      skip: isAndroid,
       condition: (info) =>
           info.version.isAtLeast(5) &&
           !info.isLocked &&
@@ -142,7 +142,7 @@ void main() {
           original,
         );
       },
-      skip: params.windowSize != WindowSize.wide || isAndroid,
+      skip: isAndroid,
       condition: (info) =>
           info.version.isAtLeast(5) &&
           !info.isLocked &&

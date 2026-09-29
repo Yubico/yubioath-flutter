@@ -4,11 +4,13 @@
 # ///
 
 import json
+import os
 import subprocess
 import sys
 import time
 from dataclasses import asdict
 from enum import StrEnum
+from pathlib import Path
 from urllib.parse import urlparse
 
 import click
@@ -18,6 +20,8 @@ from ykman.device import list_all_devices
 from ykman.pcsc import list_devices
 from yubikit.core.smartcard import SmartCardConnection
 from yubikit.support import read_info
+
+from run_artifacts import RunArtifacts
 
 
 class App(StrEnum):
@@ -79,6 +83,17 @@ def verify_controller(pico: PicoController, serial: int) -> None:
 )
 @click.option("--setup/--no-setup", default=None, help="Run pre-test setup for YubiKey")
 @click.option(
+    "--artifacts-dir",
+    type=click.Path(path_type=Path, file_okay=False),
+    default=Path(__file__).resolve().parents[1] / "build" / "test-runs",
+    help="Directory for timestamped test logs and failure diagnostics",
+)
+@click.option(
+    "--service-log",
+    type=click.Path(path_type=Path, dir_okay=False),
+    help="Log from an externally started ykman-svc (start it at TRAFFIC level)",
+)
+@click.option(
     "--app",
     type=click.Choice(list(App)),
     multiple=True,
@@ -86,7 +101,8 @@ def verify_controller(pico: PicoController, serial: int) -> None:
     help="YubiKey applications to test (default: all)",
 )
 def main(
-    serial, reader, target, window_size, name, keyless, manual, controller, pico_port, setup, app
+    serial, reader, target, window_size, name, keyless, manual, controller,
+    pico_port, setup, artifacts_dir, service_log, app,
 ):
     """Run UI tests for Yubico Authenticator.
 
@@ -94,6 +110,12 @@ def main(
 
     For a full set of tests, run --keyless without a YubiKey connected, then the full keyed
     testsuite over both USB and NFC, both without and with the --manual flag.
+
+    Each run writes private, timestamped artifacts to build/test-runs by default.
+    Desktop app/helper traffic is captured in app.log. To capture an external
+    ykman-svc as well, start it with TRAFFIC logging to a private file and pass
+    that file with --service-log. Logs may contain test PINs and protocol data.
+    On Android, traffic goes to logcat and is not included in app.log.
 
     Example:
 
@@ -104,6 +126,7 @@ def main(
       $ ./testrunner.sh --serial 123456 --controller http://192.168.7.1
       $ ./testrunner.sh --serial 123456 --controller http://192.168.7.1 --manual
       $ ./testrunner.sh --serial 123456 --app management --no-setup --window-size wide
+      $ ./testrunner.sh --serial 123456 --service-log /path/to/ykman-svc.log
       $ ./testrunner.sh --reader hid --serial 123456
       $ ./testrunner.sh --reader hid --serial 123456 --manual
 
@@ -114,13 +137,39 @@ def main(
       $ ./testrunner.sh --target pixel --serial 123456
       $ ./testrunner.sh --target pixel --serial 123456 --manual
     """
+    if service_log is not None and not service_log.is_file():
+        raise click.BadParameter("Service log must exist before the run", param_hint="--service-log")
+    os.umask(0o077)
+    artifacts = RunArtifacts(artifacts_dir, service_log)
+    click.echo(f"Test artifacts: {artifacts.path}")
+    try:
+        result = _run_tests(
+            serial, reader, target, window_size, name, keyless, manual,
+            controller, pico_port, setup, app, artifacts,
+        )
+    except BaseException as error:
+        artifacts.event("runner_error", error=str(error))
+        artifacts.finish(1, error)
+        raise
+    else:
+        artifacts.finish(result)
+        raise SystemExit(result)
+
+
+def _run_tests(
+    serial, reader, target, window_size, name, keyless, manual, controller,
+    pico_port, setup, app, artifacts: RunArtifacts,
+) -> int:
     flutter = "flutter"
     if sys.platform == "win32":
         flutter += ".bat"
 
-    cmd = [flutter, "test"]
+    cmd = [flutter, "test", "--reporter=json"]
     apps = list(app) if app else list(App)
-    dartvars = {}
+    dartvars = {
+        "TEST_LOG_FILE": str(artifacts.app_log),
+        "TEST_DIAGNOSTICS_DIR": str(artifacts.path),
+    }
     msgs = []
     pico = None
     setup_fns = []
@@ -136,6 +185,13 @@ def main(
         dartvars["CONTROLLER"] = pico.base_url
         dartvars["PICO_PORT"] = pico_port
 
+    artifacts.event(
+        "run_config",
+        serial=serial, target=target, apps=apps, name=name, manual=manual,
+        window_size=window_size, controller=controller, pico_port=pico_port,
+        setup=setup, service_log=str(artifacts.service_log) if artifacts.service_log else None,
+    )
+    artifacts.event("device_discovery_start")
     if keyless:
         cmd.append("integration_test/keyless_test.dart")
         click.echo("ℹ️  Running tests without a YubiKey")
@@ -196,6 +252,11 @@ def main(
                     default=False,
                 )
         msgs.append("Ensure the YubiKey is connected to the test machine")
+    artifacts.event(
+        "device_discovery_end",
+        serial=info.serial if not keyless else None,
+        pid=dev.pid if not keyless and not reader else None,
+    )
 
     if target:
         cmd += ["-d", target]
@@ -226,29 +287,36 @@ def main(
 
     click.echo("Starting tests...")
 
+    result = None
     try:
         if pico is not None:
-            verify_controller(pico, serial)
-            dev = next(
-                (device for device, info in list_all_devices() if info.serial == serial),
-                None,
-            )
-            if dev is None:
-                raise click.ClickException(
-                    f"YubiKey {serial} disappeared after controller verification"
+            with artifacts.phase("controller_verification"):
+                verify_controller(pico, serial)
+                dev = next(
+                    (device for device, info in list_all_devices() if info.serial == serial),
+                    None,
                 )
+                if dev is None:
+                    raise click.ClickException(
+                        f"YubiKey {serial} disappeared after controller verification"
+                    )
         if setup:
-            for fn in setup_fns:
-                fn(dev, controller=pico)
-        result = subprocess.run(
-            cmd + [f"--dart-define={k}={v}" for k, v in dartvars.items()],
-            shell=False,
-            check=False,
+            with artifacts.phase("fixture_setup"):
+                for fn in setup_fns:
+                    fn(dev, controller=pico)
+        result = artifacts.run_flutter(
+            cmd + [f"--dart-define={k}={v}" for k, v in dartvars.items()]
         )
     finally:
         if pico is not None:
-            pico.restore()
-    raise SystemExit(result.returncode)
+            try:
+                with artifacts.phase("controller_restore"):
+                    pico.restore()
+            except Exception as error:
+                click.echo(f"Pico restore failed: {error}", err=True)
+                if result == 0 and sys.exc_info()[0] is None:
+                    raise
+    return result
 
 
 if __name__ == "__main__":
