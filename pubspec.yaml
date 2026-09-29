@@ -66,7 +66,7 @@ dependencies:
   file_picker: ^10.3.10
   archive: ^4.0.9
   crypto: ^3.0.7
-  tray_manager: ^0.5.2
+  tray_manager: ^0.7.0
   local_notifier: ^0.1.6
   io: ^1.0.5
   base32: ^2.2.0

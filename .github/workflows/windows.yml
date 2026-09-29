@@ -159,7 +159,7 @@ jobs:
         cp signed/flutter_windows.dll yubioath-desktop-windows/*/flutter_windows.dll
         cp signed/local_notifier_plugin.dll yubioath-desktop-windows/*/local_notifier_plugin.dll
         cp signed/screen_retriever_windows_plugin.dll yubioath-desktop-windows/*/screen_retriever_windows_plugin.dll
-        cp signed/tray_manager_plugin.dll yubioath-desktop-windows/*/tray_manager_plugin.dll
+        cp signed/cnativeapi.dll yubioath-desktop-windows/*/cnativeapi.dll
         cp signed/url_launcher_windows_plugin.dll yubioath-desktop-windows/*/url_launcher_windows_plugin.dll
         cp signed/window_manager_plugin.dll yubioath-desktop-windows/*/window_manager_plugin.dll
         cp signed/dartjni.dll yubioath-desktop-windows/*/dartjni.dll

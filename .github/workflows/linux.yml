@@ -25,7 +25,7 @@ jobs:
     - name: Install dependencies
       run: |
         apt-get update
-        apt-get install -qq curl software-properties-common libnotify-dev libayatana-appindicator3-dev patchelf
+        apt-get install -qq curl software-properties-common libnotify-dev
         add-apt-repository -y ppa:git-core/ppa
         apt-get install -qq git
         git config --global --add safe.directory "$GITHUB_WORKSPACE"
@@ -67,7 +67,7 @@ jobs:
 
     - name: Install Flutter dependencies
       run: |
-        apt-get install -qq clang cmake ninja-build pkg-config libgtk-3-dev jq lld
+        apt-get install -qq clang cmake ninja-build pkg-config libgtk-3-dev libx11-dev libxi-dev jq lld
 
     - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
       with:
@@ -93,18 +93,6 @@ jobs:
 
     - name: Check generated files
       run: git diff --exit-code
-
-    - name: Embedd appindicator
-      run: |
-        patchelf --set-rpath '$ORIGIN' build/linux/x64/release/bundle/lib/libtray_manager_plugin.so
-        cp -L /usr/lib/x86_64-linux-gnu/libayatana-appindicator3.so.1 build/linux/x64/release/bundle/lib/
-        patchelf --set-rpath '$ORIGIN' build/linux/x64/release/bundle/lib/libayatana-appindicator3.so.1
-        cp -L /usr/lib/x86_64-linux-gnu/libayatana-indicator3.so.7 build/linux/x64/release/bundle/lib/
-        patchelf --set-rpath '$ORIGIN' build/linux/x64/release/bundle/lib/libayatana-indicator3.so.7
-        cp -L /usr/lib/x86_64-linux-gnu/libdbusmenu-glib.so.4 build/linux/x64/release/bundle/lib/
-        patchelf --set-rpath '$ORIGIN' build/linux/x64/release/bundle/lib/libdbusmenu-glib.so.4
-        cp -L /usr/lib/x86_64-linux-gnu/libdbusmenu-gtk3.so.4 build/linux/x64/release/bundle/lib/
-        patchelf --set-rpath '$ORIGIN' build/linux/x64/release/bundle/lib/libdbusmenu-gtk3.so.4
 
     - name: Rename and archive app
       run: |
