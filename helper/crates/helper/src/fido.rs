@@ -129,6 +129,44 @@ fn open_fido_after_reinsert(
     }
 }
 
+#[derive(Default)]
+struct ResetKeepalive {
+    touch_required: bool,
+    waiting: bool,
+}
+
+impl ResetKeepalive {
+    fn update(&mut self, status: u8) -> bool {
+        match status {
+            0x02 if !self.waiting => self.touch_required = true,
+            0x01 if self.touch_required && !self.waiting => {
+                self.waiting = true;
+                return true;
+            }
+            _ => {}
+        }
+        false
+    }
+}
+
+#[cfg(test)]
+mod reset_keepalive_tests {
+    use super::ResetKeepalive;
+
+    #[test]
+    fn waits_once_after_touch_is_satisfied() {
+        let mut keepalive = ResetKeepalive::default();
+        assert!(!keepalive.update(0x01));
+        assert!(!keepalive.update(0x02));
+        assert!(!keepalive.update(0x02));
+        assert!(!keepalive.update(0x03));
+        assert!(keepalive.update(0x01));
+        assert!(!keepalive.update(0x01));
+        assert!(!keepalive.update(0x02));
+        assert!(!keepalive.update(0x01));
+    }
+}
+
 fn cbor_to_json(v: &CborValue) -> Value {
     match v {
         CborValue::Int(n) => json!(*n),
@@ -504,6 +542,12 @@ impl Ctap2Node {
             .map_err(|e| RpcError::new("device-error", format!("{e}")))?;
 
         let is_cancelled = || cancel.load(Ordering::Relaxed);
+        let mut keepalive = ResetKeepalive::default();
+        let mut on_keepalive = |status| {
+            if keepalive.update(status) {
+                signal("reset", json!({"state": "wait"}));
+            }
+        };
 
         // Re-open connection and perform reset based on type
         match &mut self.device_type {
@@ -516,7 +560,7 @@ impl Ctap2Node {
 
                 signal("reset", json!({"state": "touch"}));
                 let result = ctap2
-                    .reset(Some(&mut |_| {}), Some(&is_cancelled))
+                    .reset(Some(&mut on_keepalive), Some(&is_cancelled))
                     .map_err(|e| {
                         if matches!(&e, Ctap2Error::StatusError(CtapStatus::UserActionTimeout)) {
                             return RpcError::timeout();
@@ -538,7 +582,7 @@ impl Ctap2Node {
 
                 signal("reset", json!({"state": "touch"}));
                 let result = ctap2
-                    .reset(Some(&mut |_| {}), Some(&is_cancelled))
+                    .reset(Some(&mut on_keepalive), Some(&is_cancelled))
                     .map_err(|e| {
                         if matches!(&e, Ctap2Error::StatusError(CtapStatus::UserActionTimeout)) {
                             return RpcError::timeout();
