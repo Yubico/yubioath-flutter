@@ -164,7 +164,9 @@ class DesktopFidoStateNotifier extends FidoStateNotifier {
             (e) => e.name == signal.body['state'],
           ),
         )
-        .listen(controller.sink.add);
+        .listen((event) {
+          if (!controller.isClosed) controller.add(event);
+        });
 
     controller.onCancel = () {
       if (!controller.isClosed) {
@@ -174,10 +176,14 @@ class DesktopFidoStateNotifier extends FidoStateNotifier {
     controller.onListen = () async {
       try {
         await _session.command('reset', signal: signaler);
-        await controller.sink.close();
-        ref.invalidateSelf();
+        if (!controller.isClosed) await controller.close();
+        if (ref.mounted) ref.invalidateSelf();
       } catch (e) {
-        controller.sink.addError(e);
+        if (!controller.isClosed && controller.hasListener) {
+          controller.addError(e);
+        } else {
+          _log.error('FIDO reset failed after cancellation', e);
+        }
       }
     };
 

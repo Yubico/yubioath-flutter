@@ -21,6 +21,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:logging/logging.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -62,6 +63,27 @@ List<Capability> getResetCapabilities(FeatureProvider hasFeature) => [
   if (hasFeature(features.piv)) Capability.piv,
 ];
 
+@visibleForTesting
+String fidoResetInstruction(
+  AppLocalizations l10n,
+  InteractionEvent? interaction, {
+  required bool nfc,
+  required bool longTouch,
+}) => switch (interaction) {
+  InteractionEvent.remove =>
+    nfc ? l10n.l_remove_yk_from_reader : l10n.l_unplug_yk,
+  InteractionEvent.insert =>
+    nfc ? l10n.l_replace_yk_on_reader : l10n.l_reinsert_yk,
+  InteractionEvent.touch =>
+    nfc
+        ? l10n.s_please_wait
+        : longTouch
+        ? l10n.l_long_touch_button_now
+        : l10n.l_touch_button_now,
+  InteractionEvent.wait => l10n.s_please_wait,
+  null => '',
+};
+
 class ResetDialog extends ConsumerStatefulWidget {
   final YubiKeyData data;
   final Capability? application;
@@ -85,12 +107,14 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
   bool _resetting = false;
   bool _fidoResetActive = false;
   late final int _totalSteps;
+  late final StateController<bool> _fidoResetController;
 
   @override
   void initState() {
     super.initState();
+    _fidoResetController = ref.read(fidoResetInProgressProvider.notifier);
     final nfc = widget.data.node.transport == Transport.nfc;
-    _totalSteps = nfc ? 2 : 4;
+    _totalSteps = nfc && isAndroid ? 2 : 4;
     _globalReset = _isGlobalReset();
     _application = !_globalReset ? widget.application : null;
 
@@ -122,7 +146,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
   void dispose() {
     _subscription?.cancel();
     if (_fidoResetActive) {
-      ref.read(fidoResetInProgressProvider.notifier).state = false;
+      _fidoResetController.state = false;
     }
     super.dispose();
   }
@@ -133,16 +157,12 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
     if (_currentStep == _totalSteps) {
       return l10n.l_fido_app_reset;
     }
-    return switch (_interaction) {
-      InteractionEvent.remove =>
-        nfc ? l10n.l_remove_yk_from_reader : l10n.l_unplug_yk,
-      InteractionEvent.insert =>
-        nfc ? l10n.l_replace_yk_on_reader : l10n.l_reinsert_yk,
-      InteractionEvent.touch =>
-        _longTouch ? l10n.l_long_touch_button_now : l10n.l_touch_button_now,
-      InteractionEvent.wait => l10n.s_please_wait,
-      null => '',
-    };
+    return fidoResetInstruction(
+      l10n,
+      _interaction,
+      nfc: nfc,
+      longTouch: _longTouch,
+    );
   }
 
   bool _isGlobalReset() {
@@ -239,12 +259,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                       !_fidoTransportDisabled
                           ? () async {
                               _fidoResetActive = true;
-                              ref
-                                      .read(
-                                        fidoResetInProgressProvider.notifier,
-                                      )
-                                      .state =
-                                  true;
+                              _fidoResetController.state = true;
                               _subscription = ref
                                   .read(
                                     fidoStateProvider(
@@ -262,13 +277,8 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                                     },
                                     onDone: () async {
                                       _fidoResetActive = false;
-                                      ref
-                                              .read(
-                                                fidoResetInProgressProvider
-                                                    .notifier,
-                                              )
-                                              .state =
-                                          false;
+                                      _fidoResetController.state = false;
+                                      if (!mounted) return;
                                       setState(() {
                                         _currentStep = _totalSteps;
                                       });
@@ -288,13 +298,16 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                                     },
                                     onError: (e) {
                                       _fidoResetActive = false;
-                                      ref
-                                              .read(
-                                                fidoResetInProgressProvider
-                                                    .notifier,
-                                              )
-                                              .state =
-                                          false;
+                                      _fidoResetController.state = false;
+                                      if (!mounted) {
+                                        if (e is! CancellationException) {
+                                          _log.error(
+                                            'Error performing FIDO reset',
+                                            e,
+                                          );
+                                        }
+                                        return;
+                                      }
                                       if (e is CancellationException) {
                                         setState(() {
                                           _resetting = false;
