@@ -65,6 +65,8 @@ final _oathLockKeyProvider =
       (ref, devicePath) => _LockKeyNotifier(null),
     );
 
+void clearCachedOathKeys(Ref ref) => ref.invalidate(_oathLockKeyProvider);
+
 class _LockKeyNotifier extends StateNotifier<String?> {
   _LockKeyNotifier(super.state);
 
@@ -139,7 +141,11 @@ class DesktopOathStateNotifier extends OathStateNotifier {
     final bool remembered = validate['remembered'];
     if (valid) {
       _log.debug('applet unlocked');
-      ref.read(_oathLockKeyProvider(_session.devicePath).notifier).setKey(key);
+      if (ref.read(logLevelProvider).value > Levels.TRAFFIC.value) {
+        ref
+            .read(_oathLockKeyProvider(_session.devicePath).notifier)
+            .setKey(key);
+      }
       setData(state.value!.copyWith(locked: false, remembered: remembered));
     }
     return (valid, remembered);
@@ -180,7 +186,11 @@ class DesktopOathStateNotifier extends OathStateNotifier {
       );
       var key = derive['key'];
       await _session.command('set_key', params: {'key': key});
-      ref.read(_oathLockKeyProvider(_session.devicePath).notifier).setKey(key);
+      if (ref.read(logLevelProvider).value > Levels.TRAFFIC.value) {
+        ref
+            .read(_oathLockKeyProvider(_session.devicePath).notifier)
+            .setKey(key);
+      }
     }
     _log.debug('OATH key set');
 

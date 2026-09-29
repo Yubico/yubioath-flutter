@@ -82,6 +82,14 @@ class PivManager(
     private val managementKeyStorage: MutableMap<String, ByteArray> = mutableMapOf()
     private val pinStorage: MutableMap<String, CharArray> = mutableMapOf()
 
+    fun clearCachedCredentials() {
+        pinStorage.values.forEach { it.fill(0.toChar()) }
+        pinStorage.clear()
+        managementKeyStorage.values.forEach { it.fill(0) }
+        managementKeyStorage.clear()
+        pivViewModel.clearState()
+    }
+
     private val connectionHelper = PivConnectionHelper(deviceManager)
 
     private val pivChannel = MethodChannel(messenger, "android.piv.methods")
@@ -936,10 +944,7 @@ class PivManager(
         }
 
     override fun onDisconnected() {
-        // Zero out PINs before clearing storage
-        pinStorage.values.forEach { pin -> Arrays.fill(pin, 0.toChar()) }
-        pinStorage.clear()
-        managementKeyStorage.clear()
+        clearCachedCredentials()
         pivViewModel.setSerial(null)
         pivViewModel.updateSlots(emptyList())
         pivmanData = null

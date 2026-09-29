@@ -218,6 +218,13 @@ Future<Widget> initialize(List<String> argv) async {
     overrides: [
       prefProvider.overrideWithValue(prefs),
       localeStatusProvider.overrideWithValue(await loadLocaleStatus()),
+      clearCachedCredentialsProvider.overrideWith(
+        (ref) => () async {
+          clearCachedOathKeys(ref);
+          clearCachedFidoPins(ref);
+          clearCachedPivCredentials(ref);
+        },
+      ),
       rpcProvider.overrideWith((_) => rpcFuture),
       windowStateProvider.overrideWith(
         (ref) => ref.watch(desktopWindowStateProvider),

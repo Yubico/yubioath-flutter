@@ -89,7 +89,15 @@ class OathManager(
 
     private val oathChannel = MethodChannel(messenger, "android.oath.methods")
 
-    private val keyManager = KeyManager(KeyStoreProvider(), ClearingMemProvider())
+    private val cachedKeys = ClearingMemProvider()
+    private val keyManager = KeyManager(KeyStoreProvider(), cachedKeys)
+
+    fun clearCachedCredentials() {
+        cachedKeys.clearAll()
+        memoryKeyProvider.clearAll()
+        oathViewModel.clearSession()
+        oathViewModel.updateCredentials(mapOf())
+    }
 
     private val logger = LoggerFactory.getLogger(OathManager::class.java)
 

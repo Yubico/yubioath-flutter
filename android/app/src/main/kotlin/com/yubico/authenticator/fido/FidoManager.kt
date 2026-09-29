@@ -99,6 +99,13 @@ class FidoManager(
 
     private val pinStore = FidoPinStore()
 
+    fun clearCachedCredentials() {
+        pinStore.setPin(null)
+        persistentPinUvAuthToken?.fill(0)
+        persistentPinUvAuthToken = null
+        clearData()
+    }
+
     private var pinRetries: Int? = null
 
     private val persistentPinUvAuthTokenStore =

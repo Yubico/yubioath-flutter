@@ -39,6 +39,8 @@ final _pinProvider = StateProvider.family<String?, DevicePath>((ref, _) {
   return null;
 });
 
+void clearCachedFidoPins(Ref ref) => ref.invalidate(_pinProvider);
+
 class _FidoRpcNodeSession extends RpcNodeSession {
   _FidoRpcNodeSession(super.rpc, super.devicePath, super.subpath);
 
@@ -223,7 +225,9 @@ class DesktopFidoStateNotifier extends FidoStateNotifier {
         'unlock',
         params: {'pin': pin, 'remember': remember},
       );
-      _pinController.state = pin;
+      if (ref.read(logLevelProvider).value > Levels.TRAFFIC.value) {
+        _pinController.state = pin;
+      }
 
       return PinResult.success();
     } on RpcError catch (e) {
