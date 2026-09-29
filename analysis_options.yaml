@@ -39,5 +39,9 @@ analyzer:
     - "build/**/intermediates/**/AndroidManifest.xml"
   errors:
     invalid_annotation_target: ignore # see https://github.com/rrousselGit/freezed/issues/488
-  plugins:
-    - custom_lint
+plugins:
+  lint:
+    path: lint
+    diagnostics:
+      use_recommended_widget: true
+      call_init_after_creation: true

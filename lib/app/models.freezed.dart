@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'models.dart';
@@ -9,6 +9,7 @@ part of 'models.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
@@ -25,16 +26,21 @@ $YubiKeyDataCopyWith<YubiKeyData> get copyWith => _$YubiKeyDataCopyWithImpl<Yubi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is YubiKeyData&&(identical(other.node, node) || other.node == node)&&(identical(other.name, name) || other.name == name)&&(identical(other.info, info) || other.info == info));
+  final _this = this as YubiKeyData;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is YubiKeyData&&(identical(other.node, _this.node) || other.node == _this.node)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.info, _this.info) || other.info == _this.info));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,node,name,info);
+int get hashCode {
+  final _this = this as YubiKeyData;
+  return Object.hash(runtimeType,_this.node,_this.name,_this.info);
+}
 
 @override
 String toString() {
-  return 'YubiKeyData(node: $node, name: $name, info: $info)';
+  final _this = this as YubiKeyData;
+  return 'YubiKeyData(node: ${_this.node}, name: ${_this.name}, info: ${_this.info})';
 }
 
 
@@ -49,7 +55,7 @@ $Res call({
 });
 
 
-$DeviceNodeCopyWith<$Res> get node;$DeviceInfoCopyWith<$Res> get info;
+$DeviceInfoCopyWith<$Res> get info;
 
 }
 /// @nodoc
@@ -63,23 +69,14 @@ class _$YubiKeyDataCopyWithImpl<$Res>
 /// Create a copy of YubiKeyData
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? node = null,Object? name = null,Object? info = null,}) {
-  return _then(_self.copyWith(
-node: null == node ? _self.node : node // ignore: cast_nullable_to_non_nullable
-as DeviceNode,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,info: null == info ? _self.info : info // ignore: cast_nullable_to_non_nullable
+  return _then(YubiKeyData(
+null == node ? _self.node : node // ignore: cast_nullable_to_non_nullable
+as DeviceNode,null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,null == info ? _self.info : info // ignore: cast_nullable_to_non_nullable
 as DeviceInfo,
   ));
 }
 /// Create a copy of YubiKeyData
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$DeviceNodeCopyWith<$Res> get node {
-  
-  return $DeviceNodeCopyWith<$Res>(_self.node, (value) {
-    return _then(_self.copyWith(node: value));
-  });
-}/// Create a copy of YubiKeyData
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
@@ -243,16 +240,18 @@ _$YubiKeyDataCopyWith<_YubiKeyData> get copyWith => __$YubiKeyDataCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _YubiKeyData&&(identical(other.node, node) || other.node == node)&&(identical(other.name, name) || other.name == name)&&(identical(other.info, info) || other.info == info));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _YubiKeyData&&(identical(other.node, node) || other.node == node)&&(identical(other.name, name) || other.name == name)&&(identical(other.info, info) || other.info == info));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,node,name,info);
+int get hashCode {
+    return Object.hash(runtimeType,node,name,info);
+}
 
 @override
 String toString() {
-  return 'YubiKeyData(node: $node, name: $name, info: $info)';
+    return 'YubiKeyData(node: $node, name: $name, info: $info)';
 }
 
 
@@ -267,7 +266,7 @@ $Res call({
 });
 
 
-@override $DeviceNodeCopyWith<$Res> get node;@override $DeviceInfoCopyWith<$Res> get info;
+@override $DeviceInfoCopyWith<$Res> get info;
 
 }
 /// @nodoc
@@ -293,15 +292,6 @@ as DeviceInfo,
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
-$DeviceNodeCopyWith<$Res> get node {
-  
-  return $DeviceNodeCopyWith<$Res>(_self.node, (value) {
-    return _then(_self.copyWith(node: value));
-  });
-}/// Create a copy of YubiKeyData
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
 $DeviceInfoCopyWith<$Res> get info {
   
   return $DeviceInfoCopyWith<$Res>(_self.info, (value) {
@@ -314,77 +304,32 @@ $DeviceInfoCopyWith<$Res> get info {
 mixin _$DeviceNode {
 
  DevicePath get path; String get name; UsbPid? get pid; Transport get transport; DeviceInfo? get info;
-/// Create a copy of DeviceNode
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$DeviceNodeCopyWith<DeviceNode> get copyWith => _$DeviceNodeCopyWithImpl<DeviceNode>(this as DeviceNode, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is DeviceNode&&(identical(other.path, path) || other.path == path)&&(identical(other.name, name) || other.name == name)&&(identical(other.pid, pid) || other.pid == pid)&&(identical(other.transport, transport) || other.transport == transport)&&(identical(other.info, info) || other.info == info));
+  final _this = this as DeviceNode;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DeviceNode&&(identical(other.path, _this.path) || other.path == _this.path)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.pid, _this.pid) || other.pid == _this.pid)&&(identical(other.transport, _this.transport) || other.transport == _this.transport)&&(identical(other.info, _this.info) || other.info == _this.info));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,path,name,pid,transport,info);
+int get hashCode {
+  final _this = this as DeviceNode;
+  return Object.hash(runtimeType,_this.path,_this.name,_this.pid,_this.transport,_this.info);
+}
 
 @override
 String toString() {
-  return 'DeviceNode(path: $path, name: $name, pid: $pid, transport: $transport, info: $info)';
+  final _this = this as DeviceNode;
+  return 'DeviceNode(path: ${_this.path}, name: ${_this.name}, pid: ${_this.pid}, transport: ${_this.transport}, info: ${_this.info})';
 }
 
 
 }
 
-/// @nodoc
-abstract mixin class $DeviceNodeCopyWith<$Res>  {
-  factory $DeviceNodeCopyWith(DeviceNode value, $Res Function(DeviceNode) _then) = _$DeviceNodeCopyWithImpl;
-@useResult
-$Res call({
- DevicePath path, String name, UsbPid? pid, Transport transport, DeviceInfo? info
-});
 
-
-$DeviceInfoCopyWith<$Res>? get info;
-
-}
-/// @nodoc
-class _$DeviceNodeCopyWithImpl<$Res>
-    implements $DeviceNodeCopyWith<$Res> {
-  _$DeviceNodeCopyWithImpl(this._self, this._then);
-
-  final DeviceNode _self;
-  final $Res Function(DeviceNode) _then;
-
-/// Create a copy of DeviceNode
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? path = null,Object? name = null,Object? pid = freezed,Object? transport = null,Object? info = freezed,}) {
-  return _then(_self.copyWith(
-path: null == path ? _self.path : path // ignore: cast_nullable_to_non_nullable
-as DevicePath,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,pid: freezed == pid ? _self.pid : pid // ignore: cast_nullable_to_non_nullable
-as UsbPid?,transport: null == transport ? _self.transport : transport // ignore: cast_nullable_to_non_nullable
-as Transport,info: freezed == info ? _self.info : info // ignore: cast_nullable_to_non_nullable
-as DeviceInfo?,
-  ));
-}
-/// Create a copy of DeviceNode
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$DeviceInfoCopyWith<$Res>? get info {
-    if (_self.info == null) {
-    return null;
-  }
-
-  return $DeviceInfoCopyWith<$Res>(_self.info!, (value) {
-    return _then(_self.copyWith(info: value));
-  });
-}
-}
 
 
 /// Adds pattern-matching-related methods to [DeviceNode].
@@ -524,78 +469,30 @@ class YubiKeyDeviceNode extends DeviceNode {
 @override final  Transport transport;
 @override final  DeviceInfo? info;
 
-/// Create a copy of DeviceNode
-/// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$YubiKeyDeviceNodeCopyWith<YubiKeyDeviceNode> get copyWith => _$YubiKeyDeviceNodeCopyWithImpl<YubiKeyDeviceNode>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is YubiKeyDeviceNode&&(identical(other.path, path) || other.path == path)&&(identical(other.name, name) || other.name == name)&&(identical(other.pid, pid) || other.pid == pid)&&(identical(other.transport, transport) || other.transport == transport)&&(identical(other.info, info) || other.info == info));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is YubiKeyDeviceNode&&(identical(other.path, path) || other.path == path)&&(identical(other.name, name) || other.name == name)&&(identical(other.pid, pid) || other.pid == pid)&&(identical(other.transport, transport) || other.transport == transport)&&(identical(other.info, info) || other.info == info));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,path,name,pid,transport,info);
+int get hashCode {
+    return Object.hash(runtimeType,path,name,pid,transport,info);
+}
 
 @override
 String toString() {
-  return 'DeviceNode.yubiKey(path: $path, name: $name, pid: $pid, transport: $transport, info: $info)';
+    return 'DeviceNode.yubiKey(path: $path, name: $name, pid: $pid, transport: $transport, info: $info)';
 }
 
 
 }
 
-/// @nodoc
-abstract mixin class $YubiKeyDeviceNodeCopyWith<$Res> implements $DeviceNodeCopyWith<$Res> {
-  factory $YubiKeyDeviceNodeCopyWith(YubiKeyDeviceNode value, $Res Function(YubiKeyDeviceNode) _then) = _$YubiKeyDeviceNodeCopyWithImpl;
-@override @useResult
-$Res call({
- DevicePath path, String name, UsbPid? pid, Transport transport, DeviceInfo? info
-});
 
 
-@override $DeviceInfoCopyWith<$Res>? get info;
-
-}
-/// @nodoc
-class _$YubiKeyDeviceNodeCopyWithImpl<$Res>
-    implements $YubiKeyDeviceNodeCopyWith<$Res> {
-  _$YubiKeyDeviceNodeCopyWithImpl(this._self, this._then);
-
-  final YubiKeyDeviceNode _self;
-  final $Res Function(YubiKeyDeviceNode) _then;
-
-/// Create a copy of DeviceNode
-/// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? path = null,Object? name = null,Object? pid = freezed,Object? transport = null,Object? info = freezed,}) {
-  return _then(YubiKeyDeviceNode(
-null == path ? _self.path : path // ignore: cast_nullable_to_non_nullable
-as DevicePath,null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,freezed == pid ? _self.pid : pid // ignore: cast_nullable_to_non_nullable
-as UsbPid?,null == transport ? _self.transport : transport // ignore: cast_nullable_to_non_nullable
-as Transport,freezed == info ? _self.info : info // ignore: cast_nullable_to_non_nullable
-as DeviceInfo?,
-  ));
-}
-
-/// Create a copy of DeviceNode
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$DeviceInfoCopyWith<$Res>? get info {
-    if (_self.info == null) {
-    return null;
-  }
-
-  return $DeviceInfoCopyWith<$Res>(_self.info!, (value) {
-    return _then(_self.copyWith(info: value));
-  });
-}
-}
 
 /// @nodoc
 mixin _$ActionItem {
@@ -611,16 +508,21 @@ $ActionItemCopyWith<ActionItem> get copyWith => _$ActionItemCopyWithImpl<ActionI
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ActionItem&&(identical(other.icon, icon) || other.icon == icon)&&(identical(other.title, title) || other.title == title)&&(identical(other.subtitle, subtitle) || other.subtitle == subtitle)&&(identical(other.shortcut, shortcut) || other.shortcut == shortcut)&&(identical(other.trailing, trailing) || other.trailing == trailing)&&(identical(other.intent, intent) || other.intent == intent)&&(identical(other.actionStyle, actionStyle) || other.actionStyle == actionStyle)&&(identical(other.key, key) || other.key == key)&&(identical(other.feature, feature) || other.feature == feature));
+  final _this = this as ActionItem;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ActionItem&&(identical(other.icon, _this.icon) || other.icon == _this.icon)&&(identical(other.title, _this.title) || other.title == _this.title)&&(identical(other.subtitle, _this.subtitle) || other.subtitle == _this.subtitle)&&(identical(other.shortcut, _this.shortcut) || other.shortcut == _this.shortcut)&&(identical(other.trailing, _this.trailing) || other.trailing == _this.trailing)&&(identical(other.intent, _this.intent) || other.intent == _this.intent)&&(identical(other.actionStyle, _this.actionStyle) || other.actionStyle == _this.actionStyle)&&(identical(other.key, _this.key) || other.key == _this.key)&&(identical(other.feature, _this.feature) || other.feature == _this.feature));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,icon,title,subtitle,shortcut,trailing,intent,actionStyle,key,feature);
+int get hashCode {
+  final _this = this as ActionItem;
+  return Object.hash(runtimeType,_this.icon,_this.title,_this.subtitle,_this.shortcut,_this.trailing,_this.intent,_this.actionStyle,_this.key,_this.feature);
+}
 
 @override
 String toString() {
-  return 'ActionItem(icon: $icon, title: $title, subtitle: $subtitle, shortcut: $shortcut, trailing: $trailing, intent: $intent, actionStyle: $actionStyle, key: $key, feature: $feature)';
+  final _this = this as ActionItem;
+  return 'ActionItem(icon: ${_this.icon}, title: ${_this.title}, subtitle: ${_this.subtitle}, shortcut: ${_this.shortcut}, trailing: ${_this.trailing}, intent: ${_this.intent}, actionStyle: ${_this.actionStyle}, key: ${_this.key}, feature: ${_this.feature})';
 }
 
 
@@ -649,7 +551,7 @@ class _$ActionItemCopyWithImpl<$Res>
 /// Create a copy of ActionItem
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? icon = null,Object? title = null,Object? subtitle = freezed,Object? shortcut = freezed,Object? trailing = freezed,Object? intent = freezed,Object? actionStyle = freezed,Object? key = freezed,Object? feature = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(ActionItem(
 icon: null == icon ? _self.icon : icon // ignore: cast_nullable_to_non_nullable
 as Widget,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,subtitle: freezed == subtitle ? _self.subtitle : subtitle // ignore: cast_nullable_to_non_nullable
@@ -823,16 +725,18 @@ _$ActionItemCopyWith<_ActionItem> get copyWith => __$ActionItemCopyWithImpl<_Act
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ActionItem&&(identical(other.icon, icon) || other.icon == icon)&&(identical(other.title, title) || other.title == title)&&(identical(other.subtitle, subtitle) || other.subtitle == subtitle)&&(identical(other.shortcut, shortcut) || other.shortcut == shortcut)&&(identical(other.trailing, trailing) || other.trailing == trailing)&&(identical(other.intent, intent) || other.intent == intent)&&(identical(other.actionStyle, actionStyle) || other.actionStyle == actionStyle)&&(identical(other.key, key) || other.key == key)&&(identical(other.feature, feature) || other.feature == feature));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ActionItem&&(identical(other.icon, icon) || other.icon == icon)&&(identical(other.title, title) || other.title == title)&&(identical(other.subtitle, subtitle) || other.subtitle == subtitle)&&(identical(other.shortcut, shortcut) || other.shortcut == shortcut)&&(identical(other.trailing, trailing) || other.trailing == trailing)&&(identical(other.intent, intent) || other.intent == intent)&&(identical(other.actionStyle, actionStyle) || other.actionStyle == actionStyle)&&(identical(other.key, key) || other.key == key)&&(identical(other.feature, feature) || other.feature == feature));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,icon,title,subtitle,shortcut,trailing,intent,actionStyle,key,feature);
+int get hashCode {
+    return Object.hash(runtimeType,icon,title,subtitle,shortcut,trailing,intent,actionStyle,key,feature);
+}
 
 @override
 String toString() {
-  return 'ActionItem(icon: $icon, title: $title, subtitle: $subtitle, shortcut: $shortcut, trailing: $trailing, intent: $intent, actionStyle: $actionStyle, key: $key, feature: $feature)';
+    return 'ActionItem(icon: $icon, title: $title, subtitle: $subtitle, shortcut: $shortcut, trailing: $trailing, intent: $intent, actionStyle: $actionStyle, key: $key, feature: $feature)';
 }
 
 
@@ -892,16 +796,21 @@ $WindowStateCopyWith<WindowState> get copyWith => _$WindowStateCopyWithImpl<Wind
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is WindowState&&(identical(other.focused, focused) || other.focused == focused)&&(identical(other.visible, visible) || other.visible == visible)&&(identical(other.active, active) || other.active == active)&&(identical(other.hidden, hidden) || other.hidden == hidden));
+  final _this = this as WindowState;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is WindowState&&(identical(other.focused, _this.focused) || other.focused == _this.focused)&&(identical(other.visible, _this.visible) || other.visible == _this.visible)&&(identical(other.active, _this.active) || other.active == _this.active)&&(identical(other.hidden, _this.hidden) || other.hidden == _this.hidden));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,focused,visible,active,hidden);
+int get hashCode {
+  final _this = this as WindowState;
+  return Object.hash(runtimeType,_this.focused,_this.visible,_this.active,_this.hidden);
+}
 
 @override
 String toString() {
-  return 'WindowState(focused: $focused, visible: $visible, active: $active, hidden: $hidden)';
+  final _this = this as WindowState;
+  return 'WindowState(focused: ${_this.focused}, visible: ${_this.visible}, active: ${_this.active}, hidden: ${_this.hidden})';
 }
 
 
@@ -930,7 +839,7 @@ class _$WindowStateCopyWithImpl<$Res>
 /// Create a copy of WindowState
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? focused = null,Object? visible = null,Object? active = null,Object? hidden = null,}) {
-  return _then(_self.copyWith(
+  return _then(WindowState(
 focused: null == focused ? _self.focused : focused // ignore: cast_nullable_to_non_nullable
 as bool,visible: null == visible ? _self.visible : visible // ignore: cast_nullable_to_non_nullable
 as bool,active: null == active ? _self.active : active // ignore: cast_nullable_to_non_nullable
@@ -1094,16 +1003,18 @@ _$WindowStateCopyWith<_WindowState> get copyWith => __$WindowStateCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WindowState&&(identical(other.focused, focused) || other.focused == focused)&&(identical(other.visible, visible) || other.visible == visible)&&(identical(other.active, active) || other.active == active)&&(identical(other.hidden, hidden) || other.hidden == hidden));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _WindowState&&(identical(other.focused, focused) || other.focused == focused)&&(identical(other.visible, visible) || other.visible == visible)&&(identical(other.active, active) || other.active == active)&&(identical(other.hidden, hidden) || other.hidden == hidden));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,focused,visible,active,hidden);
+int get hashCode {
+    return Object.hash(runtimeType,focused,visible,active,hidden);
+}
 
 @override
 String toString() {
-  return 'WindowState(focused: $focused, visible: $visible, active: $active, hidden: $hidden)';
+    return 'WindowState(focused: $focused, visible: $visible, active: $active, hidden: $hidden)';
 }
 
 
@@ -1161,16 +1072,21 @@ $KeyCustomizationCopyWith<KeyCustomization> get copyWith => _$KeyCustomizationCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is KeyCustomization&&(identical(other.serial, serial) || other.serial == serial)&&(identical(other.name, name) || other.name == name)&&(identical(other.color, color) || other.color == color));
+  final _this = this as KeyCustomization;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is KeyCustomization&&(identical(other.serial, _this.serial) || other.serial == _this.serial)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.color, _this.color) || other.color == _this.color));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,serial,name,color);
+int get hashCode {
+  final _this = this as KeyCustomization;
+  return Object.hash(runtimeType,_this.serial,_this.name,_this.color);
+}
 
 @override
 String toString() {
-  return 'KeyCustomization(serial: $serial, name: $name, color: $color)';
+  final _this = this as KeyCustomization;
+  return 'KeyCustomization(serial: ${_this.serial}, name: ${_this.name}, color: ${_this.color})';
 }
 
 
@@ -1199,7 +1115,7 @@ class _$KeyCustomizationCopyWithImpl<$Res>
 /// Create a copy of KeyCustomization
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? serial = null,Object? name = freezed,Object? color = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(KeyCustomization(
 serial: null == serial ? _self.serial : serial // ignore: cast_nullable_to_non_nullable
 as int,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String?,color: freezed == color ? _self.color : color // ignore: cast_nullable_to_non_nullable
@@ -1364,16 +1280,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _KeyCustomization&&(identical(other.serial, serial) || other.serial == serial)&&(identical(other.name, name) || other.name == name)&&(identical(other.color, color) || other.color == color));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _KeyCustomization&&(identical(other.serial, serial) || other.serial == serial)&&(identical(other.name, name) || other.name == name)&&(identical(other.color, color) || other.color == color));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,serial,name,color);
+int get hashCode {
+    return Object.hash(runtimeType,serial,name,color);
+}
 
 @override
 String toString() {
-  return 'KeyCustomization(serial: $serial, name: $name, color: $color)';
+    return 'KeyCustomization(serial: $serial, name: $name, color: $color)';
 }
 
 
@@ -1430,16 +1348,21 @@ $LocaleStatusCopyWith<LocaleStatus> get copyWith => _$LocaleStatusCopyWithImpl<L
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is LocaleStatus&&(identical(other.translated, translated) || other.translated == translated)&&(identical(other.proofread, proofread) || other.proofread == proofread));
+  final _this = this as LocaleStatus;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LocaleStatus&&(identical(other.translated, _this.translated) || other.translated == _this.translated)&&(identical(other.proofread, _this.proofread) || other.proofread == _this.proofread));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,translated,proofread);
+int get hashCode {
+  final _this = this as LocaleStatus;
+  return Object.hash(runtimeType,_this.translated,_this.proofread);
+}
 
 @override
 String toString() {
-  return 'LocaleStatus(translated: $translated, proofread: $proofread)';
+  final _this = this as LocaleStatus;
+  return 'LocaleStatus(translated: ${_this.translated}, proofread: ${_this.proofread})';
 }
 
 
@@ -1468,7 +1391,7 @@ class _$LocaleStatusCopyWithImpl<$Res>
 /// Create a copy of LocaleStatus
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? translated = null,Object? proofread = null,}) {
-  return _then(_self.copyWith(
+  return _then(LocaleStatus(
 translated: null == translated ? _self.translated : translated // ignore: cast_nullable_to_non_nullable
 as int,proofread: null == proofread ? _self.proofread : proofread // ignore: cast_nullable_to_non_nullable
 as int,
@@ -1631,16 +1554,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LocaleStatus&&(identical(other.translated, translated) || other.translated == translated)&&(identical(other.proofread, proofread) || other.proofread == proofread));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _LocaleStatus&&(identical(other.translated, translated) || other.translated == translated)&&(identical(other.proofread, proofread) || other.proofread == proofread));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,translated,proofread);
+int get hashCode {
+    return Object.hash(runtimeType,translated,proofread);
+}
 
 @override
 String toString() {
-  return 'LocaleStatus(translated: $translated, proofread: $proofread)';
+    return 'LocaleStatus(translated: $translated, proofread: $proofread)';
 }
 
 

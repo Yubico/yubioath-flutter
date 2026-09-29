@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'models.dart';
@@ -9,6 +9,7 @@ part of 'models.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 RpcResponse _$RpcResponseFromJson(
@@ -55,16 +56,21 @@ $RpcResponseCopyWith<RpcResponse> get copyWith => _$RpcResponseCopyWithImpl<RpcR
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RpcResponse&&const DeepCollectionEquality().equals(other.body, body));
+  final _this = this as RpcResponse;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RpcResponse&&const DeepCollectionEquality().equals(other.body, _this.body));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(body));
+int get hashCode {
+  final _this = this as RpcResponse;
+  return Object.hash(runtimeType,const DeepCollectionEquality().hash(_this.body));
+}
 
 @override
 String toString() {
-  return 'RpcResponse(body: $body)';
+  final _this = this as RpcResponse;
+  return 'RpcResponse(body: ${_this.body})';
 }
 
 
@@ -242,7 +248,7 @@ return error(_that.status,_that.message,_that.body);case _:
 @JsonSerializable()
 
 class Success implements RpcResponse {
-   Success(final  Map<String, dynamic> body, final  List<String> flags, {final  String? $type}): _body = body,_flags = flags,$type = $type ?? 'success';
+   Success( Map<String, dynamic> body,  List<String> flags, { String? $type}): _body = body,_flags = flags,$type = $type ?? 'success';
   factory Success.fromJson(Map<String, dynamic> json) => _$SuccessFromJson(json);
 
  final  Map<String, dynamic> _body;
@@ -277,16 +283,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Success&&const DeepCollectionEquality().equals(other._body, _body)&&const DeepCollectionEquality().equals(other._flags, _flags));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is Success&&const DeepCollectionEquality().equals(other.body, _body)&&const DeepCollectionEquality().equals(other.flags, _flags));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_body),const DeepCollectionEquality().hash(_flags));
+int get hashCode {
+    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_body),const DeepCollectionEquality().hash(_flags));
+}
 
 @override
 String toString() {
-  return 'RpcResponse.success(body: $body, flags: $flags)';
+    return 'RpcResponse.success(body: $body, flags: $flags)';
 }
 
 
@@ -329,7 +337,7 @@ as List<String>,
 @JsonSerializable()
 
 class Signal implements RpcResponse {
-   Signal(this.status, final  Map<String, dynamic> body, {final  String? $type}): _body = body,$type = $type ?? 'signal';
+   Signal(this.status,  Map<String, dynamic> body, { String? $type}): _body = body,$type = $type ?? 'signal';
   factory Signal.fromJson(Map<String, dynamic> json) => _$SignalFromJson(json);
 
  final  String status;
@@ -358,16 +366,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Signal&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other._body, _body));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is Signal&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other.body, _body));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,status,const DeepCollectionEquality().hash(_body));
+int get hashCode {
+    return Object.hash(runtimeType,status,const DeepCollectionEquality().hash(_body));
+}
 
 @override
 String toString() {
-  return 'RpcResponse.signal(status: $status, body: $body)';
+    return 'RpcResponse.signal(status: $status, body: $body)';
 }
 
 
@@ -410,7 +420,7 @@ as Map<String, dynamic>,
 @JsonSerializable()
 
 class RpcError implements RpcResponse {
-   RpcError(this.status, this.message, final  Map<String, dynamic> body, {final  String? $type}): _body = body,$type = $type ?? 'error';
+   RpcError(this.status, this.message,  Map<String, dynamic> body, { String? $type}): _body = body,$type = $type ?? 'error';
   factory RpcError.fromJson(Map<String, dynamic> json) => _$RpcErrorFromJson(json);
 
  final  String status;
@@ -440,16 +450,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RpcError&&(identical(other.status, status) || other.status == status)&&(identical(other.message, message) || other.message == message)&&const DeepCollectionEquality().equals(other._body, _body));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is RpcError&&(identical(other.status, status) || other.status == status)&&(identical(other.message, message) || other.message == message)&&const DeepCollectionEquality().equals(other.body, _body));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,status,message,const DeepCollectionEquality().hash(_body));
+int get hashCode {
+    return Object.hash(runtimeType,status,message,const DeepCollectionEquality().hash(_body));
+}
 
 @override
 String toString() {
-  return 'RpcResponse.error(status: $status, message: $message, body: $body)';
+    return 'RpcResponse.error(status: $status, message: $message, body: $body)';
 }
 
 
@@ -506,16 +518,21 @@ $RpcStateCopyWith<RpcState> get copyWith => _$RpcStateCopyWithImpl<RpcState>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RpcState&&(identical(other.version, version) || other.version == version));
+  final _this = this as RpcState;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RpcState&&(identical(other.version, _this.version) || other.version == _this.version));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,version);
+int get hashCode {
+  final _this = this as RpcState;
+  return Object.hash(runtimeType,_this.version);
+}
 
 @override
 String toString() {
-  return 'RpcState(version: $version)';
+  final _this = this as RpcState;
+  return 'RpcState(version: ${_this.version})';
 }
 
 
@@ -544,8 +561,8 @@ class _$RpcStateCopyWithImpl<$Res>
 /// Create a copy of RpcState
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? version = null,}) {
-  return _then(_self.copyWith(
-version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
+  return _then(RpcState(
+null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -705,16 +722,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RpcState&&(identical(other.version, version) || other.version == version));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _RpcState&&(identical(other.version, version) || other.version == version));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,version);
+int get hashCode {
+    return Object.hash(runtimeType,version);
+}
 
 @override
 String toString() {
-  return 'RpcState(version: $version)';
+    return 'RpcState(version: $version)';
 }
 
 

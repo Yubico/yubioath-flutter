@@ -115,7 +115,7 @@ class DevicePath {
   String toString() => key;
 }
 
-@freezed
+@Freezed(copyWith: false)
 sealed class DeviceNode with _$DeviceNode {
   const DeviceNode._();
   factory DeviceNode.yubiKey(
