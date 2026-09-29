@@ -84,6 +84,7 @@ class DevicesNotifier extends StateNotifier<List<YubiKeyDeviceNode>> {
 
   void _pollDevices() async {
     _pollTimer?.cancel();
+    if (!mounted) return;
     if (_fidoResetInProgress()) {
       _pollTimer = Timer(_pollDelay, _pollDevices);
       return;

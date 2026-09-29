@@ -25,6 +25,7 @@ class App(StrEnum):
     fido = "fido"
     piv = "piv"
     otp = "otp"
+    management = "management"
 
 
 app_setup = {
@@ -102,6 +103,7 @@ def main(
       $ ./testrunner.sh --serial 123456 --manual
       $ ./testrunner.sh --serial 123456 --controller http://192.168.7.1
       $ ./testrunner.sh --serial 123456 --controller http://192.168.7.1 --manual
+      $ ./testrunner.sh --serial 123456 --app management --no-setup --window-size wide
       $ ./testrunner.sh --reader hid --serial 123456
       $ ./testrunner.sh --reader hid --serial 123456 --manual
 

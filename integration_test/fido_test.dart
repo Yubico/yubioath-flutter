@@ -152,6 +152,11 @@ void main() {
 
       final passkey = passkeys.first;
       final cred = passkey.widget<AppListItem<FidoCredential>>().item;
+      final remainingIds = passkeys.evaluate().map((element) {
+        return (element.widget as AppListItem<FidoCredential>)
+            .item
+            .credentialId;
+      }).toSet()..remove(cred.credentialId);
       await $.selectOrOpenItem(passkey);
       expect($(cred.rpId), findsAny);
       expect($(cred.userName), findsAny);
@@ -175,6 +180,22 @@ void main() {
             )
             .exists,
         settle: false,
+      );
+      final currentIds = $(AppListItem<FidoCredential>)
+          .which<AppListItem<FidoCredential>>(
+            (widget) => widget.item.rpId == 'delete.example.com',
+          )
+          .evaluate()
+          .map(
+            (element) => (element.widget as AppListItem<FidoCredential>)
+                .item
+                .credentialId,
+          )
+          .toSet();
+      expect(
+        currentIds,
+        remainingIds,
+        reason: 'Deleting one passkey must preserve the others',
       );
     });
   }, condition: (info) => info.hasCapability(Capability.fido2));
