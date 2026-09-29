@@ -76,7 +76,7 @@ void main() {
       await $(
         find.byWidgetPredicate(
           (widget) =>
-              widget is RadioListTile<Locale> && widget.value != currentLocale,
+              widget is Radio<Locale> && widget.value != currentLocale,
         ),
       ).tap();
       expect($.read(currentLocaleProvider), isNot(currentLocale));
@@ -89,7 +89,7 @@ void main() {
       await $(
         find.byWidgetPredicate(
           (widget) =>
-              widget is RadioListTile<Locale> && widget.value == currentLocale,
+              widget is Radio<Locale> && widget.value == currentLocale,
         ),
       ).tap();
       expect($.read(currentLocaleProvider), equals(currentLocale));
@@ -124,7 +124,7 @@ void main() {
       await $(
         find.byWidgetPredicate(
           (widget) =>
-              widget is RadioListTile<Level> && widget.value == Levels.DEBUG,
+              widget is Radio<Level> && widget.value == Levels.DEBUG,
         ),
       ).tap();
       expect($(RegExp('WARNING:')), findsOneWidget);
@@ -137,7 +137,7 @@ void main() {
       await $(
         find.byWidgetPredicate(
           (widget) =>
-              widget is RadioListTile<Level> && widget.value == Levels.TRAFFIC,
+              widget is Radio<Level> && widget.value == Levels.TRAFFIC,
         ),
       ).tap();
       expect($(RegExp('WARNING:.*logged')), findsOneWidget);
@@ -150,7 +150,7 @@ void main() {
       await $(
         find.byWidgetPredicate(
           (widget) =>
-              widget is RadioListTile<Level> && widget.value == Levels.INFO,
+              widget is Radio<Level> && widget.value == Levels.INFO,
         ),
       ).tap();
       expect($(RegExp('WARNING:')), findsNothing);

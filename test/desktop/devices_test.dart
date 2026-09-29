@@ -69,7 +69,7 @@ void main() {
     'updates device info when capabilities change without changing ID',
     () async {
       final rpc = _DeviceRpc();
-      final notifier = DevicesNotifier(rpc);
+      final notifier = DevicesNotifier(rpc, () => false);
       addTearDown(notifier.dispose);
 
       final initial = notifier.stream.firstWhere(
@@ -97,7 +97,7 @@ void main() {
 
   test('refreshes interfaces when the serial stays the same', () async {
     final rpc = _DeviceRpc();
-    final notifier = DevicesNotifier(rpc);
+    final notifier = DevicesNotifier(rpc, () => false);
     addTearDown(notifier.dispose);
 
     final initial = notifier.stream.firstWhere((devices) => devices.isNotEmpty);
