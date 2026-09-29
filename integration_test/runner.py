@@ -67,7 +67,11 @@ def verify_controller(pico: PicoController, serial: int) -> None:
 @click.option("--window-size", type=click.Choice(["narrow", "medium", "wide"]))
 @click.option("--name", "-k", type=str, help="Test names to match against")
 @click.option("--keyless", is_flag=True, help="Run tests without a YubiKey")
-@click.option("--manual", is_flag=True, help="Run tests requiring manual interaction")
+@click.option(
+    "--manual/--no-manual",
+    default=None,
+    help="Run only / exclude interaction tests (default: include both with a controller)",
+)
 @click.option(
     "--controller",
     envvar="CONTROLLER",
@@ -110,6 +114,8 @@ def main(
 
     For a full set of tests, run --keyless without a YubiKey connected, then the full keyed
     testsuite over both USB and NFC, both without and with the --manual flag.
+    With --controller, both manual and non-manual tests run by default;
+    --manual runs only interaction tests and --no-manual excludes them.
 
     Each run writes private, timestamped artifacts to build/test-runs by default.
     Desktop app/helper traffic is captured in app.log. To capture an external
@@ -125,6 +131,7 @@ def main(
       $ ./testrunner.sh --serial 123456 --manual
       $ ./testrunner.sh --serial 123456 --controller http://192.168.7.1
       $ ./testrunner.sh --serial 123456 --controller http://192.168.7.1 --manual
+      $ ./testrunner.sh --serial 123456 --controller http://192.168.7.1 --no-manual
       $ ./testrunner.sh --serial 123456 --app management --no-setup --window-size wide
       $ ./testrunner.sh --serial 123456 --service-log /path/to/ykman-svc.log
       $ ./testrunner.sh --reader hid --serial 123456
@@ -265,15 +272,19 @@ def _run_tests(
     if name:
         cmd += ["--name", f".*{name}.*"]
 
-    if manual:
-        click.echo("ℹ️  Running tests that require interaction!")
+    if manual is True:
+        click.echo("ℹ️  Running only tests that require interaction!")
+        cmd += ["--tags", "manual"]
+    elif manual is False or pico is None:
+        cmd += ["--exclude-tags", "manual"]
+    else:
+        click.echo("ℹ️  Running all tests, including those that require interaction!")
+
+    if manual is True or (manual is None and pico is not None):
         if pico is None:
             msgs.append("Follow in-app instructions to interact with the YubiKey")
         else:
             msgs.append(f"Pico controller {pico.base_url}, USB port {pico.port}")
-        cmd += ["--tags", "manual"]
-    else:
-        cmd += ["--exclude-tags", "manual"]
 
     dartvars["TEST_APPS"] = ",".join(apps)
 
