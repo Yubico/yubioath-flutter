@@ -115,9 +115,8 @@ class RpcSession {
       final record = jsonDecode(entry);
       var entryLevel = _py2level[record['level']];
       if (entryLevel == null) {
-        Logger(
-          'helper.${record['name']}',
-        ).log(Levels.ERROR, 'Invalid log level: ${record['level']}');
+        Logger('helper.${record['name']}')
+            .log(Levels.ERROR, 'Invalid log level: ${record['level']}');
       } else {
         Logger('helper.${record['name']}').log(
           entryLevel,
@@ -267,6 +266,13 @@ class RpcNodeSession {
     List<String> target = const [],
     Map<dynamic, dynamic>? params,
     Signaler? signal,
+  }) => _command(action, target: target, params: params, signal: signal);
+
+  Future<Map<String, dynamic>> _command(
+    String action, {
+    required List<String> target,
+    Map<dynamic, dynamic>? params,
+    Signaler? signal,
   }) async {
     bool wrapped = false;
     try {
@@ -285,7 +291,7 @@ class RpcNodeSession {
       if (handler != null) {
         _log.info('Attempting recovery on "${e.status}"');
         await handler(e);
-        return await command(
+        return await _command(
           action,
           target: target,
           params: params,

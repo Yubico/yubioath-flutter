@@ -1,4 +1,5 @@
 import 'package:flutter/gestures.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:yubico_authenticator/app/models.dart';
@@ -149,8 +150,30 @@ void main() {
           ),
         );
 
+        Future<void> slotAction(SlotId slotId, Key action) async {
+          final slot = pivSlot(slotId);
+          final more = $(
+            slotId == SlotId.authentication
+                ? meatballButton9a
+                : meatballButton82,
+          );
+          if (more.exists) {
+            await more.scrollTo();
+            await more.tap();
+          } else {
+            await slot.scrollTo();
+            await slot.tap();
+            if (!$(action).exists) {
+              await $.tester.tap(slot, buttons: kSecondaryButton);
+              await $.pumpAndSettle();
+            }
+          }
+          await $(action).scrollTo();
+          await $(action).tap();
+        }
+
         // Generate a certificate
-        await $.itemAction(pivSlot(SlotId.authentication), generateAction);
+        await slotAction(SlotId.authentication, generateAction);
         await $(managementKeyField).enterText(changedManagementKey);
         await $(unlockButton).tap();
         await $(pinPukField).enterText(changedPin);
@@ -169,18 +192,21 @@ void main() {
           final slotRetired = pivSlot(SlotId.retired1);
 
           // Move the certificate to a different slot
-          await $.itemAction(pivSlot(SlotId.authentication), moveAction);
+          await slotAction(SlotId.authentication, moveAction);
           await $(ChoiceFilterChip<SlotId?>).tap();
           await $(RegExp(SlotId.retired1.hexId)).tap();
           await $(moveButton).tap();
           if (close.exists) {
             await close.tap();
           }
-          await $.pumpAndSettle(); // List may not update immediately
+          await $.condition(
+            () => slotRetired.exists,
+            reason: 'Moved certificate should appear in the retired slot',
+          );
           expect(slotRetired, findsOne);
 
           // Move the key without the certificate back, using context menu
-          await $.itemAction(slotRetired, moveAction);
+          await slotAction(SlotId.retired1, moveAction);
           await $(ChoiceFilterChip<SlotId?>).tap();
           await $(RegExp(SlotId.authentication.hexId)).tap();
           await $(includeCertificateChip).tap();
@@ -188,17 +214,24 @@ void main() {
           if (close.exists) {
             await close.tap();
           }
+          await $.condition(
+            () => $($.l10n.l_key_no_certificate).exists,
+            reason: 'Moved key should appear without a certificate',
+          );
           expect($('Test Certificate'), findsOneWidget);
           expect($($.l10n.l_key_no_certificate), findsOne);
           expect(slotRetired, findsOne);
 
           // Delete the certificate
-          await $.itemAction(slotRetired, deleteAction);
+          await slotAction(SlotId.retired1, deleteAction);
           await $(deleteButton).tap();
           if (close.exists) {
             await close.tap();
           }
-          await $.pumpAndSettle(); // List may not update immediately
+          await $.condition(
+            () => !slotRetired.exists,
+            reason: 'Deleted certificate should disappear from retired slots',
+          );
           expect($('Test Certificate'), findsNothing);
           expect(slotRetired, findsNothing);
         }
@@ -216,9 +249,12 @@ void main() {
           await close.tap();
         }
         await $.condition(() => !$(deleteButton).exists);
-        await $.pumpAndSettle(); // List may not update immediately
         expect($('Test Certificate'), findsNothing);
         if (data.info.version.isAtLeast(5, 7)) {
+          await $.condition(
+            () => !$($.l10n.l_key_no_certificate).exists,
+            reason: 'Deleted key should disappear from the slot',
+          );
           expect($($.l10n.l_key_no_certificate), findsNothing);
         } else if (data.info.version.isAtLeast(5, 3)) {
           expect($($.l10n.l_key_no_certificate), findsOneWidget);

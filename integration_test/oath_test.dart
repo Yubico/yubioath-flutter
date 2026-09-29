@@ -224,7 +224,10 @@ void main() {
     });
 
     testKey('Credential survives reconnect', params, ($, data) async {
-      final pico = picoController!;
+      final pico = picoController;
+      final reconnectTimeout = pico == null
+          ? const Duration(minutes: 3)
+          : const Duration(seconds: 30);
       const issuer = 'Reconnect';
       const name = 'reconnect@example.com';
       var removed = false;
@@ -244,22 +247,34 @@ void main() {
         added = true;
 
         removed = true;
-        await pico.remove();
+        if (pico == null) {
+          $.tester.printToConsole(
+            'OATH reconnect: Unplug the YubiKey now. Wait to reinsert it.',
+          );
+        } else {
+          await pico.remove();
+        }
         await $.condition(
           () => $.read(currentDeviceDataProvider).value == null,
+          timeout: reconnectTimeout,
           settle: false,
           reason: 'Device remained selected after disconnect',
         );
-        await pico.insert();
-        removed = false;
+        if (pico == null) {
+          $.tester.printToConsole('OATH reconnect: Reinsert the YubiKey now.');
+        } else {
+          await pico.insert();
+        }
 
         await $.condition(
           () =>
               $.read(currentDeviceDataProvider).value?.info.serial ==
               data.info.serial,
+          timeout: reconnectTimeout,
           settle: false,
           reason: 'YubiKey did not return after reconnect',
         );
+        removed = false;
         final reconnected = $.read(currentDeviceDataProvider).requireValue;
         await $.navigate(Section.accounts);
         await $.condition(
@@ -282,13 +297,22 @@ void main() {
         await $(calculateAction).tap();
         expect($('287 082'), findsWidgets);
       } finally {
-        if (removed) await pico.insert();
-        await pico.release();
+        if (removed) {
+          if (pico == null) {
+            $.tester.printToConsole(
+              'OATH reconnect: Reinsert the YubiKey for cleanup.',
+            );
+          } else {
+            await pico.insert();
+          }
+        }
+        await pico?.release();
         if (added) {
           await $.condition(
             () =>
                 $.read(currentDeviceDataProvider).value?.info.serial ==
                 data.info.serial,
+            timeout: reconnectTimeout,
             settle: false,
             reason: 'YubiKey did not return for credential cleanup',
           );
@@ -308,7 +332,7 @@ void main() {
           }
         }
       }
-    }, skip: picoController == null || isAndroid);
+    }, tags: picoController == null ? 'manual' : null, skip: isAndroid);
 
     testKey('Set/Change/Remove password', params, ($, data) async {
       bool hasLock() =>

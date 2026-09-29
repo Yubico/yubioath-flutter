@@ -191,9 +191,10 @@ class DesktopFidoStateNotifier extends FidoStateNotifier {
         'set_pin',
         params: {'pin': oldPin, 'new_pin': newPin},
       );
-      return unlock(newPin);
+      return await unlock(newPin);
     } on RpcError catch (e) {
       if (e.status == 'pin-validation') {
+        _pinController.state = null;
         ref.invalidateSelf();
         return PinResult.failed(
           FidoPinFailureReason.invalidPin(
