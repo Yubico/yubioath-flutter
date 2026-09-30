@@ -402,7 +402,7 @@ class _LayoutPickerDialogState extends State<_LayoutPickerDialog> {
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: TextField(
+              child: AppTextField(
                 autofocus: true,
                 decoration: AppInputDecoration(
                   border: const OutlineInputBorder(),
@@ -410,7 +410,7 @@ class _LayoutPickerDialogState extends State<_LayoutPickerDialog> {
                   prefixIcon: const Icon(Symbols.search),
                 ),
                 onChanged: (value) => setState(() => _query = value),
-              ),
+              ).init(),
             ),
             const SizedBox(height: 8.0),
             Expanded(

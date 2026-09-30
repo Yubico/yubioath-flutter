@@ -25,7 +25,7 @@ repos:
     - id: flutter-analyze
       name: Flutter Code Analyze
       language: system
-      entry: env -u GIT_DIR flutter analyze
+      entry: env -u GIT_DIR sh -c 'dart pub get -C lint && flutter analyze'
       files: \.dart$
       exclude: lib/generated
       pass_filenames: false
