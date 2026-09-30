@@ -10,6 +10,7 @@ jobs:
         files:
           - yubioath-desktop-windows/*/authenticator.exe
           - yubioath-desktop-windows/*/helper/authenticator-helper.exe
+          - yubioath-desktop-windows/ykman-svc.exe
           - yubioath-desktop-windows/*/desktop_drop_plugin.dll
           - yubioath-desktop-windows/*/flutter_windows.dll
           - yubioath-desktop-windows/*/local_notifier_plugin.dll

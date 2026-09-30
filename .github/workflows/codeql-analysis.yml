@@ -5,10 +5,12 @@ on:
     paths:
       - "android/**"
       - "helper/**"
+      - ".github/workflows/codeql-analysis.yml"
   pull_request:
     paths:
       - "android/**"
       - "helper/**"
+      - ".github/workflows/codeql-analysis.yml"
   schedule:
     - cron: '0 11 * * 3'
 
@@ -24,35 +26,43 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ 'python', 'kotlin' ]
+        include:
+          - language: rust
+            build-mode: none
+          - language: kotlin
+            build-mode: manual
 
     steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          path: 'app'
+
       - name: Initialize CodeQL
         uses: github/codeql-action/init@54f647b7e1bb85c95cddabcd46b0c578ec92bc1a # v4.36.3
         with:
           languages: ${{ matrix.language }}
-          setup-python-dependencies: false
+          build-mode: ${{ matrix.build-mode }}
 
       - name: set up JDK 21
+        if: matrix.language == 'kotlin'
         uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # v5.4.0
         with:
           distribution: 'temurin'
           java-version: '21'
 
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-        with:
-          path: 'app'
-
       - name: Read variables from repo
+        if: matrix.language == 'kotlin'
         run: cat .github/workflows/env >> $GITHUB_ENV
         working-directory: ./app
 
       - name: Install Flutter
+        if: matrix.language == 'kotlin'
         uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           channel: 'stable'
           flutter-version: ${{ env.FLUTTER }}
-      - run: |
+      - if: matrix.language == 'kotlin'
+        run: |
           flutter config
           flutter --version
           flutter pub get
@@ -79,10 +89,6 @@ jobs:
           YUBIOATH_KEY_PASSWORD: ${{ secrets.YUBIOATH_KEY_PASSWORD }}
           YUBIOATH_STORE_PASSWORD: ${{ secrets.YUBIOATH_STORE_PASSWORD }}
         working-directory: ./app
-
-      - if: matrix.language == 'python'
-        name: autobuild
-        uses: github/codeql-action/autobuild@54f647b7e1bb85c95cddabcd46b0c578ec92bc1a # v4.36.3
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@54f647b7e1bb85c95cddabcd46b0c578ec92bc1a # v4.36.3

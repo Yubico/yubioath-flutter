@@ -13,7 +13,7 @@ jobs:
         run: |
           export $(cat .github/workflows/env)
           cat .github/workflows/env >> $GITHUB_ENV
-          echo CACHE_KEY=${{ runner.os }}-rust-c52f5fc-${{ hashFiles('build-helper.bat', 'helper/**')}} >> $GITHUB_ENV
+          echo CACHE_KEY=${{ runner.os }}-rust-c52f5fc-svc1-${{ hashFiles('build-helper.bat', 'helper/**')}} >> $GITHUB_ENV
 
       - name: Check app versions
         run: |
@@ -42,6 +42,7 @@ jobs:
         with:
           path: |
             build/windows/helper
+            build/windows/ykman-svc.exe
             assets/licenses/helper.txt
           key: ${{ env.CACHE_KEY }}
 
@@ -50,6 +51,12 @@ jobs:
         run: |
           cargo install cargo-about --locked
           .\build-helper.bat
+
+      - name: Build ykman-svc
+        if: steps.cache-helper.outputs.cache-hit != 'true'
+        run: |
+          cargo build --release --manifest-path ..\yubikit-rs\Cargo.toml -p ykman-svc
+          Copy-Item ..\yubikit-rs\target\release\ykman-svc.exe build\windows\ykman-svc.exe
 
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
@@ -80,6 +87,7 @@ jobs:
           $dest = "deploy\yubioath-desktop-$branch-windows"
           mkdir $dest
           mv build\windows\x64\runner\Release\* $dest\
+          cp build\windows\ykman-svc.exe deploy\
           mv resources\win\release-win.ps1 deploy
           mv resources\win\verify_dll.ps1 deploy
           mv resources deploy
@@ -110,6 +118,7 @@ jobs:
     - name: download artifacts
       uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
       with:
+        name: yubioath-desktop-windows
         path: yubioath-desktop-windows
 
     - name: docker login
@@ -146,11 +155,12 @@ jobs:
         mv scribe-download/*/sign-source/1.zip signed/
         rm -rf scribe-download
         cd signed
-        unzip -j 1.zip || true
+        unzip -j 1.zip
         rm 1.zip
         cd ..
         cp signed/authenticator-helper.exe yubioath-desktop-windows/*/helper/authenticator-helper.exe
         cp signed/authenticator.exe yubioath-desktop-windows/*/authenticator.exe
+        cp signed/ykman-svc.exe yubioath-desktop-windows/ykman-svc.exe
         cp signed/desktop_drop_plugin.dll yubioath-desktop-windows/*/desktop_drop_plugin.dll
         cp signed/flutter_windows.dll yubioath-desktop-windows/*/flutter_windows.dll
         cp signed/local_notifier_plugin.dll yubioath-desktop-windows/*/local_notifier_plugin.dll
@@ -187,6 +197,9 @@ jobs:
 
       - name: Download /signed dir
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: signed-files
+          path: signed-files
 
       - name: Read variables from repo
         shell: bash
@@ -198,8 +211,9 @@ jobs:
           $branch = $arr[2]
           $env:PATH += ";$env:WIX\bin"
           $env:SRCDIR = "signed-files\yubioath-desktop-$branch-windows\"
+          $serviceSource = (Resolve-Path signed-files\ykman-svc.exe).Path
           heat dir .\signed-files\yubioath-desktop-$branch-windows\ -out fragment.wxs -gg -scom -srd -sfrag -dr INSTALLDIR -cg ApplicationFiles -var env.SRCDIR
-          candle .\fragment.wxs .\resources\win\yubioath-desktop.wxs -ext WixUtilExtension -arch x64
+          candle .\fragment.wxs .\resources\win\yubioath-desktop.wxs "-dServiceSource=$serviceSource" -ext WixUtilExtension -arch x64
           light fragment.wixobj yubioath-desktop.wixobj -ext WixUIExtension -ext WixUtilExtension -o yubioath-desktop.msi
 
       - name: Rename and archive app bundle
@@ -235,6 +249,9 @@ jobs:
 
       - name: Download /signed dir
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: signed-files
+          path: signed-files
 
       - name: Create an unsigned .msix package for the Microsoft Store
         run: |
@@ -250,6 +267,7 @@ jobs:
           $pkg = "msix-pkg"
           mkdir $pkg
           cp -Recurse signed-files\yubioath-desktop-$branch-windows\* $pkg\
+          cp signed-files\ykman-svc.exe $pkg\
           cp -Recurse resources\win\msix\Assets $pkg\Assets
           (Get-Content resources\win\msix\AppxManifest.xml) -replace '\$VERSION\$', $version | Set-Content $pkg\AppxManifest.xml -Encoding utf8
           $sdkBin = (Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin\10.*\x64\makeappx.exe" | Sort-Object FullName -Descending | Select-Object -First 1).DirectoryName
@@ -286,6 +304,9 @@ jobs:
 
     - name: download artifacts
       uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      with:
+        name: installer
+        path: installer
 
     - name: docker login
       uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0 # v4.4.0
@@ -321,7 +342,7 @@ jobs:
         mv scribe-download/*/sign-source/1.zip signed/
         rm -rf scribe-download
         cd signed
-        unzip -j 1.zip || true
+        unzip -j 1.zip
         rm 1.zip
         cd ..
 
@@ -343,6 +364,6 @@ jobs:
           name: signed-files
           path: downloaded-artifact
 
-      - name: Check for unsigned DLLs
+      - name: Check for unsigned executables and DLLs
         working-directory: .\downloaded-artifact
         run: .\verify_dll.ps1

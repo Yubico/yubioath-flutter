@@ -13,42 +13,55 @@ Development has been done using the "Install from git" method of installing the
 SDK, from the "stable" channel.
 
 === Dependencies
-This project uses several dependencies specified in the pubspec.yaml file, as
-well as in the helper/pyproject.toml file. These files specify version ranges
-which should be compatible. The corresponding pubspec.lock and
-helper/poetry.lock files contain the exact versions which are currently being
-used when building the app.
+This project uses dependencies specified in `pubspec.yaml` and
+`helper/crates/helper/Cargo.toml`. The corresponding `pubspec.lock` and
+`helper/Cargo.lock` files pin the versions used when building the app.
+The Rust helper also uses crates from the sibling `yubikit-rs` checkout.
 
 ==== Versioning (important for package maintainers!)
-We recommend that this application be bundled with all its dependencies, using
-the exact versions specified in the lock files. If this approach isn't viable,
-we strongly urge that upper bounds be set on the dependencies in accordance
-with the pubspec and pyproject files. For example, the current version depends
-on `yubikey-manager >=5, <6`. It will likely not work with versions outside
-this range!
+We recommend bundling this application with all its dependencies, using the
+versions specified in the lock files. Keep the sibling `yubikit-rs` checkout
+at the revision used by the build workflows.
 
 === Building the Yubico Authenticator Helper
 The GUI requires a compiled version of Helper to run, which is built from the
-sources in helper/ in this repository. Requirements for all platforms are
-Python >= 3.8 and Poetry. This needs to be built prior to running
+sources in `helper/` in this repository. Install Rust and Cargo and check out
+https://github.com/Yubico/yubikey-manager/[yubikit-rs] next to this repository
+at the commit pinned in the build workflows. Install `cargo-about` with
+`cargo install cargo-about --locked`. Build the helper before running
 `flutter build` or `flutter run`.
 
 ==== Windows
 
-Make sure the http://www.swig.org/[swig] executable is in your PATH.
+For Windows packaging, also build `ykman-svc` from the sibling checkout:
+
+    cargo build --release --manifest-path ..\yubikit-rs\Cargo.toml -p ykman-svc
+
+The local `resources/win/release-win.ps1` packaging script expects the resulting
+`ykman-svc.exe` next to the unpacked Windows build artifact.
+
+The MSI and MSIX packages both install `ykman-svc` as an automatic LocalSystem
+service. Before installing either package, uninstall any independently installed
+`ykman-svc` (for example, one installed by YubiKey Manager CLI); both packages
+use the same Windows service name. Installing a package that contains a service
+requires administrator privileges. The MSIX requires Windows 10 version 2004
+or later and declares the restricted `packagedServices` and
+`localSystemServices` capabilities; publishing it to the Microsoft Store may
+require approval for these capabilities.
 
 ==== macOS
 
-    $ brew install swig
+Install the Rust targets `aarch64-apple-darwin` and `x86_64-apple-darwin`
+to build the universal helper.
 
 ==== Linux (Debian-based distributions)
 
-    $ sudo apt install swig libu2f-udev pcscd libpcsclite-dev
+    $ sudo apt install libu2f-udev pcscd libpcsclite-dev libudev-dev pkg-config libssl-dev
 
 ==== Linux (RPM-based distributions)
 
     # Tested on Fedora 34
-    $ sudo dnf install pcsc-lite-devel python3-devel swig
+    $ sudo dnf install pcsc-lite-devel systemd-devel pkgconf-pkg-config openssl-devel
 
 When prerequisites are installed you build the helper by running `build-helper.sh`
 (or `build-helper.bat` on Windows).
