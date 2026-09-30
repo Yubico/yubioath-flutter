@@ -1206,9 +1206,8 @@ class _ConfirmResetDialog extends StatelessWidget {
       ],
       content: Text(
         l10n.p_reset_settings_confirmation_desc,
-        style: Theme.of(
-          context,
-        ).textTheme.bodyMedium?.copyWith(fontWeight: .w700),
+        style: Theme.of(context).textTheme.bodyMedium
+            ?.copyWith(fontWeight: .w700),
       ),
     );
   }

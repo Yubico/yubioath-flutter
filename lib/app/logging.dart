@@ -126,8 +126,7 @@ class LogWarningOverlay extends StatelessWidget {
 
             final String message;
             if (sensitiveLogs && allowScreenshots) {
-              message =
-                  'Potentially sensitive data is being logged, and other apps can potentially record the screen';
+              message = 'Potentially sensitive data is being logged, and other apps can potentially record the screen';
             } else if (sensitiveLogs) {
               message = 'Potentially sensitive data is being logged';
             } else if (allowScreenshots) {

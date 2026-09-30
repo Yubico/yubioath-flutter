@@ -858,6 +858,7 @@
     "s_private_id": "ID privé",
     "s_use_serial": "Utiliser série",
     "l_select_file": "Sélectionner fichier",
+    "l_create_export_file": null,
     "l_no_export_file": "Pas de fichier d'exportation",
     "s_no_export": "Pas d'exportation",
     "s_export": "Exporter",
@@ -871,6 +872,8 @@
         }
     },
     "s_keyboard_layout": null,
+    "s_keyboard_variant": null,
+    "s_keyboard_variant_default": null,
     "l_keyboard_layout": "Clavier {layout}",
     "@l_keyboard_layout": {
         "placeholders": {

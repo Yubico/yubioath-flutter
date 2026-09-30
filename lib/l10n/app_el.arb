@@ -858,6 +858,7 @@
     "s_private_id": "Ιδιωτικό αναγνωριστικό",
     "s_use_serial": "Χρήση σειριακού αριθμού",
     "l_select_file": "Επιλογή αρχείου",
+    "l_create_export_file": null,
     "l_no_export_file": "Δεν υπάρχει αρχείο εξαγωγής",
     "s_no_export": "Χωρίς εξαγωγή",
     "s_export": "Εξαγωγή",
@@ -871,6 +872,8 @@
         }
     },
     "s_keyboard_layout": null,
+    "s_keyboard_variant": null,
+    "s_keyboard_variant_default": null,
     "l_keyboard_layout": "Πληκτρολόγιο {layout}",
     "@l_keyboard_layout": {
         "placeholders": {

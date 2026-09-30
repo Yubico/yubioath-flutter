@@ -71,9 +71,9 @@ class IconPackManager extends StateNotifier<AsyncValue<IconPack?>> {
           (icon) => IconPackIconData(
             filename: icon['filename'],
             category: icon['category'],
-            issuer: List<String>.from(
-              icon['issuer'],
-            ).map((e) => e.toUpperCase()).toList(growable: false),
+            issuer: List<String>.from(icon['issuer'])
+                .map((e) => e.toUpperCase())
+                .toList(growable: false),
           ),
         ),
       );

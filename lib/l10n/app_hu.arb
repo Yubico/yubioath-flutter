@@ -858,6 +858,7 @@
     "s_private_id": "Privát ID",
     "s_use_serial": "Soros port használata",
     "l_select_file": "Fájl kiválasztása",
+    "l_create_export_file": null,
     "l_no_export_file": "Nincs exportfálj",
     "s_no_export": "Nincs export",
     "s_export": "Export",
@@ -871,6 +872,8 @@
         }
     },
     "s_keyboard_layout": "Billentyűzetkiosztás",
+    "s_keyboard_variant": null,
+    "s_keyboard_variant_default": null,
     "l_keyboard_layout": "{layout} billentyűzet",
     "@l_keyboard_layout": {
         "placeholders": {

@@ -222,9 +222,8 @@ DesktopCredentialListNotifier buildDesktopOathCredentialListProvider(
     ref.watch(withContextProvider),
     ref.watch(_sessionProvider(devicePath)),
     ref.watch(
-      oathStateProvider(
-        devicePath,
-      ).select((r) => r.whenOrNull(data: (state) => state.locked) ?? true),
+      oathStateProvider(devicePath)
+          .select((r) => r.whenOrNull(data: (state) => state.locked) ?? true),
     ),
   );
   ref.listen<WindowState>(windowStateProvider, (_, windowState) {

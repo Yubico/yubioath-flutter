@@ -121,23 +121,23 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
     // on Android & USB we have to query the FIDO reset parameters
     if (isAndroid && !nfc) {
       Future.microtask(() {
-        MethodChannel(
-          'android.fido.methods',
-        ).invokeMethod('getFidoResetProperties').then((response) {
-          try {
-            final fidoResetProperties = jsonDecode(response);
-            if (fidoResetProperties['success'] == true) {
-              setState(() {
-                _updateResetParameters(
-                  fidoResetProperties['long_touch_for_reset'],
-                  fidoResetProperties['transports_for_reset'],
-                );
-              });
-            }
-          } catch (e) {
-            _log.error('Failed to get FIDO reset properties');
-          }
-        });
+        MethodChannel('android.fido.methods')
+            .invokeMethod('getFidoResetProperties')
+            .then((response) {
+              try {
+                final fidoResetProperties = jsonDecode(response);
+                if (fidoResetProperties['success'] == true) {
+                  setState(() {
+                    _updateResetParameters(
+                      fidoResetProperties['long_touch_for_reset'],
+                      fidoResetProperties['transports_for_reset'],
+                    );
+                  });
+                }
+              } catch (e) {
+                _log.error('Failed to get FIDO reset properties');
+              }
+            });
       });
     }
   }
@@ -262,9 +262,8 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                               _fidoResetController.state = true;
                               _subscription = ref
                                   .read(
-                                    fidoStateProvider(
-                                      widget.data.node.path,
-                                    ).notifier,
+                                    fidoStateProvider(widget.data.node.path)
+                                        .notifier,
                                   )
                                   .reset()
                                   .listen(
@@ -398,9 +397,8 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                       // Show dismissed banner upon reset
                       ref
                           .read(
-                            dismissedBannersProvider(
-                              widget.data.info.serial,
-                            ).notifier,
+                            dismissedBannersProvider(widget.data.info.serial)
+                                .notifier,
                           )
                           .showBanner(pivPinDefaultBannerKey);
 
@@ -506,9 +504,8 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                               ? l10n.p_warning_global_reset
                               : l10n.p_factory_reset_an_app,
                       },
-                      style: Theme.of(
-                        context,
-                      ).textTheme.bodyMedium?.copyWith(fontWeight: .w700),
+                      style: Theme.of(context).textTheme.bodyMedium
+                          ?.copyWith(fontWeight: .w700),
                     ),
                     Text(switch (_application) {
                       Capability.oath => l10n.p_warning_disable_credentials,

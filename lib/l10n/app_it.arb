@@ -858,6 +858,7 @@
     "s_private_id": "ID privato",
     "s_use_serial": "Utilizza seriale",
     "l_select_file": "Seleziona file",
+    "l_create_export_file": null,
     "l_no_export_file": "Nessun file da esportare",
     "s_no_export": "Nessuna esportazione",
     "s_export": "Esporta",
@@ -871,6 +872,8 @@
         }
     },
     "s_keyboard_layout": "Layout della tastiera",
+    "s_keyboard_variant": null,
+    "s_keyboard_variant_default": null,
     "l_keyboard_layout": "Tastiera {layout}",
     "@l_keyboard_layout": {
         "placeholders": {

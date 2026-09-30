@@ -858,6 +858,7 @@
     "s_private_id": "ID riêng tư",
     "s_use_serial": "Sử dụng số sê-ri",
     "l_select_file": "Chọn tệp",
+    "l_create_export_file": null,
     "l_no_export_file": "Không có tệp xuất khẩu",
     "s_no_export": "Không xuất khẩu",
     "s_export": "Xuất khẩu",
@@ -871,6 +872,8 @@
         }
     },
     "s_keyboard_layout": null,
+    "s_keyboard_variant": null,
+    "s_keyboard_variant_default": null,
     "l_keyboard_layout": null,
     "@l_keyboard_layout": {
         "placeholders": {

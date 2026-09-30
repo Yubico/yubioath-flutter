@@ -858,6 +858,7 @@
     "s_private_id": "Soukromé ID",
     "s_use_serial": "Použít sériové číslo",
     "l_select_file": "Vybrat soubor",
+    "l_create_export_file": null,
     "l_no_export_file": "Žádný exportovaný soubor",
     "s_no_export": "Žádný export",
     "s_export": "Exportovat",
@@ -871,6 +872,8 @@
         }
     },
     "s_keyboard_layout": "Rozložení klávesnice",
+    "s_keyboard_variant": null,
+    "s_keyboard_variant_default": null,
     "l_keyboard_layout": "Klávesnice {layout}",
     "@l_keyboard_layout": {
         "placeholders": {

@@ -407,8 +407,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
                                 ),
                               ),
                             SizedBox(
-                              height:
-                                  140, // Needed for layout, adapt if text sizes changes
+                              height: 140, // Needed for layout, adapt if text sizes changes
                               child: CertInfoTable(certInfo, null),
                             ),
                           ],

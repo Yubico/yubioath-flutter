@@ -215,14 +215,12 @@ void main() {
       var removed = false;
       try {
         if (pico != null) {
-          await $(
-            RegExp(RegExp.escape($.l10n.l_unplug_yk)),
-          ).waitUntilVisible(timeout: const Duration(seconds: 30));
+          await $(RegExp(RegExp.escape($.l10n.l_unplug_yk)))
+              .waitUntilVisible(timeout: const Duration(seconds: 30));
           await pico.remove();
           removed = true;
-          await $(
-            RegExp(RegExp.escape($.l10n.l_reinsert_yk)),
-          ).waitUntilVisible(timeout: const Duration(seconds: 30));
+          await $(RegExp(RegExp.escape($.l10n.l_reinsert_yk)))
+              .waitUntilVisible(timeout: const Duration(seconds: 30));
           await pico.insert();
           removed = false;
           try {

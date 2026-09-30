@@ -858,6 +858,7 @@
     "s_private_id": "מזהה פרטי",
     "s_use_serial": "להשתמש במספר הסידורי",
     "l_select_file": "בחירת קובץ",
+    "l_create_export_file": null,
     "l_no_export_file": "אין קובץ ייצוא",
     "s_no_export": "אין ייצוא",
     "s_export": "ייצוא",
@@ -871,6 +872,8 @@
         }
     },
     "s_keyboard_layout": "פריסת מקלדת",
+    "s_keyboard_variant": null,
+    "s_keyboard_variant_default": null,
     "l_keyboard_layout": "מקלדת {layout}",
     "@l_keyboard_layout": {
         "placeholders": {

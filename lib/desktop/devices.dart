@@ -162,13 +162,12 @@ class DevicesNotifier extends StateNotifier<List<YubiKeyDeviceNode>> {
               : Transport.usb;
           devices.add(
             DeviceNode.yubiKey(
-                  DevicePath(path),
-                  deviceData['name'],
-                  pid,
-                  transport,
-                  DeviceInfo.fromJson(deviceData['info']),
-                )
-                as YubiKeyDeviceNode,
+              DevicePath(path),
+              deviceData['name'],
+              pid,
+              transport,
+              DeviceInfo.fromJson(deviceData['info']),
+            ) as YubiKeyDeviceNode,
           );
         }
 
@@ -183,13 +182,12 @@ class DevicesNotifier extends StateNotifier<List<YubiKeyDeviceNode>> {
           final name = usbPid?.displayName ?? 'YubiKey';
           devices.add(
             DeviceNode.yubiKey(
-                  DevicePath(['devices', key]),
-                  name,
-                  usbPid,
-                  Transport.usb,
-                  null,
-                )
-                as YubiKeyDeviceNode,
+              DevicePath(['devices', key]),
+              name,
+              usbPid,
+              Transport.usb,
+              null,
+            ) as YubiKeyDeviceNode,
           );
         }
 

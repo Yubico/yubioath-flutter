@@ -396,9 +396,10 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
           DeleteIntent<FidoCredential>:
               CallbackAction<DeleteIntent<FidoCredential>>(
                 onInvoke: (intent) async {
-                  final deleted =
-                      await (Actions.invoke(context, intent)
-                          as Future<dynamic>?);
+                  final deleted = await (Actions.invoke(
+                    context,
+                    intent,
+                  ) as Future<dynamic>?);
                   if (deleted == true && _selected == intent.target) {
                     if (mounted) {
                       setState(() {
@@ -523,9 +524,9 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                                       icon: Icon(
                                         e.icon,
                                         color: e == layout
-                                            ? Theme.of(
-                                                context,
-                                              ).colorScheme.primary
+                                            ? Theme.of(context)
+                                                  .colorScheme
+                                                  .primary
                                             : null,
                                       ),
                                     ),
@@ -554,9 +555,9 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                                     ),
                                     icon: Icon(
                                       layout.icon,
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.primary,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary,
                                     ),
                                     itemBuilder: (context) => [
                                       ...FlexLayout.values.map(
@@ -569,9 +570,9 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                                                 child: Icon(
                                                   e.icon,
                                                   color: e == layout
-                                                      ? Theme.of(
-                                                          context,
-                                                        ).colorScheme.primary
+                                                      ? Theme.of(context)
+                                                            .colorScheme
+                                                            .primary
                                                       : null,
                                                 ),
                                               ),
@@ -602,9 +603,8 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
                         },
                         textInputAction: .next,
                         onSubmitted: (value) {
-                          Focus.of(
-                            context,
-                          ).focusInDirection(TraversalDirection.down);
+                          Focus.of(context)
+                              .focusInDirection(TraversalDirection.down);
                         },
                       ).init(),
                     );

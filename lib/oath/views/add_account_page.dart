@@ -658,8 +658,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                                 border: const OutlineInputBorder(),
                                 labelText: l10n.s_account_name,
                                 isRequired: true,
-                                helperText:
-                                    '', // Prevents dialog resizing when disabled
+                                helperText: '', // Prevents dialog resizing when disabled
                                 errorText: _submitting
                                     ? null
                                     : (byteLength(nameText) > nameMaxLength)

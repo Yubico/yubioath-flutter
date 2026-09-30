@@ -33,9 +33,8 @@ class FsDialog extends StatelessWidget {
       namesRoute: true,
       label: title,
       child: Dialog.fullscreen(
-        backgroundColor: Theme.of(
-          context,
-        ).colorScheme.surface.withValues(alpha: 0.7),
+        backgroundColor: Theme.of(context).colorScheme.surface
+            .withValues(alpha: 0.7),
         child: SafeArea(
           child: Column(
             mainAxisAlignment: .spaceBetween,

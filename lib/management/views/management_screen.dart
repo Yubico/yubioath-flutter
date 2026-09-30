@@ -478,9 +478,8 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
                       ),
                 if (info.isLocked)
                   Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 18.0,
-                    ).copyWith(top: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: 18.0)
+                        .copyWith(top: 20),
                     child: _buildLockCodeForm(context, canSave),
                   ),
                 Padding(

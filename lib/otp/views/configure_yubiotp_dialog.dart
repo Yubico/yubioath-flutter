@@ -366,9 +366,8 @@ class _ConfigureYubiOtpDialogState
                               ? () async {
                                   final publicId = await ref
                                       .read(
-                                        otpStateProvider(
-                                          widget.devicePath,
-                                        ).notifier,
+                                        otpStateProvider(widget.devicePath)
+                                            .notifier,
                                       )
                                       .modhexEncodeSerial(info!.serial!);
                                   setState(() {
@@ -498,9 +497,9 @@ class _ConfigureYubiOtpDialogState
                           padding: const EdgeInsets.symmetric(vertical: 4.0),
                           child: Icon(
                             Symbols.tune,
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onSurfaceVariant,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurfaceVariant,
                           ),
                         ),
                         const SizedBox(width: 16.0),
@@ -534,9 +533,9 @@ class _ConfigureYubiOtpDialogState
                                         _action == OutputActions.createFile
                                     ? Icon(
                                         Symbols.check,
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.secondary,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary,
                                       )
                                     : null,
                                 value: _action,

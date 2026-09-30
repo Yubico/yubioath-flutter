@@ -86,9 +86,8 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
 
     final hasPinComplexity = deviceData?.info.pinComplexity ?? false;
     final pinRetries = ref.watch(
-      fidoStateProvider(
-        widget.devicePath,
-      ).select((s) => s.whenOrNull(data: (state) => state.pinRetries)),
+      fidoStateProvider(widget.devicePath)
+          .select((s) => s.whenOrNull(data: (state) => state.pinRetries)),
     );
 
     final isBio = widget.state.bioEnroll != null;

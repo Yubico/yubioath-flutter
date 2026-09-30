@@ -324,8 +324,9 @@ final clipboardProvider = Provider<AppClipboard>(
 /// open dialogs, show Snackbars, etc.
 ///
 /// Used with the [withContextProvider] provider.
-typedef WithContext =
-    Future<T> Function<T>(Future<T> Function(BuildContext context) action);
+typedef WithContext = Future<T> Function<T>(
+  Future<T> Function(BuildContext context) action,
+);
 
 final withContextProvider = Provider<WithContext>(
   (ref) => ref.watch(contextConsumer.notifier).withContext,

@@ -28,8 +28,8 @@ The GUI requires a compiled version of Helper to run, which is built from the
 sources in `helper/` in this repository. Install Rust and Cargo and check out
 https://github.com/Yubico/yubikey-manager/[yubikit-rs] next to this repository
 at the commit pinned in the build workflows. Install `cargo-about` with
-`cargo install cargo-about --locked`. Build the helper before running
-`flutter build` or `flutter run`.
+`cargo install cargo-about --version 0.9.2 --locked --features cli`.
+Build the helper before running `flutter build` or `flutter run`.
 
 ==== Windows
 
@@ -56,12 +56,12 @@ to build the universal helper.
 
 ==== Linux (Debian-based distributions)
 
-    $ sudo apt install libu2f-udev pcscd libpcsclite-dev libudev-dev pkg-config libssl-dev
+    $ sudo apt install libu2f-udev pcscd libpcsclite-dev libudev-dev libdbus-1-dev pkg-config libssl-dev
 
 ==== Linux (RPM-based distributions)
 
     # Tested on Fedora 34
-    $ sudo dnf install pcsc-lite-devel systemd-devel pkgconf-pkg-config openssl-devel
+    $ sudo dnf install pcsc-lite-devel systemd-devel dbus-devel pkgconf-pkg-config openssl-devel
 
 When prerequisites are installed you build the helper by running `build-helper.sh`
 (or `build-helper.bat` on Windows).

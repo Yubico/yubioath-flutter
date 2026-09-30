@@ -110,9 +110,8 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
     final password = _passwordController.text;
     final passwordLengthValid =
         password.isNotEmpty && password.length <= passwordMaxLength;
-    final passwordFormatValid = generateFormatterPattern(
-      _keyboardLayout,
-    ).hasMatch(password);
+    final passwordFormatValid = generateFormatterPattern(_keyboardLayout)
+        .hasMatch(password);
 
     void submit() async {
       _passwordFocus.unfocus();
@@ -266,9 +265,9 @@ class _ConfigureStaticDialogState extends ConsumerState<ConfigureStaticDialog> {
                           padding: const EdgeInsets.symmetric(vertical: 4.0),
                           child: Icon(
                             Symbols.tune,
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onSurfaceVariant,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurfaceVariant,
                           ),
                         ),
                         const SizedBox(width: 16.0),

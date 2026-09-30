@@ -51,9 +51,8 @@ class _OverwriteConfirmDialog extends StatelessWidget {
         children: [
           Text(
             l10n.p_overwrite_slot_desc(slot.getDisplayName(l10n)),
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(fontWeight: .w600),
+            style: Theme.of(context).textTheme.bodyMedium
+                ?.copyWith(fontWeight: .w600),
           ),
           const SizedBox(height: 12),
           if (certificate) Text(l10n.l_bullet(l10n.l_overwrite_cert)),

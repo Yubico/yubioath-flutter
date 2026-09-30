@@ -858,6 +858,7 @@
     "s_private_id": "Privat ID",
     "s_use_serial": "Använd seriell",
     "l_select_file": "Välj fil",
+    "l_create_export_file": null,
     "l_no_export_file": "Ingen exportfil",
     "s_no_export": "Ingen export",
     "s_export": "Export",
@@ -871,6 +872,8 @@
         }
     },
     "s_keyboard_layout": null,
+    "s_keyboard_variant": null,
+    "s_keyboard_variant_default": null,
     "l_keyboard_layout": "Tangentbord {layout}",
     "@l_keyboard_layout": {
         "placeholders": {

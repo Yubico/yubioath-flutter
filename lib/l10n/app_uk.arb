@@ -858,6 +858,7 @@
     "s_private_id": "Приватне посвідчення особи",
     "s_use_serial": "Використовуйте серійний номер",
     "l_select_file": "Вибрати файл",
+    "l_create_export_file": null,
     "l_no_export_file": "Немає файлу експорту",
     "s_no_export": "Експорт заборонено",
     "s_export": "Експорт",
@@ -871,6 +872,8 @@
         }
     },
     "s_keyboard_layout": null,
+    "s_keyboard_variant": null,
+    "s_keyboard_variant_default": null,
     "l_keyboard_layout": "Розкладка клавіатури {layout}",
     "@l_keyboard_layout": {
         "placeholders": {

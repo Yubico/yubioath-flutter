@@ -858,6 +858,7 @@
     "s_private_id": "ID ส่วนตัว",
     "s_use_serial": "ใช้ ซีเรียล",
     "l_select_file": "เลือกไฟล์",
+    "l_create_export_file": null,
     "l_no_export_file": "ไม่มีไฟล์ส่งออก",
     "s_no_export": "ไม่มีการส่งออก",
     "s_export": "ส่งออก",
@@ -871,6 +872,8 @@
         }
     },
     "s_keyboard_layout": null,
+    "s_keyboard_variant": null,
+    "s_keyboard_variant_default": null,
     "l_keyboard_layout": "คีย์บอร์ด {layout}",
     "@l_keyboard_layout": {
         "placeholders": {

@@ -196,9 +196,9 @@ Future<Widget> initialize(List<String> argv) async {
     } else if (Platform.isWindows) {
       relativePath += '.exe';
     }
-    exe = Uri.file(
-      Platform.resolvedExecutable,
-    ).resolve(relativePath).toFilePath();
+    exe = Uri.file(Platform.resolvedExecutable)
+        .resolve(relativePath)
+        .toFilePath();
   }
 
   // Locate feature flags file

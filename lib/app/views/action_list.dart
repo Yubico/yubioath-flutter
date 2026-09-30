@@ -81,9 +81,8 @@ class _ActionListItemState extends State<ActionListItem> {
           shape: RoundedRectangleBorder(borderRadius: borderRadius),
           title: TooltipIfTruncated(
             text: widget.title,
-            style: TextStyle(
-              fontSize: theme.textTheme.bodyLarge!.fontSize,
-            ).merge(widget.titleStyle),
+            style: TextStyle(fontSize: theme.textTheme.bodyLarge!.fontSize)
+                .merge(widget.titleStyle),
           ),
           subtitle: widget.subtitle != null
               ? TooltipIfTruncated(

@@ -54,7 +54,7 @@ jobs:
       if: steps.cache-helper.outputs.cache-hit != 'true'
       run: |
         rustup target add aarch64-apple-darwin x86_64-apple-darwin
-        cargo install cargo-about --locked
+        cargo install cargo-about --version 0.9.2 --locked --features cli
         ./build-helper.sh
 
     - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0

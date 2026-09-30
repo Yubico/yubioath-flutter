@@ -83,9 +83,8 @@ class _OathAddMultiAccountPageState
           .toList();
 
       _numCreds = ref.watch(
-        credentialListProvider(
-          widget.devicePath!,
-        ).select((value) => value?.length),
+        credentialListProvider(widget.devicePath!)
+            .select((value) => value?.length),
       );
     }
 

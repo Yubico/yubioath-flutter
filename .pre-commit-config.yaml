@@ -28,6 +28,7 @@ repos:
       entry: env -u GIT_DIR flutter analyze
       files: \.dart$
       exclude: lib/generated
+      pass_filenames: false
       require_serial: true
 - repo: local
   hooks:

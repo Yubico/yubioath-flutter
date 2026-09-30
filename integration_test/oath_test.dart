@@ -25,9 +25,8 @@ extension on PatrolTester {
   }) async {
     if (isAndroid) {
       // The camera view breaks the test on Android, add programmatically
-      await read(
-        credentialListProvider(data.node.path).notifier,
-      ).addAccount(cred.toUri(), requireTouch: requireTouch);
+      await read(credentialListProvider(data.node.path).notifier)
+          .addAccount(cred.toUri(), requireTouch: requireTouch);
       await $.pumpAndSettle();
     } else {
       // Add a credential via the form
@@ -182,9 +181,8 @@ void main() {
       );
 
       // Ensure the credential is visible
-      final hotp = $(
-        AppListItem<OathCredential>,
-      ).which((widget) => $(widget).$('HOTP').exists);
+      final hotp = $(AppListItem<OathCredential>)
+          .which((widget) => $(widget).$('HOTP').exists);
       expect($(hotp), findsOneWidget);
 
       // Select/open the credential view
@@ -223,116 +221,128 @@ void main() {
       expect($(AccountView), findsNothing);
     });
 
-    testKey('Credential survives reconnect', params, ($, data) async {
-      final pico = picoController;
-      final reconnectTimeout = pico == null
-          ? const Duration(minutes: 3)
-          : const Duration(seconds: 30);
-      const issuer = 'Reconnect';
-      const name = 'reconnect@example.com';
-      var removed = false;
-      var added = false;
-      try {
-        await $.navigate(Section.accounts);
-        await $.addCredential(
-          data,
-          CredentialData(
-            issuer: issuer,
-            name: name,
-            secret: 'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ',
-            oathType: OathType.hotp,
-            digits: 6,
-          ),
-        );
-        added = true;
-
-        removed = true;
-        if (pico == null) {
-          $.tester.printToConsole(
-            'OATH reconnect: Unplug the YubiKey now. Wait to reinsert it.',
+    testKey(
+      'Credential survives reconnect',
+      params,
+      ($, data) async {
+        final pico = picoController;
+        final reconnectTimeout = pico == null
+            ? const Duration(minutes: 3)
+            : const Duration(seconds: 30);
+        const issuer = 'Reconnect';
+        const name = 'reconnect@example.com';
+        var removed = false;
+        var added = false;
+        try {
+          await $.navigate(Section.accounts);
+          await $.addCredential(
+            data,
+            CredentialData(
+              issuer: issuer,
+              name: name,
+              secret: 'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ',
+              oathType: OathType.hotp,
+              digits: 6,
+            ),
           );
-        } else {
-          await pico.remove();
-        }
-        await $.condition(
-          () => $.read(currentDeviceDataProvider).value == null,
-          timeout: reconnectTimeout,
-          settle: false,
-          reason: 'Device remained selected after disconnect',
-        );
-        if (pico == null) {
-          $.tester.printToConsole('OATH reconnect: Reinsert the YubiKey now.');
-        } else {
-          await pico.insert();
-        }
+          added = true;
 
-        await $.condition(
-          () =>
-              $.read(currentDeviceDataProvider).value?.info.serial ==
-              data.info.serial,
-          timeout: reconnectTimeout,
-          settle: false,
-          reason: 'YubiKey did not return after reconnect',
-        );
-        removed = false;
-        final reconnected = $.read(currentDeviceDataProvider).requireValue;
-        await $.navigate(Section.accounts);
-        await $.condition(
-          () => $(
-            AppListItem<OathCredential>,
-          ).which((widget) => $(widget).$(issuer).exists).exists,
-          reason: 'OATH credential missing after reconnect',
-          settle: false,
-        );
-        expect(reconnected.info.serial, data.info.serial);
-
-        final hotp = $(
-          AppListItem<OathCredential>,
-        ).which((widget) => $(widget).$(issuer).exists);
-        await $.selectOrOpenItem(hotp);
-        if (!$('755 224').exists) {
-          await $(calculateAction).tap();
-        }
-        expect($('755 224'), findsWidgets);
-        await $(calculateAction).tap();
-        expect($('287 082'), findsWidgets);
-      } finally {
-        if (removed) {
+          removed = true;
           if (pico == null) {
             $.tester.printToConsole(
-              'OATH reconnect: Reinsert the YubiKey for cleanup.',
+              'OATH reconnect: Unplug the YubiKey now. Wait to reinsert it.',
+            );
+          } else {
+            await pico.remove();
+          }
+          await $.condition(
+            () => $.read(currentDeviceDataProvider).value == null,
+            timeout: reconnectTimeout,
+            settle: false,
+            reason: 'Device remained selected after disconnect',
+          );
+          if (pico == null) {
+            $.tester.printToConsole(
+              'OATH reconnect: Reinsert the YubiKey now.',
             );
           } else {
             await pico.insert();
           }
-        }
-        await pico?.release();
-        if (added) {
+
           await $.condition(
             () =>
                 $.read(currentDeviceDataProvider).value?.info.serial ==
                 data.info.serial,
             timeout: reconnectTimeout,
             settle: false,
-            reason: 'YubiKey did not return for credential cleanup',
+            reason: 'YubiKey did not return after reconnect',
           );
-          final path = $.read(currentDeviceDataProvider).requireValue.node.path;
+          removed = false;
+          final reconnected = $.read(currentDeviceDataProvider).requireValue;
+          await $.navigate(Section.accounts);
           await $.condition(
-            () => $.read(credentialListProvider(path)) != null,
+            () =>
+                $(AppListItem<OathCredential>)
+                    .which((widget) => $(widget).$(issuer).exists)
+                    .exists,
+            reason: 'OATH credential missing after reconnect',
             settle: false,
-            reason: 'OATH credentials unavailable for cleanup',
           );
-          for (final pair in $.read(credentialListProvider(path))!) {
-            if (pair.credential.issuer == issuer &&
-                pair.credential.name == name) {
-              await $
-                  .read(credentialListProvider(path).notifier)
-                  .deleteAccount(pair.credential);
+          expect(reconnected.info.serial, data.info.serial);
+
+          final hotp = $(AppListItem<OathCredential>)
+              .which((widget) => $(widget).$(issuer).exists);
+          await $.selectOrOpenItem(hotp);
+          if (!$('755 224').exists) {
+            await $(calculateAction).tap();
+          }
+          expect($('755 224'), findsWidgets);
+          await $(calculateAction).tap();
+          expect($('287 082'), findsWidgets);
+        } finally {
+          if (removed) {
+            if (pico == null) {
+              $.tester.printToConsole(
+                'OATH reconnect: Reinsert the YubiKey for cleanup.',
+              );
+            } else {
+              await pico.insert();
+            }
+          }
+          await pico?.release();
+          if (added) {
+            await $.condition(
+              () =>
+                  $.read(currentDeviceDataProvider).value?.info.serial ==
+                  data.info.serial,
+              timeout: reconnectTimeout,
+              settle: false,
+              reason: 'YubiKey did not return for credential cleanup',
+            );
+            final path = $
+                .read(currentDeviceDataProvider)
+                .requireValue
+                .node
+                .path;
+            await $.condition(
+              () => $.read(credentialListProvider(path)) != null,
+              settle: false,
+              reason: 'OATH credentials unavailable for cleanup',
+            );
+            for (final pair in $.read(credentialListProvider(path))!) {
+              if (pair.credential.issuer == issuer &&
+                  pair.credential.name == name) {
+                await $
+                    .read(credentialListProvider(path).notifier)
+                    .deleteAccount(pair.credential);
+              }
             }
           }
         }
-      }
-    }, tags: picoController == null ? 'manual' : null, skip: isAndroid);
+      },
+      tags: picoController == null ? 'manual' : null,
+      skip: isAndroid,
+    );
 
     testKey('Set/Change/Remove password', params, ($, data) async {
       bool hasLock() =>
@@ -398,9 +408,8 @@ void main() {
           requireTouch: true,
         );
 
-        final hotp = $(
-          AppListItem<OathCredential>,
-        ).which((widget) => $(widget).$('HOTP touch').exists);
+        final hotp = $(AppListItem<OathCredential>)
+            .which((widget) => $(widget).$('HOTP touch').exists);
 
         // Ensure the credential is visible, but no code is shown
         expect(hotp, findsOneWidget);

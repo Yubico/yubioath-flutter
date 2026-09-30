@@ -858,6 +858,7 @@
     "s_private_id": "Приватный ID",
     "s_use_serial": "Использовать серийный номер",
     "l_select_file": "Выбрать файл",
+    "l_create_export_file": null,
     "l_no_export_file": "Нет файла для экспорта",
     "s_no_export": "Без экспорта",
     "s_export": "Экспорт",
@@ -871,6 +872,8 @@
         }
     },
     "s_keyboard_layout": "Раскладка клавиатуры",
+    "s_keyboard_variant": null,
+    "s_keyboard_variant_default": null,
     "l_keyboard_layout": "Клавиатура {layout}",
     "@l_keyboard_layout": {
         "placeholders": {

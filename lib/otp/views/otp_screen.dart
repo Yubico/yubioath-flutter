@@ -130,9 +130,9 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                                     children: [
                                       Text(
                                         selected.slot.getDisplayName(l10n),
-                                        style: Theme.of(
-                                          context,
-                                        ).textTheme.headlineSmall,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headlineSmall,
                                         softWrap: true,
                                         textAlign: .center,
                                       ),
@@ -150,9 +150,9 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                                             .textTheme
                                             .bodyMedium!
                                             .copyWith(
-                                              color: Theme.of(
-                                                context,
-                                              ).colorScheme.onSurfaceVariant,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onSurfaceVariant,
                                             ),
                                       ),
                                     ],

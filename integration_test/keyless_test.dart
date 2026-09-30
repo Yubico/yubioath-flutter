@@ -75,8 +75,7 @@ void main() {
       await $.selectOrOpenItem(settingsSetion(SettingsSection.language));
       await $(
         find.byWidgetPredicate(
-          (widget) =>
-              widget is Radio<Locale> && widget.value != currentLocale,
+          (widget) => widget is Radio<Locale> && widget.value != currentLocale,
         ),
       ).tap();
       expect($.read(currentLocaleProvider), isNot(currentLocale));
@@ -88,8 +87,7 @@ void main() {
       await $.selectOrOpenItem(settingsSetion(SettingsSection.language));
       await $(
         find.byWidgetPredicate(
-          (widget) =>
-              widget is Radio<Locale> && widget.value == currentLocale,
+          (widget) => widget is Radio<Locale> && widget.value == currentLocale,
         ),
       ).tap();
       expect($.read(currentLocaleProvider), equals(currentLocale));
@@ -123,8 +121,7 @@ void main() {
       await $.selectOrOpenItem(settingsSetion(SettingsSection.debugging));
       await $(
         find.byWidgetPredicate(
-          (widget) =>
-              widget is Radio<Level> && widget.value == Levels.DEBUG,
+          (widget) => widget is Radio<Level> && widget.value == Levels.DEBUG,
         ),
       ).tap();
       expect($(RegExp('WARNING:')), findsOneWidget);
@@ -136,8 +133,7 @@ void main() {
       await $.selectOrOpenItem(settingsSetion(SettingsSection.debugging));
       await $(
         find.byWidgetPredicate(
-          (widget) =>
-              widget is Radio<Level> && widget.value == Levels.TRAFFIC,
+          (widget) => widget is Radio<Level> && widget.value == Levels.TRAFFIC,
         ),
       ).tap();
       expect($(RegExp('WARNING:.*logged')), findsOneWidget);
@@ -149,8 +145,7 @@ void main() {
       await $.selectOrOpenItem(settingsSetion(SettingsSection.debugging));
       await $(
         find.byWidgetPredicate(
-          (widget) =>
-              widget is Radio<Level> && widget.value == Levels.INFO,
+          (widget) => widget is Radio<Level> && widget.value == Levels.INFO,
         ),
       ).tap();
       expect($(RegExp('WARNING:')), findsNothing);

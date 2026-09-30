@@ -858,6 +858,7 @@
     "s_private_id": "非公開 ID",
     "s_use_serial": "シリアルを使用する",
     "l_select_file": "ファイルを選択",
+    "l_create_export_file": null,
     "l_no_export_file": "エクスポートファイルなし",
     "s_no_export": "エクスポートなし",
     "s_export": "エクスポート",
@@ -871,6 +872,8 @@
         }
     },
     "s_keyboard_layout": null,
+    "s_keyboard_variant": null,
+    "s_keyboard_variant_default": null,
     "l_keyboard_layout": "キーボード {layout}",
     "@l_keyboard_layout": {
         "placeholders": {

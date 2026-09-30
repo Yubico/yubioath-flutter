@@ -858,6 +858,7 @@
     "s_private_id": "Privé-ID",
     "s_use_serial": "Serienummer gebruiken",
     "l_select_file": "Bestand selecteren",
+    "l_create_export_file": null,
     "l_no_export_file": "Geen exportbestand",
     "s_no_export": "Geen export",
     "s_export": "Exporteren",
@@ -871,6 +872,8 @@
         }
     },
     "s_keyboard_layout": "Toetsenbordindeling",
+    "s_keyboard_variant": null,
+    "s_keyboard_variant_default": null,
     "l_keyboard_layout": "Toetsenbord {layout}",
     "@l_keyboard_layout": {
         "placeholders": {

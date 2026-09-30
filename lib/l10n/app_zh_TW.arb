@@ -858,6 +858,7 @@
     "s_private_id": "私人 ID",
     "s_use_serial": "使用序列號",
     "l_select_file": "選擇檔案",
+    "l_create_export_file": null,
     "l_no_export_file": "沒有檔案匯出",
     "s_no_export": "無匯出",
     "s_export": "匯出",
@@ -871,6 +872,8 @@
         }
     },
     "s_keyboard_layout": null,
+    "s_keyboard_variant": null,
+    "s_keyboard_variant_default": null,
     "l_keyboard_layout": "鍵盤 {layout}",
     "@l_keyboard_layout": {
         "placeholders": {

@@ -40,9 +40,8 @@ InputCounterWidgetBuilder buildByteCounterFor(String currentValue) =>
           : caption?.copyWith(color: theme.colorScheme.error);
       if (maxLength != null && isFocused) {
         final view = View.of(context);
-        final announcement = AppLocalizations.of(
-          context,
-        ).l_characters_used(used, maxLength);
+        final announcement = AppLocalizations.of(context)
+            .l_characters_used(used, maxLength);
         WidgetsBinding.instance.addPostFrameCallback((_) {
           SemanticsService.sendAnnouncement(view, announcement, .ltr);
         });

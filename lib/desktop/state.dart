@@ -180,9 +180,8 @@ class _DesktopClipboard extends AppClipboard {
         }
         await windowManager.focus();
         // Window focus isn't immediate, wait until focused with 10s timeout
-        await Future.doWhile(
-          () async => !await windowManager.isFocused(),
-        ).timeout(const Duration(seconds: 10));
+        await Future.doWhile(() async => !await windowManager.isFocused())
+            .timeout(const Duration(seconds: 10));
       }
       await Clipboard.setData(ClipboardData(text: toClipboard));
     } finally {
