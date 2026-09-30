@@ -1,6 +1,3 @@
 [workspace]
 members = ["crates/helper"]
 resolver = "2"
-
-[patch.crates-io]
-hidapi = { git = "https://github.com/dainnilsson/hidapi-rs", branch = "dain/fix-enumerate-no-serial" }
