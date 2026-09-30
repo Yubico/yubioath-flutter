@@ -135,8 +135,8 @@ jobs:
       run: cargo fmt --manifest-path helper/Cargo.toml --all -- --check
 
     - name: Run non-hardware helper tests
-      run: cargo test --locked --manifest-path helper/Cargo.toml --workspace --bins
+      run: cargo test --manifest-path helper/Cargo.toml --workspace --bins
 
     - name: Check helper with Clippy
       # Existing helper code triggers these three lints; keep all other warnings fatal.
-      run: cargo clippy --locked --manifest-path helper/Cargo.toml --workspace --all-targets -- -D warnings -A clippy::items_after_test_module -A clippy::type_complexity -A clippy::needless_borrow
+      run: cargo clippy --manifest-path helper/Cargo.toml --workspace --all-targets -- -D warnings -A clippy::items_after_test_module -A clippy::type_complexity -A clippy::needless_borrow
