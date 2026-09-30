@@ -6,12 +6,12 @@
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
   IgnorableNamespaces="uap desktop6 rescap">
 
-  <!-- Version is set by CI (build-msix job in .github/workflows/windows.yml) -->
+  <!-- Version and architecture are set by CI (build-msix jobs). -->
   <Identity
     Name="YubicoAB.YubicoAuthenticator"
     Publisher="CN=3E612EC1-46FB-46C1-ADB7-25B13FB02B10"
     Version="$VERSION$"
-    ProcessorArchitecture="x64" />
+    ProcessorArchitecture="$ARCH$" />
 
   <Properties>
     <DisplayName>Yubico Authenticator</DisplayName>

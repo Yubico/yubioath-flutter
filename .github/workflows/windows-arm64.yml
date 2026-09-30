@@ -1,0 +1,382 @@
+name: Windows arm64
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: windows-11-arm
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Read variables from repo
+        shell: bash
+        run: |
+          cat .github/workflows/env >> $GITHUB_ENV
+          echo CACHE_KEY=${{ runner.os }}-${{ runner.arch }}-rust-c52f5fc-svc1-${{ hashFiles('build-helper.bat', 'helper/**')}} >> $GITHUB_ENV
+
+      - name: Check app versions
+        run: |
+          python set-version.py
+          git diff --exit-code
+
+      - name: Check out helper dependencies
+        shell: bash
+        run: |
+          git clone --filter=blob:none https://github.com/Yubico/yubikey-manager.git ../yubikit-rs
+          git -C ../yubikit-rs checkout c52f5fcdefbb7097f8e036dc022ac33236c3e87a
+
+      - name: Cache helper
+        id: cache-helper
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            build/windows/helper
+            build/windows/ykman-svc.exe
+            assets/licenses/helper.txt
+          key: ${{ env.CACHE_KEY }}
+
+      - name: Install Rust toolchain
+        if: steps.cache-helper.outputs.cache-hit != 'true'
+        uses: dtolnay/rust-toolchain@6bed0761d98439e5a578e2877258200ad565ba87 # stable
+
+      - name: Install cargo-about
+        if: steps.cache-helper.outputs.cache-hit != 'true'
+        uses: taiki-e/install-action@83ac0ad63c0167e6f06796fab0fce28db1bf3db0 # v2.87.22
+        with:
+          tool: cargo-about@0.9.2
+          fallback: none
+
+      - name: Build the Helper
+        if: steps.cache-helper.outputs.cache-hit != 'true'
+        run: .\build-helper.bat
+
+      - name: Build ykman-svc
+        if: steps.cache-helper.outputs.cache-hit != 'true'
+        run: |
+          cargo build --release --manifest-path ..\yubikit-rs\Cargo.toml -p ykman-svc
+          Copy-Item ..\yubikit-rs\target\release\ykman-svc.exe build\windows\ykman-svc.exe
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          channel: 'stable'
+          flutter-version: ${{ env.FLUTTER }}
+          # Flutter's Windows SDK archive is x64; its Dart SDK is replaced below.
+          # Keep the resulting ARM64 SDK and pub cache separate from x64 runners.
+          architecture: x64
+          cache: true
+          cache-key: 'flutter-:os:-${{ runner.arch }}-:channel:-:version:-:arch:-:hash:'
+          pub-cache: true
+          pub-cache-key: 'flutter-pub-:os:-${{ runner.arch }}-:channel:-:version:-:arch:-:hash:'
+
+      - name: Switch Flutter SDK to native ARM64 Dart
+        shell: pwsh
+        run: |
+          if ($env:PROCESSOR_ARCHITECTURE -ne 'ARM64') {
+            throw "ARM64 PowerShell is required to download the ARM64 Dart SDK"
+          }
+          $dartVersion = & "$env:FLUTTER_ROOT\bin\cache\dart-sdk\bin\dart.exe" --version 2>&1 | Out-String
+          if ($dartVersion -notmatch 'windows_arm64') {
+            Remove-Item "$env:FLUTTER_ROOT\bin\cache\engine-dart-sdk.stamp"
+            & "$env:FLUTTER_ROOT\bin\internal\update_dart_sdk.ps1"
+            $dartVersion = & "$env:FLUTTER_ROOT\bin\cache\dart-sdk\bin\dart.exe" --version 2>&1 | Out-String
+          }
+          if ($LASTEXITCODE -ne 0 -or $dartVersion -notmatch 'windows_arm64') {
+            throw "Expected an ARM64 Dart SDK, got: $dartVersion"
+          }
+
+      - run: flutter config --enable-windows-desktop
+      - run: flutter --version
+      - run: flutter pub get
+
+      - name: Build the app
+        run: |
+          $version = python set-version.py | Select-Object -First 1
+          flutter build windows --build-name=$version
+
+      - name: Check generated files
+        run: git diff -I '.*android.*flutter_plugins.*qrscanner_zxing' --exit-code
+
+      - name: Archive app bundle
+        run: |
+          $ref = $env:GITHUB_REF_NAME -replace '[/\\]', '-'
+          $dest = "deploy\yubioath-desktop-$ref-windows-arm64"
+          New-Item -ItemType Directory -Path $dest | Out-Null
+          Move-Item build\windows\arm64\runner\Release\* $dest\
+          Copy-Item build\windows\ykman-svc.exe deploy\
+
+      - name: Verify ARM64 binaries
+        run: |
+          $binaries = @(Get-ChildItem deploy -Recurse -File | Where-Object { $_.Extension -in '.exe', '.dll' })
+          if ($binaries.Count -eq 0) { throw "No executables or DLLs in the build artifact" }
+          foreach ($file in $binaries) {
+            $bytes = [System.IO.File]::ReadAllBytes($file.FullName)
+            if ($bytes.Length -lt 64 -or [BitConverter]::ToUInt16($bytes, 0) -ne 0x5A4D) {
+              throw "$($file.FullName) is not a PE binary"
+            }
+            $headerOffset = [BitConverter]::ToInt32($bytes, 0x3c)
+            if ($headerOffset -lt 0 -or $headerOffset + 6 -gt $bytes.Length -or [BitConverter]::ToUInt32($bytes, $headerOffset) -ne 0x00004550) {
+              throw "$($file.FullName) has an invalid PE header"
+            }
+            $machine = [BitConverter]::ToUInt16($bytes, $headerOffset + 4)
+            if ($machine -ne 0xAA64) {
+              throw "$($file.FullName) is not an ARM64 PE binary (machine: 0x$($machine.ToString('X4')))"
+            }
+          }
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: yubioath-desktop-windows-arm64
+          path: deploy
+          if-no-files-found: error
+
+  sign-source:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check tag format
+        run: |
+          [[ "${GITHUB_REF}" =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$ ]]
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Test signed artifact extraction
+        run: python3 -m unittest discover -s .github/scripts -p 'test_*.py'
+
+      - name: Download ARM64 build
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: yubioath-desktop-windows-arm64
+          path: yubioath-desktop-windows-arm64
+
+      - name: Docker login
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          registry: ghcr.io
+          username: ci@yubico.com
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Write service account credentials
+        env:
+          GAC: ${{ secrets.SCRIBE_SA }}
+        run: |
+          echo "${GAC}" > scribe_sa.json
+          echo "GOOGLE_APPLICATION_CREDENTIALS=/scribe/scribe_sa.json" >> $GITHUB_ENV
+
+      - name: Sign ARM64 executables and DLLs
+        run: >
+          docker run
+          --user $(id -u):$(id -g)
+          --volume $(pwd):/scribe
+          --env-file <(env)
+          ghcr.io/yubico/scribe-ci:v1
+          --project-id scribe-prod-987134
+          --bucket scribe-u-pub-yubioath-flutter-f94pro
+          --config /scribe/.github/scribe-sign-exe-dll-arm64.yml
+          submit .
+          --synchronous
+          --download-artifacts
+
+      - name: Replace unsigned files
+        run: |
+          mkdir -p signed
+          mv scribe-download/*/sign-source/1.zip signed/
+          python3 .github/scripts/extract_signed_zip.py signed/1.zip signed
+          rm signed/1.zip
+          cp signed/authenticator-helper.exe yubioath-desktop-windows-arm64/*/helper/authenticator-helper.exe
+          cp signed/authenticator.exe yubioath-desktop-windows-arm64/*/authenticator.exe
+          cp signed/ykman-svc.exe yubioath-desktop-windows-arm64/ykman-svc.exe
+          cp signed/desktop_drop_plugin.dll yubioath-desktop-windows-arm64/*/desktop_drop_plugin.dll
+          cp signed/flutter_windows.dll yubioath-desktop-windows-arm64/*/flutter_windows.dll
+          cp signed/local_notifier_plugin.dll yubioath-desktop-windows-arm64/*/local_notifier_plugin.dll
+          cp signed/screen_retriever_windows_plugin.dll yubioath-desktop-windows-arm64/*/screen_retriever_windows_plugin.dll
+          cp signed/cnativeapi.dll yubioath-desktop-windows-arm64/*/cnativeapi.dll
+          cp signed/url_launcher_windows_plugin.dll yubioath-desktop-windows-arm64/*/url_launcher_windows_plugin.dll
+          cp signed/window_manager_plugin.dll yubioath-desktop-windows-arm64/*/window_manager_plugin.dll
+          cp signed/dartjni.dll yubioath-desktop-windows-arm64/*/dartjni.dll
+
+      - name: Upload signed files
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: signed-files-windows-arm64
+          path: yubioath-desktop-windows-arm64
+          if-no-files-found: error
+          compression-level: 0
+
+  build-msi:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [sign-source]
+    runs-on: windows-11-arm
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Download signed files
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: signed-files-windows-arm64
+          path: signed-files
+
+      - name: Install WiX 3.14.1
+        run: |
+          $archive = Join-Path $env:RUNNER_TEMP 'wix314-binaries.zip'
+          Invoke-WebRequest 'https://github.com/wixtoolset/wix3/releases/download/wix3141rtm/wix314-binaries.zip' -OutFile $archive
+          if ((Get-FileHash $archive -Algorithm SHA256).Hash -ne '6AC824E1642D6F7277D0ED7EA09411A508F6116BA6FAE0AA5F2C7DAA2FF43D31') {
+            throw 'WiX download checksum mismatch'
+          }
+          $wixDir = Join-Path $env:RUNNER_TEMP 'wix314'
+          Expand-Archive $archive -DestinationPath $wixDir
+          $wixDir >> $env:GITHUB_PATH
+
+      - name: Build ARM64 MSI
+        run: |
+          $tag = $env:GITHUB_REF_NAME
+          if ($tag -notmatch '^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$') { throw "Invalid tag: $tag" }
+          $env:SRCDIR = "signed-files\yubioath-desktop-$tag-windows-arm64\"
+          $serviceSource = (Resolve-Path signed-files\ykman-svc.exe).Path
+          heat dir $env:SRCDIR -out fragment.wxs -gg -scom -srd -sfrag -dr INSTALLDIR -cg ApplicationFiles -var env.SRCDIR
+          if ($LASTEXITCODE -ne 0) { throw 'WiX heat failed' }
+          candle .\fragment.wxs .\resources\win\yubioath-desktop.wxs "-dServiceSource=$serviceSource" -dPackagePlatform=arm64 -dPackageInstallerVersion=500 -ext WixUtilExtension -arch arm64
+          if ($LASTEXITCODE -ne 0) { throw 'WiX candle failed' }
+          light fragment.wixobj yubioath-desktop.wixobj -ext WixUIExtension -ext WixUtilExtension -o yubioath-desktop-arm64.msi
+          if ($LASTEXITCODE -ne 0) { throw 'WiX light failed' }
+          New-Item -ItemType Directory installer | Out-Null
+          Move-Item yubioath-desktop-arm64.msi installer\
+
+      - name: Upload unsigned MSI
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: installer-windows-arm64
+          path: installer
+          if-no-files-found: error
+
+  build-msix:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [sign-source]
+    runs-on: windows-11-arm
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Download signed files
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: signed-files-windows-arm64
+          path: signed-files
+
+      - name: Build ARM64 MSIX for the Microsoft Store
+        run: |
+          $tag = $env:GITHUB_REF_NAME
+          if ($tag -notmatch '^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$') { throw "Invalid tag: $tag" }
+          $base, $rc = $tag -split '-rc\.'
+          $v = $base -split '\.'
+          $version = "$($v[0]).$($v[1]).$([int]$v[2] * 100 + [int]$rc).0"
+          $pkg = "msix-pkg"
+          New-Item -ItemType Directory $pkg | Out-Null
+          Copy-Item -Recurse signed-files\yubioath-desktop-$tag-windows-arm64\* $pkg\
+          Copy-Item signed-files\ykman-svc.exe $pkg\
+          Copy-Item -Recurse resources\win\msix\Assets $pkg\Assets
+          (Get-Content resources\win\msix\AppxManifest.xml) -replace '\$VERSION\$', $version -replace '\$ARCH\$', 'arm64' | Set-Content $pkg\AppxManifest.xml -Encoding utf8
+          $sdkBin = (Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin\10.*\arm64\makeappx.exe" | Sort-Object FullName -Descending | Select-Object -First 1).DirectoryName
+          if (-not $sdkBin) { throw 'ARM64 Windows SDK packaging tools not found' }
+          & "$sdkBin\makepri.exe" createconfig /cf priconfig.xml /dq en-US /o
+          if ($LASTEXITCODE -ne 0) { throw 'makepri createconfig failed' }
+          & "$sdkBin\makepri.exe" new /pr $pkg /cf priconfig.xml /mn $pkg\AppxManifest.xml /of $pkg\Resources.pri /o
+          if ($LASTEXITCODE -ne 0) { throw 'makepri new failed' }
+          & "$sdkBin\makeappx.exe" pack /d $pkg /p yubioath-desktop-arm64.msix /o /l
+          if ($LASTEXITCODE -ne 0) { throw 'makeappx failed' }
+          New-Item -ItemType Directory msix-installer | Out-Null
+          Move-Item yubioath-desktop-arm64.msix msix-installer\
+
+      - name: Upload Store MSIX
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: store-msix-windows-arm64
+          path: msix-installer
+          if-no-files-found: error
+
+  sign-msi:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [build-msi]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Download unsigned MSI
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: installer-windows-arm64
+          path: installer
+
+      - name: Docker login
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          registry: ghcr.io
+          username: ci@yubico.com
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Write service account credentials
+        env:
+          GAC: ${{ secrets.SCRIBE_SA }}
+        run: |
+          echo "${GAC}" > scribe_sa.json
+          echo "GOOGLE_APPLICATION_CREDENTIALS=/scribe/scribe_sa.json" >> $GITHUB_ENV
+
+      - name: Sign ARM64 MSI
+        run: >
+          docker run
+          --user $(id -u):$(id -g)
+          --volume $(pwd):/scribe
+          --env-file <(env)
+          ghcr.io/yubico/scribe-ci:v1
+          --project-id scribe-prod-987134
+          --bucket scribe-u-pub-yubioath-flutter-f94pro
+          --config /scribe/.github/scribe-sign-msi-arm64.yml
+          submit .
+          --synchronous
+          --download-artifacts
+
+      - name: Extract signed MSI
+        run: |
+          mkdir -p signed
+          mv scribe-download/*/sign-source/1.zip signed/
+          python3 .github/scripts/extract_signed_zip.py signed/1.zip signed
+          rm signed/1.zip
+          test -f signed/yubioath-desktop-arm64.msi
+
+      - name: Upload signed MSI
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: signed-installer-windows-arm64
+          path: signed/yubioath-desktop-arm64.msi
+          if-no-files-found: error
+          compression-level: 0
+
+  verify-signatures:
+    needs: [sign-msi]
+    runs-on: windows-11-arm
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Download signed files
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: signed-files-windows-arm64
+          path: signed-files
+
+      - name: Download signed MSI
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: signed-installer-windows-arm64
+          path: signed-installer
+
+      - name: Verify executable and DLL signatures
+        working-directory: signed-files
+        run: ..\resources\win\verify_dll.ps1
+
+      - name: Verify MSI signature
+        run: |
+          $msi = 'signed-installer\yubioath-desktop-arm64.msi'
+          if ((Get-AuthenticodeSignature $msi).Status -ne 'Valid') {
+            throw "$msi does not have a valid signature"
+          }

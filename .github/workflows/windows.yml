@@ -263,7 +263,7 @@ jobs:
           cp -Recurse signed-files\yubioath-desktop-$branch-windows\* $pkg\
           cp signed-files\ykman-svc.exe $pkg\
           cp -Recurse resources\win\msix\Assets $pkg\Assets
-          (Get-Content resources\win\msix\AppxManifest.xml) -replace '\$VERSION\$', $version | Set-Content $pkg\AppxManifest.xml -Encoding utf8
+          (Get-Content resources\win\msix\AppxManifest.xml) -replace '\$VERSION\$', $version -replace '\$ARCH\$', 'x64' | Set-Content $pkg\AppxManifest.xml -Encoding utf8
           $sdkBin = (Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin\10.*\x64\makeappx.exe" | Sort-Object FullName -Descending | Select-Object -First 1).DirectoryName
           # Index the scale-qualified logo assets so the manifest references resolve
           & "$sdkBin\makepri.exe" createconfig /cf priconfig.xml /dq en-US /o
