@@ -39,12 +39,26 @@ jobs:
           assets/licenses/helper.txt
         key: ${{ env.CACHE_KEY }}
 
+    - name: Install Rust toolchain
+      if: steps.cache-helper.outputs.cache-hit != 'true'
+      uses: dtolnay/rust-toolchain@6bed0761d98439e5a578e2877258200ad565ba87 # stable
+      with:
+        targets: aarch64-apple-darwin,x86_64-apple-darwin
+
+    - name: Install cargo-about
+      if: steps.cache-helper.outputs.cache-hit != 'true' && runner.arch == 'ARM64'
+      uses: taiki-e/install-action@6c6fd71fe4fb72c3697d269963d0e15df8adedad # v2.85.10
+      with:
+        tool: cargo-about@0.9.2
+        fallback: none
+
+    - name: Install cargo-about on Intel
+      if: steps.cache-helper.outputs.cache-hit != 'true' && runner.arch == 'X64'
+      run: cargo install cargo-about --version 0.9.2 --locked --features cli
+
     - name: Build the Helper
       if: steps.cache-helper.outputs.cache-hit != 'true'
-      run: |
-        rustup target add aarch64-apple-darwin x86_64-apple-darwin
-        cargo install cargo-about --version 0.9.2 --locked --features cli
-        ./build-helper.sh
+      run: ./build-helper.sh
 
     - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
       with:

@@ -50,13 +50,21 @@ jobs:
           assets/licenses/helper.txt
         key: ${{ env.CACHE_KEY }}
 
+    - name: Install Rust toolchain
+      if: steps.cache-helper.outputs.cache-hit != 'true'
+      uses: dtolnay/rust-toolchain@6bed0761d98439e5a578e2877258200ad565ba87 # stable
+
+    - name: Install cargo-about
+      if: steps.cache-helper.outputs.cache-hit != 'true'
+      uses: taiki-e/install-action@6c6fd71fe4fb72c3697d269963d0e15df8adedad # v2.85.10
+      with:
+        tool: cargo-about@0.9.2
+        fallback: none
+
     - name: Build the Helper
       if: steps.cache-helper.outputs.cache-hit != 'true'
       run: |
         apt-get install -qq libpcsclite-dev libudev-dev libdbus-1-dev build-essential cmake pkg-config libssl-dev
-        curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal
-        export PATH="$HOME/.cargo/bin:$PATH"
-        cargo install cargo-about --version 0.9.2 --locked --features cli
         ./build-helper.sh
 
     - name: Install Flutter dependencies
@@ -101,3 +109,34 @@ jobs:
       with:
         name: yubioath-desktop-linux
         path: deploy
+
+  test-helper:
+    name: Rust helper checks (no hardware)
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -qq libpcsclite-dev libudev-dev libdbus-1-dev build-essential cmake pkg-config libssl-dev
+
+    - name: Check out helper dependencies
+      run: |
+        git clone --filter=blob:none https://github.com/Yubico/yubikey-manager.git ../yubikit-rs
+        git -C ../yubikit-rs checkout c52f5fcdefbb7097f8e036dc022ac33236c3e87a
+
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@6bed0761d98439e5a578e2877258200ad565ba87 # stable
+      with:
+        components: clippy,rustfmt
+
+    - name: Check Rust formatting
+      run: cargo fmt --manifest-path helper/Cargo.toml --all -- --check
+
+    - name: Run non-hardware helper tests
+      run: cargo test --locked --manifest-path helper/Cargo.toml --workspace --bins
+
+    - name: Check helper with Clippy
+      # Existing helper code triggers these three lints; keep all other warnings fatal.
+      run: cargo clippy --locked --manifest-path helper/Cargo.toml --workspace --all-targets -- -D warnings -A clippy::items_after_test_module -A clippy::type_complexity -A clippy::needless_borrow
