@@ -19,6 +19,9 @@ jobs:
           python set-version.py
           git diff --exit-code
 
+      - name: Test signed artifact extraction
+        run: python -m unittest discover -s .github/scripts -p 'test_*.py'
+
       - name: Check out helper dependencies
         shell: bash
         run: |
@@ -150,11 +153,8 @@ jobs:
       run: |
         mkdir -p signed
         mv scribe-download/*/sign-source/1.zip signed/
-        rm -rf scribe-download
-        cd signed
-        unzip -j 1.zip
-        rm 1.zip
-        cd ..
+        python3 .github/scripts/extract_signed_zip.py signed/1.zip signed
+        rm signed/1.zip
         cp signed/authenticator-helper.exe yubioath-desktop-windows/*/helper/authenticator-helper.exe
         cp signed/authenticator.exe yubioath-desktop-windows/*/authenticator.exe
         cp signed/ykman-svc.exe yubioath-desktop-windows/ykman-svc.exe
@@ -337,11 +337,8 @@ jobs:
       run: |
         mkdir -p signed
         mv scribe-download/*/sign-source/1.zip signed/
-        rm -rf scribe-download
-        cd signed
-        unzip -j 1.zip
-        rm 1.zip
-        cd ..
+        python3 .github/scripts/extract_signed_zip.py signed/1.zip signed
+        rm signed/1.zip
 
     - name: upload signed artifacts
       uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
