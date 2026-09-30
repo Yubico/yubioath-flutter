@@ -11,10 +11,12 @@ void main() {
     'clears credentials before enabling traffic logging, every time',
     () async {
       final previousLevels = <Level>[];
+      String? cachedCredential = 'previous credential';
       final container = ProviderContainer(
         overrides: [
           clearCachedCredentialsProvider.overrideWithValue(() async {
             previousLevels.add(Logger.root.level);
+            cachedCredential = null;
           }),
         ],
       );
@@ -26,11 +28,18 @@ void main() {
 
       await notifier.setLogLevel(Levels.TRAFFIC);
       expect(previousLevels, [Levels.DEBUG]);
+      expect(cachedCredential, isNull);
       expect(container.read(logLevelProvider), Levels.TRAFFIC);
+
+      cachedCredential = 'new credential';
+      await notifier.setLogLevel(Levels.TRAFFIC);
+      expect(previousLevels, [Levels.DEBUG, Levels.TRAFFIC]);
+      expect(cachedCredential, isNull);
 
       await notifier.setLogLevel(Levels.INFO);
       await notifier.setLogLevel(Levels.TRAFFIC);
-      expect(previousLevels, [Levels.DEBUG, Levels.INFO]);
+      expect(previousLevels, [Levels.DEBUG, Levels.TRAFFIC, Levels.INFO]);
+      expect(cachedCredential, isNull);
     },
   );
 

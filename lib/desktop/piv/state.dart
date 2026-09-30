@@ -175,10 +175,8 @@ class DesktopPivStateNotifier extends PivStateNotifier {
       );
 
       if (result['status']) {
-        if (ref.read(logLevelProvider).value > Levels.TRAFFIC.value) {
-          ref.read(_managementKeyProvider(_devicePath).notifier).state =
-              managementKey;
-        }
+        ref.read(_managementKeyProvider(_devicePath).notifier).state =
+            managementKey;
         final oldState = state.value;
         if (oldState != null) {
           state = AsyncData(oldState.copyWith(authenticated: true));
@@ -222,9 +220,7 @@ class DesktopPivStateNotifier extends PivStateNotifier {
         signal: signaler,
       );
 
-      if (ref.read(logLevelProvider).value > Levels.TRAFFIC.value) {
-        ref.read(_pinProvider(_devicePath).notifier).state = pin;
-      }
+      ref.read(_pinProvider(_devicePath).notifier).state = pin;
 
       return const PinVerificationStatus.success();
     } on RpcError catch (e) {
@@ -305,10 +301,8 @@ class DesktopPivStateNotifier extends PivStateNotifier {
         'store_key': storeKey,
       },
     );
-    if (ref.read(logLevelProvider).value > Levels.TRAFFIC.value) {
-      ref.read(_managementKeyProvider(_devicePath).notifier).state =
-          managementKey;
-    }
+    ref.read(_managementKeyProvider(_devicePath).notifier).state =
+        managementKey;
     ref.invalidateSelf();
   }
 

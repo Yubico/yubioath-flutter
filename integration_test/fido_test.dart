@@ -301,6 +301,10 @@ void main() {
       await $(saveButton).tap();
       await $.condition(() => !$(ResponsiveDialog).exists);
 
+      await $.condition(
+        () => $.read(fidoStateProvider(data.node.path)).value?.hasPin == true,
+        reason: 'FIDO state did not refresh after setting the PIN',
+      );
       state = $.read(fidoStateProvider(data.node.path)).value!;
       expect(state.hasPin, isTrue);
     }, tags: 'manual');

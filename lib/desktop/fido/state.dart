@@ -109,7 +109,7 @@ class DesktopFidoStateNotifier extends FidoStateNotifier {
     if (fidoState.hasPin && !fidoState.unlocked) {
       final pin = ref.read(_pinProvider(devicePath));
       if (pin != null) {
-        await unlock(pin);
+        await _unlock(pin, refresh: false);
         result = await _session.command('get');
         fidoState = FidoState.fromJson(result['data']);
       }
@@ -140,7 +140,7 @@ class DesktopFidoStateNotifier extends FidoStateNotifier {
     _session.setErrorHandler('auth-required', (e) async {
       final pin = ref.read(_pinProvider(devicePath));
       if (pin != null) {
-        await unlock(pin);
+        await _unlock(pin, refresh: false);
       } else {
         throw e;
       }
@@ -199,7 +199,9 @@ class DesktopFidoStateNotifier extends FidoStateNotifier {
         'set_pin',
         params: {'pin': oldPin, 'new_pin': newPin},
       );
-      return await unlock(newPin);
+      final result = await _unlock(newPin, refresh: false);
+      ref.invalidateSelf();
+      return result;
     } on RpcError catch (e) {
       if (e.status == 'pin-validation') {
         _pinController.state = null;
@@ -219,15 +221,21 @@ class DesktopFidoStateNotifier extends FidoStateNotifier {
   }
 
   @override
-  Future<PinResult> unlock(String pin, {bool remember = false}) async {
+  Future<PinResult> unlock(String pin, {bool remember = false}) =>
+      _unlock(pin, remember: remember, refresh: true);
+
+  Future<PinResult> _unlock(
+    String pin, {
+    bool remember = false,
+    required bool refresh,
+  }) async {
     try {
       await _session.command(
         'unlock',
         params: {'pin': pin, 'remember': remember},
       );
-      if (ref.read(logLevelProvider).value > Levels.TRAFFIC.value) {
-        _pinController.state = pin;
-      }
+      _pinController.state = pin;
+      if (refresh) ref.invalidateSelf();
 
       return PinResult.success();
     } on RpcError catch (e) {
