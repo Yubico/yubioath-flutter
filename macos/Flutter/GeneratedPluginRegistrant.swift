@@ -6,7 +6,7 @@ import FlutterMacOS
 import Foundation
 
 import desktop_drop
-import file_picker
+import file_picker_darwin
 import local_notifier
 import screen_retriever_macos
 import shared_preferences_foundation

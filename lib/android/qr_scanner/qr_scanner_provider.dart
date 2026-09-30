@@ -87,30 +87,27 @@ class AndroidQrScanner implements QrScanner {
     AppLocalizations l10n,
   ) async {
     await preserveConnectedDeviceWhenPaused();
-    final result = await FilePicker.platform.pickFiles(
+    final result = await FilePicker.pickFile(
       allowedExtensions: ['png', 'jpg', 'gif', 'webp'],
       type: FileType.custom,
-      allowMultiple: false,
-      lockParentWindow: true,
-      withData: true,
+      windowsOptions: const WindowsOptions(lockParentWindow: true),
+      linuxOptions: const LinuxOptions(lockParentWindow: true),
       dialogTitle: l10n.l_qr_select_file,
     );
 
-    if (result == null || !result.isSinglePick) {
+    if (result == null) {
       // no result
       return;
     }
 
-    final bytes = result.files.first.bytes;
-    if (bytes != null) {
-      final b64bytes = base64Encode(bytes);
-      final imageQrData = await qrScanner.scanQr(b64bytes);
-      if (imageQrData != null) {
-        await withContext(
-          (context) => handleUri(context, null, imageQrData, null, null, l10n),
-        );
-        return;
-      }
+    final bytes = await result.readAsBytes();
+    final b64bytes = base64Encode(bytes);
+    final imageQrData = await qrScanner.scanQr(b64bytes);
+    if (imageQrData != null) {
+      await withContext(
+        (context) => handleUri(context, null, imageQrData, null, null, l10n),
+      );
+      return;
     }
     // no QR code found
     await withContext(

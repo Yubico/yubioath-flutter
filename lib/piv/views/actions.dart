@@ -172,30 +172,16 @@ class PivActions extends ConsumerWidget {
                         ? 'public-key'
                         : generateType.name;
                     String fileName = '$typeName-${intent.slot.slot.hexId}';
-                    // Needed to avoid adding double extensions on MacOS
-                    if (!(Platform.isMacOS &&
-                        generateType == GenerateType.csr)) {
-                      fileName += '.$fileExt';
-                    }
-                    String? filePath = await FilePicker.platform.saveFile(
+                    fileName += '.$fileExt';
+                    await FilePicker.saveFile(
                       dialogTitle: title,
                       fileName: fileName,
-                      allowedExtensions: [fileExt],
-                      type: FileType.custom,
-                      bytes: isAndroid
-                          ? Uint8List.fromList(utf8.encode(data!))
-                          : null,
-                      lockParentWindow: true,
+                      bytes: Uint8List.fromList(utf8.encode(data!)),
+                      windowsOptions: const WindowsOptions(
+                        lockParentWindow: true,
+                      ),
+                      linuxOptions: const LinuxOptions(lockParentWindow: true),
                     );
-                    if (!isAndroid && filePath != null) {
-                      // Windows only: Append extension if missing
-                      if (Platform.isWindows &&
-                          !filePath.toLowerCase().endsWith('.$fileExt')) {
-                        filePath += '.$fileExt';
-                      }
-                      final file = File(filePath);
-                      await file.writeAsString(data!, flush: true);
-                    }
                   }
                 }
 
@@ -218,15 +204,15 @@ class PivActions extends ConsumerWidget {
 
               final picked = await withContext((context) async {
                 final l10n = AppLocalizations.of(context);
-                return await FilePicker.platform.pickFiles(
+                return await FilePicker.pickFile(
                   allowedExtensions: ['pem', 'der', 'pfx', 'p12', 'key', 'crt'],
                   type: FileType.custom,
-                  allowMultiple: false,
-                  lockParentWindow: true,
+                  windowsOptions: const WindowsOptions(lockParentWindow: true),
+                  linuxOptions: const LinuxOptions(lockParentWindow: true),
                   dialogTitle: l10n.l_select_import_file,
                 );
               });
-              if (picked == null || picked.files.isEmpty) {
+              if (picked == null) {
                 return false;
               }
 
@@ -238,7 +224,12 @@ class PivActions extends ConsumerWidget {
                         devicePath,
                         pivState,
                         intent.slot,
-                        File(picked.paths.first!),
+                        File(
+                          picked.path ??
+                              (throw StateError(
+                                'Selected PIV file has no path',
+                              )),
+                        ),
                       ),
                     ) ??
                     false,
@@ -283,31 +274,18 @@ class PivActions extends ConsumerWidget {
               }
 
               final fileExt = generateType.getFileExtension();
-              String? filePath = await withContext((context) async {
-                return await FilePicker.platform.saveFile(
+              final saved = await withContext((context) async {
+                return await FilePicker.saveFile(
                   dialogTitle: title,
                   fileName: '$typeName-${intent.slot.slot.hexId}.$fileExt',
-                  allowedExtensions: [fileExt],
-                  type: FileType.custom,
-                  bytes: isAndroid
-                      ? Uint8List.fromList(utf8.encode(data))
-                      : null,
-                  lockParentWindow: true,
+                  bytes: Uint8List.fromList(utf8.encode(data)),
+                  windowsOptions: const WindowsOptions(lockParentWindow: true),
+                  linuxOptions: const LinuxOptions(lockParentWindow: true),
                 );
               });
 
-              if (filePath == null) {
+              if (saved == null) {
                 return false;
-              }
-
-              if (!isAndroid) {
-                // Windows only: Append extension if missing
-                if (Platform.isWindows &&
-                    !filePath.toLowerCase().endsWith('.$fileExt')) {
-                  filePath += '.$fileExt';
-                }
-                final file = File(filePath);
-                await file.writeAsString(data, flush: true);
               }
 
               await withContext((context) async {

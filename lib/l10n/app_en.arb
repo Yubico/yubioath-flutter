@@ -858,6 +858,7 @@
     "s_private_id": "Private ID",
     "s_use_serial": "Use serial",
     "l_select_file": "Select file",
+    "l_create_export_file": "Create new export file",
     "l_no_export_file": "No export file",
     "s_no_export": "No export",
     "s_export": "Export",
