@@ -345,14 +345,14 @@ class _IconsViewState extends ConsumerState<_IconsView> {
     if (isAndroid) {
       await preserveConnectedDeviceWhenPaused();
     }
-    final result = await FilePicker.platform.pickFiles(
+    final result = await FilePicker.pickFile(
       allowedExtensions: ['zip'],
       type: FileType.custom,
-      allowMultiple: false,
-      lockParentWindow: true,
+      windowsOptions: const WindowsOptions(lockParentWindow: true),
+      linuxOptions: const LinuxOptions(lockParentWindow: true),
       dialogTitle: l10n.s_choose_icon_pack,
     );
-    if (result != null && result.files.isNotEmpty) {
+    if (result != null) {
       if (iconPack != null) {
         setState(() {
           _replacing = true;
@@ -360,7 +360,10 @@ class _IconsViewState extends ConsumerState<_IconsView> {
       }
       final importStatus = await ref
           .read(iconPackProvider.notifier)
-          .importPack(l10n, result.paths.first!);
+          .importPack(
+            l10n,
+            result.path ?? (throw StateError('Selected icon pack has no path')),
+          );
       await ref.read(withContextProvider)((context) async {
         if (importStatus) {
           showMessage(context, l10n.l_icon_pack_imported);
@@ -745,6 +748,17 @@ class _LogsView extends ConsumerStatefulWidget {
 class _LogsViewState extends ConsumerState<_LogsView> {
   bool _diagnosing = false;
 
+  Future<void> _setLogLevel(Level level) async {
+    try {
+      await ref.read(logLevelProvider.notifier).setLogLevel(level);
+    } on Exception catch (e) {
+      _log.error('Failed to change log level', e);
+      if (mounted) {
+        showExceptionMessage(context, e);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -754,7 +768,7 @@ class _LogsViewState extends ConsumerState<_LogsView> {
       groupValue: logLevel,
       onChanged: (value) {
         if (value != null) {
-          ref.read(logLevelProvider.notifier).setLogLevel(value);
+          _setLogLevel(value);
         }
       },
       child: Column(
@@ -774,7 +788,7 @@ class _LogsViewState extends ConsumerState<_LogsView> {
                 child: Text('${e.name[0]}${e.name.substring(1).toLowerCase()}'),
               ),
               onTap: () {
-                ref.read(logLevelProvider.notifier).setLogLevel(e);
+                _setLogLevel(e);
               },
             ),
           ),

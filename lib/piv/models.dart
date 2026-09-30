@@ -168,14 +168,40 @@ enum KeyType {
   @JsonValue(0xe0)
   ed25519,
   @JsonValue(0xe1)
-  x25519;
+  x25519,
+  @JsonValue(0xe2)
+  mlDsa44,
+  @JsonValue(0xe3)
+  mlDsa65,
+  @JsonValue(0xe4)
+  mlDsa87,
+  @JsonValue(0xe5)
+  mlKem512,
+  @JsonValue(0xe6)
+  mlKem768,
+  @JsonValue(0xe7)
+  mlKem1024;
 
   const KeyType();
 
   int get value => _$KeyTypeEnumMap[this]!;
 
+  bool get supportsSigning => switch (this) {
+    KeyType.x25519 ||
+    KeyType.mlKem512 ||
+    KeyType.mlKem768 ||
+    KeyType.mlKem1024 => false,
+    _ => true,
+  };
+
   String getDisplayName(AppLocalizations l10n) {
     return switch (this) {
+      KeyType.mlDsa44 => 'ML-DSA-44',
+      KeyType.mlDsa65 => 'ML-DSA-65',
+      KeyType.mlDsa87 => 'ML-DSA-87',
+      KeyType.mlKem512 => 'ML-KEM-512',
+      KeyType.mlKem768 => 'ML-KEM-768',
+      KeyType.mlKem1024 => 'ML-KEM-1024',
       // TODO: Should these be translatable?
       _ => name.toUpperCase(),
     };

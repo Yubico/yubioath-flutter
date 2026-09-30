@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2025 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 
@@ -31,32 +32,35 @@ import 'models.dart';
 import 'rpc.dart';
 import 'state.dart';
 
-const _usbPollDelay = Duration(milliseconds: 500);
+// Key prefix used for phantom device entries (PIDs detected but not enumerated).
+const _phantomKeyPrefix = 'pid_';
 
-const _nfcPollReadersDelay = Duration(milliseconds: 2500);
-const _nfcPollCardDelay = Duration(seconds: 1);
+const _pollDelay = Duration(milliseconds: 500);
 
 final _log = Logger('desktop.devices');
 
-final _usbDevicesProvider =
-    StateNotifierProvider<UsbDeviceNotifier, List<UsbYubiKeyNode>>((ref) {
-      final notifier = UsbDeviceNotifier(ref.watch(rpcProvider).value);
+final _devicesProvider =
+    StateNotifierProvider<DevicesNotifier, List<YubiKeyDeviceNode>>((ref) {
+      final notifier = DevicesNotifier(
+        ref.watch(rpcProvider).value,
+        () => ref.read(fidoResetInProgressProvider),
+      );
       ref.listen<WindowState>(windowStateProvider, (_, windowState) {
         notifier._notifyWindowState(windowState);
       }, fireImmediately: true);
       return notifier;
     });
 
-class UsbDeviceNotifier extends StateNotifier<List<UsbYubiKeyNode>> {
+class DevicesNotifier extends StateNotifier<List<YubiKeyDeviceNode>> {
   final RpcSession? _rpc;
+  final bool Function() _fidoResetInProgress;
   Timer? _pollTimer;
-  int _usbState = -1;
-  bool _unaccountedRetry = false;
-  UsbDeviceNotifier(this._rpc) : super([]);
+  Map<String, String> _lastChildren = {};
+  DevicesNotifier(this._rpc, this._fidoResetInProgress) : super([]);
 
   void refresh() {
-    _log.debug('Refreshing all USB devices');
-    _usbState = -1;
+    _log.debug('Refreshing all devices');
+    _lastChildren = {};
     _pollDevices();
   }
 
@@ -66,7 +70,9 @@ class UsbDeviceNotifier extends StateNotifier<List<UsbYubiKeyNode>> {
     } else {
       _pollTimer?.cancel();
       // Release any held device
-      _rpc?.command('get', ['usb']);
+      if (!_fidoResetInProgress()) {
+        _rpc?.command('get', ['devices']);
+      }
     }
   }
 
@@ -78,148 +84,126 @@ class UsbDeviceNotifier extends StateNotifier<List<UsbYubiKeyNode>> {
 
   void _pollDevices() async {
     _pollTimer?.cancel();
+    if (!mounted) return;
+    if (_fidoResetInProgress()) {
+      _pollTimer = Timer(_pollDelay, _pollDevices);
+      return;
+    }
     final rpc = _rpc;
     if (rpc == null) {
       return;
     }
 
     try {
-      var scan = await rpc.command('scan', ['usb']);
+      var devicesResult = await rpc.command('get', ['devices']);
 
       if (!mounted) {
         return;
       }
 
-      final numDevices = (scan['pids'] as Map).values.fold<int>(
-        0,
-        (a, b) => a + b as int,
-      );
-      if (_usbState != scan['state'] ||
-          state.length != numDevices ||
-          _unaccountedRetry) {
-        var usbResult = await rpc.command('get', ['usb']);
-        _log.info('USB state change', jsonEncode(usbResult));
-        _usbState = usbResult['data']['state'];
-        final pids = {
-          for (var e in (usbResult['data']['pids'] as Map).entries)
-            UsbPid.fromValue(int.parse(e.key)): e.value as int,
-        };
-        List<UsbYubiKeyNode> usbDevices = [];
+      final childrenMap = (devicesResult['children'] as Map? ?? {});
+      final childrenKeys = childrenMap.keys.toSet().cast<String>();
 
-        for (String id in (usbResult['children'] as Map).keys) {
-          final path = ['usb', id];
+      // Detect PIDs that the OS can see but the helper could not enumerate
+      // (e.g. FIDO-only devices without admin on Windows). The 'pids' field
+      // is populated in local mode; it is always empty in service mode.
+      final pidsData = (devicesResult['data']?['pids'] as Map?) ?? {};
+
+      // Count how many of each PID are already covered by real children.
+      final Map<int, int> childPidCounts = {};
+      for (final key in childrenKeys) {
+        final pidVal = childrenMap[key]?['pid'];
+        if (pidVal != null) {
+          final pid = int.tryParse(pidVal.toString()) ?? (pidVal as int);
+          childPidCounts[pid] = (childPidCounts[pid] ?? 0) + 1;
+        }
+      }
+
+      // Build phantom keys for PIDs not covered by real children.
+      final Map<String, int> phantomPids = {}; // key -> raw pid int
+      for (final entry in pidsData.entries) {
+        final pid = int.tryParse(entry.key.toString());
+        if (pid == null) continue;
+        final total = (entry.value as int?) ?? 0;
+        final known = childPidCounts[pid] ?? 0;
+        for (int i = known; i < total; i++) {
+          final key = i == 0
+              ? '$_phantomKeyPrefix$pid'
+              : '$_phantomKeyPrefix${pid}_$i';
+          phantomPids[key] = pid;
+        }
+      }
+
+      final effectiveKeys = childrenKeys.union(phantomPids.keys.toSet());
+      final children = <String, String>{
+        for (final id in childrenKeys) id: jsonEncode(childrenMap[id]),
+        for (final entry in phantomPids.entries)
+          entry.key: entry.value.toString(),
+      };
+
+      if (!const MapEquality<String, String>().equals(
+        _lastChildren,
+        children,
+      )) {
+        _log.info('Devices state change', jsonEncode(devicesResult));
+        _lastChildren = children;
+        List<YubiKeyDeviceNode> devices = [];
+
+        for (String id in childrenKeys) {
+          final path = ['devices', id];
           final deviceResult = await rpc.command('get', path);
           final deviceData = deviceResult['data'];
-          final pid = UsbPid.fromValue(deviceData['pid'] as int);
-          usbDevices.add(
-            DeviceNode.usbYubiKey(
+          final pidValue = deviceData['pid'];
+          final pid = pidValue != null
+              ? UsbPid.fromValue(pidValue as int)
+              : null;
+          final transport = deviceData['transport'] == 'nfc'
+              ? Transport.nfc
+              : Transport.usb;
+          devices.add(
+            DeviceNode.yubiKey(
                   DevicePath(path),
                   deviceData['name'],
                   pid,
+                  transport,
                   DeviceInfo.fromJson(deviceData['info']),
                 )
-                as UsbYubiKeyNode,
+                as YubiKeyDeviceNode,
           );
-          pids.update(pid, (value) => value - 1);
-        }
-        pids.removeWhere((_, value) => value == 0);
-
-        if (pids.isNotEmpty) {
-          pids.forEach((pid, count) {
-            for (var i = 0; i < count; i++) {
-              usbDevices.add(
-                DeviceNode.usbYubiKey(
-                      DevicePath(['pid', pid.value.toString(), i.toString()]),
-                      pid.displayName,
-                      pid,
-                      null,
-                    )
-                    as UsbYubiKeyNode,
-              );
-            }
-          });
-          _unaccountedRetry = !_unaccountedRetry;
-        } else {
-          _unaccountedRetry = false;
         }
 
-        _log.info('USB state updated, unaccounted for: $pids');
+        // Add phantom entries for unaccounted PIDs.
+        for (final entry in phantomPids.entries) {
+          final key = entry.key;
+          final rawPid = entry.value;
+          UsbPid? usbPid;
+          try {
+            usbPid = UsbPid.fromValue(rawPid);
+          } catch (_) {}
+          final name = usbPid?.displayName ?? 'YubiKey';
+          devices.add(
+            DeviceNode.yubiKey(
+                  DevicePath(['devices', key]),
+                  name,
+                  usbPid,
+                  Transport.usb,
+                  null,
+                )
+                as YubiKeyDeviceNode,
+          );
+        }
+
+        _log.info('Devices state updated: $effectiveKeys');
         if (mounted) {
-          state = usbDevices;
+          state = devices;
         }
       }
     } on RpcError catch (e) {
-      _log.error('Error polling USB', jsonEncode(e));
+      _log.error('Error polling devices', jsonEncode(e));
     }
 
     if (mounted) {
-      _pollTimer = Timer(_usbPollDelay, _pollDevices);
-    }
-  }
-}
-
-final _nfcDevicesProvider =
-    StateNotifierProvider<NfcDeviceNotifier, List<NfcReaderNode>>((ref) {
-      final notifier = NfcDeviceNotifier(ref.watch(rpcProvider).value);
-      ref.listen<WindowState>(windowStateProvider, (_, windowState) {
-        notifier._notifyWindowState(windowState);
-      }, fireImmediately: true);
-      return notifier;
-    });
-
-class NfcDeviceNotifier extends StateNotifier<List<NfcReaderNode>> {
-  final RpcSession? _rpc;
-  Timer? _pollTimer;
-  String _nfcState = '';
-  NfcDeviceNotifier(this._rpc) : super([]);
-
-  void _notifyWindowState(WindowState windowState) {
-    if (windowState.active) {
-      _pollReaders();
-    } else {
-      _pollTimer?.cancel();
-      // Release any held device
-      _rpc?.command('get', ['nfc']);
-    }
-  }
-
-  @override
-  void dispose() {
-    _pollTimer?.cancel();
-    super.dispose();
-  }
-
-  void _pollReaders() async {
-    _pollTimer?.cancel();
-    final rpc = _rpc;
-    if (rpc == null) {
-      return;
-    }
-
-    try {
-      var children = await rpc.command('scan', ['nfc']);
-      var newState = children.keys.join(':');
-
-      if (mounted && newState != _nfcState) {
-        _log.info('NFC state change', jsonEncode(children));
-        _nfcState = newState;
-        state = children.entries
-            .map(
-              (e) =>
-                  DeviceNode.nfcReader(
-                        DevicePath(['nfc', e.key]),
-                        e.value['name'] as String,
-                      )
-                      as NfcReaderNode,
-            )
-            .toList();
-      }
-    } on RpcError catch (e) {
-      _log.error('Error polling NFC', jsonEncode(e));
-    }
-
-    if (mounted) {
-      _pollTimer = Timer(_nfcPollReadersDelay, _pollReaders);
+      _pollTimer = Timer(_pollDelay, _pollDevices);
     }
   }
 }
@@ -227,16 +211,14 @@ class NfcDeviceNotifier extends StateNotifier<List<NfcReaderNode>> {
 class DesktopDevicesNotifier extends AttachedDevicesNotifier {
   @override
   List<DeviceNode> build() {
-    final usbDevices = ref.watch(_usbDevicesProvider).toList();
-    final nfcDevices = ref.watch(_nfcDevicesProvider).toList();
-    usbDevices.sort((a, b) => a.name.compareTo(b.name));
-    nfcDevices.sort((a, b) => a.name.compareTo(b.name));
-    return [...usbDevices, ...nfcDevices];
+    final devices = ref.watch(_devicesProvider).toList();
+    devices.sort((a, b) => a.name.compareTo(b.name));
+    return devices;
   }
 
   @override
   refresh() {
-    ref.read(_usbDevicesProvider.notifier).refresh();
+    ref.read(_devicesProvider.notifier).refresh();
   }
 }
 
@@ -251,10 +233,6 @@ final _desktopDeviceDataProvider =
       ref.listen<WindowState>(windowStateProvider, (_, windowState) {
         notifier._notifyWindowState(windowState);
       });
-      if (notifier._deviceNode is NfcReaderNode &&
-          ref.read(windowStateProvider).active) {
-        notifier._pollCard();
-      }
       return notifier;
     });
 
@@ -265,13 +243,12 @@ final desktopDeviceDataProvider = Provider<AsyncValue<YubiKeyData>>((ref) {
 class CurrentDeviceDataNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
   final RpcSession? _rpc;
   final DeviceNode? _deviceNode;
-  Timer? _pollTimer;
   StreamSubscription? _flagSubscription;
 
   CurrentDeviceDataNotifier(this._rpc, this._deviceNode)
     : super(const AsyncValue.loading()) {
     final dev = _deviceNode;
-    if (dev is UsbYubiKeyNode) {
+    if (dev is YubiKeyDeviceNode) {
       final info = dev.info;
       if (info != null) {
         state = AsyncValue.data(YubiKeyData(dev, dev.name, info));
@@ -281,44 +258,27 @@ class CurrentDeviceDataNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
     }
     _flagSubscription = _rpc?.flags.listen((flag) {
       if (flag == 'device_info') {
-        _pollDevice();
+        _refreshDevice();
       }
     });
   }
 
-  void _pollDevice() {
-    if (_deviceNode != null) {
-      switch (_deviceNode) {
-        case UsbYubiKeyNode _:
-          _refreshUsb();
-        case NfcReaderNode _:
-          _pollCard();
+  void _refreshDevice() async {
+    final node = _deviceNode;
+    if (node == null) return;
+    // Phantom devices have no RPC node; nothing to refresh.
+    if (node is YubiKeyDeviceNode && node.info == null) return;
+    Map<String, dynamic>? result;
+    try {
+      result = await _rpc?.command('get', node.path.segments);
+    } on RpcError catch (e) {
+      if (e.status == 'invalid-command' &&
+          e.message == 'No such node: ${node.path.segments.last}') {
+        _log.info('Device removed during info refresh');
+        return;
       }
+      rethrow;
     }
-  }
-
-  void _notifyWindowState(WindowState windowState) {
-    if (windowState.active) {
-      _pollDevice();
-    } else {
-      _pollTimer?.cancel();
-      // TODO: Should we clear the key here?
-      /*if (mounted) {
-        state = null;
-      }*/
-    }
-  }
-
-  @override
-  void dispose() {
-    _flagSubscription?.cancel();
-    _pollTimer?.cancel();
-    super.dispose();
-  }
-
-  void _refreshUsb() async {
-    final node = _deviceNode!;
-    var result = await _rpc?.command('get', node.path.segments);
     if (mounted && result != null) {
       final newState = YubiKeyData(
         node,
@@ -326,45 +286,21 @@ class CurrentDeviceDataNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
         DeviceInfo.fromJson(result['data']['info']),
       );
       if (state.value != newState) {
-        _log.info('Configuration change in current USB device');
+        _log.info('Configuration change in current device');
         state = AsyncValue.data(newState);
       }
     }
   }
 
-  void _pollCard() async {
-    _pollTimer?.cancel();
-    final node = _deviceNode!;
-    try {
-      var result = await _rpc?.command('get', node.path.segments);
-      if (mounted && result != null) {
-        if (result['data']['present']) {
-          final oldState = state.value;
-          final newState = YubiKeyData(
-            node,
-            result['data']['name'],
-            DeviceInfo.fromJson(result['data']['info']),
-          );
-          if (oldState != newState) {
-            if (oldState != null) {
-              // Ensure state is cleared
-              state = const AsyncValue.loading();
-            }
-            state = AsyncValue.data(newState);
-          }
-        } else {
-          final status = result['data']['status'];
-          // Only update if status is not changed
-          if (state.asError?.error != status) {
-            state = AsyncValue.error(status, StackTrace.current);
-          }
-        }
-      }
-    } on RpcError catch (e) {
-      _log.error('Error polling NFC', jsonEncode(e));
+  void _notifyWindowState(WindowState windowState) {
+    if (windowState.active) {
+      _refreshDevice();
     }
-    if (mounted) {
-      _pollTimer = Timer(_nfcPollCardDelay, _pollCard);
-    }
+  }
+
+  @override
+  void dispose() {
+    _flagSubscription?.cancel();
+    super.dispose();
   }
 }

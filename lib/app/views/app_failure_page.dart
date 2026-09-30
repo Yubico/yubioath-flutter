@@ -21,12 +21,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
-import '../../core/state.dart';
 import '../../desktop/models.dart';
-import '../../desktop/state.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
-import '../state.dart';
 import 'elevate_fido_buttons.dart';
 import 'message_page.dart';
 
@@ -72,19 +69,10 @@ class AppFailurePage extends ConsumerWidget {
           }
           break;
         case 'fido-blocked-error':
-          if (Platform.isWindows &&
-              !ref.watch(rpcStateProvider.select((state) => state.isAdmin))) {
-            final currentSection = ref.read(currentSectionProvider);
-            title = currentSection.getDisplayName(l10n);
-            capabilities = currentSection.capabilities;
+          if (Platform.isWindows) {
             header = l10n.l_admin_privileges_required;
-            message = l10n.p_webauthn_elevated_permissions_required;
-            centered = false;
-            graphic = null;
+            message = l10n.p_elevated_permissions_required;
             actions = [const ElevateFidoButtons()];
-            if (isMicrosoftStore) {
-              footnote = l10n.p_ms_store_permission_note;
-            }
           }
           break;
       }

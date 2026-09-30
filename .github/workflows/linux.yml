@@ -20,12 +20,12 @@ jobs:
       run: |
         export $(cat .github/workflows/env)
         cat .github/workflows/env >> $GITHUB_ENV
-        echo CACHE_KEY=${{ runner.os }}-py$PYVER-${{ hashFiles('build-helper.sh', 'helper/**')}} >> $GITHUB_ENV
+        echo CACHE_KEY=${{ runner.os }}-rust-c52f5fc-${{ hashFiles('build-helper.sh', 'helper/**')}} >> $GITHUB_ENV
 
     - name: Install dependencies
       run: |
         apt-get update
-        apt-get install -qq curl software-properties-common libnotify-dev libayatana-appindicator3-dev patchelf
+        apt-get install -qq curl software-properties-common libnotify-dev
         add-apt-repository -y ppa:git-core/ppa
         apt-get install -qq git
         git config --global --add safe.directory "$GITHUB_WORKSPACE"
@@ -46,28 +46,32 @@ jobs:
         uv run python set-version.py
         git diff --exit-code
 
+    - name: Check out helper dependencies
+      run: |
+        git clone --filter=blob:none https://github.com/Yubico/yubikey-manager.git ../yubikit-rs
+        git -C ../yubikit-rs checkout c52f5fcdefbb7097f8e036dc022ac33236c3e87a
+
     - name: Cache helper
       id: cache-helper
       uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: |
           build/linux/helper
-          assets/licenses/helper.json
+          assets/licenses/helper.txt
         key: ${{ env.CACHE_KEY }}
 
     - name: Build the Helper
       if: steps.cache-helper.outputs.cache-hit != 'true'
       run: |
-        add-apt-repository ppa:ubuntu-toolchain-r/test -y
-        apt update -y
-        apt-get install -qq swig libpcsclite-dev build-essential cmake gcc-13 g++-13
-        update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 60 --slave /usr/bin/g++ g++ /usr/bin/g++-13 
-        update-alternatives --config gcc
+        apt-get install -qq libpcsclite-dev libudev-dev build-essential cmake pkg-config libssl-dev
+        curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal
+        export PATH="$HOME/.cargo/bin:$PATH"
+        cargo install cargo-about --locked
         ./build-helper.sh
 
     - name: Install Flutter dependencies
       run: |
-        apt-get install -qq clang cmake ninja-build pkg-config libgtk-3-dev jq lld
+        apt-get install -qq clang cmake ninja-build pkg-config libgtk-3-dev libx11-dev libxi-dev jq lld
 
     - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
       with:
@@ -82,8 +86,6 @@ jobs:
         flutter pub get
 
     - name: Run lints/tests
-      env:
-        SKIP: ${{ steps.cache-helper.outputs.cache-hit == 'true' && 'mypy,ruff check,ruff format' || ''}}
       run: |
         uvx pre-commit run --all-files
         flutter test
@@ -93,18 +95,6 @@ jobs:
 
     - name: Check generated files
       run: git diff --exit-code
-
-    - name: Embedd appindicator
-      run: |
-        patchelf --set-rpath '$ORIGIN' build/linux/x64/release/bundle/lib/libtray_manager_plugin.so
-        cp -L /usr/lib/x86_64-linux-gnu/libayatana-appindicator3.so.1 build/linux/x64/release/bundle/lib/
-        patchelf --set-rpath '$ORIGIN' build/linux/x64/release/bundle/lib/libayatana-appindicator3.so.1
-        cp -L /usr/lib/x86_64-linux-gnu/libayatana-indicator3.so.7 build/linux/x64/release/bundle/lib/
-        patchelf --set-rpath '$ORIGIN' build/linux/x64/release/bundle/lib/libayatana-indicator3.so.7
-        cp -L /usr/lib/x86_64-linux-gnu/libdbusmenu-glib.so.4 build/linux/x64/release/bundle/lib/
-        patchelf --set-rpath '$ORIGIN' build/linux/x64/release/bundle/lib/libdbusmenu-glib.so.4
-        cp -L /usr/lib/x86_64-linux-gnu/libdbusmenu-gtk3.so.4 build/linux/x64/release/bundle/lib/
-        patchelf --set-rpath '$ORIGIN' build/linux/x64/release/bundle/lib/libdbusmenu-gtk3.so.4
 
     - name: Rename and archive app
       run: |

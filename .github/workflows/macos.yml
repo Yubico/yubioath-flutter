@@ -14,7 +14,7 @@ jobs:
       run: |
         export $(cat .github/workflows/env)
         cat .github/workflows/env >> $GITHUB_ENV
-        echo CACHE_KEY=${{ runner.os }}-py$PYVER-${{ hashFiles('build-helper.sh', 'helper/**')}} >> $GITHUB_ENV
+        echo CACHE_KEY=${{ runner.os }}-rust-c52f5fc-${{ hashFiles('build-helper.sh', 'helper/**')}} >> $GITHUB_ENV
 
     - name: Check app versions
       run: |
@@ -36,25 +36,26 @@ jobs:
       with:
         enable-cache: true
 
+    - name: Check out helper dependencies
+      run: |
+        git clone --filter=blob:none https://github.com/Yubico/yubikey-manager.git ../yubikit-rs
+        git -C ../yubikit-rs checkout c52f5fcdefbb7097f8e036dc022ac33236c3e87a
+
     - name: Cache helper
       id: cache-helper
       uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: |
           build/macos/helper
-          assets/licenses/helper.json
+          assets/licenses/helper.txt
         key: ${{ env.CACHE_KEY }}
-
-    - name: Install dependencies
-      if: steps.cache-helper.outputs.cache-hit != 'true'
-      run: |
-        brew update
-        brew install swig
-        python -m pip install --upgrade pip
 
     - name: Build the Helper
       if: steps.cache-helper.outputs.cache-hit != 'true'
-      run: ./build-helper.sh
+      run: |
+        rustup target add aarch64-apple-darwin x86_64-apple-darwin
+        cargo install cargo-about --locked
+        ./build-helper.sh
 
     - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
       with:
@@ -65,8 +66,6 @@ jobs:
     - run: flutter pub get
 
     - name: Run lints/tests
-      env:
-        SKIP: ${{ steps.cache-helper.outputs.cache-hit == 'true' && 'mypy,ruff check,ruff format' || ''}}
       run: |
         uv tool install pre-commit
         pre-commit run --all-files

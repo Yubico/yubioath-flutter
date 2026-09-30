@@ -21,7 +21,7 @@ import io.flutter.plugin.common.MethodChannel
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class FlutterLog(messenger: BinaryMessenger) {
+class FlutterLog(messenger: BinaryMessenger, private val clearCachedCredentials: () -> Unit) {
     private var channel = MethodChannel(messenger, "android.log.redirect")
 
     private val bufferAppender =
@@ -54,6 +54,9 @@ class FlutterLog(messenger: BinaryMessenger) {
                     val levelArgValue = call.argument<String>("level")
                     val requestedLogLevel = logLevelFromArgument(levelArgValue)
                     if (requestedLogLevel != null) {
+                        if (requestedLogLevel == Log.LogLevel.TRAFFIC) {
+                            clearCachedCredentials()
+                        }
                         Log.setLevel(requestedLogLevel)
                     } else {
                         loggerError("Invalid log level requested: $levelArgValue")

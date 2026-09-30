@@ -1,18 +1,23 @@
 @echo off
 
-echo Building authenticator-helper for Windows...
+set BUILD_MODE=release
+set CARGO_FLAGS=--release
+
+if /I "%~1"=="--debug" (
+	set BUILD_MODE=debug
+	set CARGO_FLAGS=
+)
+
+echo Building authenticator-helper for Windows (%BUILD_MODE%)...
 cd helper
-uv sync --locked || goto :error
-rmdir /s /q ..\build\windows\helper
-uv run pyinstaller authenticator-helper.spec --distpath ..\build\windows || goto :error
+cargo build %CARGO_FLAGS% || goto :error
+
+rmdir /s /q ..\build\windows\helper 2>nul
+mkdir ..\build\windows\helper
+copy target\%BUILD_MODE%\authenticator-helper.exe ..\build\windows\helper\ || goto :error
 
 echo Generating license files...
-rmdir /s /q ..\build\windows\helper-license-venv
-uv build || goto :error
-uv run python -m venv ..\build\windows\helper-license-venv || goto :error
-..\build\windows\helper-license-venv\Scripts\python -m pip install --upgrade pip wheel || goto :error
-..\build\windows\helper-license-venv\Scripts\python -m pip install dist\authenticator_helper-0.1.0-py3-none-any.whl pip-licenses || goto :error
-..\build\windows\helper-license-venv\Scripts\pip-licenses --format=json --no-license-path --with-license-file --ignore-packages authenticator-helper zxing-cpp --output-file ..\assets\licenses\helper.json || goto :error
+cargo about generate about.hbs --config about.toml -o ..\assets\licenses\helper.txt || goto :error
 
 cd ..
 

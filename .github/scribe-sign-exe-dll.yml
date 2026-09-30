@@ -14,9 +14,7 @@ jobs:
           - yubioath-desktop-windows/*/flutter_windows.dll
           - yubioath-desktop-windows/*/local_notifier_plugin.dll
           - yubioath-desktop-windows/*/screen_retriever_windows_plugin.dll
-          - yubioath-desktop-windows/*/tray_manager_plugin.dll
+          - yubioath-desktop-windows/*/cnativeapi.dll
           - yubioath-desktop-windows/*/url_launcher_windows_plugin.dll
           - yubioath-desktop-windows/*/window_manager_plugin.dll
           - yubioath-desktop-windows/*/dartjni.dll
-          - yubioath-desktop-windows/*/helper/_internal/pywin32_system32/pythoncom314.dll
-          - yubioath-desktop-windows/*/helper/_internal/pywin32_system32/pywintypes314.dll

@@ -1,9 +1,9 @@
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:patrol_finders/patrol_finders.dart';
 import 'package:yubico_authenticator/app/models.dart';
+import 'package:yubico_authenticator/app/state.dart';
 import 'package:yubico_authenticator/app/views/app_list_item.dart';
 import 'package:yubico_authenticator/app/views/keys.dart';
 import 'package:yubico_authenticator/core/state.dart';
@@ -14,6 +14,7 @@ import 'package:yubico_authenticator/oath/state.dart';
 import 'package:yubico_authenticator/oath/views/account_view.dart';
 import 'package:yubico_authenticator/widgets/responsive_dialog.dart';
 
+import 'controller.dart';
 import 'utils.dart';
 
 extension on PatrolTester {
@@ -222,6 +223,117 @@ void main() {
       expect($(AccountView), findsNothing);
     });
 
+    testKey('Credential survives reconnect', params, ($, data) async {
+      final pico = picoController;
+      final reconnectTimeout = pico == null
+          ? const Duration(minutes: 3)
+          : const Duration(seconds: 30);
+      const issuer = 'Reconnect';
+      const name = 'reconnect@example.com';
+      var removed = false;
+      var added = false;
+      try {
+        await $.navigate(Section.accounts);
+        await $.addCredential(
+          data,
+          CredentialData(
+            issuer: issuer,
+            name: name,
+            secret: 'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ',
+            oathType: OathType.hotp,
+            digits: 6,
+          ),
+        );
+        added = true;
+
+        removed = true;
+        if (pico == null) {
+          $.tester.printToConsole(
+            'OATH reconnect: Unplug the YubiKey now. Wait to reinsert it.',
+          );
+        } else {
+          await pico.remove();
+        }
+        await $.condition(
+          () => $.read(currentDeviceDataProvider).value == null,
+          timeout: reconnectTimeout,
+          settle: false,
+          reason: 'Device remained selected after disconnect',
+        );
+        if (pico == null) {
+          $.tester.printToConsole('OATH reconnect: Reinsert the YubiKey now.');
+        } else {
+          await pico.insert();
+        }
+
+        await $.condition(
+          () =>
+              $.read(currentDeviceDataProvider).value?.info.serial ==
+              data.info.serial,
+          timeout: reconnectTimeout,
+          settle: false,
+          reason: 'YubiKey did not return after reconnect',
+        );
+        removed = false;
+        final reconnected = $.read(currentDeviceDataProvider).requireValue;
+        await $.navigate(Section.accounts);
+        await $.condition(
+          () => $(
+            AppListItem<OathCredential>,
+          ).which((widget) => $(widget).$(issuer).exists).exists,
+          reason: 'OATH credential missing after reconnect',
+          settle: false,
+        );
+        expect(reconnected.info.serial, data.info.serial);
+
+        final hotp = $(
+          AppListItem<OathCredential>,
+        ).which((widget) => $(widget).$(issuer).exists);
+        await $.selectOrOpenItem(hotp);
+        if (!$('755 224').exists) {
+          await $(calculateAction).tap();
+        }
+        expect($('755 224'), findsWidgets);
+        await $(calculateAction).tap();
+        expect($('287 082'), findsWidgets);
+      } finally {
+        if (removed) {
+          if (pico == null) {
+            $.tester.printToConsole(
+              'OATH reconnect: Reinsert the YubiKey for cleanup.',
+            );
+          } else {
+            await pico.insert();
+          }
+        }
+        await pico?.release();
+        if (added) {
+          await $.condition(
+            () =>
+                $.read(currentDeviceDataProvider).value?.info.serial ==
+                data.info.serial,
+            timeout: reconnectTimeout,
+            settle: false,
+            reason: 'YubiKey did not return for credential cleanup',
+          );
+          final path = $.read(currentDeviceDataProvider).requireValue.node.path;
+          await $.condition(
+            () => $.read(credentialListProvider(path)) != null,
+            settle: false,
+            reason: 'OATH credentials unavailable for cleanup',
+          );
+          for (final pair in $.read(credentialListProvider(path))!) {
+            if (pair.credential.issuer == issuer &&
+                pair.credential.name == name) {
+              await $
+                  .read(credentialListProvider(path).notifier)
+                  .deleteAccount(pair.credential);
+            }
+          }
+        }
+      }
+    }, tags: picoController == null ? 'manual' : null, skip: isAndroid);
+
     testKey('Set/Change/Remove password', params, ($, data) async {
       bool hasLock() =>
           $.read(oathStateProvider(data.node.path)).requireValue.hasKey;
@@ -235,7 +347,8 @@ void main() {
       await $.viewAction(setOrManagePasswordAction);
       await $(newPasswordField).enterText('foo');
       await $(confirmPasswordField).enterText('bar');
-      expect($(savePasswordButton).widget<TextButton>().enabled, isFalse);
+      await $(savePasswordButton).tap();
+      expect($($.l10n.l_password_mismatch), findsOneWidget);
 
       // Correct the password and save
       await $(confirmPasswordField).enterText('foo');
@@ -248,9 +361,9 @@ void main() {
       await $(newPasswordField).enterText('bar');
       await $(confirmPasswordField).enterText('bar');
       await $(savePasswordButton).tap();
-      // Ensure the dialog is still open, and the save button disabled
+      // Ensure the incorrect password leaves the dialog open
       expect($(currentPasswordField), findsOneWidget);
-      expect($(savePasswordButton).widget<TextButton>().enabled, isFalse);
+      expect($($.l10n.p_wrong_password), findsOneWidget);
 
       // Correct the password and save
       await $(currentPasswordField).enterText('foo');
@@ -300,7 +413,12 @@ void main() {
 
         // Wait for touch to be confirmed
         await $($.l10n.s_touch_required).waitUntilVisible();
-        await $.condition(() => !$($.l10n.s_touch_required).exists);
+        try {
+          await picoController?.touch();
+          await $.condition(() => !$($.l10n.s_touch_required).exists);
+        } finally {
+          await picoController?.release();
+        }
         expect($('755 224'), findsWidgets);
 
         // Calculate another code
@@ -308,7 +426,12 @@ void main() {
 
         // Wait for touch to be confirmed
         await $($.l10n.s_touch_required).waitUntilVisible();
-        await $.condition(() => !$($.l10n.s_touch_required).exists);
+        try {
+          await picoController?.touch();
+          await $.condition(() => !$($.l10n.s_touch_required).exists);
+        } finally {
+          await picoController?.release();
+        }
         expect($('287 082'), findsWidgets);
 
         // Delete the credential(s) programatically

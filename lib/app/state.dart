@@ -33,6 +33,8 @@ import 'features.dart' as features;
 import 'logging.dart';
 import 'models.dart';
 
+final fidoResetInProgressProvider = StateProvider<bool>((ref) => false);
+
 final _log = Logger('app.state');
 
 extension on Section {

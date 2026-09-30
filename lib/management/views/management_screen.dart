@@ -305,7 +305,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
     }
 
     final bool reboot;
-    if (widget.deviceData.node is UsbYubiKeyNode) {
+    if (widget.deviceData.node.transport == Transport.usb) {
       // Reboot if USB device descriptor is changed.
       final oldInterfaces = UsbInterface.forCapabilities(
         widget.deviceData.info.config.enabledCapabilities[Transport.usb] ?? 0,
@@ -334,9 +334,9 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
       await ref
           .read(managementStateProvider(widget.deviceData.node.path).notifier)
           .writeConfig(
-            widget.deviceData.info.config.copyWith(
-              enabledCapabilities: _enabled,
-            ),
+            // Only write the capabilities being toggled; other settings must
+            // not be resent as configuration tags.
+            DeviceConfig(_enabled, null, null, null),
             reboot: reboot,
             currentLockCode: isLocked ? _lockCodeController.text : null,
           );
@@ -380,9 +380,9 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
         .read(managementStateProvider(widget.deviceData.node.path).notifier)
         .setMode(interfaces: _interfaces);
     if (!mounted) return;
-    showMessage(context, switch (widget.deviceData.node) {
-      NfcReaderNode() => l10n.s_config_updated,
-      UsbYubiKeyNode() => l10n.l_config_updated_reinsert,
+    showMessage(context, switch (widget.deviceData.node.transport) {
+      Transport.nfc => l10n.s_config_updated,
+      Transport.usb => l10n.l_config_updated_reinsert,
     });
     Navigator.pop(context);
   }
@@ -496,7 +496,9 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
                     maintainAnimation: true,
                     maintainState: true,
                     child: !isAndroid
-                        ? const LinearProgressIndicator()
+                        ? LinearProgressIndicator(
+                            value: _configuring ? null : 0,
+                          )
                         : const SizedBox(),
                   ),
                 ),

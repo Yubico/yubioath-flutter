@@ -1,4 +1,2 @@
 *.txt
 *.json
-!python.txt
-!apache-2.0.txt

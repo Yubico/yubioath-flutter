@@ -1,4 +1,5 @@
 import 'package:flutter/gestures.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:yubico_authenticator/app/models.dart';
@@ -6,6 +7,7 @@ import 'package:yubico_authenticator/app/state.dart';
 import 'package:yubico_authenticator/app/views/app_list_item.dart';
 import 'package:yubico_authenticator/app/views/keys.dart';
 import 'package:yubico_authenticator/core/state.dart';
+import 'package:yubico_authenticator/desktop/models.dart';
 import 'package:yubico_authenticator/management/models.dart';
 import 'package:yubico_authenticator/piv/keys.dart';
 import 'package:yubico_authenticator/piv/models.dart';
@@ -149,8 +151,30 @@ void main() {
           ),
         );
 
+        Future<void> slotAction(SlotId slotId, Key action) async {
+          final slot = pivSlot(slotId);
+          final more = $(
+            slotId == SlotId.authentication
+                ? meatballButton9a
+                : meatballButton82,
+          );
+          if (more.exists) {
+            await more.scrollTo();
+            await more.tap();
+          } else {
+            await slot.scrollTo();
+            await slot.tap();
+            if (!$(action).exists) {
+              await $.tester.tap(slot, buttons: kSecondaryButton);
+              await $.pumpAndSettle();
+            }
+          }
+          await $(action).scrollTo();
+          await $(action).tap();
+        }
+
         // Generate a certificate
-        await $.itemAction(pivSlot(SlotId.authentication), generateAction);
+        await slotAction(SlotId.authentication, generateAction);
         await $(managementKeyField).enterText(changedManagementKey);
         await $(unlockButton).tap();
         await $(pinPukField).enterText(changedPin);
@@ -169,18 +193,21 @@ void main() {
           final slotRetired = pivSlot(SlotId.retired1);
 
           // Move the certificate to a different slot
-          await $.itemAction(pivSlot(SlotId.authentication), moveAction);
+          await slotAction(SlotId.authentication, moveAction);
           await $(ChoiceFilterChip<SlotId?>).tap();
           await $(RegExp(SlotId.retired1.hexId)).tap();
           await $(moveButton).tap();
           if (close.exists) {
             await close.tap();
           }
-          await $.pumpAndSettle(); // List may not update immediately
+          await $.condition(
+            () => slotRetired.exists,
+            reason: 'Moved certificate should appear in the retired slot',
+          );
           expect(slotRetired, findsOne);
 
           // Move the key without the certificate back, using context menu
-          await $.itemAction(slotRetired, moveAction);
+          await slotAction(SlotId.retired1, moveAction);
           await $(ChoiceFilterChip<SlotId?>).tap();
           await $(RegExp(SlotId.authentication.hexId)).tap();
           await $(includeCertificateChip).tap();
@@ -188,17 +215,24 @@ void main() {
           if (close.exists) {
             await close.tap();
           }
+          await $.condition(
+            () => $($.l10n.l_key_no_certificate).exists,
+            reason: 'Moved key should appear without a certificate',
+          );
           expect($('Test Certificate'), findsOneWidget);
           expect($($.l10n.l_key_no_certificate), findsOne);
           expect(slotRetired, findsOne);
 
           // Delete the certificate
-          await $.itemAction(slotRetired, deleteAction);
+          await slotAction(SlotId.retired1, deleteAction);
           await $(deleteButton).tap();
           if (close.exists) {
             await close.tap();
           }
-          await $.pumpAndSettle(); // List may not update immediately
+          await $.condition(
+            () => !slotRetired.exists,
+            reason: 'Deleted certificate should disappear from retired slots',
+          );
           expect($('Test Certificate'), findsNothing);
           expect(slotRetired, findsNothing);
         }
@@ -216,14 +250,127 @@ void main() {
           await close.tap();
         }
         await $.condition(() => !$(deleteButton).exists);
-        await $.pumpAndSettle(); // List may not update immediately
         expect($('Test Certificate'), findsNothing);
         if (data.info.version.isAtLeast(5, 7)) {
+          await $.condition(
+            () => !$($.l10n.l_key_no_certificate).exists,
+            reason: 'Deleted key should disappear from the slot',
+          );
           expect($($.l10n.l_key_no_certificate), findsNothing);
         } else if (data.info.version.isAtLeast(5, 3)) {
           expect($($.l10n.l_key_no_certificate), findsOneWidget);
         }
       });
+
+      testKey('Post-quantum keys and certificate', params, ($, data) async {
+        await $.navigate(Section.certificates);
+        final path = data.node.path;
+        final state = await $.read(pivStateProvider(path).future);
+        final existing = await $.read(pivSlotsProvider(path).future);
+        for (final slot in [SlotId.retired1, SlotId.retired2]) {
+          final current = existing.firstWhere((entry) => entry.slot == slot);
+          expect(current.metadata, isNull);
+          expect(current.certInfo, isNull);
+        }
+
+        final access = $.read(pivStateProvider(path).notifier);
+        expect(
+          await access.authenticate(
+            state.metadata?.managementKeyMetadata.defaultValue == true
+                ? defaultManagementKey
+                : changedManagementKey,
+          ),
+          isTrue,
+        );
+        expect(
+          await access.verifyPin(
+            state.metadata?.pinMetadata.defaultValue == true
+                ? defaultPin
+                : changedPin,
+          ),
+          isA<PinSuccess>(),
+        );
+
+        try {
+          final now = DateTime.now();
+          final dsa = await $
+              .read(pivSlotsProvider(path).notifier)
+              .generate(
+                SlotId.retired1,
+                KeyType.mlDsa87,
+                parameters: PivGenerateParameters.certificate(
+                  subject: 'CN=ML-DSA Test',
+                  validFrom: now.subtract(const Duration(days: 1)),
+                  validTo: now.add(const Duration(days: 365)),
+                ),
+              );
+          expect(dsa.generateType, GenerateType.certificate);
+          expect(dsa.publicKey, startsWith('-----BEGIN PUBLIC KEY-----'));
+          expect(dsa.result, startsWith('-----BEGIN CERTIFICATE-----'));
+
+          final (dsaMetadata, certificate) = await $
+              .read(pivSlotsProvider(path).notifier)
+              .read(SlotId.retired1);
+          expect(dsaMetadata?.keyType, KeyType.mlDsa87);
+          expect(dsaMetadata?.publicKey, dsa.publicKey);
+          expect(certificate, dsa.result);
+
+          await expectLater(
+            $
+                .read(pivSlotsProvider(path).notifier)
+                .generate(
+                  SlotId.retired2,
+                  KeyType.mlKem1024,
+                  parameters: PivGenerateParameters.csr(
+                    subject: 'CN=ML-KEM Test',
+                  ),
+                ),
+            throwsA(isA<RpcError>()),
+          );
+          final (emptyMetadata, emptyCertificate) = await $
+              .read(pivSlotsProvider(path).notifier)
+              .read(SlotId.retired2);
+          expect(emptyMetadata, isNull);
+          expect(emptyCertificate, isNull);
+
+          final kem = await $
+              .read(pivSlotsProvider(path).notifier)
+              .generate(
+                SlotId.retired2,
+                KeyType.mlKem1024,
+                parameters: PivGenerateParameters.publicKey(),
+              );
+          expect(kem.generateType, GenerateType.publicKey);
+          expect(kem.publicKey, startsWith('-----BEGIN PUBLIC KEY-----'));
+          expect(kem.result, kem.publicKey);
+
+          final (kemMetadata, kemCertificate) = await $
+              .read(pivSlotsProvider(path).notifier)
+              .read(SlotId.retired2);
+          expect(kemMetadata?.keyType, KeyType.mlKem1024);
+          expect(kemMetadata?.publicKey, kem.publicKey);
+          expect(kemCertificate, isNull);
+
+          final updated = await $.read(pivSlotsProvider(path).future);
+          final certSlot = updated.firstWhere(
+            (entry) => entry.slot == SlotId.retired1,
+          );
+          expect(certSlot.certInfo?.keyType, KeyType.mlDsa87);
+          expect(certSlot.certInfo?.subject, contains('ML-DSA Test'));
+          expect(
+            certSlot.certInfo?.fingerprint,
+            matches(RegExp(r'^[0-9a-f]{64}$')),
+          );
+          expect(certSlot.publicKeyMatch, isTrue);
+        } finally {
+          await $
+              .read(pivSlotsProvider(path).notifier)
+              .delete(SlotId.retired1, true, true);
+          await $
+              .read(pivSlotsProvider(path).notifier)
+              .delete(SlotId.retired2, true, true);
+        }
+      }, condition: (info) => info.version.isAtLeast(6, 0));
     },
     skip: isAndroid,
     condition: (info) => info.hasCapability(Capability.piv),

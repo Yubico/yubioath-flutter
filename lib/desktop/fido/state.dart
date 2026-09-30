@@ -16,7 +16,6 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
@@ -39,6 +38,8 @@ final _pinProvider = StateProvider.family<String?, DevicePath>((ref, _) {
   ref.watch(currentDeviceProvider);
   return null;
 });
+
+void clearCachedFidoPins(Ref ref) => ref.invalidate(_pinProvider);
 
 class _FidoRpcNodeSession extends RpcNodeSession {
   _FidoRpcNodeSession(super.rpc, super.devicePath, super.subpath);
@@ -121,10 +122,6 @@ class DesktopFidoStateNotifier extends FidoStateNotifier {
   @override
   FutureOr<FidoState> build() async {
     _session = ref.watch(_sessionProvider(devicePath));
-    if (Platform.isWindows) {
-      // Make sure to rebuild if isAdmin changes
-      ref.watch(rpcStateProvider.select((state) => state.isAdmin));
-    }
 
     ref.listen<WindowState>(windowStateProvider, (prev, next) async {
       if (prev?.active == false && next.active) {
@@ -169,7 +166,9 @@ class DesktopFidoStateNotifier extends FidoStateNotifier {
             (e) => e.name == signal.body['state'],
           ),
         )
-        .listen(controller.sink.add);
+        .listen((event) {
+          if (!controller.isClosed) controller.add(event);
+        });
 
     controller.onCancel = () {
       if (!controller.isClosed) {
@@ -179,10 +178,14 @@ class DesktopFidoStateNotifier extends FidoStateNotifier {
     controller.onListen = () async {
       try {
         await _session.command('reset', signal: signaler);
-        await controller.sink.close();
-        ref.invalidateSelf();
+        if (!controller.isClosed) await controller.close();
+        if (ref.mounted) ref.invalidateSelf();
       } catch (e) {
-        controller.sink.addError(e);
+        if (!controller.isClosed && controller.hasListener) {
+          controller.addError(e);
+        } else {
+          _log.error('FIDO reset failed after cancellation', e);
+        }
       }
     };
 
@@ -196,10 +199,10 @@ class DesktopFidoStateNotifier extends FidoStateNotifier {
         'set_pin',
         params: {'pin': oldPin, 'new_pin': newPin},
       );
-      return unlock(newPin);
+      return await unlock(newPin);
     } on RpcError catch (e) {
       if (e.status == 'pin-validation') {
-        ref.invalidate(_pinProvider);
+        _pinController.state = null;
         ref.invalidateSelf();
         return PinResult.failed(
           FidoPinFailureReason.invalidPin(
@@ -222,7 +225,9 @@ class DesktopFidoStateNotifier extends FidoStateNotifier {
         'unlock',
         params: {'pin': pin, 'remember': remember},
       );
-      _pinController.state = pin;
+      if (ref.read(logLevelProvider).value > Levels.TRAFFIC.value) {
+        _pinController.state = pin;
+      }
 
       return PinResult.success();
     } on RpcError catch (e) {
@@ -393,6 +398,8 @@ class DesktopFidoCredentialsNotifier extends FidoCredentialsNotifier {
       'delete',
       target: ['credentials', credential.rpId, credential.credentialId],
     );
+    await _session.command('close', params: {'child': 'credentials'});
     ref.invalidate(fidoStateProvider(_session.devicePath));
+    ref.invalidateSelf();
   }
 }

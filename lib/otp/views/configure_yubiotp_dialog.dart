@@ -17,6 +17,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/gestures.dart';
@@ -42,6 +43,7 @@ import '../../widgets/utf8_utils.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
+import '../yubiotp_csv.dart';
 import 'access_code_dialog.dart';
 import 'overwrite_confirm_dialog.dart';
 
@@ -49,12 +51,14 @@ final _log = Logger('otp.view.configure_yubiotp_dialog');
 
 enum OutputActions {
   selectFile,
+  createFile,
   noOutput;
 
   const OutputActions();
 
   String getDisplayName(AppLocalizations l10n) => switch (this) {
     OutputActions.selectFile => l10n.l_select_file,
+    OutputActions.createFile => l10n.l_create_export_file,
     OutputActions.noOutput => l10n.l_no_export_file,
   };
 }
@@ -82,11 +86,6 @@ class _ConfigureYubiOtpDialogState
   final _privateIdFocus = FocusNode();
   OutputActions _action = OutputActions.noOutput;
 
-  /// Android only: the user asked for a CSV export, but has not picked a destination yet.
-  ///
-  /// The Storage Access Framework needs the file contents when the picker opens, so the
-  /// destination is only chosen once the slot has been programmed.
-  bool _exportRequested = false;
   bool _appendEnter = true;
   String? _publicIdError;
   String? _privateIdError;
@@ -170,7 +169,6 @@ class _ConfigureYubiOtpDialogState
     final publicIdFormatValid = Format.modhex.isValid(publicId);
 
     final outputFile = ref.read(yubiOtpOutputProvider);
-    final exportSelected = isAndroid ? _exportRequested : outputFile != null;
 
     void submit() async {
       _removeFocus();
@@ -275,35 +273,39 @@ class _ConfigureYubiOtpDialogState
       // unknown until the tap, which is after the dialog is built.
       final serial = info?.serial;
       String? exportedFileName;
-      if (configurationSucceeded && exportSelected && serial != null) {
+      if (configurationSucceeded &&
+          (_action == OutputActions.createFile || outputFile != null) &&
+          serial != null) {
         final csv = await otpNotifier.formatYubiOtpCsv(
           serial,
           publicId,
           privateId,
           secret,
         );
-
-        if (isAndroid) {
-          // Only now, with the CSV in hand, can the destination be picked: the SAF dialog
-          // both creates the document and writes to it in one shot.
-          final fileName = 'yubico-otp-$publicId.csv';
-          final savedPath = await FilePicker.platform.saveFile(
-            dialogTitle: l10n.l_export_configuration_file,
-            allowedExtensions: ['csv'],
-            fileName: fileName,
-            type: FileType.custom,
-            bytes: utf8.encode('$csv\n'),
-          );
-          // A null path means the user backed out of the save dialog. SAF returns an
-          // opaque content:// URI rather than a filesystem path, so surface the name we
-          // asked it to write instead of parsing the returned location.
-          exportedFileName = savedPath != null ? fileName : null;
-        } else {
-          await outputFile!.writeAsString(
-            '$csv${Platform.lineTerminator}',
-            mode: FileMode.append,
-          );
+        if (outputFile != null) {
+          await appendYubiOtpCsv(outputFile, csv);
           exportedFileName = outputFile.uri.pathSegments.last;
+        } else {
+          final fileName = 'yubico-otp-$publicId.csv';
+          final uri = await FilePicker.saveFile(
+            dialogTitle: l10n.l_export_configuration_file,
+            fileName: fileName,
+            bytes: Uint8List.fromList(
+              utf8.encode('$csv${Platform.lineTerminator}'),
+            ),
+            windowsOptions: const WindowsOptions(lockParentWindow: true),
+            linuxOptions: const LinuxOptions(lockParentWindow: true),
+          );
+          if (uri != null) {
+            exportedFileName = uri.scheme == 'file'
+                ? uri.pathSegments.last
+                : fileName;
+            if (uri.scheme == 'file') {
+              ref
+                  .read(yubiOtpOutputProvider.notifier)
+                  .setOutput(File.fromUri(uri));
+            }
+          }
         }
       }
       await ref.read(withContextProvider)((context) async {
@@ -320,28 +322,6 @@ class _ConfigureYubiOtpDialogState
           );
         }
       });
-    }
-
-    Future<bool> selectFile() async {
-      String? filePath = await FilePicker.platform.saveFile(
-        dialogTitle: l10n.l_export_configuration_file,
-        allowedExtensions: ['csv'],
-        fileName: 'yubico-otp-$publicId.csv',
-        type: FileType.custom,
-        lockParentWindow: true,
-      );
-
-      if (filePath == null) {
-        return false;
-      }
-
-      // Windows only: Append csv extension if missing
-      if (Platform.isWindows && !filePath.toLowerCase().endsWith('.csv')) {
-        filePath += '.csv';
-      }
-
-      ref.read(yubiOtpOutputProvider.notifier).setOutput(File(filePath));
-      return true;
     }
 
     return ResponsiveDialog(
@@ -543,11 +523,15 @@ class _ConfigureYubiOtpDialogState
                               ChoiceFilterChip<OutputActions>(
                                 tooltip:
                                     outputFile?.path ??
-                                    (exportSelected
-                                        ? l10n.l_export_configuration_file
+                                    (_action == OutputActions.createFile
+                                        ? l10n.l_create_export_file
                                         : l10n.s_no_export),
-                                selected: exportSelected,
-                                avatar: exportSelected
+                                selected:
+                                    outputFile != null ||
+                                    _action == OutputActions.createFile,
+                                avatar:
+                                    outputFile != null ||
+                                        _action == OutputActions.createFile
                                     ? Icon(
                                         Symbols.check,
                                         color: Theme.of(
@@ -556,7 +540,14 @@ class _ConfigureYubiOtpDialogState
                                       )
                                     : null,
                                 value: _action,
-                                items: OutputActions.values,
+                                // Android's picker returns a cached copy of an existing file.
+                                // Only offer creating a document that SAF can write directly.
+                                items: isAndroid
+                                    ? [
+                                        OutputActions.createFile,
+                                        OutputActions.noOutput,
+                                      ]
+                                    : OutputActions.values,
                                 itemBuilder: (value) =>
                                     Text(value.getDisplayName(l10n)),
                                 labelBuilder: (_) {
@@ -569,8 +560,6 @@ class _ConfigureYubiOtpDialogState
                                     child: Text(
                                       fileName != null
                                           ? '${l10n.s_export} $fileName'
-                                          : exportSelected
-                                          ? l10n.s_export
                                           : _action.getDisplayName(l10n),
                                       overflow: .ellipsis,
                                     ),
@@ -583,20 +572,29 @@ class _ConfigureYubiOtpDialogState
                                         .setOutput(null);
                                     setState(() {
                                       _action = value;
-                                      _exportRequested = false;
                                     });
                                   } else if (value ==
                                       OutputActions.selectFile) {
-                                    if (isAndroid) {
-                                      setState(() {
-                                        _action = value;
-                                        _exportRequested = true;
-                                      });
-                                    } else if (await selectFile()) {
-                                      setState(() {
-                                        _action = value;
-                                      });
+                                    final file = await pickExistingYubiOtpCsv(
+                                      l10n.l_select_file,
+                                    );
+                                    if (file == null) {
+                                      return;
                                     }
+                                    ref
+                                        .read(yubiOtpOutputProvider.notifier)
+                                        .setOutput(file);
+                                    setState(() {
+                                      _action = value;
+                                    });
+                                  } else if (value ==
+                                      OutputActions.createFile) {
+                                    ref
+                                        .read(yubiOtpOutputProvider.notifier)
+                                        .setOutput(null);
+                                    setState(() {
+                                      _action = value;
+                                    });
                                   }
                                 },
                               ),

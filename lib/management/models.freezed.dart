@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'models.dart';
@@ -9,6 +9,7 @@ part of 'models.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -28,16 +29,21 @@ $DeviceConfigCopyWith<DeviceConfig> get copyWith => _$DeviceConfigCopyWithImpl<D
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is DeviceConfig&&const DeepCollectionEquality().equals(other.enabledCapabilities, enabledCapabilities)&&(identical(other.autoEjectTimeout, autoEjectTimeout) || other.autoEjectTimeout == autoEjectTimeout)&&(identical(other.challengeResponseTimeout, challengeResponseTimeout) || other.challengeResponseTimeout == challengeResponseTimeout)&&(identical(other.deviceFlags, deviceFlags) || other.deviceFlags == deviceFlags));
+  final _this = this as DeviceConfig;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DeviceConfig&&const DeepCollectionEquality().equals(other.enabledCapabilities, _this.enabledCapabilities)&&(identical(other.autoEjectTimeout, _this.autoEjectTimeout) || other.autoEjectTimeout == _this.autoEjectTimeout)&&(identical(other.challengeResponseTimeout, _this.challengeResponseTimeout) || other.challengeResponseTimeout == _this.challengeResponseTimeout)&&(identical(other.deviceFlags, _this.deviceFlags) || other.deviceFlags == _this.deviceFlags));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(enabledCapabilities),autoEjectTimeout,challengeResponseTimeout,deviceFlags);
+int get hashCode {
+  final _this = this as DeviceConfig;
+  return Object.hash(runtimeType,const DeepCollectionEquality().hash(_this.enabledCapabilities),_this.autoEjectTimeout,_this.challengeResponseTimeout,_this.deviceFlags);
+}
 
 @override
 String toString() {
-  return 'DeviceConfig(enabledCapabilities: $enabledCapabilities, autoEjectTimeout: $autoEjectTimeout, challengeResponseTimeout: $challengeResponseTimeout, deviceFlags: $deviceFlags)';
+  final _this = this as DeviceConfig;
+  return 'DeviceConfig(enabledCapabilities: ${_this.enabledCapabilities}, autoEjectTimeout: ${_this.autoEjectTimeout}, challengeResponseTimeout: ${_this.challengeResponseTimeout}, deviceFlags: ${_this.deviceFlags})';
 }
 
 
@@ -66,11 +72,11 @@ class _$DeviceConfigCopyWithImpl<$Res>
 /// Create a copy of DeviceConfig
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? enabledCapabilities = null,Object? autoEjectTimeout = freezed,Object? challengeResponseTimeout = freezed,Object? deviceFlags = freezed,}) {
-  return _then(_self.copyWith(
-enabledCapabilities: null == enabledCapabilities ? _self.enabledCapabilities : enabledCapabilities // ignore: cast_nullable_to_non_nullable
-as Map<Transport, int>,autoEjectTimeout: freezed == autoEjectTimeout ? _self.autoEjectTimeout : autoEjectTimeout // ignore: cast_nullable_to_non_nullable
-as int?,challengeResponseTimeout: freezed == challengeResponseTimeout ? _self.challengeResponseTimeout : challengeResponseTimeout // ignore: cast_nullable_to_non_nullable
-as int?,deviceFlags: freezed == deviceFlags ? _self.deviceFlags : deviceFlags // ignore: cast_nullable_to_non_nullable
+  return _then(DeviceConfig(
+null == enabledCapabilities ? _self.enabledCapabilities : enabledCapabilities // ignore: cast_nullable_to_non_nullable
+as Map<Transport, int>,freezed == autoEjectTimeout ? _self.autoEjectTimeout : autoEjectTimeout // ignore: cast_nullable_to_non_nullable
+as int?,freezed == challengeResponseTimeout ? _self.challengeResponseTimeout : challengeResponseTimeout // ignore: cast_nullable_to_non_nullable
+as int?,freezed == deviceFlags ? _self.deviceFlags : deviceFlags // ignore: cast_nullable_to_non_nullable
 as int?,
   ));
 }
@@ -212,7 +218,7 @@ return $default(_that.enabledCapabilities,_that.autoEjectTimeout,_that.challenge
 @JsonSerializable()
 
 class _DeviceConfig implements DeviceConfig {
-   _DeviceConfig(final  Map<Transport, int> enabledCapabilities, this.autoEjectTimeout, this.challengeResponseTimeout, this.deviceFlags): _enabledCapabilities = enabledCapabilities;
+   _DeviceConfig( Map<Transport, int> enabledCapabilities, this.autoEjectTimeout, this.challengeResponseTimeout, this.deviceFlags): _enabledCapabilities = enabledCapabilities;
   factory _DeviceConfig.fromJson(Map<String, dynamic> json) => _$DeviceConfigFromJson(json);
 
  final  Map<Transport, int> _enabledCapabilities;
@@ -239,16 +245,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DeviceConfig&&const DeepCollectionEquality().equals(other._enabledCapabilities, _enabledCapabilities)&&(identical(other.autoEjectTimeout, autoEjectTimeout) || other.autoEjectTimeout == autoEjectTimeout)&&(identical(other.challengeResponseTimeout, challengeResponseTimeout) || other.challengeResponseTimeout == challengeResponseTimeout)&&(identical(other.deviceFlags, deviceFlags) || other.deviceFlags == deviceFlags));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _DeviceConfig&&const DeepCollectionEquality().equals(other.enabledCapabilities, _enabledCapabilities)&&(identical(other.autoEjectTimeout, autoEjectTimeout) || other.autoEjectTimeout == autoEjectTimeout)&&(identical(other.challengeResponseTimeout, challengeResponseTimeout) || other.challengeResponseTimeout == challengeResponseTimeout)&&(identical(other.deviceFlags, deviceFlags) || other.deviceFlags == deviceFlags));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_enabledCapabilities),autoEjectTimeout,challengeResponseTimeout,deviceFlags);
+int get hashCode {
+    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_enabledCapabilities),autoEjectTimeout,challengeResponseTimeout,deviceFlags);
+}
 
 @override
 String toString() {
-  return 'DeviceConfig(enabledCapabilities: $enabledCapabilities, autoEjectTimeout: $autoEjectTimeout, challengeResponseTimeout: $challengeResponseTimeout, deviceFlags: $deviceFlags)';
+    return 'DeviceConfig(enabledCapabilities: $enabledCapabilities, autoEjectTimeout: $autoEjectTimeout, challengeResponseTimeout: $challengeResponseTimeout, deviceFlags: $deviceFlags)';
 }
 
 
@@ -306,12 +314,16 @@ $VersionQualifierCopyWith<VersionQualifier> get copyWith => _$VersionQualifierCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is VersionQualifier&&(identical(other.version, version) || other.version == version)&&(identical(other.type, type) || other.type == type)&&(identical(other.iteration, iteration) || other.iteration == iteration));
+  final _this = this as VersionQualifier;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is VersionQualifier&&(identical(other.version, _this.version) || other.version == _this.version)&&(identical(other.type, _this.type) || other.type == _this.type)&&(identical(other.iteration, _this.iteration) || other.iteration == _this.iteration));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,version,type,iteration);
+int get hashCode {
+  final _this = this as VersionQualifier;
+  return Object.hash(runtimeType,_this.version,_this.type,_this.iteration);
+}
 
 
 
@@ -340,10 +352,10 @@ class _$VersionQualifierCopyWithImpl<$Res>
 /// Create a copy of VersionQualifier
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? version = null,Object? type = null,Object? iteration = null,}) {
-  return _then(_self.copyWith(
-version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
-as Version,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
-as ReleaseType,iteration: null == iteration ? _self.iteration : iteration // ignore: cast_nullable_to_non_nullable
+  return _then(VersionQualifier(
+null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
+as Version,null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
+as ReleaseType,null == iteration ? _self.iteration : iteration // ignore: cast_nullable_to_non_nullable
 as int,
   ));
 }
@@ -514,12 +526,14 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _VersionQualifier&&(identical(other.version, version) || other.version == version)&&(identical(other.type, type) || other.type == type)&&(identical(other.iteration, iteration) || other.iteration == iteration));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _VersionQualifier&&(identical(other.version, version) || other.version == version)&&(identical(other.type, type) || other.type == type)&&(identical(other.iteration, iteration) || other.iteration == iteration));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,version,type,iteration);
+int get hashCode {
+    return Object.hash(runtimeType,version,type,iteration);
+}
 
 
 
@@ -585,16 +599,21 @@ $DeviceInfoCopyWith<DeviceInfo> get copyWith => _$DeviceInfoCopyWithImpl<DeviceI
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is DeviceInfo&&(identical(other.config, config) || other.config == config)&&(identical(other.serial, serial) || other.serial == serial)&&(identical(other.version, version) || other.version == version)&&(identical(other.formFactor, formFactor) || other.formFactor == formFactor)&&const DeepCollectionEquality().equals(other.supportedCapabilities, supportedCapabilities)&&(identical(other.isLocked, isLocked) || other.isLocked == isLocked)&&(identical(other.isFips, isFips) || other.isFips == isFips)&&(identical(other.isSky, isSky) || other.isSky == isSky)&&(identical(other.pinComplexity, pinComplexity) || other.pinComplexity == pinComplexity)&&(identical(other.fipsCapable, fipsCapable) || other.fipsCapable == fipsCapable)&&(identical(other.fipsApproved, fipsApproved) || other.fipsApproved == fipsApproved)&&(identical(other.resetBlocked, resetBlocked) || other.resetBlocked == resetBlocked)&&(identical(other.versionQualifier, versionQualifier) || other.versionQualifier == versionQualifier));
+  final _this = this as DeviceInfo;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DeviceInfo&&(identical(other.config, _this.config) || other.config == _this.config)&&(identical(other.serial, _this.serial) || other.serial == _this.serial)&&(identical(other.version, _this.version) || other.version == _this.version)&&(identical(other.formFactor, _this.formFactor) || other.formFactor == _this.formFactor)&&const DeepCollectionEquality().equals(other.supportedCapabilities, _this.supportedCapabilities)&&(identical(other.isLocked, _this.isLocked) || other.isLocked == _this.isLocked)&&(identical(other.isFips, _this.isFips) || other.isFips == _this.isFips)&&(identical(other.isSky, _this.isSky) || other.isSky == _this.isSky)&&(identical(other.pinComplexity, _this.pinComplexity) || other.pinComplexity == _this.pinComplexity)&&(identical(other.fipsCapable, _this.fipsCapable) || other.fipsCapable == _this.fipsCapable)&&(identical(other.fipsApproved, _this.fipsApproved) || other.fipsApproved == _this.fipsApproved)&&(identical(other.resetBlocked, _this.resetBlocked) || other.resetBlocked == _this.resetBlocked)&&(identical(other.versionQualifier, _this.versionQualifier) || other.versionQualifier == _this.versionQualifier));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,config,serial,version,formFactor,const DeepCollectionEquality().hash(supportedCapabilities),isLocked,isFips,isSky,pinComplexity,fipsCapable,fipsApproved,resetBlocked,versionQualifier);
+int get hashCode {
+  final _this = this as DeviceInfo;
+  return Object.hash(runtimeType,_this.config,_this.serial,_this.version,_this.formFactor,const DeepCollectionEquality().hash(_this.supportedCapabilities),_this.isLocked,_this.isFips,_this.isSky,_this.pinComplexity,_this.fipsCapable,_this.fipsApproved,_this.resetBlocked,_this.versionQualifier);
+}
 
 @override
 String toString() {
-  return 'DeviceInfo(config: $config, serial: $serial, version: $version, formFactor: $formFactor, supportedCapabilities: $supportedCapabilities, isLocked: $isLocked, isFips: $isFips, isSky: $isSky, pinComplexity: $pinComplexity, fipsCapable: $fipsCapable, fipsApproved: $fipsApproved, resetBlocked: $resetBlocked, versionQualifier: $versionQualifier)';
+  final _this = this as DeviceInfo;
+  return 'DeviceInfo(config: ${_this.config}, serial: ${_this.serial}, version: ${_this.version}, formFactor: ${_this.formFactor}, supportedCapabilities: ${_this.supportedCapabilities}, isLocked: ${_this.isLocked}, isFips: ${_this.isFips}, isSky: ${_this.isSky}, pinComplexity: ${_this.pinComplexity}, fipsCapable: ${_this.fipsCapable}, fipsApproved: ${_this.fipsApproved}, resetBlocked: ${_this.resetBlocked}, versionQualifier: ${_this.versionQualifier})';
 }
 
 
@@ -623,20 +642,20 @@ class _$DeviceInfoCopyWithImpl<$Res>
 /// Create a copy of DeviceInfo
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? config = null,Object? serial = freezed,Object? version = null,Object? formFactor = null,Object? supportedCapabilities = null,Object? isLocked = null,Object? isFips = null,Object? isSky = null,Object? pinComplexity = null,Object? fipsCapable = null,Object? fipsApproved = null,Object? resetBlocked = null,Object? versionQualifier = null,}) {
-  return _then(_self.copyWith(
-config: null == config ? _self.config : config // ignore: cast_nullable_to_non_nullable
-as DeviceConfig,serial: freezed == serial ? _self.serial : serial // ignore: cast_nullable_to_non_nullable
-as int?,version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
-as Version,formFactor: null == formFactor ? _self.formFactor : formFactor // ignore: cast_nullable_to_non_nullable
-as FormFactor,supportedCapabilities: null == supportedCapabilities ? _self.supportedCapabilities : supportedCapabilities // ignore: cast_nullable_to_non_nullable
-as Map<Transport, int>,isLocked: null == isLocked ? _self.isLocked : isLocked // ignore: cast_nullable_to_non_nullable
-as bool,isFips: null == isFips ? _self.isFips : isFips // ignore: cast_nullable_to_non_nullable
-as bool,isSky: null == isSky ? _self.isSky : isSky // ignore: cast_nullable_to_non_nullable
-as bool,pinComplexity: null == pinComplexity ? _self.pinComplexity : pinComplexity // ignore: cast_nullable_to_non_nullable
-as bool,fipsCapable: null == fipsCapable ? _self.fipsCapable : fipsCapable // ignore: cast_nullable_to_non_nullable
-as int,fipsApproved: null == fipsApproved ? _self.fipsApproved : fipsApproved // ignore: cast_nullable_to_non_nullable
-as int,resetBlocked: null == resetBlocked ? _self.resetBlocked : resetBlocked // ignore: cast_nullable_to_non_nullable
-as int,versionQualifier: null == versionQualifier ? _self.versionQualifier : versionQualifier // ignore: cast_nullable_to_non_nullable
+  return _then(DeviceInfo(
+null == config ? _self.config : config // ignore: cast_nullable_to_non_nullable
+as DeviceConfig,freezed == serial ? _self.serial : serial // ignore: cast_nullable_to_non_nullable
+as int?,null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
+as Version,null == formFactor ? _self.formFactor : formFactor // ignore: cast_nullable_to_non_nullable
+as FormFactor,null == supportedCapabilities ? _self.supportedCapabilities : supportedCapabilities // ignore: cast_nullable_to_non_nullable
+as Map<Transport, int>,null == isLocked ? _self.isLocked : isLocked // ignore: cast_nullable_to_non_nullable
+as bool,null == isFips ? _self.isFips : isFips // ignore: cast_nullable_to_non_nullable
+as bool,null == isSky ? _self.isSky : isSky // ignore: cast_nullable_to_non_nullable
+as bool,null == pinComplexity ? _self.pinComplexity : pinComplexity // ignore: cast_nullable_to_non_nullable
+as bool,null == fipsCapable ? _self.fipsCapable : fipsCapable // ignore: cast_nullable_to_non_nullable
+as int,null == fipsApproved ? _self.fipsApproved : fipsApproved // ignore: cast_nullable_to_non_nullable
+as int,null == resetBlocked ? _self.resetBlocked : resetBlocked // ignore: cast_nullable_to_non_nullable
+as int,null == versionQualifier ? _self.versionQualifier : versionQualifier // ignore: cast_nullable_to_non_nullable
 as VersionQualifier,
   ));
 }
@@ -805,7 +824,7 @@ return $default(_that.config,_that.serial,_that.version,_that.formFactor,_that.s
 @JsonSerializable()
 
 class _DeviceInfo extends DeviceInfo {
-   _DeviceInfo(this.config, this.serial, this.version, this.formFactor, final  Map<Transport, int> supportedCapabilities, this.isLocked, this.isFips, this.isSky, this.pinComplexity, this.fipsCapable, this.fipsApproved, this.resetBlocked, this.versionQualifier): _supportedCapabilities = supportedCapabilities,super._();
+   _DeviceInfo(this.config, this.serial, this.version, this.formFactor,  Map<Transport, int> supportedCapabilities, this.isLocked, this.isFips, this.isSky, this.pinComplexity, this.fipsCapable, this.fipsApproved, this.resetBlocked, this.versionQualifier): _supportedCapabilities = supportedCapabilities,super._();
   factory _DeviceInfo.fromJson(Map<String, dynamic> json) => _$DeviceInfoFromJson(json);
 
 @override final  DeviceConfig config;
@@ -841,16 +860,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DeviceInfo&&(identical(other.config, config) || other.config == config)&&(identical(other.serial, serial) || other.serial == serial)&&(identical(other.version, version) || other.version == version)&&(identical(other.formFactor, formFactor) || other.formFactor == formFactor)&&const DeepCollectionEquality().equals(other._supportedCapabilities, _supportedCapabilities)&&(identical(other.isLocked, isLocked) || other.isLocked == isLocked)&&(identical(other.isFips, isFips) || other.isFips == isFips)&&(identical(other.isSky, isSky) || other.isSky == isSky)&&(identical(other.pinComplexity, pinComplexity) || other.pinComplexity == pinComplexity)&&(identical(other.fipsCapable, fipsCapable) || other.fipsCapable == fipsCapable)&&(identical(other.fipsApproved, fipsApproved) || other.fipsApproved == fipsApproved)&&(identical(other.resetBlocked, resetBlocked) || other.resetBlocked == resetBlocked)&&(identical(other.versionQualifier, versionQualifier) || other.versionQualifier == versionQualifier));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _DeviceInfo&&(identical(other.config, config) || other.config == config)&&(identical(other.serial, serial) || other.serial == serial)&&(identical(other.version, version) || other.version == version)&&(identical(other.formFactor, formFactor) || other.formFactor == formFactor)&&const DeepCollectionEquality().equals(other.supportedCapabilities, _supportedCapabilities)&&(identical(other.isLocked, isLocked) || other.isLocked == isLocked)&&(identical(other.isFips, isFips) || other.isFips == isFips)&&(identical(other.isSky, isSky) || other.isSky == isSky)&&(identical(other.pinComplexity, pinComplexity) || other.pinComplexity == pinComplexity)&&(identical(other.fipsCapable, fipsCapable) || other.fipsCapable == fipsCapable)&&(identical(other.fipsApproved, fipsApproved) || other.fipsApproved == fipsApproved)&&(identical(other.resetBlocked, resetBlocked) || other.resetBlocked == resetBlocked)&&(identical(other.versionQualifier, versionQualifier) || other.versionQualifier == versionQualifier));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,config,serial,version,formFactor,const DeepCollectionEquality().hash(_supportedCapabilities),isLocked,isFips,isSky,pinComplexity,fipsCapable,fipsApproved,resetBlocked,versionQualifier);
+int get hashCode {
+    return Object.hash(runtimeType,config,serial,version,formFactor,const DeepCollectionEquality().hash(_supportedCapabilities),isLocked,isFips,isSky,pinComplexity,fipsCapable,fipsApproved,resetBlocked,versionQualifier);
+}
 
 @override
 String toString() {
-  return 'DeviceInfo(config: $config, serial: $serial, version: $version, formFactor: $formFactor, supportedCapabilities: $supportedCapabilities, isLocked: $isLocked, isFips: $isFips, isSky: $isSky, pinComplexity: $pinComplexity, fipsCapable: $fipsCapable, fipsApproved: $fipsApproved, resetBlocked: $resetBlocked, versionQualifier: $versionQualifier)';
+    return 'DeviceInfo(config: $config, serial: $serial, version: $version, formFactor: $formFactor, supportedCapabilities: $supportedCapabilities, isLocked: $isLocked, isFips: $isFips, isSky: $isSky, pinComplexity: $pinComplexity, fipsCapable: $fipsCapable, fipsApproved: $fipsApproved, resetBlocked: $resetBlocked, versionQualifier: $versionQualifier)';
 }
 
 

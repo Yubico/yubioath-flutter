@@ -84,9 +84,8 @@ Future<OathCode?> _calculateCode(
   Ref ref,
 ) async {
   try {
-    return await (ref.read(
-      credentialListProvider(devicePath).notifier,
-    )).calculate(credential, headless: true);
+    return await (ref.read(credentialListProvider(devicePath).notifier))
+        .calculate(credential, headless: true);
   } on CancellationException catch (_) {
     return null;
   }
@@ -96,31 +95,22 @@ String _getIcon() {
   if (Platform.isMacOS) {
     return 'resources/icons/systray-template.png';
   }
-  if (Platform.isWindows) {
-    return 'resources/icons/com.yubico.yubioath.ico';
-  }
-
-  // if running in a sandbox, pass the icon name since the path is not visible
-  // in the host system (see https://github.com/leanflutter/tray_manager/pull/43)
-  return _runningInSandbox()
-      ? 'com.yubico.yubioath'
-      : 'resources/icons/com.yubico.yubioath-32x32.png';
+  return 'resources/icons/com.yubico.yubioath-32x32.png';
 }
 
-// copy from tray_manager package
-// tray_manager-0.5.1/lib/src/helpers/sandbox.dart
-bool _runningInSandbox() {
-  // Check if running in a Flatpak, Snap, Docker or Podman sandbox
-  return Platform.environment.containsKey('FLATPAK_ID') ||
-      Platform.environment.containsKey('SNAP') ||
-      (Platform.environment['container']?.isNotEmpty == true) ||
-      FileSystemEntity.isFileSync('/.dockerenv');
-}
-
-class _Systray extends TrayListener {
+class _Systray {
   final Ref _ref;
   String? _clipboardBinary;
-  int _lastClick = 0;
+  TrayIcon? _trayIcon;
+  Image? _icon;
+  Menu? _menu;
+  final List<MenuItem> _credentialItems = [];
+  MenuItem? _emptyItem;
+  MenuItem? _toggleItem;
+  MenuItem? _quitItem;
+  bool _menuIsVisible = false;
+  int _menuRevision = 0;
+  bool _disposed = false;
   AppLocalizations _l10n;
   DevicePath _devicePath = DevicePath([]);
   List<OathCredential> _credentials = [];
@@ -132,11 +122,29 @@ class _Systray extends TrayListener {
 
   Future<void> _init() async {
     unawaited(_initClipboardBinary());
-    await trayManager.setIcon(_getIcon(), isTemplate: true);
+    final trayIcon = TrayIcon.create();
+    if (trayIcon == null) {
+      throw StateError('Unable to create system tray icon');
+    }
+    _trayIcon = trayIcon;
+    final icon = ImageAsset.fromAsset(_getIcon());
+    if (icon == null) {
+      trayIcon.dispose();
+      _trayIcon = null;
+      throw StateError('Unable to load system tray icon');
+    }
+    _icon = icon;
+    final owner = WeakReference(this);
+    trayIcon
+      ..isIconTemplate = Platform.isMacOS
+      ..icon = icon
+      ..setTooltip(_l10n.app_name)
+      ..setContextMenuTrigger(
+        Platform.isLinux ? ContextMenuTrigger.clicked : ContextMenuTrigger.none,
+      )
+      ..addListener((event) => owner.target?._onTrayIconEvent(event))
+      ..setVisible(true);
     await _updateContextMenu();
-
-    // Doesn't seem to work on Linux
-    trayManager.addListener(this);
   }
 
   Future<void> _initClipboardBinary() async {
@@ -175,16 +183,24 @@ class _Systray extends TrayListener {
   }
 
   void dispose() {
-    trayManager.removeListener(this);
-    trayManager.destroy();
+    _disposed = true;
+    _trayIcon?.setContextMenu(null);
+    _menu?.dispose();
+    for (final item in _credentialItems) {
+      item.dispose();
+    }
+    _emptyItem?.dispose();
+    _toggleItem?.dispose();
+    _quitItem?.dispose();
+    _trayIcon?.dispose();
+    _trayIcon = null;
+    _icon?.dispose();
   }
 
-  void _updateLocale(AppLocalizations l10n) async {
+  void _updateLocale(AppLocalizations l10n) {
     _l10n = l10n;
-    if (!Platform.isLinux) {
-      await trayManager.setToolTip(l10n.app_name);
-    }
-    await _updateContextMenu();
+    _trayIcon?.setTooltip(l10n.app_name);
+    unawaited(_updateContextMenu());
   }
 
   void _updateCredentials(
@@ -203,90 +219,126 @@ class _Systray extends TrayListener {
     await _updateContextMenu();
   }
 
-  @override
-  void onTrayIconMouseDown() async {
-    if (Platform.isMacOS) {
-      await _updateContextMenu();
-      await trayManager.popUpContextMenu();
-    } else {
-      final now = DateTime.now().millisecondsSinceEpoch;
-      if (now - _lastClick < 500) {
-        _lastClick = 0;
+  void _onTrayIconEvent(TrayIconEvent event) {
+    if (_disposed) return;
+    switch (event) {
+      case TrayIconClickedEvent() when Platform.isMacOS:
+      case TrayIconRightClickedEvent():
+        unawaited(_openContextMenu());
+      case TrayIconDoubleClickedEvent() when Platform.isWindows:
         if (_isHidden) {
           _ref.read(desktopWindowStateProvider.notifier).setWindowHidden(false);
         } else {
-          await windowManager.focus();
+          unawaited(windowManager.focus());
         }
-      } else {
-        _lastClick = now;
-      }
+      default:
+        break;
     }
   }
 
-  @override
-  void onTrayIconRightMouseDown() async {
+  Future<void> _openContextMenu() async {
     await _updateContextMenu();
-    await trayManager.popUpContextMenu();
+    if (!_disposed) _trayIcon?.openContextMenu();
   }
 
   Future<void> _updateContextMenu() async {
+    final revision = ++_menuRevision;
     final isVisible = await windowManager.isVisible();
-    await trayManager.setContextMenu(
-      Menu(
-        items: [
-          ..._credentials.map((e) {
-            final label = getTextName(e);
-            return MenuItem(
-              label: label,
-              onClick: (_) async {
-                final code = await _calculateCode(_devicePath, e, _ref);
-                if (code != null) {
-                  if (_clipboardBinary != null) {
-                    // Copy to clipboard via another executable, which can be needed for Wayland
-                    _log.debug(
-                      'Using custom binary to copy to clipboard: $_clipboardBinary',
-                    );
-                    final process = await Process.start(_clipboardBinary!, []);
-                    process.stdin.writeln(code.value);
-                    await process.stdin.close();
-                  } else {
-                    await _ref
-                        .read(clipboardProvider)
-                        .setText(code.value, isSensitive: true);
-                  }
-                  final notification = LocalNotification(
-                    title: _l10n.s_code_copied,
-                    body: _l10n.p_target_copied_clipboard(label),
-                    silent: true,
-                  );
-                  await notification.show();
-                  await Future.delayed(const Duration(seconds: 4));
-                  await notification.close();
-                }
-              },
-            );
-          }),
-          if (_credentials.isEmpty)
-            MenuItem(label: _l10n.s_no_pinned_accounts, disabled: true),
-          MenuItem.separator(),
-          MenuItem(
-            label: !isVisible ? _l10n.s_show_window : _l10n.s_hide_window,
-            onClick: (_) {
-              _ref
-                  .read(desktopWindowStateProvider.notifier)
-                  .setWindowHidden(isVisible);
-            },
-          ),
-          MenuItem.separator(),
-          MenuItem(
-            label: _l10n.s_quit,
-            onClick: (_) {
-              // We don't use CloseIntent as it requires a Context, which we will not have if the window hasn't been shown yet.
-              windowManager.close();
-            },
-          ),
-        ],
-      ),
+    if (_disposed || revision != _menuRevision) return;
+
+    final owner = WeakReference(this);
+    MenuItem createItem(String label, {void Function(_Systray)? onClick}) {
+      final item = MenuItem.createWithLabelAndType(label, MenuItemType.normal);
+      if (item == null) throw StateError('Unable to create system tray item');
+      if (onClick != null) {
+        item.addListener((event) {
+          final systray = owner.target;
+          if (event is MenuItemClickedEvent &&
+              systray != null &&
+              !systray._disposed) {
+            onClick(systray);
+          }
+        });
+      }
+      return item;
+    }
+
+    final menu = _menu ?? Menu.create();
+    if (menu == null) throw StateError('Unable to create system tray menu');
+    if (_menu == null) {
+      _toggleItem = createItem(
+        _l10n.s_show_window,
+        onClick: (systray) => systray._ref
+            .read(desktopWindowStateProvider.notifier)
+            .setWindowHidden(systray._menuIsVisible),
+      );
+      _quitItem = createItem(
+        _l10n.s_quit,
+        onClick: (_) => windowManager.close(),
+      );
+      menu
+        ..addSeparator()
+        ..addItem(_toggleItem)
+        ..addSeparator()
+        ..addItem(_quitItem);
+      _trayIcon!.setContextMenu(menu);
+      _menu = menu;
+    }
+
+    if (_credentials.isEmpty && _emptyItem == null) {
+      _emptyItem = createItem(_l10n.s_no_pinned_accounts)..isEnabled = false;
+      menu.insertItem(0, _emptyItem);
+    } else if (_credentials.isNotEmpty && _emptyItem != null) {
+      menu.removeItem(_emptyItem);
+      _emptyItem!.dispose();
+      _emptyItem = null;
+    }
+    _emptyItem?.label = _l10n.s_no_pinned_accounts;
+
+    while (_credentialItems.length > _credentials.length) {
+      final item = _credentialItems.removeLast();
+      menu.removeItem(item);
+      item.dispose();
+    }
+    while (_credentialItems.length < _credentials.length) {
+      final index = _credentialItems.length;
+      final item = createItem(
+        getTextName(_credentials[index]),
+        onClick: (systray) {
+          final credential = systray._credentials[index];
+          unawaited(systray._copyCode(credential, getTextName(credential)));
+        },
+      );
+      _credentialItems.add(item);
+      menu.insertItem(index, item);
+    }
+    for (var index = 0; index < _credentialItems.length; index++) {
+      _credentialItems[index].label = getTextName(_credentials[index]);
+    }
+    _menuIsVisible = isVisible;
+    _toggleItem!.label = isVisible ? _l10n.s_hide_window : _l10n.s_show_window;
+    _quitItem!.label = _l10n.s_quit;
+    if (Platform.isLinux) _trayIcon!.setContextMenu(menu);
+  }
+
+  Future<void> _copyCode(OathCredential credential, String label) async {
+    final code = await _calculateCode(_devicePath, credential, _ref);
+    if (code == null) return;
+    if (_clipboardBinary != null) {
+      _log.debug('Using custom binary to copy to clipboard: $_clipboardBinary');
+      final process = await Process.start(_clipboardBinary!, []);
+      process.stdin.writeln(code.value);
+      await process.stdin.close();
+    } else {
+      await _ref.read(clipboardProvider).setText(code.value, isSensitive: true);
+    }
+    final notification = LocalNotification(
+      title: _l10n.s_code_copied,
+      body: _l10n.p_target_copied_clipboard(label),
+      silent: true,
     );
+    await notification.show();
+    await Future.delayed(const Duration(seconds: 4));
+    await notification.close();
   }
 }

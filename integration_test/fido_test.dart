@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -11,6 +13,7 @@ import 'package:yubico_authenticator/fido/state.dart';
 import 'package:yubico_authenticator/management/models.dart';
 import 'package:yubico_authenticator/widgets/responsive_dialog.dart';
 
+import 'controller.dart';
 import 'utils.dart';
 
 const normalPin = '23452345';
@@ -62,15 +65,14 @@ void main() {
 
       // Change the PIN
       await $.viewAction(managePinAction);
-      expect($(saveButton).widget<TextButton>().enabled, isFalse);
+      await $(saveButton).tap();
+      expect($(ResponsiveDialog).exists, isTrue);
       await $(currentPin).enterText(normalPin);
-      expect($(saveButton).widget<TextButton>().enabled, isFalse);
       await $(newPin).enterText(changedPin);
-      expect($(saveButton).widget<TextButton>().enabled, isFalse);
       await $(confirmPin).enterText(normalPin);
-      expect($(saveButton).widget<TextButton>().enabled, isFalse);
+      await $(saveButton).tap();
+      expect($(ResponsiveDialog).exists, isTrue);
       await $(confirmPin).enterText(changedPin);
-      expect($(saveButton).widget<TextButton>().enabled, isTrue);
       await $(saveButton).tap();
 
       await $.condition(() => !$(ResponsiveDialog).exists);
@@ -84,7 +86,11 @@ void main() {
       await $(confirmPin).enterText(changedPin);
       await $(saveButton).tap();
       await $(closeButton).tap();
-      await $.condition(() => !$(ResponsiveDialog).exists);
+      await $.condition(() => !$(ResponsiveDialog).exists, settle: false);
+      await $.condition(
+        () => $.read(fidoStateProvider(data.node.path)).value?.pinRetries == 7,
+        settle: false,
+      );
 
       state = $.read(fidoStateProvider(data.node.path)).value!;
       expect(state.pinRetries, 7);
@@ -146,6 +152,11 @@ void main() {
 
       final passkey = passkeys.first;
       final cred = passkey.widget<AppListItem<FidoCredential>>().item;
+      final remainingIds = passkeys.evaluate().map((element) {
+        return (element.widget as AppListItem<FidoCredential>)
+            .item
+            .credentialId;
+      }).toSet()..remove(cred.credentialId);
       await $.selectOrOpenItem(passkey);
       expect($(cred.rpId), findsAny);
       expect($(cred.userName), findsAny);
@@ -162,11 +173,29 @@ void main() {
       }
       await $(deleteButton).tap();
 
+      await $.condition(
+        () => !$(AppListItem<FidoCredential>)
+            .which<AppListItem<FidoCredential>>(
+              (widget) => widget.item.credentialId == cred.credentialId,
+            )
+            .exists,
+        settle: false,
+      );
+      final currentIds = $(AppListItem<FidoCredential>)
+          .which<AppListItem<FidoCredential>>(
+            (widget) => widget.item.rpId == 'delete.example.com',
+          )
+          .evaluate()
+          .map(
+            (element) => (element.widget as AppListItem<FidoCredential>)
+                .item
+                .credentialId,
+          )
+          .toSet();
       expect(
-        $(AppListItem<FidoCredential>).which<AppListItem<FidoCredential>>(
-          (widget) => widget.item.credentialId == cred.credentialId,
-        ),
-        findsNothing,
+        currentIds,
+        remainingIds,
+        reason: 'Deleting one passkey must preserve the others',
       );
     });
   }, condition: (info) => info.hasCapability(Capability.fido2));
@@ -182,15 +211,73 @@ void main() {
 
       await $(factoryResetReset).tap();
 
-      // Wait for the user to complete manual steps
-      await $(LinearProgressIndicator)
-          .which<LinearProgressIndicator>((widget) => widget.value == 1.0)
-          .waitUntilVisible(timeout: Duration(seconds: 30));
+      final pico = picoController;
+      var removed = false;
+      try {
+        if (pico != null) {
+          await $(
+            RegExp(RegExp.escape($.l10n.l_unplug_yk)),
+          ).waitUntilVisible(timeout: const Duration(seconds: 30));
+          await pico.remove();
+          removed = true;
+          await $(
+            RegExp(RegExp.escape($.l10n.l_reinsert_yk)),
+          ).waitUntilVisible(timeout: const Duration(seconds: 30));
+          await pico.insert();
+          removed = false;
+          try {
+            await $(
+              RegExp(
+                '${RegExp.escape($.l10n.l_touch_button_now)}|'
+                '${RegExp.escape($.l10n.l_long_touch_button_now)}',
+              ),
+            ).waitUntilVisible(timeout: const Duration(seconds: 30));
+          } catch (_) {
+            $.tester.printToConsole(
+              'FIDO reset after reinsertion: '
+              '${find.byType(Text).evaluate().map((e) => (e.widget as Text).data).whereType<String>().toList()}',
+            );
+            rethrow;
+          }
+          await Future<void>.delayed(const Duration(milliseconds: 800));
+          await pico.touch();
+        }
 
+        // Without a controller, follow the on-screen instructions.
+        try {
+          await $(LinearProgressIndicator)
+              .which<LinearProgressIndicator>((widget) => widget.value == 1.0)
+              .waitUntilVisible(timeout: const Duration(seconds: 30));
+        } catch (_) {
+          $.tester.printToConsole(
+            'FIDO reset after touch: '
+            '${find.byType(Text).evaluate().map((e) => (e.widget as Text).data).whereType<String>().toList()}',
+          );
+          rethrow;
+        }
+      } finally {
+        if (pico != null) {
+          await pico.release();
+          if (removed) await pico.insert();
+        }
+      }
+
+      final reloadTimer = Stopwatch()..start();
       await $(closeButton).tap();
 
       // Check that the FIDO state has been reset
       await $.navigate(Section.passkeys);
+      await $.condition(
+        () => $.read(fidoStateProvider(data.node.path)).value != null,
+        reason: 'FIDO state did not reload after reset',
+      );
+      if (pico != null && Platform.isLinux) {
+        expect(
+          reloadTimer.elapsed,
+          lessThan(const Duration(seconds: 3)),
+          reason: 'Passkeys should load promptly after a Pico-assisted reset',
+        );
+      }
       final state = $.read(fidoStateProvider(data.node.path)).value!;
       expect(state.hasPin, isFalse);
     }, tags: 'manual');
@@ -204,13 +291,13 @@ void main() {
 
       await $.viewAction(managePinAction);
 
-      expect($(saveButton).widget<TextButton>().enabled, isFalse);
+      await $(saveButton).tap();
+      expect($(ResponsiveDialog).exists, isTrue);
       await $(newPin).enterText(normalPin);
-      expect($(saveButton).widget<TextButton>().enabled, isFalse);
       await $(confirmPin).enterText(changedPin);
-      expect($(saveButton).widget<TextButton>().enabled, isFalse);
+      await $(saveButton).tap();
+      expect($(ResponsiveDialog).exists, isTrue);
       await $(confirmPin).enterText(normalPin);
-      expect($(saveButton).widget<TextButton>().enabled, isTrue);
       await $(saveButton).tap();
       await $.condition(() => !$(ResponsiveDialog).exists);
 

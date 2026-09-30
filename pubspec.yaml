@@ -21,7 +21,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 7.4.2+70309
 
 environment:
-  sdk: ^3.10.0
+  sdk: ^3.13.0
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -47,7 +47,7 @@ dependencies:
   collection: ^1.19.1
   shared_preferences: ^2.5.4
   flutter_riverpod: ^3.3.1
-  json_annotation: ^4.9.0
+  json_annotation: ^4.12.0
   freezed_annotation: ^3.1.0
   window_manager:
     git:
@@ -57,16 +57,16 @@ dependencies:
   qrscanner_zxing:
     path: android/flutter_plugins/qrscanner_zxing
   screen_retriever: ^0.2.0
-  desktop_drop: ^0.7.0
+  desktop_drop: ^0.8.4
   url_launcher: ^6.3.2
   path_provider: ^2.1.5
   vector_graphics: ^1.1.19
   vector_graphics_compiler: ^1.2.0
   path: ^1.9.1
-  file_picker: ^10.3.10
+  file_picker: ^13.1.0
   archive: ^4.0.9
   crypto: ^3.0.7
-  tray_manager: ^0.5.2
+  tray_manager: ^0.7.0
   local_notifier: ^0.1.6
   io: ^1.0.5
   base32: ^2.2.0
@@ -86,13 +86,10 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
 
-  build_runner: ^2.14.1
-  freezed: ^3.2.3
-  json_serializable: ^6.11.2
-  analyzer:
-  analyzer_plugin:
-  custom_lint_builder:
-  custom_lint:
+  build_runner: ^2.16.1
+  freezed: ^4.0.2
+  json_serializable: ^6.14.1
+  analyzer: ^14.4.0
   lint:
     path: lint
   patrol_finders: ^3.1.0

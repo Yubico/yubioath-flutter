@@ -13,7 +13,7 @@ jobs:
         run: |
           export $(cat .github/workflows/env)
           cat .github/workflows/env >> $GITHUB_ENV
-          echo CACHE_KEY=${{ runner.os }}-py-$PYVER-${{ hashFiles('build-helper.bat', 'helper/**')}} >> $GITHUB_ENV
+          echo CACHE_KEY=${{ runner.os }}-rust-c52f5fc-${{ hashFiles('build-helper.bat', 'helper/**')}} >> $GITHUB_ENV
 
       - name: Check app versions
         run: |
@@ -25,13 +25,16 @@ jobs:
         with:
           python-version: ${{ env.PYVER }}
 
-      - name: Update pip
-        run: python -m pip install --upgrade pip
-
       - name: Install uv
         uses: astral-sh/setup-uv@f98e06938123ccabd21905ea5d0069192241f9f1 # v8.3.1
         with:
           enable-cache: true
+
+      - name: Check out helper dependencies
+        shell: bash
+        run: |
+          git clone --filter=blob:none https://github.com/Yubico/yubikey-manager.git ../yubikit-rs
+          git -C ../yubikit-rs checkout c52f5fcdefbb7097f8e036dc022ac33236c3e87a
 
       - name: Cache helper
         id: cache-helper
@@ -39,12 +42,14 @@ jobs:
         with:
           path: |
             build/windows/helper
-            assets/licenses/helper.json
+            assets/licenses/helper.txt
           key: ${{ env.CACHE_KEY }}
 
       - name: Build the Helper
         if: steps.cache-helper.outputs.cache-hit != 'true'
-        run: .\build-helper.bat
+        run: |
+          cargo install cargo-about --locked
+          .\build-helper.bat
 
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
@@ -55,8 +60,6 @@ jobs:
       - run: flutter pub get
 
       - name: Run lints/tests
-        env:
-          SKIP: ${{ steps.cache-helper.outputs.cache-hit == 'true' && 'mypy,ruff check,ruff format' || ''}}
         run: |
           uv tool install pre-commit
           pre-commit run --all-files
@@ -69,13 +72,6 @@ jobs:
 
       - name: Check generated files
         run: git diff -I '.*android.*flutter_plugins.*qrscanner_zxing' --exit-code
-
-      - name: Move .dll files
-        run: |
-          $dest = "build\windows\x64\runner\Release"
-          cp $dest\helper\_internal/MSVCP140.dll $dest\
-          cp $dest\helper\_internal/VCRUNTIME140.dll $dest\
-          cp $dest\helper\_internal/VCRUNTIME140_1.dll $dest\
 
       - name: Rename and archive app bundle
         run: |
@@ -159,12 +155,10 @@ jobs:
         cp signed/flutter_windows.dll yubioath-desktop-windows/*/flutter_windows.dll
         cp signed/local_notifier_plugin.dll yubioath-desktop-windows/*/local_notifier_plugin.dll
         cp signed/screen_retriever_windows_plugin.dll yubioath-desktop-windows/*/screen_retriever_windows_plugin.dll
-        cp signed/tray_manager_plugin.dll yubioath-desktop-windows/*/tray_manager_plugin.dll
+        cp signed/cnativeapi.dll yubioath-desktop-windows/*/cnativeapi.dll
         cp signed/url_launcher_windows_plugin.dll yubioath-desktop-windows/*/url_launcher_windows_plugin.dll
         cp signed/window_manager_plugin.dll yubioath-desktop-windows/*/window_manager_plugin.dll
         cp signed/dartjni.dll yubioath-desktop-windows/*/dartjni.dll
-        cp signed/pythoncom314.dll yubioath-desktop-windows/*/helper/_internal/pywin32_system32/pythoncom314.dll
-        cp signed/pywintypes314.dll yubioath-desktop-windows/*/helper/_internal/pywin32_system32/pywintypes314.dll
 
     - name: upload signed artifacts
       uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

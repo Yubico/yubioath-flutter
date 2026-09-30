@@ -28,14 +28,6 @@ else
 	codesign -f --timestamp --entitlements helper-sandbox.entitlements --sign 'Application' Yubico\ Authenticator.app/Contents/Resources/helper/authenticator-helper
 fi
 
-echo "# Sign the dylib and so files, without entitlements"
-cd Yubico\ Authenticator.app/
-codesign -f --timestamp --options runtime --sign 'Application' $(find Contents/Resources/helper/_internal/ -name "*.dylib" -o -name "*.so")
-cd ..
-
-echo "# Sign the Python binary (if it exists), without entitlements"
-codesign -f --timestamp --options runtime --sign 'Application' Yubico\ Authenticator.app/Contents/Resources/helper/_internal/Python
-
 echo "# Sign the GUI"
 codesign -f --timestamp --options runtime --sign 'Application' --entitlements Release.entitlements --deep "Yubico Authenticator.app"
 

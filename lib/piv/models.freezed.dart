@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'models.dart';
@@ -9,6 +9,7 @@ part of 'models.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -28,16 +29,21 @@ $PinMetadataCopyWith<PinMetadata> get copyWith => _$PinMetadataCopyWithImpl<PinM
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PinMetadata&&(identical(other.defaultValue, defaultValue) || other.defaultValue == defaultValue)&&(identical(other.totalAttempts, totalAttempts) || other.totalAttempts == totalAttempts)&&(identical(other.attemptsRemaining, attemptsRemaining) || other.attemptsRemaining == attemptsRemaining));
+  final _this = this as PinMetadata;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PinMetadata&&(identical(other.defaultValue, _this.defaultValue) || other.defaultValue == _this.defaultValue)&&(identical(other.totalAttempts, _this.totalAttempts) || other.totalAttempts == _this.totalAttempts)&&(identical(other.attemptsRemaining, _this.attemptsRemaining) || other.attemptsRemaining == _this.attemptsRemaining));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,defaultValue,totalAttempts,attemptsRemaining);
+int get hashCode {
+  final _this = this as PinMetadata;
+  return Object.hash(runtimeType,_this.defaultValue,_this.totalAttempts,_this.attemptsRemaining);
+}
 
 @override
 String toString() {
-  return 'PinMetadata(defaultValue: $defaultValue, totalAttempts: $totalAttempts, attemptsRemaining: $attemptsRemaining)';
+  final _this = this as PinMetadata;
+  return 'PinMetadata(defaultValue: ${_this.defaultValue}, totalAttempts: ${_this.totalAttempts}, attemptsRemaining: ${_this.attemptsRemaining})';
 }
 
 
@@ -66,10 +72,10 @@ class _$PinMetadataCopyWithImpl<$Res>
 /// Create a copy of PinMetadata
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? defaultValue = null,Object? totalAttempts = null,Object? attemptsRemaining = null,}) {
-  return _then(_self.copyWith(
-defaultValue: null == defaultValue ? _self.defaultValue : defaultValue // ignore: cast_nullable_to_non_nullable
-as bool,totalAttempts: null == totalAttempts ? _self.totalAttempts : totalAttempts // ignore: cast_nullable_to_non_nullable
-as int,attemptsRemaining: null == attemptsRemaining ? _self.attemptsRemaining : attemptsRemaining // ignore: cast_nullable_to_non_nullable
+  return _then(PinMetadata(
+null == defaultValue ? _self.defaultValue : defaultValue // ignore: cast_nullable_to_non_nullable
+as bool,null == totalAttempts ? _self.totalAttempts : totalAttempts // ignore: cast_nullable_to_non_nullable
+as int,null == attemptsRemaining ? _self.attemptsRemaining : attemptsRemaining // ignore: cast_nullable_to_non_nullable
 as int,
   ));
 }
@@ -231,16 +237,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PinMetadata&&(identical(other.defaultValue, defaultValue) || other.defaultValue == defaultValue)&&(identical(other.totalAttempts, totalAttempts) || other.totalAttempts == totalAttempts)&&(identical(other.attemptsRemaining, attemptsRemaining) || other.attemptsRemaining == attemptsRemaining));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _PinMetadata&&(identical(other.defaultValue, defaultValue) || other.defaultValue == defaultValue)&&(identical(other.totalAttempts, totalAttempts) || other.totalAttempts == totalAttempts)&&(identical(other.attemptsRemaining, attemptsRemaining) || other.attemptsRemaining == attemptsRemaining));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,defaultValue,totalAttempts,attemptsRemaining);
+int get hashCode {
+    return Object.hash(runtimeType,defaultValue,totalAttempts,attemptsRemaining);
+}
 
 @override
 String toString() {
-  return 'PinMetadata(defaultValue: $defaultValue, totalAttempts: $totalAttempts, attemptsRemaining: $attemptsRemaining)';
+    return 'PinMetadata(defaultValue: $defaultValue, totalAttempts: $totalAttempts, attemptsRemaining: $attemptsRemaining)';
 }
 
 
@@ -289,7 +297,7 @@ mixin _$PinVerificationStatus {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PinVerificationStatus);
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is PinVerificationStatus);
 }
 
 
@@ -298,7 +306,7 @@ int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'PinVerificationStatus()';
+    return 'PinVerificationStatus()';
 }
 
 
@@ -454,7 +462,7 @@ class PinSuccess implements PinVerificationStatus {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PinSuccess);
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is PinSuccess);
 }
 
 
@@ -463,7 +471,7 @@ int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'PinVerificationStatus.success()';
+    return 'PinVerificationStatus.success()';
 }
 
 
@@ -491,16 +499,18 @@ $PinFailureCopyWith<PinFailure> get copyWith => _$PinFailureCopyWithImpl<PinFail
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PinFailure&&(identical(other.reason, reason) || other.reason == reason));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is PinFailure&&(identical(other.reason, reason) || other.reason == reason));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,reason);
+int get hashCode {
+    return Object.hash(runtimeType,reason);
+}
 
 @override
 String toString() {
-  return 'PinVerificationStatus.failure(reason: $reason)';
+    return 'PinVerificationStatus.failure(reason: $reason)';
 }
 
 
@@ -556,7 +566,7 @@ mixin _$PivPinFailureReason {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PivPinFailureReason);
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is PivPinFailureReason);
 }
 
 
@@ -565,7 +575,7 @@ int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'PivPinFailureReason()';
+    return 'PivPinFailureReason()';
 }
 
 
@@ -726,16 +736,18 @@ $PivInvalidPinCopyWith<PivInvalidPin> get copyWith => _$PivInvalidPinCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PivInvalidPin&&(identical(other.attemptsRemaining, attemptsRemaining) || other.attemptsRemaining == attemptsRemaining));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is PivInvalidPin&&(identical(other.attemptsRemaining, attemptsRemaining) || other.attemptsRemaining == attemptsRemaining));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,attemptsRemaining);
+int get hashCode {
+    return Object.hash(runtimeType,attemptsRemaining);
+}
 
 @override
 String toString() {
-  return 'PivPinFailureReason.invalidPin(attemptsRemaining: $attemptsRemaining)';
+    return 'PivPinFailureReason.invalidPin(attemptsRemaining: $attemptsRemaining)';
 }
 
 
@@ -787,7 +799,7 @@ class PivWeakPin implements PivPinFailureReason {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PivWeakPin);
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is PivWeakPin);
 }
 
 
@@ -796,7 +808,7 @@ int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'PivPinFailureReason.weakPin()';
+    return 'PivPinFailureReason.weakPin()';
 }
 
 
@@ -822,16 +834,21 @@ $ManagementKeyMetadataCopyWith<ManagementKeyMetadata> get copyWith => _$Manageme
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ManagementKeyMetadata&&(identical(other.keyType, keyType) || other.keyType == keyType)&&(identical(other.defaultValue, defaultValue) || other.defaultValue == defaultValue)&&(identical(other.touchPolicy, touchPolicy) || other.touchPolicy == touchPolicy));
+  final _this = this as ManagementKeyMetadata;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ManagementKeyMetadata&&(identical(other.keyType, _this.keyType) || other.keyType == _this.keyType)&&(identical(other.defaultValue, _this.defaultValue) || other.defaultValue == _this.defaultValue)&&(identical(other.touchPolicy, _this.touchPolicy) || other.touchPolicy == _this.touchPolicy));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,keyType,defaultValue,touchPolicy);
+int get hashCode {
+  final _this = this as ManagementKeyMetadata;
+  return Object.hash(runtimeType,_this.keyType,_this.defaultValue,_this.touchPolicy);
+}
 
 @override
 String toString() {
-  return 'ManagementKeyMetadata(keyType: $keyType, defaultValue: $defaultValue, touchPolicy: $touchPolicy)';
+  final _this = this as ManagementKeyMetadata;
+  return 'ManagementKeyMetadata(keyType: ${_this.keyType}, defaultValue: ${_this.defaultValue}, touchPolicy: ${_this.touchPolicy})';
 }
 
 
@@ -860,10 +877,10 @@ class _$ManagementKeyMetadataCopyWithImpl<$Res>
 /// Create a copy of ManagementKeyMetadata
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? keyType = null,Object? defaultValue = null,Object? touchPolicy = null,}) {
-  return _then(_self.copyWith(
-keyType: null == keyType ? _self.keyType : keyType // ignore: cast_nullable_to_non_nullable
-as ManagementKeyType,defaultValue: null == defaultValue ? _self.defaultValue : defaultValue // ignore: cast_nullable_to_non_nullable
-as bool,touchPolicy: null == touchPolicy ? _self.touchPolicy : touchPolicy // ignore: cast_nullable_to_non_nullable
+  return _then(ManagementKeyMetadata(
+null == keyType ? _self.keyType : keyType // ignore: cast_nullable_to_non_nullable
+as ManagementKeyType,null == defaultValue ? _self.defaultValue : defaultValue // ignore: cast_nullable_to_non_nullable
+as bool,null == touchPolicy ? _self.touchPolicy : touchPolicy // ignore: cast_nullable_to_non_nullable
 as TouchPolicy,
   ));
 }
@@ -1025,16 +1042,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ManagementKeyMetadata&&(identical(other.keyType, keyType) || other.keyType == keyType)&&(identical(other.defaultValue, defaultValue) || other.defaultValue == defaultValue)&&(identical(other.touchPolicy, touchPolicy) || other.touchPolicy == touchPolicy));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ManagementKeyMetadata&&(identical(other.keyType, keyType) || other.keyType == keyType)&&(identical(other.defaultValue, defaultValue) || other.defaultValue == defaultValue)&&(identical(other.touchPolicy, touchPolicy) || other.touchPolicy == touchPolicy));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,keyType,defaultValue,touchPolicy);
+int get hashCode {
+    return Object.hash(runtimeType,keyType,defaultValue,touchPolicy);
+}
 
 @override
 String toString() {
-  return 'ManagementKeyMetadata(keyType: $keyType, defaultValue: $defaultValue, touchPolicy: $touchPolicy)';
+    return 'ManagementKeyMetadata(keyType: $keyType, defaultValue: $defaultValue, touchPolicy: $touchPolicy)';
 }
 
 
@@ -1091,16 +1110,21 @@ $SlotMetadataCopyWith<SlotMetadata> get copyWith => _$SlotMetadataCopyWithImpl<S
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SlotMetadata&&(identical(other.keyType, keyType) || other.keyType == keyType)&&(identical(other.pinPolicy, pinPolicy) || other.pinPolicy == pinPolicy)&&(identical(other.touchPolicy, touchPolicy) || other.touchPolicy == touchPolicy)&&(identical(other.generated, generated) || other.generated == generated)&&(identical(other.publicKey, publicKey) || other.publicKey == publicKey));
+  final _this = this as SlotMetadata;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SlotMetadata&&(identical(other.keyType, _this.keyType) || other.keyType == _this.keyType)&&(identical(other.pinPolicy, _this.pinPolicy) || other.pinPolicy == _this.pinPolicy)&&(identical(other.touchPolicy, _this.touchPolicy) || other.touchPolicy == _this.touchPolicy)&&(identical(other.generated, _this.generated) || other.generated == _this.generated)&&(identical(other.publicKey, _this.publicKey) || other.publicKey == _this.publicKey));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,keyType,pinPolicy,touchPolicy,generated,publicKey);
+int get hashCode {
+  final _this = this as SlotMetadata;
+  return Object.hash(runtimeType,_this.keyType,_this.pinPolicy,_this.touchPolicy,_this.generated,_this.publicKey);
+}
 
 @override
 String toString() {
-  return 'SlotMetadata(keyType: $keyType, pinPolicy: $pinPolicy, touchPolicy: $touchPolicy, generated: $generated, publicKey: $publicKey)';
+  final _this = this as SlotMetadata;
+  return 'SlotMetadata(keyType: ${_this.keyType}, pinPolicy: ${_this.pinPolicy}, touchPolicy: ${_this.touchPolicy}, generated: ${_this.generated}, publicKey: ${_this.publicKey})';
 }
 
 
@@ -1129,12 +1153,12 @@ class _$SlotMetadataCopyWithImpl<$Res>
 /// Create a copy of SlotMetadata
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? keyType = null,Object? pinPolicy = null,Object? touchPolicy = null,Object? generated = null,Object? publicKey = null,}) {
-  return _then(_self.copyWith(
-keyType: null == keyType ? _self.keyType : keyType // ignore: cast_nullable_to_non_nullable
-as KeyType,pinPolicy: null == pinPolicy ? _self.pinPolicy : pinPolicy // ignore: cast_nullable_to_non_nullable
-as PinPolicy,touchPolicy: null == touchPolicy ? _self.touchPolicy : touchPolicy // ignore: cast_nullable_to_non_nullable
-as TouchPolicy,generated: null == generated ? _self.generated : generated // ignore: cast_nullable_to_non_nullable
-as bool,publicKey: null == publicKey ? _self.publicKey : publicKey // ignore: cast_nullable_to_non_nullable
+  return _then(SlotMetadata(
+null == keyType ? _self.keyType : keyType // ignore: cast_nullable_to_non_nullable
+as KeyType,null == pinPolicy ? _self.pinPolicy : pinPolicy // ignore: cast_nullable_to_non_nullable
+as PinPolicy,null == touchPolicy ? _self.touchPolicy : touchPolicy // ignore: cast_nullable_to_non_nullable
+as TouchPolicy,null == generated ? _self.generated : generated // ignore: cast_nullable_to_non_nullable
+as bool,null == publicKey ? _self.publicKey : publicKey // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -1298,16 +1322,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SlotMetadata&&(identical(other.keyType, keyType) || other.keyType == keyType)&&(identical(other.pinPolicy, pinPolicy) || other.pinPolicy == pinPolicy)&&(identical(other.touchPolicy, touchPolicy) || other.touchPolicy == touchPolicy)&&(identical(other.generated, generated) || other.generated == generated)&&(identical(other.publicKey, publicKey) || other.publicKey == publicKey));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SlotMetadata&&(identical(other.keyType, keyType) || other.keyType == keyType)&&(identical(other.pinPolicy, pinPolicy) || other.pinPolicy == pinPolicy)&&(identical(other.touchPolicy, touchPolicy) || other.touchPolicy == touchPolicy)&&(identical(other.generated, generated) || other.generated == generated)&&(identical(other.publicKey, publicKey) || other.publicKey == publicKey));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,keyType,pinPolicy,touchPolicy,generated,publicKey);
+int get hashCode {
+    return Object.hash(runtimeType,keyType,pinPolicy,touchPolicy,generated,publicKey);
+}
 
 @override
 String toString() {
-  return 'SlotMetadata(keyType: $keyType, pinPolicy: $pinPolicy, touchPolicy: $touchPolicy, generated: $generated, publicKey: $publicKey)';
+    return 'SlotMetadata(keyType: $keyType, pinPolicy: $pinPolicy, touchPolicy: $touchPolicy, generated: $generated, publicKey: $publicKey)';
 }
 
 
@@ -1366,16 +1392,21 @@ $PivStateMetadataCopyWith<PivStateMetadata> get copyWith => _$PivStateMetadataCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PivStateMetadata&&(identical(other.managementKeyMetadata, managementKeyMetadata) || other.managementKeyMetadata == managementKeyMetadata)&&(identical(other.pinMetadata, pinMetadata) || other.pinMetadata == pinMetadata)&&(identical(other.pukMetadata, pukMetadata) || other.pukMetadata == pukMetadata));
+  final _this = this as PivStateMetadata;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PivStateMetadata&&(identical(other.managementKeyMetadata, _this.managementKeyMetadata) || other.managementKeyMetadata == _this.managementKeyMetadata)&&(identical(other.pinMetadata, _this.pinMetadata) || other.pinMetadata == _this.pinMetadata)&&(identical(other.pukMetadata, _this.pukMetadata) || other.pukMetadata == _this.pukMetadata));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,managementKeyMetadata,pinMetadata,pukMetadata);
+int get hashCode {
+  final _this = this as PivStateMetadata;
+  return Object.hash(runtimeType,_this.managementKeyMetadata,_this.pinMetadata,_this.pukMetadata);
+}
 
 @override
 String toString() {
-  return 'PivStateMetadata(managementKeyMetadata: $managementKeyMetadata, pinMetadata: $pinMetadata, pukMetadata: $pukMetadata)';
+  final _this = this as PivStateMetadata;
+  return 'PivStateMetadata(managementKeyMetadata: ${_this.managementKeyMetadata}, pinMetadata: ${_this.pinMetadata}, pukMetadata: ${_this.pukMetadata})';
 }
 
 
@@ -1404,7 +1435,7 @@ class _$PivStateMetadataCopyWithImpl<$Res>
 /// Create a copy of PivStateMetadata
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? managementKeyMetadata = null,Object? pinMetadata = null,Object? pukMetadata = null,}) {
-  return _then(_self.copyWith(
+  return _then(PivStateMetadata(
 managementKeyMetadata: null == managementKeyMetadata ? _self.managementKeyMetadata : managementKeyMetadata // ignore: cast_nullable_to_non_nullable
 as ManagementKeyMetadata,pinMetadata: null == pinMetadata ? _self.pinMetadata : pinMetadata // ignore: cast_nullable_to_non_nullable
 as PinMetadata,pukMetadata: null == pukMetadata ? _self.pukMetadata : pukMetadata // ignore: cast_nullable_to_non_nullable
@@ -1596,16 +1627,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PivStateMetadata&&(identical(other.managementKeyMetadata, managementKeyMetadata) || other.managementKeyMetadata == managementKeyMetadata)&&(identical(other.pinMetadata, pinMetadata) || other.pinMetadata == pinMetadata)&&(identical(other.pukMetadata, pukMetadata) || other.pukMetadata == pukMetadata));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _PivStateMetadata&&(identical(other.managementKeyMetadata, managementKeyMetadata) || other.managementKeyMetadata == managementKeyMetadata)&&(identical(other.pinMetadata, pinMetadata) || other.pinMetadata == pinMetadata)&&(identical(other.pukMetadata, pukMetadata) || other.pukMetadata == pukMetadata));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,managementKeyMetadata,pinMetadata,pukMetadata);
+int get hashCode {
+    return Object.hash(runtimeType,managementKeyMetadata,pinMetadata,pukMetadata);
+}
 
 @override
 String toString() {
-  return 'PivStateMetadata(managementKeyMetadata: $managementKeyMetadata, pinMetadata: $pinMetadata, pukMetadata: $pukMetadata)';
+    return 'PivStateMetadata(managementKeyMetadata: $managementKeyMetadata, pinMetadata: $pinMetadata, pukMetadata: $pukMetadata)';
 }
 
 
@@ -1689,16 +1722,21 @@ $PivStateCopyWith<PivState> get copyWith => _$PivStateCopyWithImpl<PivState>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PivState&&(identical(other.version, version) || other.version == version)&&(identical(other.authenticated, authenticated) || other.authenticated == authenticated)&&(identical(other.derivedKey, derivedKey) || other.derivedKey == derivedKey)&&(identical(other.storedKey, storedKey) || other.storedKey == storedKey)&&(identical(other.pinAttempts, pinAttempts) || other.pinAttempts == pinAttempts)&&(identical(other.supportsBio, supportsBio) || other.supportsBio == supportsBio)&&(identical(other.chuid, chuid) || other.chuid == chuid)&&(identical(other.ccc, ccc) || other.ccc == ccc)&&(identical(other.metadata, metadata) || other.metadata == metadata));
+  final _this = this as PivState;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PivState&&(identical(other.version, _this.version) || other.version == _this.version)&&(identical(other.authenticated, _this.authenticated) || other.authenticated == _this.authenticated)&&(identical(other.derivedKey, _this.derivedKey) || other.derivedKey == _this.derivedKey)&&(identical(other.storedKey, _this.storedKey) || other.storedKey == _this.storedKey)&&(identical(other.pinAttempts, _this.pinAttempts) || other.pinAttempts == _this.pinAttempts)&&(identical(other.supportsBio, _this.supportsBio) || other.supportsBio == _this.supportsBio)&&(identical(other.chuid, _this.chuid) || other.chuid == _this.chuid)&&(identical(other.ccc, _this.ccc) || other.ccc == _this.ccc)&&(identical(other.metadata, _this.metadata) || other.metadata == _this.metadata));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,version,authenticated,derivedKey,storedKey,pinAttempts,supportsBio,chuid,ccc,metadata);
+int get hashCode {
+  final _this = this as PivState;
+  return Object.hash(runtimeType,_this.version,_this.authenticated,_this.derivedKey,_this.storedKey,_this.pinAttempts,_this.supportsBio,_this.chuid,_this.ccc,_this.metadata);
+}
 
 @override
 String toString() {
-  return 'PivState(version: $version, authenticated: $authenticated, derivedKey: $derivedKey, storedKey: $storedKey, pinAttempts: $pinAttempts, supportsBio: $supportsBio, chuid: $chuid, ccc: $ccc, metadata: $metadata)';
+  final _this = this as PivState;
+  return 'PivState(version: ${_this.version}, authenticated: ${_this.authenticated}, derivedKey: ${_this.derivedKey}, storedKey: ${_this.storedKey}, pinAttempts: ${_this.pinAttempts}, supportsBio: ${_this.supportsBio}, chuid: ${_this.chuid}, ccc: ${_this.ccc}, metadata: ${_this.metadata})';
 }
 
 
@@ -1727,7 +1765,7 @@ class _$PivStateCopyWithImpl<$Res>
 /// Create a copy of PivState
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? version = null,Object? authenticated = null,Object? derivedKey = null,Object? storedKey = null,Object? pinAttempts = null,Object? supportsBio = null,Object? chuid = freezed,Object? ccc = freezed,Object? metadata = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(PivState(
 version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
 as Version,authenticated: null == authenticated ? _self.authenticated : authenticated // ignore: cast_nullable_to_non_nullable
 as bool,derivedKey: null == derivedKey ? _self.derivedKey : derivedKey // ignore: cast_nullable_to_non_nullable
@@ -1925,16 +1963,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PivState&&(identical(other.version, version) || other.version == version)&&(identical(other.authenticated, authenticated) || other.authenticated == authenticated)&&(identical(other.derivedKey, derivedKey) || other.derivedKey == derivedKey)&&(identical(other.storedKey, storedKey) || other.storedKey == storedKey)&&(identical(other.pinAttempts, pinAttempts) || other.pinAttempts == pinAttempts)&&(identical(other.supportsBio, supportsBio) || other.supportsBio == supportsBio)&&(identical(other.chuid, chuid) || other.chuid == chuid)&&(identical(other.ccc, ccc) || other.ccc == ccc)&&(identical(other.metadata, metadata) || other.metadata == metadata));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _PivState&&(identical(other.version, version) || other.version == version)&&(identical(other.authenticated, authenticated) || other.authenticated == authenticated)&&(identical(other.derivedKey, derivedKey) || other.derivedKey == derivedKey)&&(identical(other.storedKey, storedKey) || other.storedKey == storedKey)&&(identical(other.pinAttempts, pinAttempts) || other.pinAttempts == pinAttempts)&&(identical(other.supportsBio, supportsBio) || other.supportsBio == supportsBio)&&(identical(other.chuid, chuid) || other.chuid == chuid)&&(identical(other.ccc, ccc) || other.ccc == ccc)&&(identical(other.metadata, metadata) || other.metadata == metadata));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,version,authenticated,derivedKey,storedKey,pinAttempts,supportsBio,chuid,ccc,metadata);
+int get hashCode {
+    return Object.hash(runtimeType,version,authenticated,derivedKey,storedKey,pinAttempts,supportsBio,chuid,ccc,metadata);
+}
 
 @override
 String toString() {
-  return 'PivState(version: $version, authenticated: $authenticated, derivedKey: $derivedKey, storedKey: $storedKey, pinAttempts: $pinAttempts, supportsBio: $supportsBio, chuid: $chuid, ccc: $ccc, metadata: $metadata)';
+    return 'PivState(version: $version, authenticated: $authenticated, derivedKey: $derivedKey, storedKey: $storedKey, pinAttempts: $pinAttempts, supportsBio: $supportsBio, chuid: $chuid, ccc: $ccc, metadata: $metadata)';
 }
 
 
@@ -2018,16 +2058,21 @@ $CertInfoCopyWith<CertInfo> get copyWith => _$CertInfoCopyWithImpl<CertInfo>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CertInfo&&(identical(other.keyType, keyType) || other.keyType == keyType)&&(identical(other.subject, subject) || other.subject == subject)&&(identical(other.issuer, issuer) || other.issuer == issuer)&&(identical(other.serial, serial) || other.serial == serial)&&(identical(other.notValidBefore, notValidBefore) || other.notValidBefore == notValidBefore)&&(identical(other.notValidAfter, notValidAfter) || other.notValidAfter == notValidAfter)&&(identical(other.fingerprint, fingerprint) || other.fingerprint == fingerprint));
+  final _this = this as CertInfo;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CertInfo&&(identical(other.keyType, _this.keyType) || other.keyType == _this.keyType)&&(identical(other.subject, _this.subject) || other.subject == _this.subject)&&(identical(other.issuer, _this.issuer) || other.issuer == _this.issuer)&&(identical(other.serial, _this.serial) || other.serial == _this.serial)&&(identical(other.notValidBefore, _this.notValidBefore) || other.notValidBefore == _this.notValidBefore)&&(identical(other.notValidAfter, _this.notValidAfter) || other.notValidAfter == _this.notValidAfter)&&(identical(other.fingerprint, _this.fingerprint) || other.fingerprint == _this.fingerprint));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,keyType,subject,issuer,serial,notValidBefore,notValidAfter,fingerprint);
+int get hashCode {
+  final _this = this as CertInfo;
+  return Object.hash(runtimeType,_this.keyType,_this.subject,_this.issuer,_this.serial,_this.notValidBefore,_this.notValidAfter,_this.fingerprint);
+}
 
 @override
 String toString() {
-  return 'CertInfo(keyType: $keyType, subject: $subject, issuer: $issuer, serial: $serial, notValidBefore: $notValidBefore, notValidAfter: $notValidAfter, fingerprint: $fingerprint)';
+  final _this = this as CertInfo;
+  return 'CertInfo(keyType: ${_this.keyType}, subject: ${_this.subject}, issuer: ${_this.issuer}, serial: ${_this.serial}, notValidBefore: ${_this.notValidBefore}, notValidAfter: ${_this.notValidAfter}, fingerprint: ${_this.fingerprint})';
 }
 
 
@@ -2056,7 +2101,7 @@ class _$CertInfoCopyWithImpl<$Res>
 /// Create a copy of CertInfo
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? keyType = freezed,Object? subject = null,Object? issuer = null,Object? serial = null,Object? notValidBefore = null,Object? notValidAfter = null,Object? fingerprint = null,}) {
-  return _then(_self.copyWith(
+  return _then(CertInfo(
 keyType: freezed == keyType ? _self.keyType : keyType // ignore: cast_nullable_to_non_nullable
 as KeyType?,subject: null == subject ? _self.subject : subject // ignore: cast_nullable_to_non_nullable
 as String,issuer: null == issuer ? _self.issuer : issuer // ignore: cast_nullable_to_non_nullable
@@ -2229,16 +2274,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CertInfo&&(identical(other.keyType, keyType) || other.keyType == keyType)&&(identical(other.subject, subject) || other.subject == subject)&&(identical(other.issuer, issuer) || other.issuer == issuer)&&(identical(other.serial, serial) || other.serial == serial)&&(identical(other.notValidBefore, notValidBefore) || other.notValidBefore == notValidBefore)&&(identical(other.notValidAfter, notValidAfter) || other.notValidAfter == notValidAfter)&&(identical(other.fingerprint, fingerprint) || other.fingerprint == fingerprint));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _CertInfo&&(identical(other.keyType, keyType) || other.keyType == keyType)&&(identical(other.subject, subject) || other.subject == subject)&&(identical(other.issuer, issuer) || other.issuer == issuer)&&(identical(other.serial, serial) || other.serial == serial)&&(identical(other.notValidBefore, notValidBefore) || other.notValidBefore == notValidBefore)&&(identical(other.notValidAfter, notValidAfter) || other.notValidAfter == notValidAfter)&&(identical(other.fingerprint, fingerprint) || other.fingerprint == fingerprint));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,keyType,subject,issuer,serial,notValidBefore,notValidAfter,fingerprint);
+int get hashCode {
+    return Object.hash(runtimeType,keyType,subject,issuer,serial,notValidBefore,notValidAfter,fingerprint);
+}
 
 @override
 String toString() {
-  return 'CertInfo(keyType: $keyType, subject: $subject, issuer: $issuer, serial: $serial, notValidBefore: $notValidBefore, notValidAfter: $notValidAfter, fingerprint: $fingerprint)';
+    return 'CertInfo(keyType: $keyType, subject: $subject, issuer: $issuer, serial: $serial, notValidBefore: $notValidBefore, notValidAfter: $notValidAfter, fingerprint: $fingerprint)';
 }
 
 
@@ -2299,16 +2346,21 @@ $PivSlotCopyWith<PivSlot> get copyWith => _$PivSlotCopyWithImpl<PivSlot>(this as
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PivSlot&&(identical(other.slot, slot) || other.slot == slot)&&(identical(other.metadata, metadata) || other.metadata == metadata)&&(identical(other.certInfo, certInfo) || other.certInfo == certInfo)&&(identical(other.publicKeyMatch, publicKeyMatch) || other.publicKeyMatch == publicKeyMatch));
+  final _this = this as PivSlot;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PivSlot&&(identical(other.slot, _this.slot) || other.slot == _this.slot)&&(identical(other.metadata, _this.metadata) || other.metadata == _this.metadata)&&(identical(other.certInfo, _this.certInfo) || other.certInfo == _this.certInfo)&&(identical(other.publicKeyMatch, _this.publicKeyMatch) || other.publicKeyMatch == _this.publicKeyMatch));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,slot,metadata,certInfo,publicKeyMatch);
+int get hashCode {
+  final _this = this as PivSlot;
+  return Object.hash(runtimeType,_this.slot,_this.metadata,_this.certInfo,_this.publicKeyMatch);
+}
 
 @override
 String toString() {
-  return 'PivSlot(slot: $slot, metadata: $metadata, certInfo: $certInfo, publicKeyMatch: $publicKeyMatch)';
+  final _this = this as PivSlot;
+  return 'PivSlot(slot: ${_this.slot}, metadata: ${_this.metadata}, certInfo: ${_this.certInfo}, publicKeyMatch: ${_this.publicKeyMatch})';
 }
 
 
@@ -2337,7 +2389,7 @@ class _$PivSlotCopyWithImpl<$Res>
 /// Create a copy of PivSlot
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? slot = null,Object? metadata = freezed,Object? certInfo = freezed,Object? publicKeyMatch = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(PivSlot(
 slot: null == slot ? _self.slot : slot // ignore: cast_nullable_to_non_nullable
 as SlotId,metadata: freezed == metadata ? _self.metadata : metadata // ignore: cast_nullable_to_non_nullable
 as SlotMetadata?,certInfo: freezed == certInfo ? _self.certInfo : certInfo // ignore: cast_nullable_to_non_nullable
@@ -2528,16 +2580,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PivSlot&&(identical(other.slot, slot) || other.slot == slot)&&(identical(other.metadata, metadata) || other.metadata == metadata)&&(identical(other.certInfo, certInfo) || other.certInfo == certInfo)&&(identical(other.publicKeyMatch, publicKeyMatch) || other.publicKeyMatch == publicKeyMatch));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _PivSlot&&(identical(other.slot, slot) || other.slot == slot)&&(identical(other.metadata, metadata) || other.metadata == metadata)&&(identical(other.certInfo, certInfo) || other.certInfo == certInfo)&&(identical(other.publicKeyMatch, publicKeyMatch) || other.publicKeyMatch == publicKeyMatch));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,slot,metadata,certInfo,publicKeyMatch);
+int get hashCode {
+    return Object.hash(runtimeType,slot,metadata,certInfo,publicKeyMatch);
+}
 
 @override
 String toString() {
-  return 'PivSlot(slot: $slot, metadata: $metadata, certInfo: $certInfo, publicKeyMatch: $publicKeyMatch)';
+    return 'PivSlot(slot: $slot, metadata: $metadata, certInfo: $certInfo, publicKeyMatch: $publicKeyMatch)';
 }
 
 
@@ -2637,7 +2691,7 @@ mixin _$PivExamineResult {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PivExamineResult);
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is PivExamineResult);
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -2646,7 +2700,7 @@ int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'PivExamineResult()';
+    return 'PivExamineResult()';
 }
 
 
@@ -2792,7 +2846,7 @@ return invalidPassword();case _:
 @JsonSerializable()
 
 class PivExamineResultResult implements PivExamineResult {
-   PivExamineResultResult({required this.password, required this.keyType, required this.certInfo, this.publicKeyMatch, final  String? $type}): $type = $type ?? 'result';
+   PivExamineResultResult({required this.password, required this.keyType, required this.certInfo, this.publicKeyMatch,  String? $type}): $type = $type ?? 'result';
   factory PivExamineResultResult.fromJson(Map<String, dynamic> json) => _$PivExamineResultResultFromJson(json);
 
  final  bool password;
@@ -2817,16 +2871,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PivExamineResultResult&&(identical(other.password, password) || other.password == password)&&(identical(other.keyType, keyType) || other.keyType == keyType)&&(identical(other.certInfo, certInfo) || other.certInfo == certInfo)&&(identical(other.publicKeyMatch, publicKeyMatch) || other.publicKeyMatch == publicKeyMatch));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is PivExamineResultResult&&(identical(other.password, password) || other.password == password)&&(identical(other.keyType, keyType) || other.keyType == keyType)&&(identical(other.certInfo, certInfo) || other.certInfo == certInfo)&&(identical(other.publicKeyMatch, publicKeyMatch) || other.publicKeyMatch == publicKeyMatch));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,password,keyType,certInfo,publicKeyMatch);
+int get hashCode {
+    return Object.hash(runtimeType,password,keyType,certInfo,publicKeyMatch);
+}
 
 @override
 String toString() {
-  return 'PivExamineResult.result(password: $password, keyType: $keyType, certInfo: $certInfo, publicKeyMatch: $publicKeyMatch)';
+    return 'PivExamineResult.result(password: $password, keyType: $keyType, certInfo: $certInfo, publicKeyMatch: $publicKeyMatch)';
 }
 
 
@@ -2883,7 +2939,7 @@ $CertInfoCopyWith<$Res>? get certInfo {
 @JsonSerializable()
 
 class PivExamineResultInvalidPassword implements PivExamineResult {
-   PivExamineResultInvalidPassword({final  String? $type}): $type = $type ?? 'invalidPassword';
+   PivExamineResultInvalidPassword({ String? $type}): $type = $type ?? 'invalidPassword';
   factory PivExamineResultInvalidPassword.fromJson(Map<String, dynamic> json) => _$PivExamineResultInvalidPasswordFromJson(json);
 
 
@@ -2900,7 +2956,7 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PivExamineResultInvalidPassword);
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is PivExamineResultInvalidPassword);
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -2909,7 +2965,7 @@ int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'PivExamineResult.invalidPassword()';
+    return 'PivExamineResult.invalidPassword()';
 }
 
 
@@ -2927,7 +2983,7 @@ mixin _$PivGenerateParameters {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PivGenerateParameters);
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is PivGenerateParameters);
 }
 
 
@@ -2936,7 +2992,7 @@ int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'PivGenerateParameters()';
+    return 'PivGenerateParameters()';
 }
 
 
@@ -3098,7 +3154,7 @@ class PivGeneratePublicKeyParameters implements PivGenerateParameters {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PivGeneratePublicKeyParameters);
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is PivGeneratePublicKeyParameters);
 }
 
 
@@ -3107,7 +3163,7 @@ int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'PivGenerateParameters.publicKey()';
+    return 'PivGenerateParameters.publicKey()';
 }
 
 
@@ -3137,16 +3193,18 @@ $PivGenerateCertificateParametersCopyWith<PivGenerateCertificateParameters> get 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PivGenerateCertificateParameters&&(identical(other.subject, subject) || other.subject == subject)&&(identical(other.validFrom, validFrom) || other.validFrom == validFrom)&&(identical(other.validTo, validTo) || other.validTo == validTo));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is PivGenerateCertificateParameters&&(identical(other.subject, subject) || other.subject == subject)&&(identical(other.validFrom, validFrom) || other.validFrom == validFrom)&&(identical(other.validTo, validTo) || other.validTo == validTo));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,subject,validFrom,validTo);
+int get hashCode {
+    return Object.hash(runtimeType,subject,validFrom,validTo);
+}
 
 @override
 String toString() {
-  return 'PivGenerateParameters.certificate(subject: $subject, validFrom: $validFrom, validTo: $validTo)';
+    return 'PivGenerateParameters.certificate(subject: $subject, validFrom: $validFrom, validTo: $validTo)';
 }
 
 
@@ -3205,16 +3263,18 @@ $PivGenerateCsrParametersCopyWith<PivGenerateCsrParameters> get copyWith => _$Pi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PivGenerateCsrParameters&&(identical(other.subject, subject) || other.subject == subject));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is PivGenerateCsrParameters&&(identical(other.subject, subject) || other.subject == subject));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,subject);
+int get hashCode {
+    return Object.hash(runtimeType,subject);
+}
 
 @override
 String toString() {
-  return 'PivGenerateParameters.csr(subject: $subject)';
+    return 'PivGenerateParameters.csr(subject: $subject)';
 }
 
 
@@ -3269,16 +3329,21 @@ $PivGenerateResultCopyWith<PivGenerateResult> get copyWith => _$PivGenerateResul
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PivGenerateResult&&(identical(other.generateType, generateType) || other.generateType == generateType)&&(identical(other.publicKey, publicKey) || other.publicKey == publicKey)&&(identical(other.result, result) || other.result == result));
+  final _this = this as PivGenerateResult;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PivGenerateResult&&(identical(other.generateType, _this.generateType) || other.generateType == _this.generateType)&&(identical(other.publicKey, _this.publicKey) || other.publicKey == _this.publicKey)&&(identical(other.result, _this.result) || other.result == _this.result));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,generateType,publicKey,result);
+int get hashCode {
+  final _this = this as PivGenerateResult;
+  return Object.hash(runtimeType,_this.generateType,_this.publicKey,_this.result);
+}
 
 @override
 String toString() {
-  return 'PivGenerateResult(generateType: $generateType, publicKey: $publicKey, result: $result)';
+  final _this = this as PivGenerateResult;
+  return 'PivGenerateResult(generateType: ${_this.generateType}, publicKey: ${_this.publicKey}, result: ${_this.result})';
 }
 
 
@@ -3307,7 +3372,7 @@ class _$PivGenerateResultCopyWithImpl<$Res>
 /// Create a copy of PivGenerateResult
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? generateType = null,Object? publicKey = null,Object? result = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(PivGenerateResult(
 generateType: null == generateType ? _self.generateType : generateType // ignore: cast_nullable_to_non_nullable
 as GenerateType,publicKey: null == publicKey ? _self.publicKey : publicKey // ignore: cast_nullable_to_non_nullable
 as String,result: freezed == result ? _self.result : result // ignore: cast_nullable_to_non_nullable
@@ -3472,16 +3537,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PivGenerateResult&&(identical(other.generateType, generateType) || other.generateType == generateType)&&(identical(other.publicKey, publicKey) || other.publicKey == publicKey)&&(identical(other.result, result) || other.result == result));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _PivGenerateResult&&(identical(other.generateType, generateType) || other.generateType == generateType)&&(identical(other.publicKey, publicKey) || other.publicKey == publicKey)&&(identical(other.result, result) || other.result == result));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,generateType,publicKey,result);
+int get hashCode {
+    return Object.hash(runtimeType,generateType,publicKey,result);
+}
 
 @override
 String toString() {
-  return 'PivGenerateResult(generateType: $generateType, publicKey: $publicKey, result: $result)';
+    return 'PivGenerateResult(generateType: $generateType, publicKey: $publicKey, result: $result)';
 }
 
 
@@ -3538,16 +3605,21 @@ $PivImportResultCopyWith<PivImportResult> get copyWith => _$PivImportResultCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PivImportResult&&(identical(other.metadata, metadata) || other.metadata == metadata)&&(identical(other.publicKey, publicKey) || other.publicKey == publicKey)&&(identical(other.certificate, certificate) || other.certificate == certificate));
+  final _this = this as PivImportResult;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PivImportResult&&(identical(other.metadata, _this.metadata) || other.metadata == _this.metadata)&&(identical(other.publicKey, _this.publicKey) || other.publicKey == _this.publicKey)&&(identical(other.certificate, _this.certificate) || other.certificate == _this.certificate));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,metadata,publicKey,certificate);
+int get hashCode {
+  final _this = this as PivImportResult;
+  return Object.hash(runtimeType,_this.metadata,_this.publicKey,_this.certificate);
+}
 
 @override
 String toString() {
-  return 'PivImportResult(metadata: $metadata, publicKey: $publicKey, certificate: $certificate)';
+  final _this = this as PivImportResult;
+  return 'PivImportResult(metadata: ${_this.metadata}, publicKey: ${_this.publicKey}, certificate: ${_this.certificate})';
 }
 
 
@@ -3576,7 +3648,7 @@ class _$PivImportResultCopyWithImpl<$Res>
 /// Create a copy of PivImportResult
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? metadata = freezed,Object? publicKey = freezed,Object? certificate = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(PivImportResult(
 metadata: freezed == metadata ? _self.metadata : metadata // ignore: cast_nullable_to_non_nullable
 as SlotMetadata?,publicKey: freezed == publicKey ? _self.publicKey : publicKey // ignore: cast_nullable_to_non_nullable
 as String?,certificate: freezed == certificate ? _self.certificate : certificate // ignore: cast_nullable_to_non_nullable
@@ -3753,16 +3825,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PivImportResult&&(identical(other.metadata, metadata) || other.metadata == metadata)&&(identical(other.publicKey, publicKey) || other.publicKey == publicKey)&&(identical(other.certificate, certificate) || other.certificate == certificate));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _PivImportResult&&(identical(other.metadata, metadata) || other.metadata == metadata)&&(identical(other.publicKey, publicKey) || other.publicKey == publicKey)&&(identical(other.certificate, certificate) || other.certificate == certificate));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,metadata,publicKey,certificate);
+int get hashCode {
+    return Object.hash(runtimeType,metadata,publicKey,certificate);
+}
 
 @override
 String toString() {
-  return 'PivImportResult(metadata: $metadata, publicKey: $publicKey, certificate: $certificate)';
+    return 'PivImportResult(metadata: $metadata, publicKey: $publicKey, certificate: $certificate)';
 }
 
 

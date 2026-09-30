@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'models.dart';
@@ -9,6 +9,7 @@ part of 'models.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
@@ -25,16 +26,21 @@ $NfcOverlayWidgetPropertiesCopyWith<NfcOverlayWidgetProperties> get copyWith => 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is NfcOverlayWidgetProperties&&(identical(other.child, child) || other.child == child)&&(identical(other.visible, visible) || other.visible == visible)&&(identical(other.hasCloseButton, hasCloseButton) || other.hasCloseButton == hasCloseButton));
+  final _this = this as NfcOverlayWidgetProperties;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is NfcOverlayWidgetProperties&&(identical(other.child, _this.child) || other.child == _this.child)&&(identical(other.visible, _this.visible) || other.visible == _this.visible)&&(identical(other.hasCloseButton, _this.hasCloseButton) || other.hasCloseButton == _this.hasCloseButton));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,child,visible,hasCloseButton);
+int get hashCode {
+  final _this = this as NfcOverlayWidgetProperties;
+  return Object.hash(runtimeType,_this.child,_this.visible,_this.hasCloseButton);
+}
 
 @override
 String toString() {
-  return 'NfcOverlayWidgetProperties(child: $child, visible: $visible, hasCloseButton: $hasCloseButton)';
+  final _this = this as NfcOverlayWidgetProperties;
+  return 'NfcOverlayWidgetProperties(child: ${_this.child}, visible: ${_this.visible}, hasCloseButton: ${_this.hasCloseButton})';
 }
 
 
@@ -63,7 +69,7 @@ class _$NfcOverlayWidgetPropertiesCopyWithImpl<$Res>
 /// Create a copy of NfcOverlayWidgetProperties
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? child = null,Object? visible = null,Object? hasCloseButton = null,}) {
-  return _then(_self.copyWith(
+  return _then(NfcOverlayWidgetProperties(
 child: null == child ? _self.child : child // ignore: cast_nullable_to_non_nullable
 as Widget,visible: null == visible ? _self.visible : visible // ignore: cast_nullable_to_non_nullable
 as bool,hasCloseButton: null == hasCloseButton ? _self.hasCloseButton : hasCloseButton // ignore: cast_nullable_to_non_nullable
@@ -225,16 +231,18 @@ _$NfcOverlayWidgetPropertiesCopyWith<_NfcOverlayWidgetProperties> get copyWith =
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _NfcOverlayWidgetProperties&&(identical(other.child, child) || other.child == child)&&(identical(other.visible, visible) || other.visible == visible)&&(identical(other.hasCloseButton, hasCloseButton) || other.hasCloseButton == hasCloseButton));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _NfcOverlayWidgetProperties&&(identical(other.child, child) || other.child == child)&&(identical(other.visible, visible) || other.visible == visible)&&(identical(other.hasCloseButton, hasCloseButton) || other.hasCloseButton == hasCloseButton));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,child,visible,hasCloseButton);
+int get hashCode {
+    return Object.hash(runtimeType,child,visible,hasCloseButton);
+}
 
 @override
 String toString() {
-  return 'NfcOverlayWidgetProperties(child: $child, visible: $visible, hasCloseButton: $hasCloseButton)';
+    return 'NfcOverlayWidgetProperties(child: $child, visible: $visible, hasCloseButton: $hasCloseButton)';
 }
 
 

@@ -349,7 +349,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
                                 Text(l10n.s_algorithm),
                                 const SizedBox(width: 8),
                                 Text(
-                                  keyType.name.toUpperCase(),
+                                  keyType.getDisplayName(l10n),
                                   style: subtitleStyle,
                                 ),
                               ],

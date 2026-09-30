@@ -329,6 +329,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
       final result = await ref
           .read(fidoStateProvider(widget.devicePath).notifier)
           .setPin(newPin, oldPin: oldPin);
+      if (!mounted) return;
       switch (result) {
         case PinResultSuccess():
           {
@@ -383,6 +384,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
       // ignored
     } catch (e) {
       _log.error('Failed to set PIN', e);
+      if (!mounted) return;
       final String errorMessage;
       // TODO: Make this cleaner than importing desktop specific RpcError.
       if (e is RpcError) {

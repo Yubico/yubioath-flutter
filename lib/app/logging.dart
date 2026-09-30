@@ -60,12 +60,18 @@ extension LoggerExt on Logger {
 }
 
 final logLevelProvider = StateNotifierProvider<LogLevelNotifier, Level>(
-  (ref) => LogLevelNotifier(),
+  (ref) => LogLevelNotifier(ref.read(clearCachedCredentialsProvider)),
+);
+
+final clearCachedCredentialsProvider = Provider<Future<void> Function()>(
+  (ref) => () async {},
 );
 
 class LogLevelNotifier extends StateNotifier<Level> {
   final List<String> _buffer = [];
-  LogLevelNotifier() : super(Logger.root.level) {
+  final Future<void> Function() _clearCachedCredentials;
+
+  LogLevelNotifier(this._clearCachedCredentials) : super(Logger.root.level) {
     Logger.root.onRecord.listen((record) {
       _buffer.add(
         '${record.time.logFormat} [${record.loggerName}] ${record.level}: ${record.message}',
@@ -79,7 +85,10 @@ class LogLevelNotifier extends StateNotifier<Level> {
     });
   }
 
-  void setLogLevel(Level level) {
+  Future<void> setLogLevel(Level level) async {
+    if (level.value <= Levels.TRAFFIC.value) {
+      await _clearCachedCredentials();
+    }
     state = level;
     Logger.root.level = level;
   }

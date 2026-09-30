@@ -46,6 +46,11 @@ final _pinProvider = StateProvider.autoDispose.family<String?, DevicePath>(
   (ref, _) => null,
 );
 
+void clearCachedPivCredentials(Ref ref) {
+  ref.invalidate(_managementKeyProvider);
+  ref.invalidate(_pinProvider);
+}
+
 final _sessionProvider = Provider.autoDispose.family<RpcNodeSession, DevicePath>((
   ref,
   devicePath,
@@ -170,8 +175,10 @@ class DesktopPivStateNotifier extends PivStateNotifier {
       );
 
       if (result['status']) {
-        ref.read(_managementKeyProvider(_devicePath).notifier).state =
-            managementKey;
+        if (ref.read(logLevelProvider).value > Levels.TRAFFIC.value) {
+          ref.read(_managementKeyProvider(_devicePath).notifier).state =
+              managementKey;
+        }
         final oldState = state.value;
         if (oldState != null) {
           state = AsyncData(oldState.copyWith(authenticated: true));
@@ -215,7 +222,9 @@ class DesktopPivStateNotifier extends PivStateNotifier {
         signal: signaler,
       );
 
-      ref.read(_pinProvider(_devicePath).notifier).state = pin;
+      if (ref.read(logLevelProvider).value > Levels.TRAFFIC.value) {
+        ref.read(_pinProvider(_devicePath).notifier).state = pin;
+      }
 
       return const PinVerificationStatus.success();
     } on RpcError catch (e) {
@@ -296,8 +305,10 @@ class DesktopPivStateNotifier extends PivStateNotifier {
         'store_key': storeKey,
       },
     );
-    ref.read(_managementKeyProvider(_devicePath).notifier).state =
-        managementKey;
+    if (ref.read(logLevelProvider).value > Levels.TRAFFIC.value) {
+      ref.read(_managementKeyProvider(_devicePath).notifier).state =
+          managementKey;
+    }
     ref.invalidateSelf();
   }
 
