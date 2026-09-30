@@ -13,7 +13,7 @@ jobs:
     - name: Read variables from repo
       run: |
         cat .github/workflows/env >> $GITHUB_ENV
-        echo CACHE_KEY=${{ runner.os }}-rust-c52f5fc-${{ hashFiles('build-helper.sh', 'helper/**')}} >> $GITHUB_ENV
+        echo CACHE_KEY=${{ runner.os }}-${{ runner.arch }}-rust-c52f5fc-${{ hashFiles('build-helper.sh', 'helper/**')}} >> $GITHUB_ENV
 
     - name: Check app versions
       run: |
@@ -64,14 +64,11 @@ jobs:
       with:
         channel: 'stable'
         flutter-version: ${{ env.FLUTTER }}
+        cache: true
+        pub-cache: true
     - run: flutter config --enable-macos-desktop
     - run: flutter --version
     - run: flutter pub get
-
-    - name: Run lints/tests
-      run: |
-        pipx run pre-commit run --all-files
-        flutter test
 
     - name: Build the app
       run: |

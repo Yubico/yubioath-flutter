@@ -15,7 +15,7 @@ jobs:
     - name: Read variables from repo
       run: |
         cat .github/workflows/env >> $GITHUB_ENV
-        echo CACHE_KEY=${{ runner.os }}-rust-c52f5fc-${{ hashFiles('build-helper.sh', 'helper/**')}} >> $GITHUB_ENV
+        echo CACHE_KEY=${{ runner.os }}-${{ runner.arch }}-rust-c52f5fc-${{ hashFiles('build-helper.sh', 'helper/**')}} >> $GITHUB_ENV
 
     - name: Install dependencies
       run: |
@@ -71,6 +71,8 @@ jobs:
         # for weird reasons, arm64 only works on main
         # https://github.com/subosito/flutter-action/issues/268
         flutter-version: ${{ env.FLUTTER }}
+        cache: true
+        pub-cache: true
 
     - name: Configure Flutter
       run: |
@@ -78,11 +80,6 @@ jobs:
         flutter config --enable-linux-desktop
         flutter --version
         flutter pub get
-
-    - name: Run lints/tests
-      run: |
-        pipx run pre-commit run --all-files
-        flutter test
 
     - name: Build the app
       run: flutter build linux

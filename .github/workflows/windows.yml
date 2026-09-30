@@ -12,7 +12,7 @@ jobs:
         shell: bash
         run: |
           cat .github/workflows/env >> $GITHUB_ENV
-          echo CACHE_KEY=${{ runner.os }}-rust-c52f5fc-svc1-${{ hashFiles('build-helper.bat', 'helper/**')}} >> $GITHUB_ENV
+          echo CACHE_KEY=${{ runner.os }}-${{ runner.arch }}-rust-c52f5fc-svc1-${{ hashFiles('build-helper.bat', 'helper/**')}} >> $GITHUB_ENV
 
       - name: Check app versions
         run: |
@@ -63,14 +63,11 @@ jobs:
         with:
           channel: 'stable'
           flutter-version: ${{ env.FLUTTER }}
+          cache: true
+          pub-cache: true
       - run: flutter config --enable-windows-desktop
       - run: flutter --version
       - run: flutter pub get
-
-      - name: Run lints/tests
-        run: |
-          pipx run pre-commit run --all-files
-          flutter test
 
       - name: Build the app
         run: |

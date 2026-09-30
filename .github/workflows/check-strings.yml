@@ -24,6 +24,8 @@ jobs:
       with:
         channel: 'stable'
         flutter-version: ${{ env.FLUTTER }}
+        cache: true
+        pub-cache: false
 
     - name: Check missing strings
       run: |
