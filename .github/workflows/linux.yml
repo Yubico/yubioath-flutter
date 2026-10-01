@@ -19,7 +19,7 @@ jobs:
     - name: Read variables from repo
       run: |
         cat .github/workflows/env >> $GITHUB_ENV
-        echo CACHE_KEY=${{ runner.os }}-${{ runner.arch }}-rust-c52f5fc-${{ hashFiles('build-helper.sh', 'helper/**')}} >> $GITHUB_ENV
+        echo CACHE_KEY=${{ runner.os }}-${{ runner.arch }}-rust-2d47563-${{ hashFiles('build-helper.sh', 'helper/**')}} >> $GITHUB_ENV
 
     - name: Install dependencies
       run: |
@@ -39,7 +39,7 @@ jobs:
     - name: Check out helper dependencies
       run: |
         git clone --filter=blob:none https://github.com/Yubico/yubikey-manager.git ../yubikit-rs
-        git -C ../yubikit-rs checkout c52f5fcdefbb7097f8e036dc022ac33236c3e87a
+        git -C ../yubikit-rs checkout 2d47563fa0d641766c99bf13307e9a2adf1d7566
 
     - name: Cache helper
       id: cache-helper
@@ -119,7 +119,7 @@ jobs:
     - name: Check out helper dependencies
       run: |
         git clone --filter=blob:none https://github.com/Yubico/yubikey-manager.git ../yubikit-rs
-        git -C ../yubikit-rs checkout c52f5fcdefbb7097f8e036dc022ac33236c3e87a
+        git -C ../yubikit-rs checkout 2d47563fa0d641766c99bf13307e9a2adf1d7566
 
     - name: Install Rust toolchain
       uses: dtolnay/rust-toolchain@6bed0761d98439e5a578e2877258200ad565ba87 # stable
