@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
 	xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
-  <?define ProductVersion="7.4.2" ?>
+  <?define ProductVersion="7.5.0" ?>
   <?define ProductName="Yubico Authenticator" ?>
   <?ifndef PackagePlatform ?>
     <?define PackagePlatform="x64" ?>
