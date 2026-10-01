@@ -149,24 +149,6 @@ impl ResetKeepalive {
     }
 }
 
-#[cfg(test)]
-mod reset_keepalive_tests {
-    use super::ResetKeepalive;
-
-    #[test]
-    fn waits_once_after_touch_is_satisfied() {
-        let mut keepalive = ResetKeepalive::default();
-        assert!(!keepalive.update(0x01));
-        assert!(!keepalive.update(0x02));
-        assert!(!keepalive.update(0x02));
-        assert!(!keepalive.update(0x03));
-        assert!(keepalive.update(0x01));
-        assert!(!keepalive.update(0x01));
-        assert!(!keepalive.update(0x02));
-        assert!(!keepalive.update(0x01));
-    }
-}
-
 fn cbor_to_json(v: &CborValue) -> Value {
     match v {
         CborValue::Int(n) => json!(*n),
@@ -1738,4 +1720,22 @@ fn enroll_fingerprint<C: yubikit::core::Connection + 'static>(
     }
 
     Ok((hex::encode(&template_id), name.clone()))
+}
+
+#[cfg(test)]
+mod reset_keepalive_tests {
+    use super::ResetKeepalive;
+
+    #[test]
+    fn waits_once_after_touch_is_satisfied() {
+        let mut keepalive = ResetKeepalive::default();
+        assert!(!keepalive.update(0x01));
+        assert!(!keepalive.update(0x02));
+        assert!(!keepalive.update(0x02));
+        assert!(!keepalive.update(0x03));
+        assert!(keepalive.update(0x01));
+        assert!(!keepalive.update(0x01));
+        assert!(!keepalive.update(0x02));
+        assert!(!keepalive.update(0x01));
+    }
 }

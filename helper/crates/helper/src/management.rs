@@ -127,7 +127,7 @@ impl RpcNode for ManagementCcidNode {
                     .and_then(|v| v.as_str())
                     .map(|s| hex::decode(s).unwrap_or_default());
 
-                let enabled_capabilities = parse_capabilities(&params);
+                let enabled_capabilities = parse_capabilities(params);
                 let auto_eject_timeout = params
                     .get("auto_eject_timeout")
                     .and_then(|v| v.as_u64())
@@ -275,7 +275,7 @@ impl RpcNode for ManagementOtpNode {
                     .get("new_lock_code")
                     .and_then(|v| v.as_str())
                     .map(|s| hex::decode(s).unwrap_or_default());
-                let enabled_capabilities = parse_capabilities(&params);
+                let enabled_capabilities = parse_capabilities(params);
                 let auto_eject_timeout = params
                     .get("auto_eject_timeout")
                     .and_then(|v| v.as_u64())
@@ -412,7 +412,7 @@ impl RpcNode for ManagementFidoNode {
                     .get("new_lock_code")
                     .and_then(|v| v.as_str())
                     .map(|s| hex::decode(s).unwrap_or_default());
-                let enabled_capabilities = parse_capabilities(&params);
+                let enabled_capabilities = parse_capabilities(params);
                 let auto_eject_timeout = params
                     .get("auto_eject_timeout")
                     .and_then(|v| v.as_u64())

@@ -50,3 +50,19 @@ repos:
       language: script
       entry: spotless_apply.py
       require_serial: true
+- repo: local
+  hooks:
+    - id: cargo-fmt-helper
+      name: cargo fmt (helper)
+      language: system
+      entry: cargo fmt --manifest-path helper/Cargo.toml --all -- --check
+      files: ^helper/.*\.rs$
+      pass_filenames: false
+      require_serial: true
+    - id: cargo-clippy-helper
+      name: cargo clippy (helper)
+      language: system
+      entry: cargo clippy --manifest-path helper/Cargo.toml --workspace --all-targets -- -D warnings
+      files: ^helper/(.*\.rs|(.*/)?Cargo\.(toml|lock))$
+      pass_filenames: false
+      require_serial: true

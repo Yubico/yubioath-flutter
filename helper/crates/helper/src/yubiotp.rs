@@ -86,7 +86,7 @@ impl RpcNode for YubiOtpCcidNode {
                 Ok(RpcResponse::new(json!({})))
             }
             "serial_modhex" | "generate_static" | "keyboard_layouts" | "format_yubiotp_csv" => {
-                handle_utility_action(action, &params)
+                handle_utility_action(action, params)
             }
             _ => Err(RpcError::no_such_action(action)),
         }
@@ -203,7 +203,7 @@ impl RpcNode for YubiOtpOtpNode {
                 Ok(RpcResponse::new(json!({})))
             }
             "serial_modhex" | "generate_static" | "keyboard_layouts" | "format_yubiotp_csv" => {
-                handle_utility_action(action, &params)
+                handle_utility_action(action, params)
             }
             _ => Err(RpcError::no_such_action(action)),
         }
@@ -312,7 +312,7 @@ impl RpcNode for OtpCcidSlotNode {
         let session = self.session.as_mut().unwrap();
         match action {
             "delete" => {
-                let cur_acc_code = get_acc_code(&params, "curr_acc_code")?;
+                let cur_acc_code = get_acc_code(params, "curr_acc_code")?;
                 session
                     .delete_slot(self.slot, cur_acc_code.as_ref())
                     .map_err(otp_error)?;
@@ -338,9 +338,9 @@ impl RpcNode for OtpCcidSlotNode {
                     .and_then(|v| v.as_str())
                     .ok_or_else(|| RpcError::invalid_params("Missing type"))?;
                 let options = params.get("options").cloned().unwrap_or_else(|| json!({}));
-                let cur_acc_code = get_acc_code(&params, "curr_acc_code")?;
+                let cur_acc_code = get_acc_code(params, "curr_acc_code")?;
 
-                let mut config = build_config(cfg_type, &params)?;
+                let mut config = build_config(cfg_type, params)?;
                 config = apply_options(config, &options)?;
 
                 session
@@ -355,8 +355,8 @@ impl RpcNode for OtpCcidSlotNode {
             }
             "update" => {
                 let options = params.clone();
-                let acc_code = get_acc_code(&params, "acc_code")?;
-                let cur_acc_code = get_acc_code(&params, "curr_acc_code")?;
+                let acc_code = get_acc_code(params, "acc_code")?;
+                let cur_acc_code = get_acc_code(params, "curr_acc_code")?;
 
                 let mut config = SlotConfiguration::update();
                 config = apply_options(config, &options)?;
@@ -442,7 +442,7 @@ impl RpcNode for OtpOtpSlotNode {
         let session = self.session.as_mut().unwrap();
         match action {
             "delete" => {
-                let cur_acc_code = get_acc_code(&params, "curr_acc_code")?;
+                let cur_acc_code = get_acc_code(params, "curr_acc_code")?;
                 session
                     .delete_slot(self.slot, cur_acc_code.as_ref())
                     .map_err(otp_error)?;
@@ -474,9 +474,9 @@ impl RpcNode for OtpOtpSlotNode {
                     .and_then(|v| v.as_str())
                     .ok_or_else(|| RpcError::invalid_params("Missing type"))?;
                 let options = params.get("options").cloned().unwrap_or_else(|| json!({}));
-                let cur_acc_code = get_acc_code(&params, "curr_acc_code")?;
+                let cur_acc_code = get_acc_code(params, "curr_acc_code")?;
 
-                let mut config = build_config(cfg_type, &params)?;
+                let mut config = build_config(cfg_type, params)?;
                 config = apply_options(config, &options)?;
 
                 session
@@ -491,8 +491,8 @@ impl RpcNode for OtpOtpSlotNode {
             }
             "update" => {
                 let options = params.clone();
-                let acc_code = get_acc_code(&params, "acc_code")?;
-                let cur_acc_code = get_acc_code(&params, "curr_acc_code")?;
+                let acc_code = get_acc_code(params, "acc_code")?;
+                let cur_acc_code = get_acc_code(params, "curr_acc_code")?;
 
                 let mut config = SlotConfiguration::update();
                 config = apply_options(config, &options)?;
@@ -771,28 +771,6 @@ fn build_config(cfg_type: &str, params: &Value) -> Result<SlotConfiguration, Rpc
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn yubiotp_public_id_uses_modhex() {
-        let params = json!({
-            "public_id": "vvcccccccccc",
-            "private_id": "010203040506",
-            "key": "000102030405060708090a0b0c0d0e0f",
-        });
-        assert!(build_config("yubiotp", &params).is_ok());
-
-        let invalid = json!({
-            "public_id": "aaaaaaaaaaaa",
-            "private_id": "010203040506",
-            "key": "000102030405060708090a0b0c0d0e0f",
-        });
-        assert!(build_config("yubiotp", &invalid).is_err());
-    }
-}
-
 fn apply_options(
     mut config: SlotConfiguration,
     options: &Value,
@@ -896,4 +874,26 @@ fn apply_options(
             .map_err(|e| RpcError::invalid_params(format!("{e}")))?;
     }
     Ok(config)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn yubiotp_public_id_uses_modhex() {
+        let params = json!({
+            "public_id": "vvcccccccccc",
+            "private_id": "010203040506",
+            "key": "000102030405060708090a0b0c0d0e0f",
+        });
+        assert!(build_config("yubiotp", &params).is_ok());
+
+        let invalid = json!({
+            "public_id": "aaaaaaaaaaaa",
+            "private_id": "010203040506",
+            "key": "000102030405060708090a0b0c0d0e0f",
+        });
+        assert!(build_config("yubiotp", &invalid).is_err());
+    }
 }

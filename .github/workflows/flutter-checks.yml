@@ -34,6 +34,18 @@ jobs:
       - name: Install Flutter dependencies
         run: flutter pub get
 
+      - uses: dtolnay/rust-toolchain@6bed0761d98439e5a578e2877258200ad565ba87 # stable
+
+      - name: Install helper lint dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -qq libpcsclite-dev libudev-dev libdbus-1-dev build-essential cmake pkg-config libssl-dev
+
+      - name: Check out helper Rust dependencies
+        run: |
+          git clone --filter=blob:none https://github.com/Yubico/yubikey-manager.git ../yubikit-rs
+          git -C ../yubikit-rs checkout ff69c7a060a687213867aff9abd563d034371707
+
       - name: Run lints and tests
         run: |
           pipx run pre-commit run --all-files

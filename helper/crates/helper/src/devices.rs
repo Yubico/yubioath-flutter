@@ -28,6 +28,8 @@ use crate::util::{id_from_fingerprint, version_to_json};
 /// enumeration instead.
 static IS_SERVICE: OnceLock<bool> = OnceLock::new();
 
+type DeviceWithRevision = (Box<dyn YubiKeyDevice>, u64);
+
 /// Whether device access is backed by the ykman-svc service (RPC) rather
 /// than direct local access. `false` until the first [`DevicesNode`] has
 /// been constructed.
@@ -74,9 +76,7 @@ impl DevicesNode {
     /// otherwise. The monitor runs continuously in the background for the
     /// lifetime of the helper process, so this is always up to date and
     /// never needs to trigger a fresh USB/PC-SC scan.
-    fn list_devices(
-        &mut self,
-    ) -> Result<Vec<(Box<dyn YubiKeyDevice>, u64)>, yubikit::device::DeviceError> {
+    fn list_devices(&mut self) -> Result<Vec<DeviceWithRevision>, DeviceError> {
         if self.is_service {
             self.source
                 .list_devices()
@@ -252,28 +252,6 @@ fn fido_open_error(device: &str, error: &DeviceError, is_service: bool) -> RpcEr
     #[cfg(not(windows))]
     let _ = is_service;
     RpcError::connection_error(device, "fido", &format!("{error:?}"))
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn monitor_change_invalidates_cached_device_with_same_metadata() {
-        let devices = BTreeMap::from([("123".to_string(), json!({"name": "YubiKey"}))]);
-        let original = BTreeMap::from([("123".to_string(), 1)]);
-        let changed = BTreeMap::from([("123".to_string(), 2)]);
-
-        assert!(!inventory_changed(&devices, &devices, &original, &original));
-        assert!(inventory_changed(&devices, &devices, &original, &changed));
-    }
-
-    #[test]
-    fn service_fido_open_failure_is_retryable() {
-        let error = fido_open_error("YubiKey", &DeviceError::NoDeviceFound, true);
-        assert_eq!(error.status, "connection-error");
-        assert_eq!(error.body["connection"], "fido");
-    }
 }
 
 /// A YubiKey device node — works with both local and service-backed devices.
@@ -488,5 +466,27 @@ fn extract_ec_pubkey_from_cert(cert_der: &[u8]) -> Result<Vec<u8>, &'static str>
         Ok(pk_bytes.to_vec())
     } else {
         Err("Unexpected public key format")
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn monitor_change_invalidates_cached_device_with_same_metadata() {
+        let devices = BTreeMap::from([("123".to_string(), json!({"name": "YubiKey"}))]);
+        let original = BTreeMap::from([("123".to_string(), 1)]);
+        let changed = BTreeMap::from([("123".to_string(), 2)]);
+
+        assert!(!inventory_changed(&devices, &devices, &original, &original));
+        assert!(inventory_changed(&devices, &devices, &original, &changed));
+    }
+
+    #[test]
+    fn service_fido_open_failure_is_retryable() {
+        let error = fido_open_error("YubiKey", &DeviceError::NoDeviceFound, true);
+        assert_eq!(error.status, "connection-error");
+        assert_eq!(error.body["connection"], "fido");
     }
 }

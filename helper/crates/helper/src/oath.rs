@@ -319,7 +319,7 @@ impl OathNode {
                 Ok(RpcResponse::new(json!({})))
             }
             "validate" => {
-                let access_key_bytes = self.get_key(&params)?;
+                let access_key_bytes = self.get_key(params)?;
                 let remember = params
                     .get("remember")
                     .and_then(|v| v.as_bool())
@@ -359,7 +359,7 @@ impl OathNode {
                 })))
             }
             "set_key" => {
-                let access_key_bytes = self.get_key(&params)?;
+                let access_key_bytes = self.get_key(params)?;
                 let remember = params
                     .get("remember")
                     .and_then(|v| v.as_bool())
