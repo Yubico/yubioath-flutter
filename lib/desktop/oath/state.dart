@@ -34,6 +34,7 @@ import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
 import '../../oath/models.dart';
 import '../../oath/state.dart';
+import '../models.dart';
 import '../rpc.dart';
 import '../state.dart';
 
@@ -227,10 +228,15 @@ DesktopCredentialListNotifier buildDesktopOathCredentialListProvider(
     ),
   );
   ref.listen<WindowState>(windowStateProvider, (_, windowState) {
-    notifier._rescheduleTimer(windowState.active);
+    notifier._rescheduleTimer(
+      windowState.active &&
+          ref.read(currentSectionProvider) == Section.accounts,
+    );
   }, fireImmediately: true);
   ref.listen(currentSectionProvider, (_, section) {
-    notifier._rescheduleTimer(section == Section.accounts);
+    notifier._rescheduleTimer(
+      section == Section.accounts && ref.read(windowStateProvider).active,
+    );
   });
 
   return notifier;
@@ -260,11 +266,13 @@ class DesktopCredentialListNotifier extends OathCredentialListNotifier {
   final RpcNodeSession _session;
   final bool _locked;
   Timer? _timer;
+  bool _active = false;
 
   DesktopCredentialListNotifier(this._withContext, this._session, this._locked)
     : super();
 
   void _rescheduleTimer(bool active) {
+    _active = active;
     if (_locked) return;
     if (active) {
       _scheduleRefresh();
@@ -427,12 +435,23 @@ class DesktopCredentialListNotifier extends OathCredentialListNotifier {
     }
   }
 
+  void _refreshScheduled() async {
+    try {
+      await refresh();
+    } on RpcError catch (e) {
+      _log.warning('OATH credential refresh failed', e);
+      if (mounted && _active) {
+        _timer = Timer(const Duration(seconds: 1), _refreshScheduled);
+      }
+    }
+  }
+
   void _scheduleRefresh() {
     _timer?.cancel();
-    if (_locked) return;
+    if (_locked || !_active) return;
     if (state == null) {
       _log.debug('No OATH state, refresh immediately');
-      refresh();
+      _refreshScheduled();
     } else if (mounted) {
       final expirations = (state ?? [])
           .where(
@@ -451,10 +470,13 @@ class DesktopCredentialListNotifier extends OathCredentialListNotifier {
         final now = DateTime.now().millisecondsSinceEpoch;
         if (earliest < now) {
           _log.debug('Already expired, refresh immediately');
-          refresh();
+          _refreshScheduled();
         } else {
           _log.debug('Schedule refresh in ${earliest - now}ms');
-          _timer = Timer(Duration(milliseconds: earliest - now), refresh);
+          _timer = Timer(
+            Duration(milliseconds: earliest - now),
+            _refreshScheduled,
+          );
         }
       }
     }

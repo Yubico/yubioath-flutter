@@ -48,7 +48,8 @@ final fidoStateProvider = AsyncNotifierProvider.autoDispose
         if (error is RpcError && error.status == 'fido-blocked-error') {
           return null;
         }
-        return Duration(milliseconds: 200 * (1 << retryCount));
+        final cappedRetryCount = retryCount < 4 ? retryCount : 4;
+        return Duration(milliseconds: 200 * (1 << cappedRetryCount));
       },
     );
 

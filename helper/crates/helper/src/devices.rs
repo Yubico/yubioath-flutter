@@ -6,7 +6,7 @@ use der::Decode;
 use serde_json::{Value, json};
 
 use yubikit::core::Transport;
-use yubikit::device::YubiKeyDevice;
+use yubikit::device::{DeviceError, YubiKeyDevice};
 use yubikit::management::{Capability, UsbInterface};
 use yubikit::platform::device::get_name;
 use yubikit::securitydomain::{KeyRef, SecurityDomainSession};
@@ -240,6 +240,20 @@ fn inventory_changed(
     previous != current || previous_revisions != current_revisions
 }
 
+fn fido_open_error(device: &str, error: &DeviceError, is_service: bool) -> RpcError {
+    #[cfg(windows)]
+    if !is_service && !crate::util::is_admin() {
+        return RpcError::with_body(
+            "fido-blocked-error",
+            "FIDO access required admin",
+            json!({ "connection": "fido" }),
+        );
+    }
+    #[cfg(not(windows))]
+    let _ = is_service;
+    RpcError::connection_error(device, "fido", &format!("{error:?}"))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -252,6 +266,13 @@ mod tests {
 
         assert!(!inventory_changed(&devices, &devices, &original, &original));
         assert!(inventory_changed(&devices, &devices, &original, &changed));
+    }
+
+    #[test]
+    fn service_fido_open_failure_is_retryable() {
+        let error = fido_open_error("YubiKey", &DeviceError::NoDeviceFound, true);
+        assert_eq!(error.status, "connection-error");
+        assert_eq!(error.body["connection"], "fido");
     }
 }
 
@@ -350,17 +371,10 @@ impl RpcNode for DeviceNode {
                 Ok(Box::new(ConnectionNode::new_otp(dev, conn, info)))
             }
             "fido" => {
-                let conn = self.device.open_fido().map_err(|e| {
-                    #[cfg(windows)]
-                    if !crate::util::is_admin() {
-                        return RpcError::with_body(
-                            "fido-blocked-error",
-                            "FIDO access required admin",
-                            json!({ "connection": "fido" }),
-                        );
-                    }
-                    RpcError::connection_error(&self.device.name(), "fido", &format!("{e:?}"))
-                })?;
+                let conn = self
+                    .device
+                    .open_fido()
+                    .map_err(|e| fido_open_error(&self.device.name(), &e, is_service_mode()))?;
                 let dev = self.device.clone_box();
                 Ok(Box::new(ConnectionNode::new_fido(dev, conn, info)))
             }
