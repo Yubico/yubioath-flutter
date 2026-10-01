@@ -98,6 +98,10 @@ jobs:
   sign-source:
     if: startsWith(github.ref, 'refs/tags/')
     needs: [build]
+    # Scribe can report another submission's completion when jobs for a tag overlap.
+    concurrency:
+      group: windows-scribe-${{ github.ref }}
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     steps:
     - name: Check tag format
@@ -282,6 +286,9 @@ jobs:
   sign-msi:
     if: startsWith(github.ref, 'refs/tags/')
     needs: [build-msi]
+    concurrency:
+      group: windows-scribe-${{ github.ref }}
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     steps:
     - name: Check tag

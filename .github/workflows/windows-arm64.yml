@@ -134,6 +134,10 @@ jobs:
   sign-source:
     if: startsWith(github.ref, 'refs/tags/')
     needs: [build]
+    # Share the signing slot with the x64 workflow; builds remain parallel.
+    concurrency:
+      group: windows-scribe-${{ github.ref }}
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     steps:
       - name: Check tag format
@@ -298,6 +302,9 @@ jobs:
   sign-msi:
     if: startsWith(github.ref, 'refs/tags/')
     needs: [build-msi]
+    concurrency:
+      group: windows-scribe-${{ github.ref }}
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
