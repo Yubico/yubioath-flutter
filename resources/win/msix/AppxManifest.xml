@@ -51,10 +51,10 @@
         <desktop6:Extension Category="windows.service"
                             Executable="ykman-svc.exe"
                             EntryPoint="Windows.FullTrustApplication">
-          <desktop6:Service Name="ykman-svc"
+          <desktop6:Service Name="yubico-authenticator-svc"
                             StartupType="auto"
                             StartAccount="localSystem"
-                            Arguments="run" />
+                            Arguments="run --authenticator-msix" />
         </desktop6:Extension>
       </Extensions>
     </Application>

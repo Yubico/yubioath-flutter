@@ -12,7 +12,7 @@ jobs:
         shell: bash
         run: |
           cat .github/workflows/env >> $GITHUB_ENV
-          echo CACHE_KEY=${{ runner.os }}-${{ runner.arch }}-rust-7ba53ca-svc1-${{ hashFiles('build-helper.bat', 'helper/**')}} >> $GITHUB_ENV
+          echo CACHE_KEY=${{ runner.os }}-${{ runner.arch }}-rust-9841da8-svc1-${{ hashFiles('build-helper.bat', 'helper/**')}} >> $GITHUB_ENV
 
       - name: Check app versions
         run: |
@@ -26,7 +26,7 @@ jobs:
         shell: bash
         run: |
           git clone --filter=blob:none https://github.com/Yubico/yubikey-manager.git ../yubikit-rs
-          git -C ../yubikit-rs checkout 7ba53ca05c8f27b129dfcfa280409d76aa5eaf9c
+          git -C ../yubikit-rs checkout 9841da81b8b27206312a4d139aa2c927fb6c7920
 
       - name: Cache helper
         id: cache-helper
@@ -85,6 +85,8 @@ jobs:
           mkdir $dest
           mv build\windows\x64\runner\Release\* $dest\
           cp build\windows\ykman-svc.exe deploy\
+          New-Item -ItemType Directory deploy\service-module | Out-Null
+          Copy-Item ..\yubikit-rs\resources\win\make_service_msm.ps1, ..\yubikit-rs\resources\win\ykman-service.wxs deploy\service-module\
           mv resources\win\release-win.ps1 deploy
           mv resources\win\verify_dll.ps1 deploy
           mv resources deploy
@@ -210,9 +212,14 @@ jobs:
           $env:PATH += ";$env:WIX\bin"
           $env:SRCDIR = "signed-files\yubioath-desktop-$branch-windows\"
           $serviceSource = (Resolve-Path signed-files\ykman-svc.exe).Path
+          & .\signed-files\service-module\make_service_msm.ps1 -ServiceSource $serviceSource -Architecture x64 -OutputPath .\ykman-service.msm
+          $serviceModule = (Resolve-Path .\ykman-service.msm).Path
           heat dir .\signed-files\yubioath-desktop-$branch-windows\ -out fragment.wxs -gg -scom -srd -sfrag -dr INSTALLDIR -cg ApplicationFiles -var env.SRCDIR
-          candle .\fragment.wxs .\resources\win\yubioath-desktop.wxs "-dServiceSource=$serviceSource" -ext WixUtilExtension -arch x64
+          if ($LASTEXITCODE -ne 0) { throw 'WiX heat failed' }
+          candle .\fragment.wxs .\resources\win\yubioath-desktop.wxs "-dServiceModule=$serviceModule" -ext WixUtilExtension -arch x64
+          if ($LASTEXITCODE -ne 0) { throw 'WiX candle failed' }
           light fragment.wixobj yubioath-desktop.wixobj -ext WixUIExtension -ext WixUtilExtension -o yubioath-desktop.msi
+          if ($LASTEXITCODE -ne 0) { throw 'WiX light failed' }
 
       - name: Rename and archive app bundle
         run: |

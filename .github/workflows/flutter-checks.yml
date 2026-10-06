@@ -44,7 +44,7 @@ jobs:
       - name: Check out helper Rust dependencies
         run: |
           git clone --filter=blob:none https://github.com/Yubico/yubikey-manager.git ../yubikit-rs
-          git -C ../yubikit-rs checkout 7ba53ca05c8f27b129dfcfa280409d76aa5eaf9c
+          git -C ../yubikit-rs checkout 9841da81b8b27206312a4d139aa2c927fb6c7920
 
       - name: Run lints and tests
         run: |
