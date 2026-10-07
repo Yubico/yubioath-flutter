@@ -7,13 +7,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yubico_authenticator/app/models.dart';
 import 'package:yubico_authenticator/app/state.dart';
 import 'package:yubico_authenticator/app/views/device_avatar.dart';
+import 'package:yubico_authenticator/app/views/device_error_screen.dart';
 import 'package:yubico_authenticator/app/views/device_picker.dart';
+import 'package:yubico_authenticator/app/views/main_page.dart';
+import 'package:yubico_authenticator/app/views/message_page.dart';
+import 'package:yubico_authenticator/app/views/message_page_not_initialized.dart';
 import 'package:yubico_authenticator/app/views/navigation.dart';
 import 'package:yubico_authenticator/core/models.dart';
 import 'package:yubico_authenticator/core/state.dart';
 import 'package:yubico_authenticator/desktop/state.dart';
 import 'package:yubico_authenticator/generated/l10n/app_localizations.dart';
 import 'package:yubico_authenticator/generated/l10n/app_localizations_en.dart';
+import 'package:yubico_authenticator/home/views/home_message_page.dart';
 import 'package:yubico_authenticator/theme.dart';
 
 class _NoDevices extends AttachedDevicesNotifier {
@@ -42,6 +47,13 @@ class _NoCurrentDevice extends CurrentDeviceNotifier {
   void setCurrentDevice(DeviceNode? device) => state = device;
 }
 
+class _HomeSection extends CurrentSectionNotifier {
+  _HomeSection() : super(Section.home);
+
+  @override
+  void setCurrentSection(Section section) => state = section;
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   final l10n = AppLocalizationsEn();
@@ -57,6 +69,49 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     prefs = await SharedPreferences.getInstance();
   });
+
+  for (final (name, page) in [
+    ('Home', const MainPage()),
+    (
+      'uninitialized application',
+      const MessagePageNotInitialized(title: 'Accounts', capabilities: null),
+    ),
+    ('NFC device error', DeviceErrorScreen(_reader)),
+  ]) {
+    testWidgets('$name uses a themed security key graphic', (tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            currentDeviceProvider.overrideWith(_NoCurrentDevice.new),
+            currentDeviceDataProvider.overrideWithValue(const AsyncLoading()),
+            currentSectionProvider.overrideWith((ref) => _HomeSection()),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.getLightTheme(defaultPrimaryColor),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Consumer(
+              builder: (context, ref, _) {
+                final content = page.build(context, ref);
+                final graphic = switch (content) {
+                  HomeMessagePage(:final graphic) => graphic,
+                  MessagePage(:final graphic) => graphic,
+                  _ => throw StateError('Expected a message page'),
+                };
+                return Center(child: graphic);
+              },
+            ),
+          ),
+        ),
+      );
+      final finder = find.byIcon(Symbols.security_key);
+      expect(finder, findsOneWidget);
+      expect(find.byType(Image), findsNothing);
+      final icon = tester.widget<Icon>(finder);
+      expect(icon.size, 128);
+      expect(icon.color, Theme.of(tester.element(finder)).colorScheme.primary);
+    }, variant: TargetPlatformVariant({TargetPlatform.linux}));
+  }
 
   Future<void> pumpPicker(
     WidgetTester tester, {

@@ -91,10 +91,9 @@ class DeviceErrorScreen extends ConsumerWidget {
       ),
       _ => HomeMessagePage(
         centered: true,
-        graphic: Image.asset(
-          'assets/graphics/no-key.png',
-          filterQuality: .medium,
-          scale: 2,
+        graphic: Icon(
+          Symbols.security_key,
+          size: 128,
           color: Theme.of(context).colorScheme.primary,
         ),
         header: l10n.l_place_on_nfc_reader,

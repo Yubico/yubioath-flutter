@@ -41,10 +41,9 @@ class MessagePageNotInitialized extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final noKeyImage = Image.asset(
-      'assets/graphics/no-key.png',
-      filterQuality: .medium,
-      scale: 2,
+    final noKeyIcon = Icon(
+      Symbols.security_key,
+      size: 128,
       color: Theme.of(context).colorScheme.primary,
     );
 
@@ -59,7 +58,7 @@ class MessagePageNotInitialized extends ConsumerWidget {
         capabilities: capabilities,
         centered: true,
         delayedContent: isUsbYubiKey,
-        graphic: noKeyImage,
+        graphic: noKeyIcon,
         header: hasNfcSupport && isNfcEnabled
             ? l10n.l_insert_or_tap_yk
             : l10n.l_insert_yk,
@@ -80,7 +79,7 @@ class MessagePageNotInitialized extends ConsumerWidget {
         capabilities: capabilities,
         centered: true,
         delayedContent: false,
-        graphic: noKeyImage,
+        graphic: noKeyIcon,
         header: l10n.l_insert_yk,
       );
     }
