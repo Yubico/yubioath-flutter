@@ -162,10 +162,6 @@
     "@_yubikey_selection": {},
 
     "s_select_to_scan": "יש לבחור כדי לסרוק",
-    "s_hide_reader": "הסתרת קורא",
-    "s_show_hidden_readers": "הצגת קוראים מוסתרים",
-    "s_toggle_readers": "החלפת מצב קוראים",
-    "l_toggle_readers_desc": "הצגת או הסתרת קוראים",
     "s_sn_serial": "מס׳ סידורי: {serial}",
     "@s_sn_serial": {
         "placeholders": {

@@ -9,7 +9,9 @@ import 'package:yubico_authenticator/app/state.dart';
 import 'package:yubico_authenticator/app/views/device_avatar.dart';
 import 'package:yubico_authenticator/app/views/device_picker.dart';
 import 'package:yubico_authenticator/app/views/navigation.dart';
+import 'package:yubico_authenticator/core/models.dart';
 import 'package:yubico_authenticator/core/state.dart';
+import 'package:yubico_authenticator/desktop/state.dart';
 import 'package:yubico_authenticator/generated/l10n/app_localizations.dart';
 import 'package:yubico_authenticator/generated/l10n/app_localizations_en.dart';
 import 'package:yubico_authenticator/theme.dart';
@@ -17,6 +19,19 @@ import 'package:yubico_authenticator/theme.dart';
 class _NoDevices extends AttachedDevicesNotifier {
   @override
   List<DeviceNode> build() => [];
+}
+
+final _reader = DeviceNode.yubiKey(
+  DevicePath(['devices', 'reader']),
+  'NFC reader',
+  null,
+  Transport.nfc,
+  null,
+);
+
+class _ReaderDevices extends AttachedDevicesNotifier {
+  @override
+  List<DeviceNode> build() => [_reader];
 }
 
 class _NoCurrentDevice extends CurrentDeviceNotifier {
@@ -48,14 +63,18 @@ void main() {
     required bool extended,
     bool isDrawer = false,
     bool referenceRow = false,
+    bool reader = false,
     double textScale = 1,
   }) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           prefProvider.overrideWithValue(prefs),
-          attachedDevicesProvider.overrideWith(_NoDevices.new),
+          attachedDevicesProvider.overrideWith(
+            reader ? _ReaderDevices.new : _NoDevices.new,
+          ),
           currentDeviceProvider.overrideWith(_NoCurrentDevice.new),
+          currentDeviceDataProvider.overrideWithValue(const AsyncLoading()),
         ],
         child: MaterialApp(
           theme: AppTheme.getLightTheme(defaultPrimaryColor),
@@ -98,6 +117,47 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+  }
+
+  test(
+    'previously hidden reader can be restored as the current device',
+    () async {
+      await prefs.setStringList('DEVICE_PICKER_HIDDEN', [_reader.path.key]);
+      await prefs.setString('APP_STATE_LAST_DEVICE', _reader.path.key);
+      final container = ProviderContainer(
+        overrides: [
+          prefProvider.overrideWithValue(prefs),
+          attachedDevicesProvider.overrideWith(_ReaderDevices.new),
+          currentDeviceProvider.overrideWith(DesktopCurrentDeviceNotifier.new),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      expect(container.read(currentDeviceProvider), _reader);
+    },
+  );
+
+  for (final extended in [false, true]) {
+    testWidgets(
+      'previously hidden reader is visible without reader menus (extended=$extended)',
+      (tester) async {
+        await prefs.setStringList('DEVICE_PICKER_HIDDEN', [_reader.path.key]);
+        await pumpPicker(tester, extended: extended, reader: true);
+
+        final row = find.byKey(ValueKey(_reader.path.key));
+        expect(row, findsOneWidget);
+        expect(find.byType(PopupMenuButton), findsNothing);
+        expect(find.byIcon(Symbols.more_horiz), findsNothing);
+        await tester.longPress(row);
+        await tester.pumpAndSettle();
+        expect(find.byType(PopupMenuItem), findsNothing);
+
+        await tester.tap(row);
+        final container = ProviderScope.containerOf(tester.element(row));
+        expect(container.read(currentDeviceProvider), _reader);
+      },
+      variant: TargetPlatformVariant({TargetPlatform.linux}),
+    );
   }
 
   for (final scale in [0.8, 1.5, 2.0]) {
@@ -179,31 +239,30 @@ void main() {
           tester.getCenter(find.text(l10n.l_no_yk_present)).dy,
           closeTo(tester.getCenter(emptyTile).dy, 0.5),
         );
-        final image = tester.widget<Image>(
-          find.descendant(
-            of: find.byType(DeviceAvatar),
-            matching: find.byType(Image),
-          ),
+        final placeholderIcon = find.descendant(
+          of: find.byType(DeviceAvatar),
+          matching: find.byIcon(Symbols.security_key),
         );
+        expect(placeholderIcon, findsOneWidget);
+        expect(find.byType(Image), findsNothing);
         expect(
-          (image.image as AssetImage).assetName,
-          'assets/graphics/no-key.png',
-        );
-        expect(
-          image.color,
-          IconTheme.of(tester.element(find.byType(Image))).color,
+          IconTheme.of(tester.element(placeholderIcon)).color,
+          effectiveStyle(placeholderText).color,
         );
       },
       variant: TargetPlatformVariant({TargetPlatform.linux}),
     );
   }
 
-  testWidgets('collapsed navigation uses the same graphic and no USB label', (
-    tester,
-  ) async {
-    await pumpPicker(tester, extended: false);
-    expect(find.byIcon(Symbols.usb), findsNothing);
-    expect(find.byType(Image), findsOneWidget);
-    expect(find.byTooltip(l10n.l_no_yk_present), findsOneWidget);
-  }, variant: TargetPlatformVariant({TargetPlatform.linux}));
+  testWidgets(
+    'collapsed navigation uses the security key icon and no USB label',
+    (tester) async {
+      await pumpPicker(tester, extended: false);
+      expect(find.byIcon(Symbols.usb), findsNothing);
+      expect(find.byIcon(Symbols.security_key), findsOneWidget);
+      expect(find.byType(Image), findsNothing);
+      expect(find.byTooltip(l10n.l_no_yk_present), findsOneWidget);
+    },
+    variant: TargetPlatformVariant({TargetPlatform.linux}),
+  );
 }

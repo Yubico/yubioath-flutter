@@ -162,10 +162,6 @@
     "@_yubikey_selection": {},
 
     "s_select_to_scan": "選取後開始掃描",
-    "s_hide_reader": "隱藏讀卡機",
-    "s_show_hidden_readers": "顯示隱藏的讀卡機",
-    "s_toggle_readers": "切換讀卡機",
-    "l_toggle_readers_desc": "顯示或隱藏讀卡機",
     "s_sn_serial": "序號：{serial}",
     "@s_sn_serial": {
         "placeholders": {

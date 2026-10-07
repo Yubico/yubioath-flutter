@@ -35,17 +35,9 @@ class DeviceAvatar extends StatelessWidget {
   factory DeviceAvatar.noDevice({double? radius}) => DeviceAvatar(
     radius: radius,
     key: noDeviceAvatar,
-    child: Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Builder(
-        builder: (context) => Image.asset(
-          'assets/graphics/no-key.png',
-          filterQuality: .medium,
-          width: 24,
-          height: 24,
-          color: IconTheme.of(context).color,
-        ),
-      ),
+    child: const Padding(
+      padding: EdgeInsets.all(8.0),
+      child: Icon(Symbols.security_key),
     ),
   );
 

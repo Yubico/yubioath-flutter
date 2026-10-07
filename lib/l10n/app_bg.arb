@@ -162,10 +162,6 @@
     "@_yubikey_selection": {},
 
     "s_select_to_scan": "Избери за сканиране",
-    "s_hide_reader": "Скрий четеца",
-    "s_show_hidden_readers": "Показване на скрити четци",
-    "s_toggle_readers": "Превключване на четци",
-    "l_toggle_readers_desc": "Покажи или скрий четци",
     "s_sn_serial": "S/N: {serial}",
     "@s_sn_serial": {
         "placeholders": {

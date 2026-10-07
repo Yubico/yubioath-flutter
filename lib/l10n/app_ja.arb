@@ -162,10 +162,6 @@
     "@_yubikey_selection": {},
 
     "s_select_to_scan": "選択してスキャン",
-    "s_hide_reader": "リーダーを隠す",
-    "s_show_hidden_readers": "非表示のリーダーを表示する",
-    "s_toggle_readers": "リーダーを切り替える",
-    "l_toggle_readers_desc": "リーダーを表示/非表示にします",
     "s_sn_serial": "S/N: {serial}",
     "@s_sn_serial": {
         "placeholders": {

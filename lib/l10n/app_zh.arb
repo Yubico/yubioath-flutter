@@ -162,10 +162,6 @@
     "@_yubikey_selection": {},
 
     "s_select_to_scan": "选择以扫描",
-    "s_hide_reader": "隐藏读取器",
-    "s_show_hidden_readers": "显示隐藏的读取器",
-    "s_toggle_readers": "切换读取器",
-    "l_toggle_readers_desc": "显示或隐藏读取器",
     "s_sn_serial": "S/N: {serial}",
     "@s_sn_serial": {
         "placeholders": {

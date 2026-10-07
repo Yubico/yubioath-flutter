@@ -26,7 +26,6 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../../android/app_methods.dart';
 import '../../android/models.dart';
 import '../../android/state.dart';
-import '../../core/models.dart';
 import '../../core/state.dart';
 import '../../desktop/state.dart';
 import '../../generated/l10n/app_localizations.dart';
@@ -35,7 +34,6 @@ import '../../widgets/basic_dialog.dart';
 import '../../widgets/info_popup_button.dart';
 import '../../widgets/list_title.dart';
 import '../../widgets/responsive_dialog.dart';
-import '../../widgets/tooltip_if_truncated.dart';
 import '../app_url_launcher.dart';
 import '../icon_provider/icon_pack.dart';
 import '../icon_provider/icon_pack_manager.dart';
@@ -71,7 +69,6 @@ enum SettingsSection {
   theme(),
   customIcons(),
   language(),
-  readers(),
   debugging(),
   help(),
   nfcAndUsb(),
@@ -663,79 +660,6 @@ class _LanguageItem extends ConsumerWidget {
   }
 }
 
-class _ToggleReadersView extends ConsumerWidget {
-  final bool isDialog;
-
-  const _ToggleReadersView({required this.isDialog});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-    final textTheme = theme.textTheme;
-    final hidden = ref.watch(hiddenDevicesProvider);
-    final nfcDevices = ref
-        .watch(attachedDevicesProvider)
-        .where((e) => e.transport == Transport.nfc);
-    if (nfcDevices.isEmpty && isDialog) {
-      Navigator.of(context).pop();
-    }
-
-    final items = nfcDevices.map(
-      (e) => SwitchListTile(
-        value: !hidden.contains(e.path.key),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(isDialog ? 0 : 48.0),
-        ),
-        contentPadding: EdgeInsets.symmetric(horizontal: 26),
-        onChanged: (show) {
-          if (!show) {
-            ref.read(hiddenDevicesProvider.notifier).hideDevice(e.path);
-          } else {
-            ref.read(hiddenDevicesProvider.notifier).showDevice(e.path);
-          }
-        },
-        title: Transform.translate(
-          offset: Offset(6, 0),
-          child: TooltipIfTruncated(
-            text: e.name,
-            style: TextStyle(fontSize: textTheme.bodyMedium?.fontSize),
-          ),
-        ),
-        secondary: Icon(Symbols.contactless),
-      ),
-    );
-    if (isDialog) {
-      return ResponsiveDialog(
-        title: Text(l10n.s_toggle_readers),
-        builder: (context, fullScreen) => Column(children: [...items]),
-      );
-    } else {
-      return Column(children: [ListTitle(l10n.s_toggle_readers), ...items]);
-    }
-  }
-}
-
-class _ToggleReadersItem extends StatelessWidget {
-  final SettingsSection? selected;
-  final bool expanded;
-
-  const _ToggleReadersItem({required this.selected, required this.expanded});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return _SettingsSectionItem(
-      SettingsSection.readers,
-      selected: selected,
-      expanded: expanded,
-      icon: Symbols.contactless,
-      title: l10n.s_toggle_readers,
-      subtitle: l10n.l_toggle_readers_desc,
-    );
-  }
-}
-
 class _LogsView extends ConsumerStatefulWidget {
   final bool isDialog;
 
@@ -1236,7 +1160,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       SettingsSection.language => _LanguageView(isDialog: isDialog),
       SettingsSection.theme => _ThemeModeView(isDialog: isDialog),
       SettingsSection.debugging => _LogsView(isDialog: isDialog),
-      SettingsSection.readers => _ToggleReadersView(isDialog: isDialog),
       SettingsSection.customIcons => _IconsView(isDialog: isDialog),
       SettingsSection.help => _HelpView(isDialog: isDialog),
       SettingsSection.nfcAndUsb => _NfcAndUsbView(isDialog: isDialog),
@@ -1247,14 +1170,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    ref.listen(attachedDevicesProvider, (prev, next) {
-      final nfcDevices = next.where((e) => e.transport == Transport.nfc);
-      if (nfcDevices.isEmpty && _selected == SettingsSection.readers) {
-        setState(() {
-          _selected = null;
-        });
-      }
-    });
     return Actions(
       actions: {
         EscapeIntent: CallbackAction<EscapeIntent>(
@@ -1306,9 +1221,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             ? (context) => _buildSectionView(_selected!, false)
             : null,
         builder: (context, expanded) {
-          final nfcDevices = ref
-              .watch(attachedDevicesProvider)
-              .where((e) => e.transport == Transport.nfc);
           return Actions(
             actions: {
               OpenIntent<SettingsSection>:
@@ -1337,8 +1249,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   _LanguageItem(selected: _selected, expanded: expanded),
                   if (isAndroid)
                     _NfcAndUsbItem(selected: _selected, expanded: expanded),
-                  if (nfcDevices.isNotEmpty && isDesktop)
-                    _ToggleReadersItem(selected: _selected, expanded: expanded),
                   const SizedBox(height: 16.0),
                   Column(
                     crossAxisAlignment: .start,

@@ -204,15 +204,9 @@ class DesktopCurrentDeviceNotifier extends CurrentDeviceNotifier {
   DeviceNode? build() {
     SharedPreferences prefs = ref.watch(prefProvider);
     final devices = ref.watch(attachedDevicesProvider);
-    final hidden = ref.watch(hiddenDevicesProvider);
     final lastDevice = prefs.getString(_lastDevice) ?? '';
 
-    // Ensure hidden devices are deselected
-    var node = devices
-        .where(
-          (dev) => dev.path.key == lastDevice && !hidden.contains(dev.path.key),
-        )
-        .firstOrNull;
+    var node = devices.where((dev) => dev.path.key == lastDevice).firstOrNull;
 
     if (node == null) {
       final parts = lastDevice.split('/');

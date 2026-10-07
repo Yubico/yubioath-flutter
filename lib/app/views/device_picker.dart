@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:material_symbols_icons/symbols.dart';
 
 import '../../android/state.dart';
 import '../../core/models.dart';
@@ -28,7 +26,6 @@ import '../../widgets/focus_border.dart';
 import '../models.dart';
 import '../state.dart';
 import 'device_avatar.dart';
-import 'keys.dart';
 
 class DevicePickerContent extends ConsumerWidget {
   final bool extended;
@@ -43,11 +40,7 @@ class DevicePickerContent extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final hidden = ref.watch(hiddenDevicesProvider);
-    final devices = ref
-        .watch(attachedDevicesProvider)
-        .where((e) => !hidden.contains(e.path.key))
-        .toList();
+    final devices = ref.watch(attachedDevicesProvider);
     final currentNode = ref.watch(currentDeviceProvider);
 
     final showNoKey =
@@ -156,43 +149,13 @@ List<String> _getDeviceStrings(
   return messages;
 }
 
-class _DeviceMenuButton extends ConsumerWidget {
-  final List<PopupMenuItem> menuItems;
-  final double opacity;
-
-  const _DeviceMenuButton({required this.menuItems, required this.opacity});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context);
-    return Theme(
-      data: Theme.of(Navigator.of(context).context), // use app theme
-      child: Opacity(
-        opacity: menuItems.isNotEmpty ? opacity : 0.0,
-        child: PopupMenuButton(
-          key: yubikeyPopupMenuButton,
-          enabled: menuItems.isNotEmpty,
-          icon: const Icon(Symbols.more_horiz),
-          tooltip: l10n.s_options,
-          iconColor: Theme.of(context).listTileTheme.textColor,
-          itemBuilder: (context) {
-            return menuItems;
-          },
-          popUpAnimationStyle: AnimationStyle(duration: Duration.zero),
-        ),
-      ),
-    );
-  }
-}
-
-class DeviceRow extends ConsumerStatefulWidget {
+class DeviceRow extends StatefulWidget {
   final Widget leading;
   final String title;
   final String? subtitle;
   final bool extended;
   final bool selected;
   final Color? background;
-  final DeviceNode? node;
   final void Function() onTap;
   final BorderRadiusGeometry? borderRadius;
 
@@ -204,18 +167,16 @@ class DeviceRow extends ConsumerStatefulWidget {
     required this.extended,
     required this.selected,
     this.background,
-    this.node,
     required this.onTap,
     this.borderRadius,
   });
 
   @override
-  ConsumerState<DeviceRow> createState() => _DeviceRowState();
+  State<DeviceRow> createState() => _DeviceRowState();
 }
 
-class _DeviceRowState extends ConsumerState<DeviceRow> {
+class _DeviceRowState extends State<DeviceRow> {
   final FocusNode _focusNode = FocusNode();
-  bool _showContextMenu = false;
 
   @override
   void dispose() {
@@ -225,7 +186,6 @@ class _DeviceRowState extends ConsumerState<DeviceRow> {
 
   @override
   Widget build(BuildContext context) {
-    final menuItems = _getMenuItems(context, ref, widget.node);
     final tooltip = [widget.title, ?widget.subtitle].join('\n');
     final themeData = Theme.of(context);
     final seedColor = !widget.selected || widget.background == null
@@ -253,141 +213,62 @@ class _DeviceRowState extends ConsumerState<DeviceRow> {
         message: '', // no tooltip for drawer
         child: Theme(
           data: localThemeData,
-          child: MouseRegion(
-            onEnter: (PointerEnterEvent event) {
-              setState(() {
-                _showContextMenu = true;
-              });
-            },
-            onExit: (PointerExitEvent event) {
-              setState(() {
-                _showContextMenu = false;
-              });
-            },
-            child: FocusBorder(
+          child: FocusBorder(
+            focusNode: _focusNode,
+            borderRadius: borderRadius,
+            color: widget.selected
+                ? colorScheme.onPrimary
+                : themeData.colorScheme.primary,
+            child: ListTile(
               focusNode: _focusNode,
-              borderRadius: borderRadius,
-              color: widget.selected
-                  ? colorScheme.onPrimary
-                  : themeData.colorScheme.primary,
-              child: ListTile(
-                focusNode: _focusNode,
-                shape: RoundedRectangleBorder(borderRadius: borderRadius),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 0,
-                ),
-                horizontalTitleGap: 8,
-                leading: widget.leading,
-                trailing: menuItems.isNotEmpty
-                    ? _DeviceMenuButton(
-                        menuItems: menuItems,
-                        opacity: widget.selected
-                            ? 1.0
-                            : _showContextMenu
-                            ? 0.3
-                            : 0.0,
-                      )
-                    : null,
-                title: Text(widget.title, overflow: .fade, softWrap: false),
-                subtitle: switch (widget.subtitle) {
-                  final subtitle? => Text(
-                    subtitle,
-                    overflow: .fade,
-                    softWrap: false,
-                  ),
-                  null => null,
-                },
-                minVerticalPadding: widget.subtitle == null ? 14.5 : null,
-                dense: widget.subtitle != null,
-                onTap: widget.onTap,
+              shape: RoundedRectangleBorder(borderRadius: borderRadius),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 8,
+                vertical: 0,
               ),
+              horizontalTitleGap: 8,
+              leading: widget.leading,
+              title: Text(widget.title, overflow: .fade, softWrap: false),
+              subtitle: switch (widget.subtitle) {
+                final subtitle? => Text(
+                  subtitle,
+                  overflow: .fade,
+                  softWrap: false,
+                ),
+                null => null,
+              },
+              minVerticalPadding: widget.subtitle == null ? 14.5 : null,
+              dense: widget.subtitle != null,
+              onTap: widget.onTap,
             ),
           ),
         ),
       );
     } else {
-      void showMenuFn(details) {
-        showMenu(
-          context: context,
-          position: RelativeRect.fromLTRB(
-            details.globalPosition.dx,
-            details.globalPosition.dy,
-            details.globalPosition.dx,
-            0,
-          ),
-          items: menuItems,
-        );
-      }
-
-      return GestureDetector(
-        onSecondaryTapDown: isDesktop && menuItems.isNotEmpty
-            ? showMenuFn
-            : null,
-        onLongPressStart: isAndroid ? showMenuFn : null,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 6.5),
-          child: widget.selected
-              ? Semantics(
-                  label: tooltip,
-                  child: IconButton.filled(
-                    tooltip: isDesktop ? tooltip : null,
-                    icon: widget.leading,
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    onPressed: widget.onTap,
-                  ),
-                )
-              : Semantics(
-                  label: tooltip,
-                  child: IconButton(
-                    tooltip: isDesktop ? tooltip : null,
-                    icon: widget.leading,
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    onPressed: widget.onTap,
-                    color: colorScheme.secondary,
-                  ),
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6.5),
+        child: widget.selected
+            ? Semantics(
+                label: tooltip,
+                child: IconButton.filled(
+                  tooltip: isDesktop ? tooltip : null,
+                  icon: widget.leading,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  onPressed: widget.onTap,
                 ),
-        ),
+              )
+            : Semantics(
+                label: tooltip,
+                child: IconButton(
+                  tooltip: isDesktop ? tooltip : null,
+                  icon: widget.leading,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  onPressed: widget.onTap,
+                  color: colorScheme.secondary,
+                ),
+              ),
       );
     }
-  }
-
-  List<PopupMenuItem> _getMenuItems(
-    BuildContext context,
-    WidgetRef ref,
-    DeviceNode? node,
-  ) {
-    final l10n = AppLocalizations.of(context);
-    final hidden = ref.watch(hiddenDevicesProvider);
-
-    return [
-      if (isDesktop && hidden.isNotEmpty)
-        PopupMenuItem(
-          enabled: hidden.isNotEmpty,
-          onTap: () {
-            ref.read(hiddenDevicesProvider.notifier).showAll();
-          },
-          child: ListTile(
-            title: Text(l10n.s_show_hidden_readers),
-            leading: const Icon(Symbols.visibility),
-            dense: true,
-            contentPadding: EdgeInsets.zero,
-            enabled: hidden.isNotEmpty,
-          ),
-        ),
-      if (isDesktop && node != null && node.transport == Transport.nfc)
-        PopupMenuItem(
-          onTap: () {
-            ref.read(hiddenDevicesProvider.notifier).hideDevice(node.path);
-          },
-          child: ListTile(
-            title: Text(l10n.s_hide_reader),
-            leading: const Icon(Symbols.visibility_off),
-            dense: true,
-            contentPadding: EdgeInsets.zero,
-          ),
-        ),
-    ];
   }
 }
 
@@ -418,7 +299,6 @@ DeviceRow _buildDeviceRow(
     subtitle: subtitle,
     extended: extended,
     selected: false,
-    node: node,
     onTap: () {
       ref.read(currentDeviceProvider.notifier).setCurrentDevice(node);
     },
@@ -462,7 +342,6 @@ DeviceRow _buildCurrentDeviceRow(
     extended: extended,
     background: displayColor,
     selected: true,
-    node: node,
     onTap: () {},
   );
 }

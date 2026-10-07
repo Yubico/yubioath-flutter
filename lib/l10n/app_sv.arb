@@ -162,10 +162,6 @@
     "@_yubikey_selection": {},
 
     "s_select_to_scan": "Välj att skanna",
-    "s_hide_reader": "Göm läsare",
-    "s_show_hidden_readers": "Visa dolda läsare",
-    "s_toggle_readers": "Växla läsare",
-    "l_toggle_readers_desc": "Visa eller dölj läsare",
     "s_sn_serial": "S/N: {serial}",
     "@s_sn_serial": {
         "placeholders": {

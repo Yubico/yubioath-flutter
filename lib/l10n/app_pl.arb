@@ -162,10 +162,6 @@
     "@_yubikey_selection": {},
 
     "s_select_to_scan": "Wybierz, aby zeskanować",
-    "s_hide_reader": "Ukryj czytnik",
-    "s_show_hidden_readers": "Pokaż ukryte czytniki",
-    "s_toggle_readers": "Przełącz czytniki",
-    "l_toggle_readers_desc": "Pokaż lub ukryj czytniki",
     "s_sn_serial": "S/N: {serial}",
     "@s_sn_serial": {
         "placeholders": {

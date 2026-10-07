@@ -162,10 +162,6 @@
     "@_yubikey_selection": {},
 
     "s_select_to_scan": "Selecteren om te scannen",
-    "s_hide_reader": "Lezer verbergen",
-    "s_show_hidden_readers": "Geef verborgen lezers weer",
-    "s_toggle_readers": "Lezers weergeven/verbergen",
-    "l_toggle_readers_desc": "Toon of verberg lezers",
     "s_sn_serial": "S/N: {serial}",
     "@s_sn_serial": {
         "placeholders": {

@@ -49,7 +49,6 @@ const openpgpAppDrawer = Key('$_prefix.drawer.openpgp');
 const settingsDrawer = Key('$_prefix.drawer.settings');
 
 // drawer yubikey more items
-const yubikeyPopupMenuButton = Key('$_prefix.yubikey_popup_menu_button');
 const yubikeyLabelColorMenuButton = Key(
   '$_prefix.yubikey_label_color_menu_button',
 );
@@ -72,7 +71,6 @@ const settingDrawerIcon = Key('$_prefix.settings_drawer_icon');
 const helpDrawerIcon = Key('$_prefix.setting_drawer_icon');
 const themeModeSetting = Key('$_prefix.settings.theme_mode');
 const languageSetting = Key('$_prefix.settings.language');
-const toggleDevicesSetting = Key('$_prefix.settings.toggle_devices');
 const customIconSetting = Key('$_prefix.settings.custom_icons');
 Key themeModeOption(ThemeMode mode) => Key('$_prefix.theme_mode.${mode.name}');
 const tosButton = Key('$_prefix.tos_button');

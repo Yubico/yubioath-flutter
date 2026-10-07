@@ -162,10 +162,6 @@
     "@_yubikey_selection": {},
 
     "s_select_to_scan": "Seleziona per scansionare",
-    "s_hide_reader": "Nascondi lettore",
-    "s_show_hidden_readers": "Mostra i lettori nascosti",
-    "s_toggle_readers": "Attiva/Disattiva i lettori",
-    "l_toggle_readers_desc": "Mostra o nasconde i lettori",
     "s_sn_serial": "S/N: {serial}",
     "@s_sn_serial": {
         "placeholders": {

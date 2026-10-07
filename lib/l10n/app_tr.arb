@@ -162,10 +162,6 @@
     "@_yubikey_selection": {},
 
     "s_select_to_scan": "Taramak için seçin",
-    "s_hide_reader": "Okuyucuyu gizle",
-    "s_show_hidden_readers": "Gizli okuyucuları göster",
-    "s_toggle_readers": "Okuyucuları aç/kapat",
-    "l_toggle_readers_desc": "Okuyucuları göster veya gizle",
     "s_sn_serial": "S/N: {serial}",
     "@s_sn_serial": {
         "placeholders": {

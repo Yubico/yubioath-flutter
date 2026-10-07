@@ -162,10 +162,6 @@
     "@_yubikey_selection": {},
 
     "s_select_to_scan": "Chọn để quét",
-    "s_hide_reader": "Ẩn đầu đọc",
-    "s_show_hidden_readers": "Xem đầu đọc đã ẩn",
-    "s_toggle_readers": "Bật/tắt đầu đọc",
-    "l_toggle_readers_desc": "Hiện hoặc ẩn đầu đọc",
     "s_sn_serial": "S/N: {serial}",
     "@s_sn_serial": {
         "placeholders": {

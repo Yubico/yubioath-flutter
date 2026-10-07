@@ -162,10 +162,6 @@
     "@_yubikey_selection": {},
 
     "s_select_to_scan": "เลือกเพื่อสเเกน",
-    "s_hide_reader": "ซ่อนเครื่องอ่าน",
-    "s_show_hidden_readers": "เเสดงเครื่องอ่านที่ซ่อน",
-    "s_toggle_readers": "สลับเครื่องอ่าน",
-    "l_toggle_readers_desc": "เเสดงหรือซ่อนเครื่องอ่าน",
     "s_sn_serial": "หมายเลขประจำตัวอุปกรณ์: {serial}",
     "@s_sn_serial": {
         "placeholders": {

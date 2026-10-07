@@ -162,10 +162,6 @@
     "@_yubikey_selection": {},
 
     "s_select_to_scan": "Виберіть для сканування",
-    "s_hide_reader": "Приховати читача",
-    "s_show_hidden_readers": "Показати прихованих читачів",
-    "s_toggle_readers": "Перемикання читачів",
-    "l_toggle_readers_desc": "Показати або приховати читачів",
     "s_sn_serial": "Серійний номер:{serial}",
     "@s_sn_serial": {
         "placeholders": {

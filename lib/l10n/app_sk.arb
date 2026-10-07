@@ -162,10 +162,6 @@
     "@_yubikey_selection": {},
 
     "s_select_to_scan": "Vyberte na skenovanie",
-    "s_hide_reader": "Skryť čítačku",
-    "s_show_hidden_readers": "Zobraziť skryté čítačky",
-    "s_toggle_readers": "Prepnúť čítačky",
-    "l_toggle_readers_desc": "Zobraziť alebo skryť čítačky",
     "s_sn_serial": "S/N: {serial}",
     "@s_sn_serial": {
         "placeholders": {
