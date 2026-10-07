@@ -1,0 +1,864 @@
+{
+ "transcript": [
+  {
+   "request": {
+    "kind": "command",
+    "action": "get",
+    "target": [
+     "usb"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "data": {
+      "state": 8833202456474453612,
+      "pids": {
+       "1031": 1
+      }
+     },
+     "actions": [
+      "get",
+      "scan"
+     ],
+     "children": {
+      "125": {
+       "pid": 1031,
+       "name": "YubiKey 5 NFC - Enhanced PIN",
+       "serial": 125
+      }
+     }
+    },
+    "flags": []
+   },
+   "ms": 277
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "get",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "oath"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "data": {
+      "version": [
+       5,
+       8,
+       0
+      ],
+      "device_id": "CxdsN4yNURx75X9keUPBlg",
+      "has_key": false,
+      "locked": false,
+      "remembered": false,
+      "keystore": "unknown"
+     },
+     "actions": [
+      "derive",
+      "forget",
+      "get",
+      "reset",
+      "set_key",
+      "validate"
+     ],
+     "children": {
+      "accounts": {}
+     }
+    },
+    "flags": []
+   },
+   "ms": 36
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "put",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "oath",
+     "accounts"
+    ],
+    "body": {
+     "uri": "otpauth://totp/SdkEval:alice@example.com?secret=JBSWY3DPEHPK3PXP&issuer=SdkEval",
+     "require_touch": false
+    }
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "device_id": "CxdsN4yNURx75X9keUPBlg",
+     "id": "53646b4576616c3a616c696365406578616d706c652e636f6d",
+     "issuer": "SdkEval",
+     "name": "alice@example.com",
+     "oath_type": 32,
+     "period": 30,
+     "touch_required": false
+    },
+    "flags": []
+   },
+   "ms": 17
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "put",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "oath",
+     "accounts"
+    ],
+    "body": {
+     "uri": "otpauth://totp/SdkEval:alice@example.com?secret=JBSWY3DPEHPK3PXP&issuer=SdkEval",
+     "require_touch": false
+    }
+   },
+   "signals": [],
+   "response": {
+    "kind": "error",
+    "status": "invalid-command",
+    "message": "Invalid parameters: Credential already exists",
+    "body": {}
+   },
+   "ms": 1
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "put",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "oath",
+     "accounts"
+    ],
+    "body": {
+     "uri": "otpauth://hotp/SdkEval:bob@example.com?secret=JBSWY3DPEHPK3PXP&issuer=SdkEval&counter=0",
+     "require_touch": false
+    }
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "device_id": "CxdsN4yNURx75X9keUPBlg",
+     "id": "53646b4576616c3a626f62406578616d706c652e636f6d",
+     "issuer": "SdkEval",
+     "name": "bob@example.com",
+     "oath_type": 16,
+     "period": 30,
+     "touch_required": false
+    },
+    "flags": []
+   },
+   "ms": 10
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "get",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "oath",
+     "accounts"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "data": {},
+     "actions": [
+      "calculate_all",
+      "get",
+      "put"
+     ],
+     "children": {
+      "45696768744469676974546573743a65696768746469676974406578616d706c652e636f6d": {
+       "device_id": "CxdsN4yNURx75X9keUPBlg",
+       "id": "45696768744469676974546573743a65696768746469676974406578616d706c652e636f6d",
+       "issuer": "EightDigitTest",
+       "name": "eightdigit@example.com",
+       "oath_type": 32,
+       "period": 30,
+       "touch_required": false
+      },
+      "53646b4576616c3a616c696365406578616d706c652e636f6d": {
+       "device_id": "CxdsN4yNURx75X9keUPBlg",
+       "id": "53646b4576616c3a616c696365406578616d706c652e636f6d",
+       "issuer": "SdkEval",
+       "name": "alice@example.com",
+       "oath_type": 32,
+       "period": 30,
+       "touch_required": false
+      },
+      "53646b4576616c3a626f62406578616d706c652e636f6d": {
+       "device_id": "CxdsN4yNURx75X9keUPBlg",
+       "id": "53646b4576616c3a626f62406578616d706c652e636f6d",
+       "issuer": "SdkEval",
+       "name": "bob@example.com",
+       "oath_type": 16,
+       "period": 30,
+       "touch_required": false
+      }
+     }
+    },
+    "flags": []
+   },
+   "ms": 0
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "calculate_all",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "oath",
+     "accounts"
+    ],
+    "body": {
+     "timestamp": 1700000000
+    }
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "entries": [
+      {
+       "credential": {
+        "device_id": "CxdsN4yNURx75X9keUPBlg",
+        "id": "45696768744469676974546573743a65696768746469676974406578616d706c652e636f6d",
+        "issuer": "EightDigitTest",
+        "name": "eightdigit@example.com",
+        "oath_type": 32,
+        "period": 30,
+        "touch_required": false
+       },
+       "code": {
+        "value": "76501315",
+        "valid_from": 1699999980,
+        "valid_to": 1700000010
+       }
+      },
+      {
+       "credential": {
+        "device_id": "CxdsN4yNURx75X9keUPBlg",
+        "id": "53646b4576616c3a616c696365406578616d706c652e636f6d",
+        "issuer": "SdkEval",
+        "name": "alice@example.com",
+        "oath_type": 32,
+        "period": 30,
+        "touch_required": false
+       },
+       "code": {
+        "value": "324550",
+        "valid_from": 1699999980,
+        "valid_to": 1700000010
+       }
+      },
+      {
+       "credential": {
+        "device_id": "CxdsN4yNURx75X9keUPBlg",
+        "id": "53646b4576616c3a626f62406578616d706c652e636f6d",
+        "issuer": "SdkEval",
+        "name": "bob@example.com",
+        "oath_type": 16,
+        "period": 0,
+        "touch_required": false
+       },
+       "code": null
+      }
+     ]
+    },
+    "flags": []
+   },
+   "ms": 4
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "code",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "oath",
+     "accounts",
+     "53646b4576616c3a616c696365406578616d706c652e636f6d"
+    ],
+    "body": {
+     "timestamp": 1700000000
+    }
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "value": "324550",
+     "valid_from": 1699999980,
+     "valid_to": 1700000010
+    },
+    "flags": []
+   },
+   "ms": 3
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "code",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "oath",
+     "accounts",
+     "53646b4576616c3a626f62406578616d706c652e636f6d"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "value": "282760",
+     "valid_from": 1791364309,
+     "valid_to": 9223372036854775807
+    },
+    "flags": []
+   },
+   "ms": 7
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "calculate",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "oath",
+     "accounts",
+     "53646b4576616c3a616c696365406578616d706c652e636f6d"
+    ],
+    "body": {
+     "challenge": "000000000361f8a9"
+    }
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "response": "fc2c6a2698d00a62fe57f949d729304c47e3a596"
+    },
+    "flags": []
+   },
+   "ms": 3
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "rename",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "oath",
+     "accounts",
+     "53646b4576616c3a616c696365406578616d706c652e636f6d"
+    ],
+    "body": {
+     "issuer": "Renamed",
+     "name": "alice@example.com"
+    }
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "credential_id": "52656e616d65643a616c696365406578616d706c652e636f6d"
+    },
+    "flags": []
+   },
+   "ms": 19
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "delete",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "oath",
+     "accounts",
+     "52656e616d65643a616c696365406578616d706c652e636f6d"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {},
+    "flags": []
+   },
+   "ms": 16
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "delete",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "oath",
+     "accounts",
+     "53646b4576616c3a626f62406578616d706c652e636f6d"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {},
+    "flags": []
+   },
+   "ms": 12
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "set_key",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "oath"
+    ],
+    "body": {
+     "password": "sdk-eval-password"
+    }
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "remembered": false
+    },
+    "flags": []
+   },
+   "ms": 39
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "get",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "oath"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "data": {
+      "version": [
+       5,
+       8,
+       0
+      ],
+      "device_id": "CxdsN4yNURx75X9keUPBlg",
+      "has_key": true,
+      "locked": true,
+      "remembered": false,
+      "keystore": "unknown"
+     },
+     "actions": [
+      "derive",
+      "forget",
+      "get",
+      "reset",
+      "set_key",
+      "unset_key",
+      "validate"
+     ],
+     "children": {
+      "accounts": {}
+     }
+    },
+    "flags": []
+   },
+   "ms": 2
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "validate",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "oath"
+    ],
+    "body": {
+     "password": "wrong"
+    }
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "valid": false,
+     "remembered": false
+    },
+    "flags": []
+   },
+   "ms": 3
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "validate",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "oath"
+    ],
+    "body": {
+     "password": "sdk-eval-password"
+    }
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "valid": true,
+     "remembered": false
+    },
+    "flags": []
+   },
+   "ms": 4
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "get",
+    "target": [
+     "usb",
+     "125"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "data": {
+      "pid": 1031,
+      "name": "YubiKey 5 NFC - Enhanced PIN",
+      "transport": "usb",
+      "info": {
+       "config": {
+        "enabled_capabilities": {
+         "usb": 5951,
+         "nfc": 1855
+        },
+        "auto_eject_timeout": 10,
+        "challenge_response_timeout": 15,
+        "device_flags": 0,
+        "nfc_restricted": false
+       },
+       "serial": 125,
+       "version": [
+        5,
+        8,
+        0
+       ],
+       "form_factor": 1,
+       "supported_capabilities": {
+        "usb": 5951,
+        "nfc": 1855
+       },
+       "is_locked": false,
+       "is_fips": false,
+       "is_sky": false,
+       "part_number": "78CLUFX5000P",
+       "fips_capable": 0,
+       "fips_approved": 0,
+       "pin_complexity": true,
+       "reset_blocked": 0,
+       "fps_version": null,
+       "stm_version": null,
+       "version_qualifier": {
+        "version": [
+         5,
+         8,
+         0
+        ],
+        "type": 0,
+        "iteration": 2
+       }
+      }
+     },
+     "actions": [
+      "get"
+     ],
+     "children": {
+      "ccid": {},
+      "fido": {},
+      "otp": {}
+     }
+    },
+    "flags": []
+   },
+   "ms": 14
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "get",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "oath"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "data": {
+      "version": [
+       5,
+       8,
+       0
+      ],
+      "device_id": "CxdsN4yNURx75X9keUPBlg",
+      "has_key": true,
+      "locked": true,
+      "remembered": false,
+      "keystore": "unknown"
+     },
+     "actions": [
+      "derive",
+      "forget",
+      "get",
+      "reset",
+      "set_key",
+      "unset_key",
+      "validate"
+     ],
+     "children": {
+      "accounts": {}
+     }
+    },
+    "flags": []
+   },
+   "ms": 4
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "get",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "oath",
+     "accounts"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "error",
+    "status": "auth-required",
+    "message": "Authentication is required",
+    "body": {}
+   },
+   "ms": 0
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "validate",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "oath"
+    ],
+    "body": {
+     "password": "wrong"
+    }
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "valid": false,
+     "remembered": false
+    },
+    "flags": []
+   },
+   "ms": 2
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "validate",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "oath"
+    ],
+    "body": {
+     "password": "sdk-eval-password"
+    }
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "valid": true,
+     "remembered": false
+    },
+    "flags": []
+   },
+   "ms": 4
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "get",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "oath",
+     "accounts"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "data": {},
+     "actions": [
+      "calculate_all",
+      "get",
+      "put"
+     ],
+     "children": {
+      "45696768744469676974546573743a65696768746469676974406578616d706c652e636f6d": {
+       "device_id": "CxdsN4yNURx75X9keUPBlg",
+       "id": "45696768744469676974546573743a65696768746469676974406578616d706c652e636f6d",
+       "issuer": "EightDigitTest",
+       "name": "eightdigit@example.com",
+       "oath_type": 32,
+       "period": 30,
+       "touch_required": false
+      }
+     }
+    },
+    "flags": []
+   },
+   "ms": 3
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "unset_key",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "oath"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {},
+    "flags": []
+   },
+   "ms": 10
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "get",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "oath"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "data": {
+      "version": [
+       5,
+       8,
+       0
+      ],
+      "device_id": "CxdsN4yNURx75X9keUPBlg",
+      "has_key": false,
+      "locked": false,
+      "remembered": false,
+      "keystore": "unknown"
+     },
+     "actions": [
+      "derive",
+      "forget",
+      "get",
+      "reset",
+      "set_key",
+      "validate"
+     ],
+     "children": {
+      "accounts": {}
+     }
+    },
+    "flags": []
+   },
+   "ms": 0
+  }
+ ],
+ "stderr": []
+}

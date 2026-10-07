@@ -1,0 +1,21 @@
+[
+  {"action": "logging", "target": [], "body": {"level": "info"}},
+  {"action": "get", "target": []},
+  {"action": "scan", "target": ["usb"]},
+  {"action": "get", "target": ["usb"]},
+  {"action": "get", "target": ["usb", "$serial"]},
+  {"action": "get", "target": ["usb", "$serial", "ccid"]},
+  {"action": "get", "target": ["usb", "$serial", "ccid", "management"]},
+  {"action": "get", "target": ["usb", "$serial", "ccid", "oath"]},
+  {"action": "get", "target": ["usb", "$serial", "ccid", "oath", "accounts"]},
+  {"action": "get", "target": ["usb", "$serial", "ccid", "piv"]},
+  {"action": "get", "target": ["usb", "$serial", "ccid", "piv", "slots"]},
+  {"action": "get", "target": ["usb", "$serial", "ccid", "piv", "slots", "9a"]},
+  {"action": "validate_rfc4514", "target": ["usb", "$serial", "ccid", "piv"], "body": {"data": "CN=test"}},
+  {"action": "get", "target": ["usb", "$serial", "fido"]},
+  {"action": "get", "target": ["usb", "$serial", "fido", "ctap2"]},
+  {"action": "get", "target": ["usb", "$serial", "fido", "ctap2", "credentials"]},
+  {"action": "get", "target": ["usb", "nope"]},
+  {"action": "frobnicate", "target": []},
+  {"action": "get", "target": ["nfc"]}
+]

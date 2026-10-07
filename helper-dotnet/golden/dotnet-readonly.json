@@ -1,0 +1,952 @@
+{
+ "transcript": [
+  {
+   "request": {
+    "kind": "command",
+    "action": "logging",
+    "target": [],
+    "body": {
+     "level": "info"
+    }
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {},
+    "flags": []
+   },
+   "ms": 6
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "get",
+    "target": [],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "data": {
+      "version": "1.0.0-dotnet",
+      "is_admin": false
+     },
+     "actions": [
+      "get",
+      "logging"
+     ],
+     "children": {
+      "nfc": {},
+      "usb": {}
+     }
+    },
+    "flags": []
+   },
+   "ms": 0
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "scan",
+    "target": [
+     "usb"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "state": 6742971711491019065,
+     "pids": {
+      "1031": 1
+     }
+    },
+    "flags": []
+   },
+   "ms": 28
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "get",
+    "target": [
+     "usb"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "data": {
+      "state": 6742971711491019065,
+      "pids": {
+       "1031": 1
+      }
+     },
+     "actions": [
+      "get",
+      "scan"
+     ],
+     "children": {
+      "125": {
+       "pid": 1031,
+       "name": "YubiKey 5 NFC - Enhanced PIN",
+       "serial": 125
+      }
+     }
+    },
+    "flags": []
+   },
+   "ms": 17
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "get",
+    "target": [
+     "usb",
+     "125"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "data": {
+      "pid": 1031,
+      "name": "YubiKey 5 NFC - Enhanced PIN",
+      "transport": "usb",
+      "info": {
+       "config": {
+        "enabled_capabilities": {
+         "usb": 5951,
+         "nfc": 1855
+        },
+        "auto_eject_timeout": 10,
+        "challenge_response_timeout": 15,
+        "device_flags": 0,
+        "nfc_restricted": false
+       },
+       "serial": 125,
+       "version": [
+        5,
+        8,
+        0
+       ],
+       "form_factor": 1,
+       "supported_capabilities": {
+        "usb": 5951,
+        "nfc": 1855
+       },
+       "is_locked": false,
+       "is_fips": false,
+       "is_sky": false,
+       "part_number": "78CLUFX5000P",
+       "fips_capable": 0,
+       "fips_approved": 0,
+       "pin_complexity": true,
+       "reset_blocked": 0,
+       "fps_version": null,
+       "stm_version": null,
+       "version_qualifier": {
+        "version": [
+         5,
+         8,
+         0
+        ],
+        "type": 0,
+        "iteration": 2
+       }
+      }
+     },
+     "actions": [
+      "get"
+     ],
+     "children": {
+      "ccid": {},
+      "fido": {},
+      "otp": {}
+     }
+    },
+    "flags": []
+   },
+   "ms": 16
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "get",
+    "target": [
+     "usb",
+     "125",
+     "ccid"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "data": {
+      "version": [
+       5,
+       8,
+       0
+      ],
+      "serial": 125
+     },
+     "actions": [
+      "get"
+     ],
+     "children": {
+      "ctap2": {},
+      "management": {},
+      "oath": {},
+      "piv": {}
+     }
+    },
+    "flags": []
+   },
+   "ms": 1
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "get",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "management"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "data": {
+      "config": {
+       "enabled_capabilities": {
+        "usb": 5951,
+        "nfc": 1855
+       },
+       "auto_eject_timeout": 10,
+       "challenge_response_timeout": 15,
+       "device_flags": 0,
+       "nfc_restricted": false
+      },
+      "serial": 125,
+      "version": [
+       5,
+       8,
+       0
+      ],
+      "form_factor": 1,
+      "supported_capabilities": {
+       "usb": 5951,
+       "nfc": 1855
+      },
+      "is_locked": false,
+      "is_fips": false,
+      "is_sky": false,
+      "part_number": "78CLUFX5000P",
+      "fips_capable": 0,
+      "fips_approved": 0,
+      "pin_complexity": true,
+      "reset_blocked": 0,
+      "fps_version": null,
+      "stm_version": null,
+      "version_qualifier": {
+       "version": [
+        5,
+        8,
+        0
+       ],
+       "type": 0,
+       "iteration": 2
+      }
+     },
+     "actions": [
+      "configure",
+      "device_reset",
+      "get"
+     ],
+     "children": {}
+    },
+    "flags": []
+   },
+   "ms": 15
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "get",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "oath"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "data": {
+      "version": [
+       5,
+       8,
+       0
+      ],
+      "device_id": "CxdsN4yNURx75X9keUPBlg",
+      "has_key": false,
+      "locked": false,
+      "remembered": false,
+      "keystore": "unknown"
+     },
+     "actions": [
+      "derive",
+      "forget",
+      "get",
+      "reset",
+      "set_key",
+      "validate"
+     ],
+     "children": {
+      "accounts": {}
+     }
+    },
+    "flags": []
+   },
+   "ms": 2
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "get",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "oath",
+     "accounts"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "data": {},
+     "actions": [
+      "calculate_all",
+      "get",
+      "put"
+     ],
+     "children": {
+      "45696768744469676974546573743a65696768746469676974406578616d706c652e636f6d": {
+       "device_id": "CxdsN4yNURx75X9keUPBlg",
+       "id": "45696768744469676974546573743a65696768746469676974406578616d706c652e636f6d",
+       "issuer": "EightDigitTest",
+       "name": "eightdigit@example.com",
+       "oath_type": 32,
+       "period": 30,
+       "touch_required": false
+      }
+     }
+    },
+    "flags": []
+   },
+   "ms": 3
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "get",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "piv"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "data": {
+      "version": [
+       5,
+       8,
+       0
+      ],
+      "authenticated": false,
+      "derived_key": false,
+      "stored_key": false,
+      "supports_bio": false,
+      "chuid": "3019d4e739da739ced39ce739d836858210842108421c84210c3eb3410492b7657c5ef327d252d353669165313350832303330303130313e00fe00",
+      "ccc": null,
+      "pin_attempts": 3,
+      "metadata": {
+       "pin_metadata": {
+        "default_value": true,
+        "total_attempts": 3,
+        "attempts_remaining": 3
+       },
+       "puk_metadata": {
+        "default_value": true,
+        "total_attempts": 3,
+        "attempts_remaining": 3
+       },
+       "management_key_metadata": {
+        "key_type": 10,
+        "default_value": true,
+        "touch_policy": 1
+       }
+      }
+     },
+     "actions": [
+      "authenticate",
+      "change_pin",
+      "change_puk",
+      "get",
+      "reset",
+      "unblock_pin",
+      "validate_rfc4514",
+      "verify_pin"
+     ],
+     "children": {
+      "slots": {}
+     }
+    },
+    "flags": []
+   },
+   "ms": 12
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "get",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "piv",
+     "slots"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "data": {},
+     "actions": [
+      "get"
+     ],
+     "children": {
+      "82": {
+       "slot": 130,
+       "name": "RETIRED1",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "83": {
+       "slot": 131,
+       "name": "RETIRED2",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "84": {
+       "slot": 132,
+       "name": "RETIRED3",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "85": {
+       "slot": 133,
+       "name": "RETIRED4",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "86": {
+       "slot": 134,
+       "name": "RETIRED5",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "87": {
+       "slot": 135,
+       "name": "RETIRED6",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "88": {
+       "slot": 136,
+       "name": "RETIRED7",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "89": {
+       "slot": 137,
+       "name": "RETIRED8",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "8a": {
+       "slot": 138,
+       "name": "RETIRED9",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "8b": {
+       "slot": 139,
+       "name": "RETIRED10",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "8c": {
+       "slot": 140,
+       "name": "RETIRED11",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "8d": {
+       "slot": 141,
+       "name": "RETIRED12",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "8e": {
+       "slot": 142,
+       "name": "RETIRED13",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "8f": {
+       "slot": 143,
+       "name": "RETIRED14",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "90": {
+       "slot": 144,
+       "name": "RETIRED15",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "91": {
+       "slot": 145,
+       "name": "RETIRED16",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "92": {
+       "slot": 146,
+       "name": "RETIRED17",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "93": {
+       "slot": 147,
+       "name": "RETIRED18",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "94": {
+       "slot": 148,
+       "name": "RETIRED19",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "95": {
+       "slot": 149,
+       "name": "RETIRED20",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "9a": {
+       "slot": 154,
+       "name": "AUTHENTICATION",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "9c": {
+       "slot": 156,
+       "name": "SIGNATURE",
+       "metadata": {
+        "key_type": 7,
+        "pin_policy": 3,
+        "touch_policy": 1,
+        "generated": true,
+        "public_key": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqmgJvJMnoNOJGouon7wc\n3kp+MFIgMYZIrBV5avO4ePZ3QeVLzxcjQq6ayAqwdHx3mma6sWMhHXlvF0oxVScx\nzCDWvGVVzEctdVSPDTdJKsCLcNlRM6ipPooUHX4HDy+DnYy0q1aPcLv+7jqraQwy\ndMI05/rHI8ODujQqF6tezKFi1YXXQk9SrMlwF2+lj2Tl+RKdP9FElH3ZFfbSJcMD\n4uuNM+OJC+hZnhDOkTo2WEdgpdVYse1AQqFS1Mc+nbf2VL5VEBitQ3XocbkVuTNj\nwq8zFgKaUPlnJFxSbjI1Ued7BL0UTN39vcJVt5AyI/e149g3bQEvlqdSk5/4Dd7T\n6QIDAQAB\n-----END PUBLIC KEY-----\n"
+       },
+       "cert_info": {
+        "key_type": 7,
+        "subject": "CN=Dennis Dyall Wallin,O=Yubico",
+        "issuer": "CN=Dennis Dyall Wallin,O=Yubico",
+        "serial": "afc3db859dbffc9506b9cc9053e6c93c",
+        "not_valid_before": "2026-10-01T08:08:09+00:00",
+        "not_valid_after": "2026-10-31T09:13:09+00:00",
+        "fingerprint": "0284880eae97280954803c8093a72acb176d7589ed7d1793543211481a43ad33"
+       },
+       "public_key_match": true
+      },
+      "9d": {
+       "slot": 157,
+       "name": "KEY_MANAGEMENT",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "9e": {
+       "slot": 158,
+       "name": "CARD_AUTH",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      }
+     }
+    },
+    "flags": []
+   },
+   "ms": 58
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "get",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "piv",
+     "slots",
+     "9a"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "data": {
+      "id": "9a",
+      "name": "AUTHENTICATION",
+      "metadata": null,
+      "certificate": null
+     },
+     "actions": [
+      "examine_file",
+      "generate",
+      "get",
+      "import_file"
+     ],
+     "children": {}
+    },
+    "flags": []
+   },
+   "ms": 0
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "validate_rfc4514",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "piv"
+    ],
+    "body": {
+     "data": "CN=test"
+    }
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "status": true
+    },
+    "flags": []
+   },
+   "ms": 0
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "get",
+    "target": [
+     "usb",
+     "125",
+     "fido"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "data": {
+      "version": [
+       5,
+       8,
+       0
+      ],
+      "serial": 125
+     },
+     "actions": [
+      "get"
+     ],
+     "children": {
+      "ctap2": {},
+      "management": {}
+     }
+    },
+    "flags": []
+   },
+   "ms": 1
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "get",
+    "target": [
+     "usb",
+     "125",
+     "fido",
+     "ctap2"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "data": {
+      "info": {
+       "versions": [
+        "U2F_V2",
+        "FIDO_2_0",
+        "FIDO_2_1_PRE",
+        "FIDO_2_1",
+        "FIDO_2_2"
+       ],
+       "extensions": [
+        "credProtect",
+        "hmac-secret",
+        "largeBlobKey",
+        "credBlob",
+        "minPinLength",
+        "hmac-secret-mc",
+        "thirdPartyPayment",
+        "sign"
+       ],
+       "aaguid": "f8a011f38c0a4d15800617111f9edc7d",
+       "options": {
+        "ep": false,
+        "rk": true,
+        "up": true,
+        "plat": false,
+        "alwaysUv": false,
+        "credMgmt": true,
+        "authnrCfg": true,
+        "clientPin": true,
+        "largeBlobs": true,
+        "perCredMgmtRO": true,
+        "pinUvAuthToken": true,
+        "setMinPINLength": true,
+        "makeCredUvNotRqd": true,
+        "credentialMgmtPreview": true
+       },
+       "max_msg_size": 1536,
+       "pin_uv_protocols": [
+        2,
+        1
+       ],
+       "max_creds_in_list": 8,
+       "max_cred_id_length": 128,
+       "transports": [
+        "nfc",
+        "usb"
+       ],
+       "algorithms": [
+        {
+         "alg": -7,
+         "type": "public-key"
+        },
+        {
+         "alg": -8,
+         "type": "public-key"
+        },
+        {
+         "alg": -35,
+         "type": "public-key"
+        }
+       ],
+       "max_large_blob": 4096,
+       "force_pin_change": false,
+       "min_pin_length": 6,
+       "firmware_version": 1,
+       "max_cred_blob_length": 32,
+       "max_rpids_for_min_pin": 1,
+       "preferred_platform_uv_attempts": 0,
+       "uv_modality": 0,
+       "certifications": {},
+       "remaining_disc_creds": 100,
+       "vendor_prototype_config_commands": [],
+       "attestation_formats": [
+        "packed",
+        "none"
+       ],
+       "uv_count_since_pin": null,
+       "long_touch_for_reset": true,
+       "enc_identifier": "cb2bdc7fb3828a1bcdde691b2c4c9488ac548f4217ff1c17271d45c8e67d76bc",
+       "transports_for_reset": [
+        "usb"
+       ],
+       "pin_complexity_policy": true,
+       "pin_complexity_policy_url": "68747470733a2f2f6578616d706c652e636f6d",
+       "max_pin_length": 63,
+       "enc_cred_store_state": "8020870944ee41a4f7524c31d2b84606f26d6e0f3c20f3524ea6e23891a93e02",
+       "authenticator_config_commands": null
+      },
+      "unlocked_read": false,
+      "unlocked": false,
+      "pin_retries": 8,
+      "power_cycle": false
+     },
+     "actions": [
+      "enable_ep_attestation",
+      "get",
+      "reset",
+      "set_pin",
+      "unlock"
+     ],
+     "children": {
+      "credentials": {}
+     }
+    },
+    "flags": []
+   },
+   "ms": 87
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "get",
+    "target": [
+     "usb",
+     "125",
+     "fido",
+     "ctap2",
+     "credentials"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "error",
+    "status": "auth-required",
+    "message": "Authentication is required",
+    "body": {}
+   },
+   "ms": 0
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "get",
+    "target": [
+     "usb",
+     "nope"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "error",
+    "status": "invalid-command",
+    "message": "No such node: nope",
+    "body": {}
+   },
+   "ms": 0
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "frobnicate",
+    "target": [],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "error",
+    "status": "invalid-command",
+    "message": "No such action: frobnicate",
+    "body": {}
+   },
+   "ms": 0
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "get",
+    "target": [
+     "nfc"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "data": {},
+     "actions": [
+      "get",
+      "scan"
+     ],
+     "children": {}
+    },
+    "flags": []
+   },
+   "ms": 0
+  }
+ ],
+ "stderr": [
+  "{\"time\":1791364307.399,\"name\":\"helper\",\"level\":\"INFO\",\"message\":\"Log level set to: Information\"}",
+  "{\"time\":1791364307.419,\"name\":\"Yubico.YubiKit.Core.Devices.PcscConnectionSlot\",\"level\":\"INFO\",\"message\":\"Connected to YubiKey in reader Yubico YubiKey OTP\\u002BFIDO\\u002BCCID\"}",
+  "{\"time\":1791364307.43,\"name\":\"Yubico.YubiKit.Core.Devices.PcscConnectionSlot\",\"level\":\"INFO\",\"message\":\"Connected to YubiKey in reader Yubico YubiKey OTP\\u002BFIDO\\u002BCCID\"}",
+  "{\"time\":1791364307.446,\"name\":\"Yubico.YubiKit.Core.Devices.PcscConnectionSlot\",\"level\":\"INFO\",\"message\":\"Connected to YubiKey in reader Yubico YubiKey OTP\\u002BFIDO\\u002BCCID\"}",
+  "{\"time\":1791364307.462,\"name\":\"Yubico.YubiKit.Core.Devices.PcscConnectionSlot\",\"level\":\"INFO\",\"message\":\"Connected to YubiKey in reader Yubico YubiKey OTP\\u002BFIDO\\u002BCCID\"}",
+  "{\"time\":1791364307.485,\"name\":\"Yubico.YubiKit.Piv.PivSession\",\"level\":\"INFO\",\"message\":\"PIV session initialized successfully. Version: 0.0.1\"}"
+ ]
+}

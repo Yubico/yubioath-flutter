@@ -1,0 +1,20 @@
+[
+  {"action": "get", "target": ["usb"]},
+  {"action": "get", "target": ["usb", "$serial", "ccid", "piv"]},
+  {"action": "verify_pin", "target": ["usb", "$serial", "ccid", "piv"], "body": {"pin": "000000"}},
+  {"action": "verify_pin", "target": ["usb", "$serial", "ccid", "piv"], "body": {"pin": "123456"}},
+  {"action": "authenticate", "target": ["usb", "$serial", "ccid", "piv"], "body": {"key": "000000000000000000000000000000000000000000000000"}},
+  {"action": "authenticate", "target": ["usb", "$serial", "ccid", "piv"], "body": {"key": "010203040506070801020304050607080102030405060708"}},
+  {"action": "get", "target": ["usb", "$serial", "ccid", "piv"]},
+  {"action": "generate", "target": ["usb", "$serial", "ccid", "piv", "slots", "9a"], "body": {"key_type": 17, "pin_policy": 0, "touch_policy": 1, "generate_type": "certificate", "subject": "CN=SDK Eval,O=Yubico", "valid_from": "2026-01-01", "valid_to": "2027-01-01", "pin": "123456"}},
+  {"action": "get", "target": ["usb", "$serial", "ccid", "piv", "slots", "9a"]},
+  {"action": "generate", "target": ["usb", "$serial", "ccid", "piv", "slots", "9e"], "body": {"key_type": 7, "pin_policy": 1, "touch_policy": 1, "generate_type": "csr", "subject": "CN=SDK Eval CSR"}},
+  {"action": "authenticate", "target": ["usb", "$serial", "ccid", "piv"], "body": {"key": "010203040506070801020304050607080102030405060708"}},
+  {"action": "generate", "target": ["usb", "$serial", "ccid", "piv", "slots", "9e"], "body": {"key_type": 7, "pin_policy": 1, "touch_policy": 1, "generate_type": "csr", "subject": "CN=SDK Eval CSR"}},
+  {"action": "get", "target": ["usb", "$serial", "ccid", "piv", "slots"]},
+  {"action": "authenticate", "target": ["usb", "$serial", "ccid", "piv"], "body": {"key": "010203040506070801020304050607080102030405060708"}},
+  {"action": "delete", "target": ["usb", "$serial", "ccid", "piv", "slots", "9a"], "body": {"delete_cert": true, "delete_key": true}},
+  {"action": "delete", "target": ["usb", "$serial", "ccid", "piv", "slots", "9e"], "body": {"delete_cert": false, "delete_key": true}},
+  {"action": "get", "target": ["usb", "$serial", "ccid", "piv", "slots", "9a"]},
+  {"action": "get", "target": ["usb", "$serial", "ccid", "piv"]}
+]

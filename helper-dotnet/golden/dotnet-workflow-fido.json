@@ -1,0 +1,697 @@
+{
+ "transcript": [
+  {
+   "request": {
+    "kind": "command",
+    "action": "get",
+    "target": [
+     "usb"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "data": {
+      "state": 6742971711491019065,
+      "pids": {
+       "1031": 1
+      }
+     },
+     "actions": [
+      "get",
+      "scan"
+     ],
+     "children": {
+      "125": {
+       "pid": 1031,
+       "name": "YubiKey 5 NFC - Enhanced PIN",
+       "serial": 125
+      }
+     }
+    },
+    "flags": []
+   },
+   "ms": 85
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "get",
+    "target": [
+     "usb",
+     "125",
+     "fido",
+     "ctap2"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "data": {
+      "info": {
+       "versions": [
+        "U2F_V2",
+        "FIDO_2_0",
+        "FIDO_2_1_PRE",
+        "FIDO_2_1",
+        "FIDO_2_2"
+       ],
+       "extensions": [
+        "credProtect",
+        "hmac-secret",
+        "largeBlobKey",
+        "credBlob",
+        "minPinLength",
+        "hmac-secret-mc",
+        "thirdPartyPayment",
+        "sign"
+       ],
+       "aaguid": "f8a011f38c0a4d15800617111f9edc7d",
+       "options": {
+        "ep": false,
+        "rk": true,
+        "up": true,
+        "plat": false,
+        "alwaysUv": false,
+        "credMgmt": true,
+        "authnrCfg": true,
+        "clientPin": true,
+        "largeBlobs": true,
+        "perCredMgmtRO": true,
+        "pinUvAuthToken": true,
+        "setMinPINLength": true,
+        "makeCredUvNotRqd": true,
+        "credentialMgmtPreview": true
+       },
+       "max_msg_size": 1536,
+       "pin_uv_protocols": [
+        2,
+        1
+       ],
+       "max_creds_in_list": 8,
+       "max_cred_id_length": 128,
+       "transports": [
+        "nfc",
+        "usb"
+       ],
+       "algorithms": [
+        {
+         "alg": -7,
+         "type": "public-key"
+        },
+        {
+         "alg": -8,
+         "type": "public-key"
+        },
+        {
+         "alg": -35,
+         "type": "public-key"
+        }
+       ],
+       "max_large_blob": 4096,
+       "force_pin_change": false,
+       "min_pin_length": 6,
+       "firmware_version": 1,
+       "max_cred_blob_length": 32,
+       "max_rpids_for_min_pin": 1,
+       "preferred_platform_uv_attempts": 0,
+       "uv_modality": 0,
+       "certifications": {},
+       "remaining_disc_creds": 100,
+       "vendor_prototype_config_commands": [],
+       "attestation_formats": [
+        "packed",
+        "none"
+       ],
+       "uv_count_since_pin": null,
+       "long_touch_for_reset": true,
+       "enc_identifier": "ae0546860754f70a29b9e89ed3b54140532c06f3623d3964b5794606da43f66a",
+       "transports_for_reset": [
+        "usb"
+       ],
+       "pin_complexity_policy": true,
+       "pin_complexity_policy_url": "68747470733a2f2f6578616d706c652e636f6d",
+       "max_pin_length": 63,
+       "enc_cred_store_state": "fe85ee3641d90a3518ff7134e78edf9b8f5a6fe4461bbc5ed508ac303ef5c10d",
+       "authenticator_config_commands": null
+      },
+      "unlocked_read": false,
+      "unlocked": false,
+      "pin_retries": 8,
+      "power_cycle": false
+     },
+     "actions": [
+      "enable_ep_attestation",
+      "get",
+      "reset",
+      "set_pin",
+      "unlock"
+     ],
+     "children": {
+      "credentials": {}
+     }
+    },
+    "flags": []
+   },
+   "ms": 124
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "get",
+    "target": [
+     "usb",
+     "125",
+     "fido",
+     "ctap2",
+     "credentials"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "error",
+    "status": "auth-required",
+    "message": "Authentication is required",
+    "body": {}
+   },
+   "ms": 1
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "unlock",
+    "target": [
+     "usb",
+     "125",
+     "fido",
+     "ctap2"
+    ],
+    "body": {
+     "pin": "99999999"
+    }
+   },
+   "signals": [],
+   "response": {
+    "kind": "error",
+    "status": "pin-validation",
+    "message": "Authentication is required",
+    "body": {
+     "retries": 7,
+     "auth_blocked": false
+    }
+   },
+   "ms": 329
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "unlock",
+    "target": [
+     "usb",
+     "125",
+     "fido",
+     "ctap2"
+    ],
+    "body": {
+     "pin": "11234567"
+    }
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {},
+    "flags": []
+   },
+   "ms": 128
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "get",
+    "target": [
+     "usb",
+     "125",
+     "fido",
+     "ctap2"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "data": {
+      "info": {
+       "versions": [
+        "U2F_V2",
+        "FIDO_2_0",
+        "FIDO_2_1_PRE",
+        "FIDO_2_1",
+        "FIDO_2_2"
+       ],
+       "extensions": [
+        "credProtect",
+        "hmac-secret",
+        "largeBlobKey",
+        "credBlob",
+        "minPinLength",
+        "hmac-secret-mc",
+        "thirdPartyPayment",
+        "sign"
+       ],
+       "aaguid": "f8a011f38c0a4d15800617111f9edc7d",
+       "options": {
+        "ep": false,
+        "rk": true,
+        "up": true,
+        "plat": false,
+        "alwaysUv": false,
+        "credMgmt": true,
+        "authnrCfg": true,
+        "clientPin": true,
+        "largeBlobs": true,
+        "perCredMgmtRO": true,
+        "pinUvAuthToken": true,
+        "setMinPINLength": true,
+        "makeCredUvNotRqd": true,
+        "credentialMgmtPreview": true
+       },
+       "max_msg_size": 1536,
+       "pin_uv_protocols": [
+        2,
+        1
+       ],
+       "max_creds_in_list": 8,
+       "max_cred_id_length": 128,
+       "transports": [
+        "nfc",
+        "usb"
+       ],
+       "algorithms": [
+        {
+         "alg": -7,
+         "type": "public-key"
+        },
+        {
+         "alg": -8,
+         "type": "public-key"
+        },
+        {
+         "alg": -35,
+         "type": "public-key"
+        }
+       ],
+       "max_large_blob": 4096,
+       "force_pin_change": false,
+       "min_pin_length": 6,
+       "firmware_version": 1,
+       "max_cred_blob_length": 32,
+       "max_rpids_for_min_pin": 1,
+       "preferred_platform_uv_attempts": 0,
+       "uv_modality": 0,
+       "certifications": {},
+       "remaining_disc_creds": 100,
+       "vendor_prototype_config_commands": [],
+       "attestation_formats": [
+        "packed",
+        "none"
+       ],
+       "uv_count_since_pin": null,
+       "long_touch_for_reset": true,
+       "enc_identifier": "eaa8c6cc22d3c7316128b47e077d3226409840747c3b1a9a872195a498faa9af",
+       "transports_for_reset": [
+        "usb"
+       ],
+       "pin_complexity_policy": true,
+       "pin_complexity_policy_url": "68747470733a2f2f6578616d706c652e636f6d",
+       "max_pin_length": 63,
+       "enc_cred_store_state": "c1a37ffba0f11ee4de60a225a4d46186c2c706afb0d743c252af344feab6e8ae",
+       "authenticator_config_commands": null
+      },
+      "unlocked_read": true,
+      "unlocked": true,
+      "pin_retries": 8,
+      "power_cycle": false
+     },
+     "actions": [
+      "enable_ep_attestation",
+      "get",
+      "reset",
+      "set_pin",
+      "unlock"
+     ],
+     "children": {
+      "credentials": {}
+     }
+    },
+    "flags": []
+   },
+   "ms": 30
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "get",
+    "target": [
+     "usb",
+     "125",
+     "fido",
+     "ctap2",
+     "credentials"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "data": {},
+     "actions": [
+      "get"
+     ],
+     "children": {}
+    },
+    "flags": []
+   },
+   "ms": 8
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "set_pin",
+    "target": [
+     "usb",
+     "125",
+     "fido",
+     "ctap2"
+    ],
+    "body": {
+     "pin": "11234567",
+     "new_pin": "111111"
+    }
+   },
+   "signals": [],
+   "response": {
+    "kind": "error",
+    "status": "pin-complexity",
+    "message": "PIN does not meet complexity requirements",
+    "body": {}
+   },
+   "ms": 127
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "set_pin",
+    "target": [
+     "usb",
+     "125",
+     "fido",
+     "ctap2"
+    ],
+    "body": {
+     "pin": "11234567",
+     "new_pin": "76543211"
+    }
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {},
+    "flags": []
+   },
+   "ms": 210
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "get",
+    "target": [
+     "usb",
+     "125"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "data": {
+      "pid": 1031,
+      "name": "YubiKey 5 NFC - Enhanced PIN",
+      "transport": "usb",
+      "info": {
+       "config": {
+        "enabled_capabilities": {
+         "usb": 5951,
+         "nfc": 1855
+        },
+        "auto_eject_timeout": 10,
+        "challenge_response_timeout": 15,
+        "device_flags": 0,
+        "nfc_restricted": false
+       },
+       "serial": 125,
+       "version": [
+        5,
+        8,
+        0
+       ],
+       "form_factor": 1,
+       "supported_capabilities": {
+        "usb": 5951,
+        "nfc": 1855
+       },
+       "is_locked": false,
+       "is_fips": false,
+       "is_sky": false,
+       "part_number": "78CLUFX5000P",
+       "fips_capable": 0,
+       "fips_approved": 0,
+       "pin_complexity": true,
+       "reset_blocked": 0,
+       "fps_version": null,
+       "stm_version": null,
+       "version_qualifier": {
+        "version": [
+         5,
+         8,
+         0
+        ],
+        "type": 0,
+        "iteration": 2
+       }
+      }
+     },
+     "actions": [
+      "get"
+     ],
+     "children": {
+      "ccid": {},
+      "fido": {},
+      "otp": {}
+     }
+    },
+    "flags": []
+   },
+   "ms": 0
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "unlock",
+    "target": [
+     "usb",
+     "125",
+     "fido",
+     "ctap2"
+    ],
+    "body": {
+     "pin": "76543211"
+    }
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {},
+    "flags": []
+   },
+   "ms": 182
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "set_pin",
+    "target": [
+     "usb",
+     "125",
+     "fido",
+     "ctap2"
+    ],
+    "body": {
+     "pin": "76543211",
+     "new_pin": "11234567"
+    }
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {},
+    "flags": []
+   },
+   "ms": 210
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "unlock",
+    "target": [
+     "usb",
+     "125",
+     "fido",
+     "ctap2"
+    ],
+    "body": {
+     "pin": "11234567"
+    }
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {},
+    "flags": []
+   },
+   "ms": 180
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "get",
+    "target": [
+     "usb",
+     "125",
+     "fido",
+     "ctap2"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "data": {
+      "info": {
+       "versions": [
+        "U2F_V2",
+        "FIDO_2_0",
+        "FIDO_2_1_PRE",
+        "FIDO_2_1",
+        "FIDO_2_2"
+       ],
+       "extensions": [
+        "credProtect",
+        "hmac-secret",
+        "largeBlobKey",
+        "credBlob",
+        "minPinLength",
+        "hmac-secret-mc",
+        "thirdPartyPayment",
+        "sign"
+       ],
+       "aaguid": "f8a011f38c0a4d15800617111f9edc7d",
+       "options": {
+        "ep": false,
+        "rk": true,
+        "up": true,
+        "plat": false,
+        "alwaysUv": false,
+        "credMgmt": true,
+        "authnrCfg": true,
+        "clientPin": true,
+        "largeBlobs": true,
+        "perCredMgmtRO": true,
+        "pinUvAuthToken": true,
+        "setMinPINLength": true,
+        "makeCredUvNotRqd": true,
+        "credentialMgmtPreview": true
+       },
+       "max_msg_size": 1536,
+       "pin_uv_protocols": [
+        2,
+        1
+       ],
+       "max_creds_in_list": 8,
+       "max_cred_id_length": 128,
+       "transports": [
+        "nfc",
+        "usb"
+       ],
+       "algorithms": [
+        {
+         "alg": -7,
+         "type": "public-key"
+        },
+        {
+         "alg": -8,
+         "type": "public-key"
+        },
+        {
+         "alg": -35,
+         "type": "public-key"
+        }
+       ],
+       "max_large_blob": 4096,
+       "force_pin_change": false,
+       "min_pin_length": 6,
+       "firmware_version": 1,
+       "max_cred_blob_length": 32,
+       "max_rpids_for_min_pin": 1,
+       "preferred_platform_uv_attempts": 0,
+       "uv_modality": 0,
+       "certifications": {},
+       "remaining_disc_creds": 100,
+       "vendor_prototype_config_commands": [],
+       "attestation_formats": [
+        "packed",
+        "none"
+       ],
+       "uv_count_since_pin": null,
+       "long_touch_for_reset": true,
+       "enc_identifier": "c005b027877cf0838011f8ec32f8c700b20b8608bb72b7dcee393f114f38c522",
+       "transports_for_reset": [
+        "usb"
+       ],
+       "pin_complexity_policy": true,
+       "pin_complexity_policy_url": "68747470733a2f2f6578616d706c652e636f6d",
+       "max_pin_length": 63,
+       "enc_cred_store_state": "d66947bc7e8a024415010553ef9e3d74711592545d4bf39d5114aa5828abee01",
+       "authenticator_config_commands": null
+      },
+      "unlocked_read": true,
+      "unlocked": true,
+      "pin_retries": 8,
+      "power_cycle": false
+     },
+     "actions": [
+      "enable_ep_attestation",
+      "get",
+      "reset",
+      "set_pin",
+      "unlock"
+     ],
+     "children": {
+      "credentials": {}
+     }
+    },
+    "flags": []
+   },
+   "ms": 30
+  }
+ ],
+ "stderr": []
+}

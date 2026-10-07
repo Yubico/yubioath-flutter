@@ -1,0 +1,837 @@
+{
+ "transcript": [
+  {
+   "request": {
+    "kind": "command",
+    "action": "get",
+    "target": [
+     "usb"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "data": {
+      "state": 6742971711491019065,
+      "pids": {
+       "1031": 1
+      }
+     },
+     "actions": [
+      "get",
+      "scan"
+     ],
+     "children": {
+      "125": {
+       "pid": 1031,
+       "name": "YubiKey 5 NFC - Enhanced PIN",
+       "serial": 125
+      }
+     }
+    },
+    "flags": []
+   },
+   "ms": 64
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "get",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "piv"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "data": {
+      "version": [
+       5,
+       8,
+       0
+      ],
+      "authenticated": false,
+      "derived_key": false,
+      "stored_key": false,
+      "supports_bio": false,
+      "chuid": "3019d4e739da739ced39ce739d836858210842108421c84210c3eb34109948b49870b4419ca03b84f657bb065e350832303330303130313e00fe00",
+      "ccc": null,
+      "pin_attempts": 3,
+      "metadata": {
+       "pin_metadata": {
+        "default_value": true,
+        "total_attempts": 3,
+        "attempts_remaining": 3
+       },
+       "puk_metadata": {
+        "default_value": true,
+        "total_attempts": 3,
+        "attempts_remaining": 3
+       },
+       "management_key_metadata": {
+        "key_type": 10,
+        "default_value": true,
+        "touch_policy": 1
+       }
+      }
+     },
+     "actions": [
+      "authenticate",
+      "change_pin",
+      "change_puk",
+      "get",
+      "reset",
+      "unblock_pin",
+      "validate_rfc4514",
+      "verify_pin"
+     ],
+     "children": {
+      "slots": {}
+     }
+    },
+    "flags": []
+   },
+   "ms": 29
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "verify_pin",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "piv"
+    ],
+    "body": {
+     "pin": "000000"
+    }
+   },
+   "signals": [],
+   "response": {
+    "kind": "error",
+    "status": "invalid-pin",
+    "message": "Wrong PIN",
+    "body": {
+     "attempts_remaining": 2
+    }
+   },
+   "ms": 6
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "verify_pin",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "piv"
+    ],
+    "body": {
+     "pin": "123456"
+    }
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "status": true,
+     "authenticated": false
+    },
+    "flags": []
+   },
+   "ms": 9
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "authenticate",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "piv"
+    ],
+    "body": {
+     "key": "000000000000000000000000000000000000000000000000"
+    }
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "status": false
+    },
+    "flags": []
+   },
+   "ms": 3
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "authenticate",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "piv"
+    ],
+    "body": {
+     "key": "010203040506070801020304050607080102030405060708"
+    }
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "status": true
+    },
+    "flags": []
+   },
+   "ms": 3
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "get",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "piv"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "data": {
+      "version": [
+       5,
+       8,
+       0
+      ],
+      "authenticated": true,
+      "derived_key": false,
+      "stored_key": false,
+      "supports_bio": false,
+      "chuid": "3019d4e739da739ced39ce739d836858210842108421c84210c3eb34109948b49870b4419ca03b84f657bb065e350832303330303130313e00fe00",
+      "ccc": null,
+      "pin_attempts": 3,
+      "metadata": {
+       "pin_metadata": {
+        "default_value": true,
+        "total_attempts": 3,
+        "attempts_remaining": 3
+       },
+       "puk_metadata": {
+        "default_value": true,
+        "total_attempts": 3,
+        "attempts_remaining": 3
+       },
+       "management_key_metadata": {
+        "key_type": 10,
+        "default_value": true,
+        "touch_policy": 1
+       }
+      }
+     },
+     "actions": [
+      "authenticate",
+      "change_pin",
+      "change_puk",
+      "get",
+      "reset",
+      "set_key",
+      "unblock_pin",
+      "validate_rfc4514",
+      "verify_pin"
+     ],
+     "children": {
+      "slots": {}
+     }
+    },
+    "flags": []
+   },
+   "ms": 6
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "generate",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "piv",
+     "slots",
+     "9a"
+    ],
+    "body": {
+     "key_type": 17,
+     "pin_policy": 0,
+     "touch_policy": 1,
+     "generate_type": "certificate",
+     "subject": "CN=SDK Eval,O=Yubico",
+     "valid_from": "2026-01-01",
+     "valid_to": "2027-01-01",
+     "pin": "123456"
+    }
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "public_key": "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEcqv+a9ymhtDONiM2TUcN/fI7rdH4\nRxg1HOEbLHbMphshv4tg1qSqsPcDZCnfAyPLvyGQsTfz6EjYXJ3dlKdoiQ==\n-----END PUBLIC KEY-----\n",
+     "result": "-----BEGIN CERTIFICATE-----\nMIIBRjCB7qADAgECAhR4QNtzOw3UO3j9b4wpGxDTBMjgwTAKBggqhkjOPQQDAjAk\nMQ8wDQYDVQQKEwZZdWJpY28xETAPBgNVBAMTCFNESyBFdmFsMB4XDTI2MDEwMTAw\nMDAwMFoXDTI3MDEwMTAwMDAwMFowJDEPMA0GA1UEChMGWXViaWNvMREwDwYDVQQD\nEwhTREsgRXZhbDBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABHKr/mvcpobQzjYj\nNk1HDf3yO63R+EcYNRzhGyx2zKYbIb+LYNakqrD3A2Qp3wMjy78hkLE38+hI2Fyd\n3ZSnaIkwCgYIKoZIzj0EAwIDRwAwRAIgELgFRU29lQDy9l0qxnXv+zXacalfMtqN\ne+R4o3GNiG8CIFiIMvfaedkieSu4j8mdKhgh91v+lCCpXZoY2sdMIYSO\n-----END CERTIFICATE-----\n"
+    },
+    "flags": []
+   },
+   "ms": 677
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "get",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "piv",
+     "slots",
+     "9a"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "data": {
+      "id": "9a",
+      "name": "AUTHENTICATION",
+      "metadata": {
+       "key_type": 17,
+       "pin_policy": 2,
+       "touch_policy": 1,
+       "generated": true,
+       "public_key": "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEcqv+a9ymhtDONiM2TUcN/fI7rdH4\nRxg1HOEbLHbMphshv4tg1qSqsPcDZCnfAyPLvyGQsTfz6EjYXJ3dlKdoiQ==\n-----END PUBLIC KEY-----\n"
+      },
+      "certificate": "-----BEGIN CERTIFICATE-----\nMIIBRjCB7qADAgECAhR4QNtzOw3UO3j9b4wpGxDTBMjgwTAKBggqhkjOPQQDAjAk\nMQ8wDQYDVQQKEwZZdWJpY28xETAPBgNVBAMTCFNESyBFdmFsMB4XDTI2MDEwMTAw\nMDAwMFoXDTI3MDEwMTAwMDAwMFowJDEPMA0GA1UEChMGWXViaWNvMREwDwYDVQQD\nEwhTREsgRXZhbDBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABHKr/mvcpobQzjYj\nNk1HDf3yO63R+EcYNRzhGyx2zKYbIb+LYNakqrD3A2Qp3wMjy78hkLE38+hI2Fyd\n3ZSnaIkwCgYIKoZIzj0EAwIDRwAwRAIgELgFRU29lQDy9l0qxnXv+zXacalfMtqN\ne+R4o3GNiG8CIFiIMvfaedkieSu4j8mdKhgh91v+lCCpXZoY2sdMIYSO\n-----END CERTIFICATE-----\n"
+     },
+     "actions": [
+      "delete",
+      "examine_file",
+      "generate",
+      "get",
+      "import_file",
+      "move_key"
+     ],
+     "children": {}
+    },
+    "flags": []
+   },
+   "ms": 69
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "generate",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "piv",
+     "slots",
+     "9e"
+    ],
+    "body": {
+     "key_type": 7,
+     "pin_policy": 1,
+     "touch_policy": 1,
+     "generate_type": "csr",
+     "subject": "CN=SDK Eval CSR"
+    }
+   },
+   "signals": [],
+   "response": {
+    "kind": "error",
+    "status": "auth-required",
+    "message": "Authentication is required",
+    "body": {}
+   },
+   "ms": 1
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "authenticate",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "piv"
+    ],
+    "body": {
+     "key": "010203040506070801020304050607080102030405060708"
+    }
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "status": true
+    },
+    "flags": []
+   },
+   "ms": 4
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "generate",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "piv",
+     "slots",
+     "9e"
+    ],
+    "body": {
+     "key_type": 7,
+     "pin_policy": 1,
+     "touch_policy": 1,
+     "generate_type": "csr",
+     "subject": "CN=SDK Eval CSR"
+    }
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "public_key": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmn5adERz4CY1cpYtdXNz\n3cSpCB3jbv+fi/uwzCbKWRD9aHB8mxXaQGGISp950ItnB2Ii1GRolmnvRo7To0e5\ndMEFVRnxjKPnWwQLAVawvH7Zzr9kuuWVlUYoHKn3CeVp7VU+l1a2p4CndVfB2Crv\ncsZ5e2fYF16UbTblK11dTxv4owy9N8AgneuLUp/nF1K12sTJLxH/3fegRDI4PYWE\nSkkIGhagHsTLbXtAkiKaktkezd1+qJrHzGV6/RSZURI4OEzlpueu81a3JSDpVikt\n2okYSb2Rt1tbTmkMVZSw8Rmr/zLJEH2Z6uz4Qy1Sy6ursKnz4KpoRz3xtm2Xm2it\n8QIDAQAB\n-----END PUBLIC KEY-----\n",
+     "result": "-----BEGIN CERTIFICATE REQUEST-----\nMIICXDCCAUQCAQAwFzEVMBMGA1UEAxMMU0RLIEV2YWwgQ1NSMIIBIjANBgkqhkiG\n9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmn5adERz4CY1cpYtdXNz3cSpCB3jbv+fi/uw\nzCbKWRD9aHB8mxXaQGGISp950ItnB2Ii1GRolmnvRo7To0e5dMEFVRnxjKPnWwQL\nAVawvH7Zzr9kuuWVlUYoHKn3CeVp7VU+l1a2p4CndVfB2CrvcsZ5e2fYF16UbTbl\nK11dTxv4owy9N8AgneuLUp/nF1K12sTJLxH/3fegRDI4PYWESkkIGhagHsTLbXtA\nkiKaktkezd1+qJrHzGV6/RSZURI4OEzlpueu81a3JSDpVikt2okYSb2Rt1tbTmkM\nVZSw8Rmr/zLJEH2Z6uz4Qy1Sy6ursKnz4KpoRz3xtm2Xm2it8QIDAQABoAAwDQYJ\nKoZIhvcNAQELBQADggEBAH4RAayVeijaxH0GiDwZj4/NviVCgO3SKASHY/jnm0pb\nEHS+hQMJJ1RPq5AkoCIzsSKqcR7hGyk3COHCWgP4Xlzxqc1RE2hvNDNBeaIIry3n\nSV31QwHINy1Fqj7T1b8kOQYuPDDmwyKtCEIyxjzfVa1Kah3uKMh1uTGXsPGjCBOR\nIH7nrDeIsSQnQtMDuQazPuKh8LyFZC/HfDsyqrx7d94Rz6nuODqVNrKjxxuqIRWb\njRshiicjYsL5UyZNVF7137uxqrFut4j6v70rmT6GiLZ5KQIgDs0ajUH/W/zRWMCk\nuUEXCIgOYHxYta4awNPRsXVaX629ymB4zNF7JLTW69c=\n-----END CERTIFICATE REQUEST-----\n"
+    },
+    "flags": []
+   },
+   "ms": 4820
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "get",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "piv",
+     "slots"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "data": {},
+     "actions": [
+      "get"
+     ],
+     "children": {
+      "82": {
+       "slot": 130,
+       "name": "RETIRED1",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "83": {
+       "slot": 131,
+       "name": "RETIRED2",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "84": {
+       "slot": 132,
+       "name": "RETIRED3",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "85": {
+       "slot": 133,
+       "name": "RETIRED4",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "86": {
+       "slot": 134,
+       "name": "RETIRED5",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "87": {
+       "slot": 135,
+       "name": "RETIRED6",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "88": {
+       "slot": 136,
+       "name": "RETIRED7",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "89": {
+       "slot": 137,
+       "name": "RETIRED8",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "8a": {
+       "slot": 138,
+       "name": "RETIRED9",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "8b": {
+       "slot": 139,
+       "name": "RETIRED10",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "8c": {
+       "slot": 140,
+       "name": "RETIRED11",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "8d": {
+       "slot": 141,
+       "name": "RETIRED12",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "8e": {
+       "slot": 142,
+       "name": "RETIRED13",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "8f": {
+       "slot": 143,
+       "name": "RETIRED14",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "90": {
+       "slot": 144,
+       "name": "RETIRED15",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "91": {
+       "slot": 145,
+       "name": "RETIRED16",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "92": {
+       "slot": 146,
+       "name": "RETIRED17",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "93": {
+       "slot": 147,
+       "name": "RETIRED18",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "94": {
+       "slot": 148,
+       "name": "RETIRED19",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "95": {
+       "slot": 149,
+       "name": "RETIRED20",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "9a": {
+       "slot": 154,
+       "name": "AUTHENTICATION",
+       "metadata": {
+        "key_type": 17,
+        "pin_policy": 2,
+        "touch_policy": 1,
+        "generated": true,
+        "public_key": "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEcqv+a9ymhtDONiM2TUcN/fI7rdH4\nRxg1HOEbLHbMphshv4tg1qSqsPcDZCnfAyPLvyGQsTfz6EjYXJ3dlKdoiQ==\n-----END PUBLIC KEY-----\n"
+       },
+       "cert_info": {
+        "key_type": 17,
+        "subject": "CN=SDK Eval,O=Yubico",
+        "issuer": "CN=SDK Eval,O=Yubico",
+        "serial": "7840db733b0dd43b78fd6f8c291b10d304c8e0c1",
+        "not_valid_before": "2026-01-01T00:00:00+00:00",
+        "not_valid_after": "2027-01-01T00:00:00+00:00",
+        "fingerprint": "a88219e2737447f86429b8109af4589aee789a94557b0bab8f25eda9633ed817"
+       },
+       "public_key_match": true
+      },
+      "9c": {
+       "slot": 156,
+       "name": "SIGNATURE",
+       "metadata": {
+        "key_type": 7,
+        "pin_policy": 3,
+        "touch_policy": 1,
+        "generated": true,
+        "public_key": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqmgJvJMnoNOJGouon7wc\n3kp+MFIgMYZIrBV5avO4ePZ3QeVLzxcjQq6ayAqwdHx3mma6sWMhHXlvF0oxVScx\nzCDWvGVVzEctdVSPDTdJKsCLcNlRM6ipPooUHX4HDy+DnYy0q1aPcLv+7jqraQwy\ndMI05/rHI8ODujQqF6tezKFi1YXXQk9SrMlwF2+lj2Tl+RKdP9FElH3ZFfbSJcMD\n4uuNM+OJC+hZnhDOkTo2WEdgpdVYse1AQqFS1Mc+nbf2VL5VEBitQ3XocbkVuTNj\nwq8zFgKaUPlnJFxSbjI1Ued7BL0UTN39vcJVt5AyI/e149g3bQEvlqdSk5/4Dd7T\n6QIDAQAB\n-----END PUBLIC KEY-----\n"
+       },
+       "cert_info": {
+        "key_type": 7,
+        "subject": "CN=Dennis Dyall Wallin,O=Yubico",
+        "issuer": "CN=Dennis Dyall Wallin,O=Yubico",
+        "serial": "afc3db859dbffc9506b9cc9053e6c93c",
+        "not_valid_before": "2026-10-01T08:08:09+00:00",
+        "not_valid_after": "2026-10-31T09:13:09+00:00",
+        "fingerprint": "0284880eae97280954803c8093a72acb176d7589ed7d1793543211481a43ad33"
+       },
+       "public_key_match": true
+      },
+      "9d": {
+       "slot": 157,
+       "name": "KEY_MANAGEMENT",
+       "metadata": null,
+       "cert_info": null,
+       "public_key_match": null
+      },
+      "9e": {
+       "slot": 158,
+       "name": "CARD_AUTH",
+       "metadata": {
+        "key_type": 7,
+        "pin_policy": 1,
+        "touch_policy": 1,
+        "generated": true,
+        "public_key": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmn5adERz4CY1cpYtdXNz\n3cSpCB3jbv+fi/uwzCbKWRD9aHB8mxXaQGGISp950ItnB2Ii1GRolmnvRo7To0e5\ndMEFVRnxjKPnWwQLAVawvH7Zzr9kuuWVlUYoHKn3CeVp7VU+l1a2p4CndVfB2Crv\ncsZ5e2fYF16UbTblK11dTxv4owy9N8AgneuLUp/nF1K12sTJLxH/3fegRDI4PYWE\nSkkIGhagHsTLbXtAkiKaktkezd1+qJrHzGV6/RSZURI4OEzlpueu81a3JSDpVikt\n2okYSb2Rt1tbTmkMVZSw8Rmr/zLJEH2Z6uz4Qy1Sy6ursKnz4KpoRz3xtm2Xm2it\n8QIDAQAB\n-----END PUBLIC KEY-----\n"
+       },
+       "cert_info": null,
+       "public_key_match": null
+      }
+     }
+    },
+    "flags": []
+   },
+   "ms": 56
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "authenticate",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "piv"
+    ],
+    "body": {
+     "key": "010203040506070801020304050607080102030405060708"
+    }
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "status": true
+    },
+    "flags": []
+   },
+   "ms": 4
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "delete",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "piv",
+     "slots",
+     "9a"
+    ],
+    "body": {
+     "delete_cert": true,
+     "delete_key": true
+    }
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {},
+    "flags": []
+   },
+   "ms": 175
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "delete",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "piv",
+     "slots",
+     "9e"
+    ],
+    "body": {
+     "delete_cert": false,
+     "delete_key": true
+    }
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {},
+    "flags": []
+   },
+   "ms": 83
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "get",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "piv",
+     "slots",
+     "9a"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "data": {
+      "id": "9a",
+      "name": "AUTHENTICATION",
+      "metadata": null,
+      "certificate": null
+     },
+     "actions": [
+      "examine_file",
+      "generate",
+      "get",
+      "import_file"
+     ],
+     "children": {}
+    },
+    "flags": []
+   },
+   "ms": 0
+  },
+  {
+   "request": {
+    "kind": "command",
+    "action": "get",
+    "target": [
+     "usb",
+     "125",
+     "ccid",
+     "piv"
+    ],
+    "body": {}
+   },
+   "signals": [],
+   "response": {
+    "kind": "success",
+    "body": {
+     "data": {
+      "version": [
+       5,
+       8,
+       0
+      ],
+      "authenticated": true,
+      "derived_key": false,
+      "stored_key": false,
+      "supports_bio": false,
+      "chuid": "3019d4e739da739ced39ce739d836858210842108421c84210c3eb34107ca63cd6a573f96bffbcc98b5cf871ed350832303330303130313e00fe00",
+      "ccc": null,
+      "pin_attempts": 3,
+      "metadata": {
+       "pin_metadata": {
+        "default_value": true,
+        "total_attempts": 3,
+        "attempts_remaining": 3
+       },
+       "puk_metadata": {
+        "default_value": true,
+        "total_attempts": 3,
+        "attempts_remaining": 3
+       },
+       "management_key_metadata": {
+        "key_type": 10,
+        "default_value": true,
+        "touch_policy": 1
+       }
+      }
+     },
+     "actions": [
+      "authenticate",
+      "change_pin",
+      "change_puk",
+      "get",
+      "reset",
+      "set_key",
+      "unblock_pin",
+      "validate_rfc4514",
+      "verify_pin"
+     ],
+     "children": {
+      "slots": {}
+     }
+    },
+    "flags": []
+   },
+   "ms": 6
+  }
+ ],
+ "stderr": []
+}

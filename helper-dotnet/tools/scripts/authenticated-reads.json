@@ -1,0 +1,12 @@
+[
+  {"action": "get", "target": ["usb"]},
+  {"action": "get", "target": ["usb", "$serial"]},
+  {"action": "calculate_all", "target": ["usb", "$serial", "ccid", "oath", "accounts"], "body": {"timestamp": 1700000000}},
+  {"action": "derive", "target": ["usb", "$serial", "ccid", "oath"], "body": {"password": "password"}},
+  {"action": "verify_pin", "target": ["usb", "$serial", "ccid", "piv"], "body": {"pin": "123456"}},
+  {"action": "get", "target": ["usb", "$serial", "ccid", "piv"]},
+  {"action": "get", "target": ["usb", "$serial", "ccid", "piv", "slots", "9c"]},
+  {"action": "unlock", "target": ["usb", "$serial", "fido", "ctap2"], "body": {"pin": "11234567"}},
+  {"action": "get", "target": ["usb", "$serial", "fido", "ctap2"]},
+  {"action": "get", "target": ["usb", "$serial", "fido", "ctap2", "credentials"]}
+]

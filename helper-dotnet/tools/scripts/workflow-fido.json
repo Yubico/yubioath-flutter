@@ -1,0 +1,16 @@
+[
+  {"action": "get", "target": ["usb"]},
+  {"action": "get", "target": ["usb", "$serial", "fido", "ctap2"]},
+  {"action": "get", "target": ["usb", "$serial", "fido", "ctap2", "credentials"]},
+  {"action": "unlock", "target": ["usb", "$serial", "fido", "ctap2"], "body": {"pin": "99999999"}},
+  {"action": "unlock", "target": ["usb", "$serial", "fido", "ctap2"], "body": {"pin": "11234567"}},
+  {"action": "get", "target": ["usb", "$serial", "fido", "ctap2"]},
+  {"action": "get", "target": ["usb", "$serial", "fido", "ctap2", "credentials"]},
+  {"action": "set_pin", "target": ["usb", "$serial", "fido", "ctap2"], "body": {"pin": "11234567", "new_pin": "111111"}},
+  {"action": "set_pin", "target": ["usb", "$serial", "fido", "ctap2"], "body": {"pin": "11234567", "new_pin": "76543211"}},
+  {"action": "get", "target": ["usb", "$serial"]},
+  {"action": "unlock", "target": ["usb", "$serial", "fido", "ctap2"], "body": {"pin": "76543211"}},
+  {"action": "set_pin", "target": ["usb", "$serial", "fido", "ctap2"], "body": {"pin": "76543211", "new_pin": "11234567"}},
+  {"action": "unlock", "target": ["usb", "$serial", "fido", "ctap2"], "body": {"pin": "11234567"}},
+  {"action": "get", "target": ["usb", "$serial", "fido", "ctap2"]}
+]

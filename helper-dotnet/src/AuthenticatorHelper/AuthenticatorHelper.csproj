@@ -1,0 +1,57 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Prototype replacement for helper/ (Python + yubikey-manager), built on the v2
+    Yubico.YubiKit.NET.SDK and published with Native AOT. Speaks the same newline-delimited
+    JSON RPC as the Python helper, so the Flutter app can launch it via _HELPER_PATH or by
+    dropping it in place of helper/authenticator-helper.
+
+    The v2 SDK is not published to nuget.org yet, so the SDK modules are consumed as project
+    references. Override YubiKitSdkRoot to point at a different SDK checkout.
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>14</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>authenticator-helper</AssemblyName>
+    <RootNamespace>Yubico.Authenticator.Helper</RootNamespace>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <IsPackable>false</IsPackable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+    <PublishAot>true</PublishAot>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <UseSystemResourceKeys>true</UseSystemResourceKeys>
+    <StripSymbols>true</StripSymbols>
+    <OptimizationPreference>Size</OptimizationPreference>
+    <JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
+    <!-- Ship only the native executable: no .pdb/.xml from the SDK project references. -->
+    <AllowedReferenceRelatedFileExtensions>-</AllowedReferenceRelatedFileExtensions>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <YubiKitSdkRoot Condition="'$(YubiKitSdkRoot)' == ''">$(MSBuildThisFileDirectory)../../../../../Yubico.YubiKit.NET.SDK</YubiKitSdkRoot>
+  </PropertyGroup>
+
+  <!--
+    WORKAROUND (SDK/NativeShims finding): Yubico.NativeShims 1.18.1 makes every NativeShims P/Invoke
+    a DirectPInvoke that is statically linked, but the Linux archive does not contain the macOS-only
+    HID input shims (Native_HidInput*) that Core's MacOSFidoHidConnection references, so the Linux
+    link fails with undefined references. Those code paths never run on Linux; let the linker leave
+    them unresolved until the package or the SDK is fixed.
+  -->
+  <ItemGroup Condition="$(RuntimeIdentifier.StartsWith('linux-'))">
+    <LinkerArg Include="-Wl,--unresolved-symbols=ignore-in-object-files" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="$(YubiKitSdkRoot)/src/Core/src/Yubico.YubiKit.Core.csproj" />
+    <ProjectReference Include="$(YubiKitSdkRoot)/src/Management/src/Yubico.YubiKit.Management.csproj" />
+    <ProjectReference Include="$(YubiKitSdkRoot)/src/Fido2/src/Yubico.YubiKit.Fido2.csproj" />
+    <ProjectReference Include="$(YubiKitSdkRoot)/src/Oath/src/Yubico.YubiKit.Oath.csproj" />
+    <ProjectReference Include="$(YubiKitSdkRoot)/src/Piv/src/Yubico.YubiKit.Piv.csproj" />
+  </ItemGroup>
+
+</Project>
