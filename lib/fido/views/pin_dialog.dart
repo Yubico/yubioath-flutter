@@ -35,6 +35,7 @@ import '../../widgets/visibility_toggle_button.dart';
 import '../keys.dart';
 import '../models.dart';
 import '../state.dart';
+import '../validation.dart';
 
 final _log = Logger('fido.views.pin_dialog');
 
@@ -291,6 +292,10 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
 
     if (hasPin && _currentPinController.text.isEmpty) {
       _currentPinError = l10n.l_field_required;
+      _currentIsWrong = true;
+      valid = false;
+    } else if (hasPin && !isValidFidoPinLength(_currentPinController.text)) {
+      _currentPinError = l10n.s_invalid_length;
       _currentIsWrong = true;
       valid = false;
     }

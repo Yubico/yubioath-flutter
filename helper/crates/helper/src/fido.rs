@@ -75,7 +75,7 @@ fn select_pin_protocol(info: &Info) -> Option<PinProtocol> {
 
 fn handle_pin_error<E: std::error::Error + Send + Sync + 'static>(
     e: &Ctap2Error<E>,
-    retries: u32,
+    retries: (u32, Option<u32>),
 ) -> RpcError {
     if let Ctap2Error::StatusError(status) = e {
         match status {
@@ -84,7 +84,8 @@ fn handle_pin_error<E: std::error::Error + Send + Sync + 'static>(
                     "pin-validation",
                     "Authentication is required",
                     json!({
-                        "retries": retries,
+                        "retries": retries.0,
+                        "power_cycle": retries.1,
                         "auth_blocked": *status == CtapStatus::PinAuthBlocked,
                     }),
                 );
@@ -238,7 +239,10 @@ macro_rules! with_ctap2 {
                         Err(RpcError::new("device-error", format!("{e}")))
                     }
                     Ok(ctap) => match Ctap2Session::new(ctap) {
-                        Err((e, _)) => Err(RpcError::new("device-error", format!("{e}"))),
+                        Err((e, s)) => {
+                            *conn = Some(s.into_connection());
+                            Err(RpcError::new("device-error", format!("{e}")))
+                        }
                         Ok($session) => {
                             let (result, returned_c) = { $body };
                             *conn = Some(returned_c);
@@ -255,7 +259,10 @@ macro_rules! with_ctap2 {
                         Err(RpcError::new("device-error", format!("{e}")))
                     }
                     Ok(ctap) => match Ctap2Session::new(ctap) {
-                        Err((e, _)) => Err(RpcError::new("device-error", format!("{e}"))),
+                        Err((e, s)) => {
+                            *conn = Some(s.into_connection());
+                            Err(RpcError::new("device-error", format!("{e}")))
+                        }
                         Ok($session) => {
                             let (result, returned_c) = { $body };
                             *conn = Some(returned_c);
@@ -281,7 +288,10 @@ macro_rules! with_ctap2_dev {
                             Err(RpcError::new("device-error", format!("{e}")))
                         }
                         Ok(ctap) => match Ctap2Session::new(ctap) {
-                            Err((e, _)) => Err(RpcError::new("device-error", format!("{e}"))),
+                            Err((e, s)) => {
+                                *conn = Some(s.into_connection());
+                                Err(RpcError::new("device-error", format!("{e}")))
+                            }
                             #[allow(unused_mut)]
                             Ok(mut $session) => {
                                 let (result, returned_c) = { $body };
@@ -301,7 +311,10 @@ macro_rules! with_ctap2_dev {
                             Err(RpcError::new("device-error", format!("{e}")))
                         }
                         Ok(ctap) => match Ctap2Session::new(ctap) {
-                            Err((e, _)) => Err(RpcError::new("device-error", format!("{e}"))),
+                            Err((e, s)) => {
+                                *conn = Some(s.into_connection());
+                                Err(RpcError::new("device-error", format!("{e}")))
+                            }
                             #[allow(unused_mut)]
                             Ok(mut $session) => {
                                 let (result, returned_c) = { $body };
@@ -359,7 +372,10 @@ impl Ctap2Node {
             ident: None,
             cached_data: json!({}),
         };
-        node.refresh_data();
+        if let Err(e) = node.refresh_data() {
+            node.close();
+            return Err(e);
+        }
         Ok(node)
     }
 
@@ -385,7 +401,10 @@ impl Ctap2Node {
             ident: None,
             cached_data: json!({}),
         };
-        node.refresh_data();
+        if let Err(e) = node.refresh_data() {
+            node.close();
+            return Err(e);
+        }
         Ok(node)
     }
 
@@ -440,7 +459,7 @@ impl Ctap2Node {
         self.ident = None;
     }
 
-    fn refresh_data(&mut self) {
+    fn refresh_data(&mut self) -> Result<(), RpcError> {
         let data: Result<(Value, Info), RpcError> =
             with_ctap2_dev!(&mut self.device_type, |ctap2| {
                 match ctap2.get_info() {
@@ -463,18 +482,24 @@ impl Ctap2Node {
                                     (Err(RpcError::new("device-error", format!("{e}"))), conn)
                                 }
                                 Ok(mut client_pin) => {
-                                    let (pin_retries, power_cycle) =
-                                        client_pin.get_pin_retries().unwrap_or((0, None));
-                                    data["pin_retries"] = json!(pin_retries);
-                                    data["power_cycle"] = json!(power_cycle);
-
-                                    if has_bio {
-                                        let uv_retries = client_pin.get_uv_retries().unwrap_or(0);
-                                        data["uv_retries"] = json!(uv_retries);
-                                    }
+                                    let result = match client_pin.get_pin_retries() {
+                                        Ok((pin_retries, power_cycle)) => {
+                                            data["pin_retries"] = json!(pin_retries);
+                                            data["power_cycle"] = json!(power_cycle);
+                                            if has_bio {
+                                                let uv_retries =
+                                                    client_pin.get_uv_retries().unwrap_or(0);
+                                                data["uv_retries"] = json!(uv_retries);
+                                            }
+                                            Ok((data, info))
+                                        }
+                                        Err(e) => {
+                                            Err(RpcError::new("device-error", format!("{e}")))
+                                        }
+                                    };
                                     let conn =
                                         client_pin.into_session().into_session().into_connection();
-                                    (Ok((data, info)), conn)
+                                    (result, conn)
                                 }
                             }
                         } else {
@@ -484,13 +509,13 @@ impl Ctap2Node {
                     }
                 }
             });
-        if let Ok((d, info)) = data {
-            self.cached_data = d;
-            // Try to load a stored PPUAT on first refresh (construction).
-            if self.ppuat.is_none() {
-                self.load_ppuat(&info);
-            }
+        let (d, info) = data?;
+        self.cached_data = d;
+        // Try to load a stored PPUAT on first refresh (construction).
+        if self.ppuat.is_none() {
+            self.load_ppuat(&info);
         }
+        Ok(())
     }
 
     fn do_reset(&mut self, signal: SignalFn, cancel: &AtomicBool) -> Result<RpcResponse, RpcError> {
@@ -659,6 +684,13 @@ impl RpcNode for Ctap2Node {
         cancel: &AtomicBool,
     ) -> Result<RpcResponse, RpcError> {
         let result = self.do_call_action(action, params, signal, cancel);
+        if let Err(ref e) = result
+            && e.status == "pin-validation"
+        {
+            self.pin_token = None;
+            self.cached_data["pin_retries"] = e.body["retries"].clone();
+            self.cached_data["power_cycle"] = e.body["power_cycle"].clone();
+        }
         // If we get an auth error and no regular token was used, the PPUAT
         // may have been invalid — delete it so we don't keep trying.
         if let Err(ref e) = result
@@ -710,8 +742,8 @@ impl Ctap2Node {
                 let pin = params
                     .get("pin")
                     .and_then(|v| v.as_str())
-                    .ok_or_else(|| RpcError::invalid_params("Missing pin"))?
-                    .to_string();
+                    .ok_or_else(|| RpcError::invalid_params("Missing pin"))?;
+                let pin = Ctap2Pin::new(pin).map_err(RpcError::invalid_params)?;
                 let remember = params
                     .get("remember")
                     .and_then(|v| v.as_bool())
@@ -764,31 +796,30 @@ impl Ctap2Node {
                                 }
                                 Ok(mut client_pin) => {
                                     // If remember requested, get a persistent PPUAT first
-                                    let ppuat_data =
+                                    let ppuat_result =
                                         if remember && self.ppuat.is_none() && supports_readonly {
-                                            let ctap2_pin = Ctap2Pin::new(&pin).map_err(|e| {
-                                                RpcError::invalid_params(e.to_string())
-                                            })?;
-                                            match client_pin.get_pin_token(
-                                                &ctap2_pin,
-                                                Some(Permissions::PERSISTENT_CREDENTIAL_MGMT),
-                                                None,
-                                            ) {
-                                                Ok(ppuat) => {
+                                            client_pin
+                                                .get_pin_token(
+                                                    &pin,
+                                                    Some(Permissions::PERSISTENT_CREDENTIAL_MGMT),
+                                                    None,
+                                                )
+                                                .map(|ppuat| {
                                                     let ident = info.get_identifier(&ppuat);
                                                     ident.map(|id| (ppuat, id))
-                                                }
-                                                Err(_) => None,
-                                            }
+                                                })
                                         } else {
-                                            None
+                                            Ok(None)
                                         };
 
                                     // Get the regular token
-                                    let ctap2_pin = Ctap2Pin::new(&pin)
-                                        .map_err(|e| RpcError::invalid_params(e.to_string()))?;
-                                    match client_pin.get_pin_token(&ctap2_pin, perms, rpid) {
-                                        Ok(token) => {
+                                    let token_result = ppuat_result.and_then(|ppuat_data| {
+                                        client_pin
+                                            .get_pin_token(&pin, perms, rpid)
+                                            .map(|token| (token, ppuat_data))
+                                    });
+                                    match token_result {
+                                        Ok((token, ppuat_data)) => {
                                             let protocol = client_pin.protocol();
                                             let conn = client_pin
                                                 .into_session()
@@ -797,13 +828,20 @@ impl Ctap2Node {
                                             (Ok((token, protocol, ppuat_data)), conn)
                                         }
                                         Err(e) => {
-                                            let retries =
-                                                client_pin.get_pin_retries().unwrap_or((0, None)).0;
+                                            let error = match client_pin.get_pin_retries() {
+                                                Ok(retries) => handle_pin_error(&e, retries),
+                                                Err(retry_error) => RpcError::new(
+                                                    "device-error",
+                                                    format!(
+                                                        "Failed to read PIN retries after {e}: {retry_error}"
+                                                    ),
+                                                ),
+                                            };
                                             let conn = client_pin
                                                 .into_session()
                                                 .into_session()
                                                 .into_connection();
-                                            (Err(handle_pin_error(&e, retries)), conn)
+                                            (Err(error), conn)
                                         }
                                     }
                                 }
@@ -811,36 +849,38 @@ impl Ctap2Node {
                         }
                     }
                 });
-                result.map(|(token, protocol, ppuat_data)| {
-                    self.pin_token = Some(token);
-                    self.pin_protocol = Some(protocol);
+                let (token, protocol, ppuat_data) = result?;
+                self.pin_token = Some(token);
+                self.pin_protocol = Some(protocol);
 
-                    // Store the PPUAT if we got one
-                    if let Some((ppuat, ident)) = ppuat_data {
-                        let mut store = PPUAT_STATE.lock().unwrap();
-                        if store.ensure_unlocked() {
-                            let _ = store
-                                .ppuats
-                                .put_secret(&hex::encode(&ident), &hex::encode(&ppuat));
-                            let _ = store.ppuats.write();
-                        }
-                        self.ppuat = Some(ppuat);
-                        self.ident = Some(ident);
+                // Store the PPUAT if we got one
+                if let Some((ppuat, ident)) = ppuat_data {
+                    let mut store = PPUAT_STATE.lock().unwrap();
+                    if store.ensure_unlocked() {
+                        let _ = store
+                            .ppuats
+                            .put_secret(&hex::encode(&ident), &hex::encode(&ppuat));
+                        let _ = store.ppuats.write();
                     }
+                    self.ppuat = Some(ppuat);
+                    self.ident = Some(ident);
+                }
 
-                    RpcResponse::new(json!({}))
-                })
+                self.refresh_data()?;
+                Ok(RpcResponse::new(json!({})))
             }
             "set_pin" => {
                 let new_pin = params
                     .get("new_pin")
                     .and_then(|v| v.as_str())
-                    .ok_or_else(|| RpcError::invalid_params("Missing new_pin"))?
-                    .to_string();
+                    .ok_or_else(|| RpcError::invalid_params("Missing new_pin"))?;
+                let new_pin = Ctap2Pin::new(new_pin).map_err(RpcError::invalid_params)?;
                 let pin = params
                     .get("pin")
                     .and_then(|v| v.as_str())
-                    .map(|s| s.to_string());
+                    .map(Ctap2Pin::new)
+                    .transpose()
+                    .map_err(RpcError::invalid_params)?;
 
                 let result = with_ctap2_dev!(&mut self.device_type, |ctap2| {
                     match ctap2.get_info() {
@@ -864,13 +904,9 @@ impl Ctap2Node {
                                         (Err(RpcError::invalid_params("Missing pin")), conn)
                                     } else {
                                         let result = if has_pin {
-                                            let old_pin =
-                                                Ctap2Pin::new(pin.as_deref().unwrap()).unwrap();
-                                            let new_p = Ctap2Pin::new(&new_pin).unwrap();
-                                            client_pin.change_pin(&old_pin, &new_p)
+                                            client_pin.change_pin(pin.as_ref().unwrap(), &new_pin)
                                         } else {
-                                            let new_p = Ctap2Pin::new(&new_pin).unwrap();
-                                            client_pin.set_pin(&new_p)
+                                            client_pin.set_pin(&new_pin)
                                         };
 
                                         match result {
@@ -882,15 +918,20 @@ impl Ctap2Node {
                                                 (Ok(()), conn)
                                             }
                                             Err(e) => {
-                                                let retries = client_pin
-                                                    .get_pin_retries()
-                                                    .unwrap_or((0, None))
-                                                    .0;
+                                                let error = match client_pin.get_pin_retries() {
+                                                    Ok(retries) => handle_pin_error(&e, retries),
+                                                    Err(retry_error) => RpcError::new(
+                                                        "device-error",
+                                                        format!(
+                                                            "Failed to read PIN retries after {e}: {retry_error}"
+                                                        ),
+                                                    ),
+                                                };
                                                 let conn = client_pin
                                                     .into_session()
                                                     .into_session()
                                                     .into_connection();
-                                                (Err(handle_pin_error(&e, retries)), conn)
+                                                (Err(error), conn)
                                             }
                                         }
                                     }
@@ -899,14 +940,10 @@ impl Ctap2Node {
                         }
                     }
                 });
-                if matches!(&result, Err(e) if e.status == "pin-validation") {
-                    self.pin_token = None;
-                    self.refresh_data();
-                }
                 result?;
                 self.pin_token = None;
                 self.delete_ppuat();
-                self.refresh_data();
+                self.refresh_data()?;
                 Ok(RpcResponse::with_flags(json!({}), vec!["device_info"]))
             }
             "enable_ep_attestation" => {
@@ -1720,6 +1757,373 @@ fn enroll_fingerprint<C: yubikit::core::Connection + 'static>(
     }
 
     Ok((hex::encode(&template_id), name.clone()))
+}
+
+#[cfg(test)]
+mod pin_tests {
+    use super::*;
+    use sha2::{Digest, Sha256};
+    use yubikit::core::{Connection, Version};
+    use yubikit::fido::CtapHidCapability;
+    use yubikit::smartcard::SmartCardError;
+
+    struct PinState {
+        retries: u32,
+        power_cycle: bool,
+        fail_info: bool,
+        fail_retries: bool,
+        readonly: bool,
+        token_requests: u32,
+        last_permissions: Option<i64>,
+    }
+
+    fn response(value: CborValue) -> Vec<u8> {
+        let mut response = vec![0];
+        response.extend(value.encode());
+        response
+    }
+
+    impl PinState {
+        fn call(&mut self, data: &[u8]) -> Vec<u8> {
+            match data[0] {
+                0x04 if self.fail_info => vec![CtapStatus::Other as u8],
+                0x04 => response(CborValue::Map(vec![
+                    (
+                        CborValue::Int(1),
+                        CborValue::Array(vec![CborValue::Text("FIDO_2_1".into())]),
+                    ),
+                    (CborValue::Int(3), CborValue::Bytes(vec![0; 16])),
+                    (
+                        CborValue::Int(4),
+                        CborValue::Map(vec![
+                            (CborValue::Text("clientPin".into()), CborValue::Bool(true)),
+                            (CborValue::Text("credMgmt".into()), CborValue::Bool(true)),
+                            (
+                                CborValue::Text("pinUvAuthToken".into()),
+                                CborValue::Bool(true),
+                            ),
+                            (
+                                CborValue::Text("perCredMgmtRO".into()),
+                                CborValue::Bool(self.readonly),
+                            ),
+                        ]),
+                    ),
+                    (CborValue::Int(6), CborValue::Array(vec![CborValue::Int(1)])),
+                ])),
+                0x06 => {
+                    let args = yubikit::cbor::decode(&data[1..]).unwrap();
+                    let command = args.map_get_int(2).unwrap().as_int().unwrap();
+                    match command {
+                        1 if self.fail_retries => vec![CtapStatus::Other as u8],
+                        1 => response(CborValue::Map(vec![
+                            (CborValue::Int(3), CborValue::Int(self.retries as i64)),
+                            (
+                                CborValue::Int(4),
+                                CborValue::Int(i64::from(self.power_cycle)),
+                            ),
+                        ])),
+                        2 => {
+                            // Private key 1 makes the shared point equal to the peer's public key.
+                            let x = hex::decode(
+                                "6b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c296",
+                            )
+                            .unwrap();
+                            let y = hex::decode(
+                                "4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5",
+                            )
+                            .unwrap();
+                            response(CborValue::Map(vec![(
+                                CborValue::Int(1),
+                                CborValue::Map(vec![
+                                    (CborValue::Int(1), CborValue::Int(2)),
+                                    (CborValue::Int(3), CborValue::Int(-25)),
+                                    (CborValue::Int(-1), CborValue::Int(1)),
+                                    (CborValue::Int(-2), CborValue::Bytes(x)),
+                                    (CborValue::Int(-3), CborValue::Bytes(y)),
+                                ]),
+                            )]))
+                        }
+                        4 | 5 | 9 => {
+                            self.token_requests += 1;
+                            self.last_permissions = args.map_get_int(9).and_then(CborValue::as_int);
+                            if self.retries == 0 {
+                                return vec![CtapStatus::PinBlocked as u8];
+                            }
+                            if self.power_cycle {
+                                return vec![CtapStatus::PinAuthBlocked as u8];
+                            }
+                            let peer = args.map_get_int(3).unwrap();
+                            let x = peer.map_get_int(-2).unwrap().as_bytes().unwrap();
+                            let secret = Sha256::digest(x);
+                            let encrypted = args.map_get_int(6).unwrap().as_bytes().unwrap();
+                            let hash = PinProtocol::V1.decrypt(&secret, encrypted).unwrap();
+                            if hash != Sha256::digest(b"123456")[..16] {
+                                self.retries -= 1;
+                                return vec![CtapStatus::PinInvalid as u8];
+                            }
+                            self.retries = 8;
+                            if command == 4 {
+                                return vec![0];
+                            }
+                            response(CborValue::Map(vec![(
+                                CborValue::Int(2),
+                                CborValue::Bytes(PinProtocol::V1.encrypt(&secret, &[0x42; 32])),
+                            )]))
+                        }
+                        _ => panic!("Unexpected ClientPIN command: {command}"),
+                    }
+                }
+                command => panic!("Unexpected CTAP2 command: {command:02x}"),
+            }
+        }
+    }
+
+    struct Hid(Arc<StdMutex<PinState>>);
+
+    impl Connection for Hid {
+        type Error = FidoError;
+        fn close(&mut self) {}
+    }
+
+    impl FidoConnection for Hid {
+        fn call(
+            &mut self,
+            cmd: u8,
+            data: &[u8],
+            _on_keepalive: Option<&mut dyn FnMut(u8)>,
+            _cancel: Option<&dyn Fn() -> bool>,
+        ) -> Result<Vec<u8>, FidoError> {
+            assert_eq!(cmd, 0x10);
+            Ok(self.0.lock().unwrap().call(data))
+        }
+
+        fn device_version(&self) -> Version {
+            Version(5, 2, 6)
+        }
+
+        fn capabilities(&self) -> CtapHidCapability {
+            CtapHidCapability::from_raw(CtapHidCapability::CBOR)
+        }
+    }
+
+    struct SmartCard(Arc<StdMutex<PinState>>);
+
+    impl Connection for SmartCard {
+        type Error = SmartCardError;
+        fn close(&mut self) {}
+    }
+
+    impl SmartCardConnection for SmartCard {
+        fn send_and_receive(&mut self, apdu: &[u8]) -> Result<(Vec<u8>, u16), SmartCardError> {
+            match apdu[1] {
+                0xa4 => Ok((b"U2F_V2".to_vec(), 0x9000)),
+                0x10 => {
+                    let (offset, length) = if apdu[4] == 0 {
+                        (7, u16::from_be_bytes([apdu[5], apdu[6]]) as usize)
+                    } else {
+                        (5, apdu[4] as usize)
+                    };
+                    Ok((
+                        self.0.lock().unwrap().call(&apdu[offset..offset + length]),
+                        0x9000,
+                    ))
+                }
+                instruction => panic!("Unexpected APDU instruction: {instruction:02x}"),
+            }
+        }
+
+        fn transport(&self) -> Transport {
+            Transport::Nfc
+        }
+    }
+
+    fn node(smartcard: bool) -> (Ctap2Node, Arc<StdMutex<PinState>>) {
+        let state = Arc::new(StdMutex::new(PinState {
+            retries: 8,
+            power_cycle: false,
+            fail_info: false,
+            fail_retries: false,
+            readonly: false,
+            token_requests: 0,
+            last_permissions: None,
+        }));
+        let node = if smartcard {
+            Ctap2Node::new_smartcard(
+                Box::new(SmartCard(state.clone())),
+                Arc::new(StdMutex::new(None)),
+                None,
+            )
+        } else {
+            Ctap2Node::new_hid(
+                Box::new(Hid(state.clone())),
+                Arc::new(StdMutex::new(None)),
+                None,
+            )
+        }
+        .unwrap();
+        (node, state)
+    }
+
+    fn action(node: &mut Ctap2Node, action: &str, params: Value) -> Result<RpcResponse, RpcError> {
+        node.call_action(action, &params, &|_, _| {}, &AtomicBool::new(false))
+    }
+
+    #[test]
+    fn wrong_then_correct_pin_updates_reported_retries() {
+        for smartcard in [false, true] {
+            let (mut node, _) = node(smartcard);
+            let error = action(&mut node, "unlock", json!({"pin": "654321"}))
+                .err()
+                .unwrap();
+            assert_eq!(error.status, "pin-validation");
+            assert_eq!(error.body["retries"], 7);
+            assert_eq!(node.get_data()["pin_retries"], 7);
+            assert_eq!(node.get_data()["unlocked"], false);
+            action(&mut node, "unlock", json!({"pin": "123456"})).unwrap();
+            assert_eq!(node.get_data()["pin_retries"], 8);
+            assert_eq!(node.get_data()["unlocked"], true);
+        }
+    }
+
+    #[test]
+    fn invalid_lengths_do_not_lose_connection_or_consume_retries() {
+        for smartcard in [false, true] {
+            let (mut node, state) = node(smartcard);
+            for pin in ["".to_string(), "123".into(), "1".repeat(241)] {
+                for (action_name, params) in [
+                    ("unlock", json!({"pin": pin})),
+                    ("unlock", json!({"pin": pin, "remember": true})),
+                    ("set_pin", json!({"pin": "123456", "new_pin": pin})),
+                    ("set_pin", json!({"pin": pin, "new_pin": "123456"})),
+                ] {
+                    let error = action(&mut node, action_name, params).err().unwrap();
+                    assert_eq!(error.status, "invalid-command");
+                    assert_eq!(node.get_data()["pin_retries"], 8);
+                }
+            }
+            assert_eq!(state.lock().unwrap().token_requests, 0);
+            action(&mut node, "unlock", json!({"pin": "123456"})).unwrap();
+            assert_eq!(node.get_data()["unlocked"], true);
+        }
+    }
+
+    #[test]
+    fn session_initialization_failure_does_not_lose_connection() {
+        for smartcard in [false, true] {
+            let (mut node, state) = node(smartcard);
+            state.lock().unwrap().fail_info = true;
+            let error = action(&mut node, "unlock", json!({"pin": "123456"}))
+                .err()
+                .unwrap();
+            assert_eq!(error.status, "device-error");
+            state.lock().unwrap().fail_info = false;
+            action(&mut node, "unlock", json!({"pin": "123456"})).unwrap();
+            assert_eq!(node.get_data()["unlocked"], true);
+        }
+    }
+
+    #[test]
+    fn node_initialization_failure_returns_connection_to_shared_owner() {
+        fn reopen(node: &mut Ctap2Node) -> Result<Ctap2Node, RpcError> {
+            node.close();
+            match &mut node.device_type {
+                FidoDeviceType::Hid { shared, .. } => {
+                    let connection = shared.lock().unwrap().take().unwrap();
+                    Ctap2Node::new_hid(connection, shared.clone(), None)
+                }
+                FidoDeviceType::SmartCard { shared, .. } => {
+                    let connection = shared.lock().unwrap().take().unwrap();
+                    Ctap2Node::new_smartcard(connection, shared.clone(), None)
+                }
+            }
+        }
+
+        for smartcard in [false, true] {
+            let (mut node, state) = node(smartcard);
+            state.lock().unwrap().fail_retries = true;
+            let error = reopen(&mut node).err().unwrap();
+            assert_eq!(error.status, "device-error");
+            state.lock().unwrap().fail_retries = false;
+            let recovered = reopen(&mut node).unwrap();
+            assert_eq!(recovered.get_data()["pin_retries"], 8);
+        }
+    }
+
+    #[test]
+    fn remember_with_wrong_pin_consumes_only_one_attempt() {
+        let (mut node, state) = node(false);
+        state.lock().unwrap().readonly = true;
+        let error = action(
+            &mut node,
+            "unlock",
+            json!({"pin": "654321", "remember": true}),
+        )
+        .err()
+        .unwrap();
+        assert_eq!(error.status, "pin-validation");
+        assert_eq!(error.body["retries"], 7);
+        assert_eq!(state.lock().unwrap().token_requests, 1);
+        assert_eq!(
+            state.lock().unwrap().last_permissions,
+            Some(Permissions::PERSISTENT_CREDENTIAL_MGMT.bits() as i64),
+        );
+        assert_eq!(node.get_data()["pin_retries"], 7);
+    }
+
+    #[test]
+    fn retry_read_failure_is_not_reported_as_a_blocked_pin() {
+        let (mut node, state) = node(false);
+        state.lock().unwrap().fail_retries = true;
+        let error = action(&mut node, "unlock", json!({"pin": "654321"}))
+            .err()
+            .unwrap();
+        assert_eq!(error.status, "device-error");
+        assert_eq!(node.get_data()["pin_retries"], 8);
+        state.lock().unwrap().fail_retries = false;
+        action(&mut node, "unlock", json!({"pin": "123456"})).unwrap();
+    }
+
+    #[test]
+    fn pin_change_failure_updates_reported_retries() {
+        for smartcard in [false, true] {
+            let (mut node, _) = node(smartcard);
+            let error = action(
+                &mut node,
+                "set_pin",
+                json!({"pin": "654321", "new_pin": "123456"}),
+            )
+            .err()
+            .unwrap();
+            assert_eq!(error.status, "pin-validation");
+            assert_eq!(node.get_data()["pin_retries"], 7);
+            action(
+                &mut node,
+                "set_pin",
+                json!({"pin": "123456", "new_pin": "123456"}),
+            )
+            .unwrap();
+            assert_eq!(node.get_data()["pin_retries"], 8);
+        }
+    }
+
+    #[test]
+    fn blocked_pin_statuses_preserve_actual_retry_counts() {
+        for (retries, power_cycle) in [(0, false), (6, true)] {
+            let (mut node, state) = node(false);
+            {
+                let mut state = state.lock().unwrap();
+                state.retries = retries;
+                state.power_cycle = power_cycle;
+            }
+            let error = action(&mut node, "unlock", json!({"pin": "123456"}))
+                .err()
+                .unwrap();
+            assert_eq!(error.status, "pin-validation");
+            assert_eq!(error.body["auth_blocked"], power_cycle);
+            assert_eq!(node.get_data()["pin_retries"], retries);
+            assert_eq!(node.get_data()["power_cycle"], u32::from(power_cycle));
+        }
+    }
 }
 
 #[cfg(test)]
