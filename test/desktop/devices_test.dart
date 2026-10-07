@@ -6,6 +6,8 @@ import 'package:yubico_authenticator/desktop/rpc.dart';
 class _DeviceRpc extends RpcSession {
   int enabled = 0x231;
   int pid = 0x407;
+  String transport = 'usb';
+  bool present = true;
 
   _DeviceRpc() : super('unused');
 
@@ -20,15 +22,21 @@ class _DeviceRpc extends RpcSession {
       return {
         'data': {
           'name': 'YubiKey',
-          'pid': pid,
-          'transport': 'usb',
+          'pid': transport == 'usb' ? pid : null,
+          'transport': transport,
           'info': {
             'serial': 1234,
             'version': [5, 7, 0],
             'form_factor': 1,
-            'supported_capabilities': {'usb': 0x231},
+            'supported_capabilities': {
+              'usb': 0x231,
+              if (transport == 'nfc') 'nfc': 0x231,
+            },
             'config': {
-              'enabled_capabilities': {'usb': enabled},
+              'enabled_capabilities': {
+                'usb': enabled,
+                if (transport == 'nfc') 'nfc': enabled,
+              },
               'auto_eject_timeout': null,
               'challenge_response_timeout': null,
               'device_flags': null,
@@ -52,13 +60,17 @@ class _DeviceRpc extends RpcSession {
     return {
       'data': {'pids': <String, int>{}},
       'children': {
-        '1234': {
-          'name': 'YubiKey',
-          'serial': 1234,
-          'transport': 'usb',
-          'pid': pid,
-          'enabled_capabilities': {'usb': enabled},
-        },
+        if (present)
+          '1234': {
+            'name': 'YubiKey',
+            'serial': 1234,
+            'transport': transport,
+            'pid': transport == 'usb' ? pid : null,
+            'enabled_capabilities': {
+              'usb': enabled,
+              if (transport == 'nfc') 'nfc': enabled,
+            },
+          },
       },
     };
   }
@@ -117,4 +129,39 @@ void main() {
     expect(refreshed.single.pid?.value, 0x406);
     expect(refreshed.single.path.key, 'devices/1234');
   });
+
+  test(
+    'discovers service NFC keys without a USB PID and tracks removal',
+    () async {
+      final rpc = _DeviceRpc()..transport = 'nfc';
+      final notifier = DevicesNotifier(rpc, () => false);
+      addTearDown(notifier.dispose);
+
+      final initial = notifier.stream.firstWhere(
+        (devices) => devices.isNotEmpty,
+      );
+      notifier.refresh();
+      final devices = await initial.timeout(const Duration(seconds: 2));
+      expect(devices.single.transport, Transport.nfc);
+      expect(devices.single.pid, isNull);
+      expect(devices.single.path.key, 'devices/1234');
+      expect(
+        devices.single.info?.config.enabledCapabilities[Transport.nfc],
+        rpc.enabled,
+      );
+
+      rpc.present = false;
+      await notifier.stream
+          .firstWhere((devices) => devices.isEmpty)
+          .timeout(const Duration(seconds: 3));
+      expect(notifier.state, isEmpty);
+
+      rpc.present = true;
+      final reinserted = await notifier.stream
+          .firstWhere((devices) => devices.isNotEmpty)
+          .timeout(const Duration(seconds: 3));
+      expect(reinserted.single.transport, Transport.nfc);
+      expect(reinserted.single.pid, isNull);
+    },
+  );
 }

@@ -58,7 +58,7 @@ impl DevicesNode {
         let is_service = source.is_service();
         IS_SERVICE.get_or_init(|| is_service);
         if is_service {
-            log::info!("Connected to ykman-svc service for USB device access");
+            log::info!("Connected to ykman-svc service for device access");
         }
         Self {
             source,
@@ -105,19 +105,12 @@ impl RpcNode for DevicesNode {
     }
 
     fn list_children(&mut self) -> BTreeMap<String, Value> {
-        let is_service = self.is_service;
         let previous = std::mem::take(&mut self.devices);
         let previous_revisions = std::mem::take(&mut self.revisions);
         match self.list_devices() {
             Ok(devs) => {
                 self.device_mapping.clear();
                 for (dev, revision) in devs {
-                    // The service source dedupes/excludes NFC readers on its
-                    // side; local (monitor-backed) enumeration still reports
-                    // them so a tapped NFC card shows up as a device.
-                    if is_service && dev.transport() == Transport::Nfc {
-                        continue;
-                    }
                     let dev_id = if let Some(serial) = dev.info().serial {
                         serial.to_string()
                     } else {
@@ -292,6 +285,11 @@ impl RpcNode for DeviceNode {
 
     fn list_children(&mut self) -> BTreeMap<String, Value> {
         let mut children = BTreeMap::new();
+        // NFC applications use the reader, regardless of the key's USB configuration.
+        if self.device.transport() == Transport::Nfc {
+            children.insert("ccid".to_string(), json!({}));
+            return children;
+        }
         let ifaces = self.device.usb_interfaces();
         if ifaces.contains(UsbInterface::CCID) {
             children.insert("ccid".to_string(), json!({}));
@@ -472,6 +470,207 @@ fn extract_ec_pubkey_from_cert(cert_der: &[u8]) -> Result<Vec<u8>, &'static str>
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::sync::{Arc, Mutex};
+    use yubikit::core::{Connection, Version};
+    use yubikit::device::ReinsertStatus;
+    use yubikit::fido::FidoConnection;
+    use yubikit::management::DeviceInfo;
+    use yubikit::otp::OtpConnection;
+    use yubikit::smartcard::{SmartCardConnection, SmartCardError};
+
+    #[derive(Clone)]
+    struct ServiceDevice {
+        info: DeviceInfo,
+        transport: Transport,
+        interfaces: UsbInterface,
+    }
+
+    impl ServiceDevice {
+        fn new(serial: Option<u32>, transport: Transport) -> Self {
+            let mut info = DeviceInfo::parse(&[0], Version(5, 2, 6)).unwrap();
+            let capabilities = Capability::FIDO2 | Capability::OATH | Capability::PIV;
+            info.serial = serial;
+            info.config.enabled_capabilities = [
+                (Transport::Usb, capabilities),
+                (Transport::Nfc, capabilities),
+            ]
+            .into();
+            info.supported_capabilities = info.config.enabled_capabilities.clone();
+            Self {
+                info,
+                transport,
+                interfaces: UsbInterface::CCID | UsbInterface::FIDO | UsbInterface::OTP,
+            }
+        }
+    }
+
+    struct Card(Transport);
+
+    impl Connection for Card {
+        type Error = SmartCardError;
+        fn close(&mut self) {}
+    }
+
+    impl SmartCardConnection for Card {
+        fn send_and_receive(&mut self, _apdu: &[u8]) -> Result<(Vec<u8>, u16), SmartCardError> {
+            panic!("Discovery must not send application APDUs");
+        }
+
+        fn transport(&self) -> Transport {
+            self.0
+        }
+    }
+
+    impl YubiKeyDevice for ServiceDevice {
+        fn info(&self) -> &DeviceInfo {
+            &self.info
+        }
+        fn transport(&self) -> Transport {
+            self.transport
+        }
+        fn name(&self) -> String {
+            get_name(&self.info)
+        }
+        fn usb_interfaces(&self) -> UsbInterface {
+            self.interfaces
+        }
+        fn open_smartcard(&self) -> Result<Box<dyn SmartCardConnection + Send>, DeviceError> {
+            Ok(Box::new(Card(self.transport)))
+        }
+        fn open_fido(&self) -> Result<Box<dyn FidoConnection + Send>, DeviceError> {
+            Err(DeviceError::NoDeviceFound)
+        }
+        fn open_otp(&self) -> Result<Box<dyn OtpConnection + Send>, DeviceError> {
+            Err(DeviceError::NoDeviceFound)
+        }
+        fn reinsert(
+            &mut self,
+            _status_cb: &dyn Fn(ReinsertStatus),
+            _cancelled: &dyn Fn() -> bool,
+        ) -> Result<(), DeviceError> {
+            panic!("Discovery must not request reinsertion");
+        }
+        fn clone_box(&self) -> Box<dyn YubiKeyDevice> {
+            Box::new(self.clone())
+        }
+    }
+
+    struct ServiceSource(Arc<Mutex<Vec<ServiceDevice>>>);
+
+    impl DeviceSource for ServiceSource {
+        fn list_devices(&mut self) -> Result<Vec<Box<dyn YubiKeyDevice>>, DeviceError> {
+            Ok(self
+                .0
+                .lock()
+                .unwrap()
+                .iter()
+                .map(|dev| dev.clone_box())
+                .collect())
+        }
+        fn select_fido(
+            &mut self,
+            _cancel: Option<&dyn Fn() -> bool>,
+        ) -> Result<Box<dyn YubiKeyDevice>, DeviceError> {
+            panic!("Discovery must not select a device");
+        }
+        fn is_service(&self) -> bool {
+            true
+        }
+    }
+
+    fn service_node(devices: Arc<Mutex<Vec<ServiceDevice>>>) -> DevicesNode {
+        DevicesNode {
+            source: Box::new(ServiceSource(devices)),
+            is_service: true,
+            device_mapping: BTreeMap::new(),
+            devices: BTreeMap::new(),
+            revisions: BTreeMap::new(),
+            refreshed_info: BTreeMap::new(),
+            child_invalidated: false,
+        }
+    }
+
+    #[test]
+    fn service_nfc_devices_are_listed_and_expose_smartcard_applications() {
+        let devices = Arc::new(Mutex::new(vec![
+            ServiceDevice::new(Some(123), Transport::Nfc),
+            ServiceDevice::new(Some(456), Transport::Usb),
+            ServiceDevice::new(None, Transport::Nfc),
+        ]));
+        let mut node = service_node(devices);
+        let children = node.list_children();
+        assert_eq!(children.len(), 3);
+        assert_eq!(children["123"]["transport"], "nfc");
+        assert_eq!(children["456"]["transport"], "usb");
+        assert_eq!(
+            children
+                .values()
+                .filter(|data| data["serial"].is_null())
+                .count(),
+            1
+        );
+        assert_eq!(children["123"]["pid"], Value::Null);
+
+        let mut nfc = node.create_child("123").unwrap();
+        assert_eq!(nfc.get_data()["transport"], "nfc");
+        assert_eq!(nfc.get_data()["info"]["serial"], 123);
+        assert_eq!(nfc.list_children().keys().collect::<Vec<_>>(), ["ccid"]);
+        let mut ccid = nfc.create_child("ccid").unwrap();
+        let applications = ccid.list_children();
+        for application in ["oath", "piv", "ctap2"] {
+            assert!(applications.contains_key(application));
+        }
+
+        let mut usb = node.create_child("456").unwrap();
+        assert_eq!(
+            usb.list_children().keys().collect::<Vec<_>>(),
+            ["ccid", "fido", "otp"]
+        );
+    }
+
+    #[test]
+    fn service_nfc_removal_and_reinsertion_update_inventory() {
+        let devices = Arc::new(Mutex::new(vec![ServiceDevice::new(
+            Some(123),
+            Transport::Nfc,
+        )]));
+        let mut node = service_node(devices.clone());
+        assert_eq!(node.list_children().len(), 1);
+        node.create_child("123").unwrap();
+        assert!(node.is_child_valid("123"));
+
+        devices.lock().unwrap().clear();
+        assert!(node.list_children().is_empty());
+        assert!(!node.is_child_valid("123"));
+        assert!(node.create_child("123").is_err());
+
+        devices
+            .lock()
+            .unwrap()
+            .push(ServiceDevice::new(Some(123), Transport::Nfc));
+        assert_eq!(node.list_children().len(), 1);
+        assert_eq!(
+            node.create_child("123").unwrap().get_data()["transport"],
+            "nfc"
+        );
+    }
+
+    #[test]
+    fn service_nfc_passkeys_use_smartcard_even_without_usb_ccid() {
+        let mut device = ServiceDevice::new(Some(789), Transport::Nfc);
+        device.interfaces = UsbInterface::FIDO;
+        device.info.config.enabled_capabilities = [
+            (Transport::Usb, Capability::FIDO2),
+            (Transport::Nfc, Capability::FIDO2),
+        ]
+        .into();
+        let mut node = service_node(Arc::new(Mutex::new(vec![device])));
+        assert_eq!(node.list_children()["789"]["transport"], "nfc");
+        let mut nfc = node.create_child("789").unwrap();
+        assert_eq!(nfc.list_children().keys().collect::<Vec<_>>(), ["ccid"]);
+        let mut ccid = nfc.create_child("ccid").unwrap();
+        assert!(ccid.list_children().contains_key("ctap2"));
+    }
 
     #[test]
     fn monitor_change_invalidates_cached_device_with_same_metadata() {
