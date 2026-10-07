@@ -33,12 +33,56 @@ use crate::rpc::{RpcNode, SignalFn};
 use crate::util::version_to_json;
 
 type SharedPivSession = Arc<Mutex<Option<PivSession<Box<dyn SmartCardConnection + Send>>>>>;
+type SharedPinAttempts = Arc<Mutex<PinAttempts>>;
 type KeyCertPair = (Option<Vec<u8>>, Option<Vec<u8>>);
+
+struct PinAttempts {
+    remaining: u32,
+    total: u32,
+}
+
+impl PinAttempts {
+    fn new(
+        session: &mut PivSession<Box<dyn SmartCardConnection + Send>>,
+    ) -> Result<Self, PivError> {
+        match session.get_pin_metadata() {
+            Ok(metadata) => Ok(Self {
+                remaining: metadata.attempts_remaining,
+                total: metadata.total_attempts,
+            }),
+            Err(PivError::NotSupported(_)) => {
+                let remaining = session.get_pin_attempts()?;
+                // Older firmware cannot report the configured maximum. Use the default
+                // unless a larger retry count has been observed.
+                Ok(Self {
+                    remaining,
+                    total: remaining.max(3),
+                })
+            }
+            Err(e) => Err(e),
+        }
+    }
+
+    fn verify_pin(
+        &mut self,
+        session: &mut PivSession<Box<dyn SmartCardConnection + Send>>,
+        pin: &PivPin,
+    ) -> Result<(), PivError> {
+        let result = session.verify_pin(pin);
+        match &result {
+            Ok(()) => self.remaining = self.total,
+            Err(PivError::InvalidPin(remaining)) => self.remaining = *remaining,
+            _ => {}
+        }
+        result
+    }
+}
 
 pub struct PivNode {
     session: SharedPivSession,
     conn: SharedConn<Box<dyn SmartCardConnection + Send>>,
     authenticated: bool,
+    pin_attempts: SharedPinAttempts,
 }
 
 impl PivNode {
@@ -53,11 +97,21 @@ impl PivNode {
             PivSession::new(connection)
         };
         match result {
-            Ok(session) => Ok(Self {
-                session: Arc::new(Mutex::new(Some(session))),
-                conn,
-                authenticated: false,
-            }),
+            Ok(mut session) => {
+                let pin_attempts = match PinAttempts::new(&mut session) {
+                    Ok(attempts) => attempts,
+                    Err(e) => {
+                        *conn.lock().unwrap() = Some(session.into_connection());
+                        return Err(RpcError::new("device-error", format!("{e}")));
+                    }
+                };
+                Ok(Self {
+                    session: Arc::new(Mutex::new(Some(session))),
+                    conn,
+                    authenticated: false,
+                    pin_attempts: Arc::new(Mutex::new(pin_attempts)),
+                })
+            }
             Err((e, c)) => {
                 *conn.lock().unwrap() = Some(c);
                 Err(RpcError::new("session-error", format!("{e}")))
@@ -65,7 +119,10 @@ impl PivNode {
         }
     }
 
-    fn fetch_data(session: &mut PivSession<Box<dyn SmartCardConnection + Send>>) -> Value {
+    fn fetch_data(
+        session: &mut PivSession<Box<dyn SmartCardConnection + Send>>,
+        pin_attempts: &mut PinAttempts,
+    ) -> Value {
         let version = session.version();
         let pivman = get_pivman_data(session);
         let derived_key = pivman.iter().any(|(t, _)| *t == TAG_PIVMAN_SALT);
@@ -93,6 +150,8 @@ impl PivNode {
             Ok(pin_md) => {
                 let puk_md = session.get_puk_metadata().ok();
                 let mgm_md = session.get_management_key_metadata().ok();
+                pin_attempts.remaining = pin_md.attempts_remaining;
+                pin_attempts.total = pin_md.total_attempts;
                 data["pin_attempts"] = json!(pin_md.attempts_remaining);
                 data["metadata"] = json!({
                     "pin_metadata": {
@@ -112,9 +171,24 @@ impl PivNode {
                     })),
                 });
             }
-            Err(_) => {
-                let attempts = session.get_pin_attempts().unwrap_or(0);
-                data["pin_attempts"] = json!(attempts);
+            Err(PivError::NotSupported(_)) => {
+                match session.get_pin_attempts() {
+                    Ok(attempts) => {
+                        pin_attempts.remaining = attempts;
+                        pin_attempts.total = pin_attempts.total.max(attempts);
+                    }
+                    Err(PivError::NotSupported(_)) => {
+                        // Older firmware cannot report retries while the PIN is verified.
+                        log::debug!("Using cached PIV PIN attempts for verified session");
+                    }
+                    Err(e) => log::warn!("Failed to read PIV PIN attempts: {e}"),
+                }
+                data["pin_attempts"] = json!(pin_attempts.remaining);
+                data["metadata"] = json!(null);
+            }
+            Err(e) => {
+                log::warn!("Failed to read PIV PIN metadata: {e}");
+                data["pin_attempts"] = json!(pin_attempts.remaining);
                 data["metadata"] = json!(null);
             }
         }
@@ -127,7 +201,7 @@ impl RpcNode for PivNode {
     fn get_data(&self) -> Value {
         let mut session_guard = self.session.lock().unwrap();
         let mut data = if let Some(ref mut session) = *session_guard {
-            Self::fetch_data(session)
+            Self::fetch_data(session, &mut self.pin_attempts.lock().unwrap())
         } else {
             json!({})
         };
@@ -178,7 +252,10 @@ impl RpcNode for PivNode {
 
     fn create_child(&mut self, name: &str) -> Result<Box<dyn RpcNode>, RpcError> {
         match name {
-            "slots" => Ok(Box::new(SlotsNode::new(self.session.clone()))),
+            "slots" => Ok(Box::new(SlotsNode::new(
+                self.session.clone(),
+                self.pin_attempts.clone(),
+            ))),
             _ => Err(RpcError::no_such_node(name)),
         }
     }
@@ -207,7 +284,11 @@ impl PivNode {
                 let session = session_guard.as_mut().unwrap();
                 let piv_pin =
                     PivPin::new(pin).map_err(|e| RpcError::invalid_params(format!("{e}")))?;
-                session.verify_pin(&piv_pin).map_err(handle_pin_error)?;
+                self.pin_attempts
+                    .lock()
+                    .unwrap()
+                    .verify_pin(session, &piv_pin)
+                    .map_err(handle_pin_error)?;
 
                 // Try to auto-authenticate with stored management key
                 let pivman = get_pivman_data(session);
@@ -221,7 +302,11 @@ impl PivNode {
                             self.authenticated = true;
                         }
                         // Re-verify PIN so it was the last operation
-                        let _ = session.verify_pin(&piv_pin);
+                        self.pin_attempts
+                            .lock()
+                            .unwrap()
+                            .verify_pin(session, &piv_pin)
+                            .map_err(handle_pin_error)?;
                     }
                 }
 
@@ -341,6 +426,10 @@ impl PivNode {
                 session
                     .reset()
                     .map_err(|e| RpcError::new("device-error", format!("{e}")))?;
+                *self.pin_attempts.lock().unwrap() = PinAttempts {
+                    remaining: 3,
+                    total: 3,
+                };
                 self.authenticated = false;
                 Ok(RpcResponse::with_flags(json!({}), vec!["device_info"]))
             }
@@ -592,11 +681,15 @@ fn random_serial_number() -> Result<SerialNumber, RpcError> {
 
 struct SlotsNode {
     session: SharedPivSession,
+    pin_attempts: SharedPinAttempts,
 }
 
 impl SlotsNode {
-    fn new(session: SharedPivSession) -> Self {
-        Self { session }
+    fn new(session: SharedPivSession, pin_attempts: SharedPinAttempts) -> Self {
+        Self {
+            session,
+            pin_attempts,
+        }
     }
 }
 
@@ -653,7 +746,11 @@ impl RpcNode for SlotsNode {
             return Err(RpcError::new("session-error", "No active PIV session"));
         }
 
-        Ok(Box::new(SlotNode::new(self.session.clone(), slot)))
+        Ok(Box::new(SlotNode::new(
+            self.session.clone(),
+            self.pin_attempts.clone(),
+            slot,
+        )))
     }
 }
 
@@ -661,13 +758,14 @@ impl RpcNode for SlotsNode {
 
 struct SlotNode {
     session: SharedPivSession,
+    pin_attempts: SharedPinAttempts,
     slot: Slot,
     cached_metadata: Option<yubikit::piv::SlotMetadata>,
     cached_cert_der: Option<Vec<u8>>,
 }
 
 impl SlotNode {
-    fn new(session: SharedPivSession, slot: Slot) -> Self {
+    fn new(session: SharedPivSession, pin_attempts: SharedPinAttempts, slot: Slot) -> Self {
         let (metadata, cert_der) = {
             let mut guard = session.lock().unwrap();
             let s = guard.as_mut().unwrap();
@@ -675,6 +773,7 @@ impl SlotNode {
         };
         Self {
             session,
+            pin_attempts,
             slot,
             cached_metadata: metadata,
             cached_cert_der: cert_der,
@@ -1039,7 +1138,11 @@ impl SlotNode {
                     {
                         let piv_pin = PivPin::new(pin)
                             .map_err(|e| RpcError::invalid_params(format!("{e}")))?;
-                        session.verify_pin(&piv_pin).map_err(handle_pin_error)?;
+                        self.pin_attempts
+                            .lock()
+                            .unwrap()
+                            .verify_pin(session, &piv_pin)
+                            .map_err(handle_pin_error)?;
                     }
 
                     if touch_policy == TouchPolicy::Always || touch_policy == TouchPolicy::Cached {
@@ -1314,4 +1417,298 @@ fn public_key_match(cert_der: &[u8], metadata: &yubikit::piv::SlotMetadata) -> b
     };
 
     slot_spki == cert_spki
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use yubikit::core::{Connection, Transport};
+    use yubikit::smartcard::SmartCardError;
+
+    struct PinState {
+        attempts: u32,
+        total_attempts: u32,
+        puk_attempts: u32,
+        verified: bool,
+        read_error: bool,
+        supports_metadata: bool,
+    }
+
+    struct MockPivConnection(Arc<Mutex<PinState>>);
+
+    impl Connection for MockPivConnection {
+        type Error = SmartCardError;
+        fn close(&mut self) {}
+    }
+
+    impl SmartCardConnection for MockPivConnection {
+        fn send_and_receive(&mut self, apdu: &[u8]) -> Result<(Vec<u8>, u16), SmartCardError> {
+            let mut state = self.0.lock().unwrap();
+            let response = match apdu[1] {
+                0xa4 => (vec![], 0x9000),
+                0xfd if state.supports_metadata => (vec![5, 3, 0], 0x9000),
+                0xfd => (vec![5, 2, 6], 0x9000),
+                0xf7 if state.supports_metadata && apdu[3] == 0x80 => (
+                    vec![0x06, 0x02, state.total_attempts as u8, state.attempts as u8],
+                    0x9000,
+                ),
+                0xf7 if state.supports_metadata && apdu[3] == 0x9b => {
+                    (vec![0x01, 0x01, 0x03, 0x02, 0x02, 0x00, 0x01], 0x9000)
+                }
+                0xf7 => (vec![], 0x6d00),
+                0xcb => (vec![], 0x6a82),
+                0x20 if state.read_error => {
+                    return Err(SmartCardError::Transport(Box::new(std::io::Error::other(
+                        "test read failure",
+                    ))));
+                }
+                0x20 if state.attempts == 0 => (vec![], 0x6983),
+                0x20 if apdu.len() >= 13 => {
+                    if apdu.windows(6).any(|data| data == b"123456") {
+                        state.verified = true;
+                        state.attempts = state.total_attempts;
+                        (vec![], 0x9000)
+                    } else {
+                        state.verified = false;
+                        state.attempts -= 1;
+                        (vec![], 0x63c0 | state.attempts as u16)
+                    }
+                }
+                0x20 if state.verified => (vec![], 0x9000),
+                0x20 => (vec![], 0x63c0 | state.attempts as u16),
+                0x24 => {
+                    state.attempts = state.total_attempts;
+                    state.verified = false;
+                    (vec![], 0x9000)
+                }
+                0x2c if apdu.windows(8).any(|data| data == b"12345678") => {
+                    state.attempts = state.total_attempts;
+                    state.verified = false;
+                    (vec![], 0x9000)
+                }
+                0x2c => {
+                    state.puk_attempts = state.puk_attempts.saturating_sub(1);
+                    (vec![], 0x63c0 | state.puk_attempts as u16)
+                }
+                0xfb => {
+                    state.attempts = 3;
+                    state.total_attempts = 3;
+                    state.puk_attempts = 3;
+                    state.verified = false;
+                    (vec![], 0x9000)
+                }
+                0x47 => {
+                    let point = hex::decode(concat!(
+                        "04",
+                        "6b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c296",
+                        "4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5",
+                    ))
+                    .unwrap();
+                    let mut public_key = vec![0x7f, 0x49, 0x43, 0x86, 0x41];
+                    public_key.extend(point);
+                    (public_key, 0x9000)
+                }
+                0x87 => (
+                    vec![
+                        0x7c, 0x0a, 0x82, 0x08, 0x30, 0x06, 0x02, 0x01, 0x01, 0x02, 0x01, 0x01,
+                    ],
+                    0x9000,
+                ),
+                0xdb => (vec![], 0x9000),
+                instruction => panic!("Unexpected instruction: {instruction:02x}"),
+            };
+            Ok(response)
+        }
+
+        fn transport(&self) -> Transport {
+            Transport::Usb
+        }
+    }
+
+    fn node(attempts: u32) -> (PivNode, Arc<Mutex<PinState>>) {
+        node_with_metadata(attempts, attempts.max(3), false)
+    }
+
+    fn node_with_metadata(
+        attempts: u32,
+        total_attempts: u32,
+        supports_metadata: bool,
+    ) -> (PivNode, Arc<Mutex<PinState>>) {
+        let state = Arc::new(Mutex::new(PinState {
+            attempts,
+            total_attempts,
+            puk_attempts: 3,
+            verified: false,
+            read_error: false,
+            supports_metadata,
+        }));
+        let connection: Box<dyn SmartCardConnection + Send> =
+            Box::new(MockPivConnection(state.clone()));
+        let node = PivNode::new(connection, Arc::new(Mutex::new(None)), None).unwrap();
+        (node, state)
+    }
+
+    #[test]
+    fn verified_pin_restores_total_attempts_on_older_firmware() {
+        for attempts in [1, 3, 5] {
+            let (mut node, _) = node(attempts);
+            assert_eq!(node.get_data()["pin_attempts"], attempts);
+            node._call_action("verify_pin", &json!({"pin": "123456"}))
+                .unwrap();
+            assert_eq!(node.get_data()["pin_attempts"], attempts.max(3));
+            assert!(node.get_data()["metadata"].is_null());
+        }
+    }
+
+    #[test]
+    fn verified_pin_uses_configured_total_from_metadata() {
+        for total in [2, 5] {
+            let (mut node, _) = node_with_metadata(1, total, true);
+            assert_eq!(node.get_data()["pin_attempts"], 1);
+            node._call_action("verify_pin", &json!({"pin": "123456"}))
+                .unwrap();
+            assert_eq!(node.pin_attempts.lock().unwrap().remaining, total);
+            assert_eq!(node.get_data()["pin_attempts"], total);
+        }
+    }
+
+    #[test]
+    fn slot_node_pin_verification_preserves_parent_retry_count() {
+        let (node, _) = node(3);
+        let shared_session = node.session.clone();
+        {
+            let mut session = shared_session.lock().unwrap();
+            let session = session.as_mut().unwrap();
+            session.verify_pin(&PivPin::new("123456").unwrap()).unwrap();
+            assert!(matches!(
+                session.get_pin_attempts(),
+                Err(PivError::NotSupported(_))
+            ));
+        }
+        assert_eq!(node.get_data()["pin_attempts"], 3);
+    }
+
+    #[test]
+    fn reset_restores_default_total_after_custom_retry_count() {
+        let (mut node, _) = node(5);
+        node._call_action("reset", &json!({})).unwrap();
+        node._call_action("verify_pin", &json!({"pin": "123456"}))
+            .unwrap();
+        assert_eq!(node.get_data()["pin_attempts"], 3);
+    }
+
+    #[test]
+    fn generation_with_wrong_then_correct_pin_restores_parent_retry_count() {
+        for generate_type in ["certificate", "csr"] {
+            for total_attempts in [3, 5] {
+                let (node, state) = node(total_attempts);
+                let mut slot = SlotNode::new(
+                    node.session.clone(),
+                    node.pin_attempts.clone(),
+                    Slot::Authentication,
+                );
+                let mut params = json!({
+                    "key_type": KeyType::EccP256 as u8,
+                    "generate_type": generate_type,
+                    "subject": "CN=Test",
+                    "pin": "654321",
+                });
+                let cancel = AtomicBool::new(false);
+                let error = slot
+                    .call_action("generate", &params, &|_, _| {}, &cancel)
+                    .err()
+                    .expect("Incorrect PIN must fail generation");
+                assert_eq!(error.status, "invalid-pin");
+                assert_eq!(node.get_data()["pin_attempts"], total_attempts - 1);
+                params["pin"] = json!("123456");
+                slot.call_action("generate", &params, &|_, _| {}, &cancel)
+                    .unwrap();
+                assert_eq!(state.lock().unwrap().attempts, total_attempts);
+                assert_eq!(node.get_data()["pin_attempts"], total_attempts);
+            }
+        }
+    }
+
+    #[test]
+    fn wrong_then_correct_pin_updates_cache_without_intermediate_read() {
+        let (mut node, _) = node(3);
+        assert!(
+            node._call_action("verify_pin", &json!({"pin": "654321"}))
+                .is_err()
+        );
+        assert_eq!(node.pin_attempts.lock().unwrap().remaining, 2);
+        node._call_action("verify_pin", &json!({"pin": "123456"}))
+            .unwrap();
+        assert_eq!(node.get_data()["pin_attempts"], 3);
+    }
+
+    #[test]
+    fn invalid_pin_and_unblock_refresh_retry_count() {
+        let (mut node, _) = node(3);
+        for attempts in [2, 1, 0] {
+            let error = node
+                ._call_action("verify_pin", &json!({"pin": "654321"}))
+                .err()
+                .expect("Incorrect PIN must fail");
+            assert_eq!(error.status, "invalid-pin");
+            assert_eq!(error.body["attempts_remaining"], attempts);
+            assert_eq!(node.get_data()["pin_attempts"], attempts);
+        }
+        node._call_action(
+            "unblock_pin",
+            &json!({"puk": "12345678", "new_pin": "123456"}),
+        )
+        .unwrap();
+        assert_eq!(node.get_data()["pin_attempts"], 3);
+        node._call_action("verify_pin", &json!({"pin": "123456"}))
+            .unwrap();
+        assert_eq!(node.get_data()["pin_attempts"], 3);
+    }
+
+    #[test]
+    fn pin_change_and_reset_refresh_retry_count() {
+        let (mut node, state) = node(1);
+        node._call_action("change_pin", &json!({"pin": "123456", "new_pin": "123456"}))
+            .unwrap();
+        assert_eq!(node.get_data()["pin_attempts"], 3);
+        state.lock().unwrap().attempts = 0;
+        assert_eq!(node.get_data()["pin_attempts"], 0);
+        node._call_action("reset", &json!({})).unwrap();
+        assert_eq!(node.get_data()["pin_attempts"], 3);
+    }
+
+    #[test]
+    fn pin_attempt_cache_tracks_actual_retry_counts_including_blocked_pin() {
+        let (node, state) = node(3);
+        for attempts in [2, 1, 0, 3] {
+            state.lock().unwrap().attempts = attempts;
+            assert_eq!(node.get_data()["pin_attempts"], attempts);
+        }
+    }
+
+    #[test]
+    fn pin_retry_read_failure_does_not_report_a_blocked_pin() {
+        let (node, state) = node(3);
+        state.lock().unwrap().read_error = true;
+        assert_eq!(node.get_data()["pin_attempts"], 3);
+    }
+
+    #[test]
+    fn initial_pin_retry_read_failure_is_reported_and_returns_the_connection() {
+        let state = Arc::new(Mutex::new(PinState {
+            attempts: 3,
+            total_attempts: 3,
+            puk_attempts: 3,
+            verified: false,
+            read_error: true,
+            supports_metadata: false,
+        }));
+        let connection: Box<dyn SmartCardConnection + Send> = Box::new(MockPivConnection(state));
+        let returned_connection = Arc::new(Mutex::new(None));
+        let result = PivNode::new(connection, returned_connection.clone(), None);
+        let error = result.err().expect("Initial PIN retry read must fail");
+        assert_eq!(error.status, "device-error");
+        assert!(error.message.contains("test read failure"));
+        assert!(returned_connection.lock().unwrap().is_some());
+    }
 }
