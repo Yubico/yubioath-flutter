@@ -32,6 +32,23 @@ class DeviceAvatar extends StatelessWidget {
   final double? radius;
   const DeviceAvatar({super.key, required this.child, this.badge, this.radius});
 
+  factory DeviceAvatar.noDevice({double? radius}) => DeviceAvatar(
+    radius: radius,
+    key: noDeviceAvatar,
+    child: Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Builder(
+        builder: (context) => Image.asset(
+          'assets/graphics/no-key.png',
+          filterQuality: .medium,
+          width: 24,
+          height: 24,
+          color: IconTheme.of(context).color,
+        ),
+      ),
+    ),
+  );
+
   factory DeviceAvatar.yubiKeyData(YubiKeyData data, {double? radius}) =>
       DeviceAvatar(
         badge: isDesktop && data.node.transport == Transport.nfc
@@ -79,14 +96,7 @@ class DeviceAvatar extends StatelessWidget {
             orElse: () => DeviceAvatar.deviceNode(deviceNode, radius: radius),
           );
     } else {
-      return DeviceAvatar(
-        radius: radius,
-        key: noDeviceAvatar,
-        child: const Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Icon(Symbols.usb),
-        ),
-      );
+      return DeviceAvatar.noDevice(radius: radius);
     }
   }
 

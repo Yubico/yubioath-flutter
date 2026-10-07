@@ -16,7 +16,6 @@
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -51,7 +50,8 @@ class DevicePickerContent extends ConsumerWidget {
         .toList();
     final currentNode = ref.watch(currentDeviceProvider);
 
-    final showUsb = isDesktop && devices.whereType<YubiKeyDeviceNode>().isEmpty;
+    final showNoKey =
+        isDesktop && devices.whereType<YubiKeyDeviceNode>().isEmpty;
     final borderRadius = isDrawer
         ? BorderRadius.only(
             topRight: Radius.circular(24),
@@ -69,12 +69,7 @@ class DevicePickerContent extends ConsumerWidget {
 
       androidNoKeyWidget = DeviceRow(
         borderRadius: borderRadius,
-        leading: const DeviceAvatar(
-          child: Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Icon(Symbols.usb),
-          ),
-        ),
+        leading: DeviceAvatar.noDevice(),
         title: l10n.l_no_yk_present,
         subtitle: subtitle,
         onTap: () {
@@ -86,17 +81,11 @@ class DevicePickerContent extends ConsumerWidget {
     }
 
     List<Widget> children = [
-      if (showUsb)
+      if (showNoKey)
         DeviceRow(
           borderRadius: borderRadius,
-          leading: const DeviceAvatar(
-            child: Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Icon(Symbols.usb),
-            ),
-          ),
-          title: l10n.s_usb,
-          subtitle: l10n.l_no_yk_present,
+          leading: DeviceAvatar.noDevice(),
+          title: l10n.l_no_yk_present,
           onTap: () {
             ref.read(currentDeviceProvider.notifier).setCurrentDevice(null);
           },
@@ -199,7 +188,7 @@ class _DeviceMenuButton extends ConsumerWidget {
 class DeviceRow extends ConsumerStatefulWidget {
   final Widget leading;
   final String title;
-  final String subtitle;
+  final String? subtitle;
   final bool extended;
   final bool selected;
   final Color? background;
@@ -211,7 +200,7 @@ class DeviceRow extends ConsumerStatefulWidget {
     super.key,
     required this.leading,
     required this.title,
-    required this.subtitle,
+    this.subtitle,
     required this.extended,
     required this.selected,
     this.background,
@@ -237,7 +226,7 @@ class _DeviceRowState extends ConsumerState<DeviceRow> {
   @override
   Widget build(BuildContext context) {
     final menuItems = _getMenuItems(context, ref, widget.node);
-    final tooltip = '${widget.title}\n${widget.subtitle}';
+    final tooltip = [widget.title, ?widget.subtitle].join('\n');
     final themeData = Theme.of(context);
     final seedColor = !widget.selected || widget.background == null
         ? themeData.colorScheme.primary
@@ -301,12 +290,16 @@ class _DeviceRowState extends ConsumerState<DeviceRow> {
                       )
                     : null,
                 title: Text(widget.title, overflow: .fade, softWrap: false),
-                subtitle: Text(
-                  widget.subtitle,
-                  overflow: .fade,
-                  softWrap: false,
-                ),
-                dense: true,
+                subtitle: switch (widget.subtitle) {
+                  final subtitle? => Text(
+                    subtitle,
+                    overflow: .fade,
+                    softWrap: false,
+                  ),
+                  null => null,
+                },
+                minVerticalPadding: widget.subtitle == null ? 14.5 : null,
+                dense: widget.subtitle != null,
                 onTap: widget.onTap,
               ),
             ),
