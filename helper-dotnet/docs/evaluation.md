@@ -28,6 +28,9 @@ The contract and the per-workflow SDK mapping are in [`rpc-contract.md`](rpc-con
 
 ---
 
+SDK-facing findings, filtered to what belongs in the .NET SDK repository, are collected in
+[`sdk-feedback.md`](sdk-feedback.md).
+
 ## 1. Design
 
 ### 1.1 Shape: keep the process boundary and the protocol
@@ -254,10 +257,11 @@ Status is **verified** (reproduced in this evaluation) unless marked otherwise.
 ### 5.1 v2 SDK API findings
 
 1. **Pre-release firmware reports 0.0.1 to applet sessions.** `PivSession` and `OathSession` on a
-   5.8.0-alpha key report `FirmwareVersion` 0.0.1, so version-gated behaviour is wrong unless the
-   caller passes `SessionCreationOptions.FirmwareVersionOverride`. yubikit applies the
-   version-qualifier override globally. Suggest a helper on `DeviceInfo`, or doing it automatically
-   when sessions are created from an `IYubiKey`.
+   5.8.0-alpha key report `FirmwareVersion` 0.0.1.
+   - SDK feature gates still work, because alpha and beta versions count as newest.
+   - But the version a consumer displays or forwards is wrong unless it passes
+     `SessionCreationOptions.FirmwareVersionOverride`. yubikit applies the version qualifier
+     globally.
 2. **`OathSession.CalculateAsync` returns `[digits byte][HMAC]`.** The XML doc says "the full HMAC
    response", and yubikit's `calculate()` returns only the HMAC. The app's Steam codes depend on
    it. The helper strips byte 0. **Probable SDK bug.**
@@ -293,9 +297,9 @@ Status is **verified** (reproduced in this evaluation) unless marked otherwise.
    `-Wl,--unresolved-symbols=ignore-in-object-files` for Linux RIDs.
    - The real fix belongs in NativeShims: export stubs on every platform, or limit `DirectPInvoke`
      per entry point.
-   - The SDK's own `docs/NATIVE-AOT.md` reports a Linux publish, which predates 1.18.1 or used a
-     different shim build.
-   - **Windows is likely affected the same way (unverified).**
+   - The SDK's own `verification/NativeAotVerification` host fails the same way on
+     `yubikit` `df1ec06d`.
+   - The Windows `.lib` lacks the symbols too, so Windows is expected to fail the same way (not run).
 2. The SDK's `nuget.config` maps `Yubico.NativeShims` to an authenticated GitHub feed as well as
    nuget.org. Unauthenticated CI must override it. The release package is on nuget.org.
 3. macOS publish links NativeShims statically and emits no dylib, so there's nothing extra to sign.
