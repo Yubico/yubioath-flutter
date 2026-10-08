@@ -27,44 +27,68 @@ from PIL import Image, UnidentifiedImageError
 from .base import RpcException
 
 
-def _capture_screen():
-    try:
-        with mss.mss() as sct:
-            monitor = sct.monitors[0]  # 0 is the special "all monitors" value.
-            sct_img = sct.grab(monitor)  # mss format
-        return Image.frombytes("RGB", sct_img.size, sct_img.bgra, "raw", "BGRX")
-    except ScreenShotError:
-        # One common error is that mss doesn't work with Wayland
-        if sys.platform.startswith("linux"):
-            # Try calling screenshot tools, with original library path
-            env = dict(os.environ)
-            lp = env.get("LD_LIBRARY_PATH_ORIG")
-            if lp is not None:
-                env["LD_LIBRARY_PATH"] = lp
-            else:
-                env.pop("LD_LIBRARY_PATH", None)
-            fd, fname = tempfile.mkstemp(suffix=".png")
-            os.close(fd)
+def _capture_with_mss():
+    with mss.mss() as sct:
+        monitor = sct.monitors[0]  # 0 is the special "all monitors" value.
+        sct_img = sct.grab(monitor)  # mss format
+    return Image.frombytes("RGB", sct_img.size, sct_img.bgra, "raw", "BGRX")
 
-            # Try each tool in turn until one produces a usable image.
-            tools = [
-                ["gnome-screenshot", "-f", fname],  # GNOME
-                ["spectacle", "-b", "-n", "-o", fname],  # KDE
-                ["grim", fname],  # wlroots (Sway, Hyprland, ...)
-            ]
+
+def _capture_with_tools():
+    # Call screenshot tools, with original library path
+    env = dict(os.environ)
+    lp = env.get("LD_LIBRARY_PATH_ORIG")
+    if lp is not None:
+        env["LD_LIBRARY_PATH"] = lp
+    else:
+        env.pop("LD_LIBRARY_PATH", None)
+    fd, fname = tempfile.mkstemp(suffix=".png")
+    os.close(fd)
+
+    # Try each tool in turn until one produces a usable image.
+    tools = [
+        ["gnome-screenshot", "-f", fname],  # GNOME
+        ["spectacle", "-b", "-n", "-o", fname],  # KDE
+        ["grim", fname],  # wlroots (Sway, Hyprland, ...)
+    ]
+    try:
+        for cmd in tools:
             try:
-                for cmd in tools:
-                    try:
-                        rc = subprocess.call(cmd, env=env)  # noqa: S603
-                        if rc != 0 or os.path.getsize(fname) == 0:
-                            continue
-                        with Image.open(fname) as img:
-                            img.load()
-                            return img.copy()
-                    except (OSError, UnidentifiedImageError):
-                        continue
-            finally:
-                os.unlink(fname)
+                rc = subprocess.call(cmd, env=env)  # noqa: S603
+                if rc != 0 or os.path.getsize(fname) == 0:
+                    continue
+                with Image.open(fname) as img:
+                    img.load()
+                    return img.copy()
+            except (OSError, UnidentifiedImageError):
+                continue
+    finally:
+        os.unlink(fname)
+    return None
+
+
+def _is_wayland():
+    return (
+        os.environ.get("XDG_SESSION_TYPE", "").lower() == "wayland"
+        or "WAYLAND_DISPLAY" in os.environ
+    )
+
+
+def _capture_screen():
+    linux = sys.platform.startswith("linux")
+    # Under Wayland, mss may "succeed" via XWayland but only capture a blank
+    # screen, so prefer the native tools there.
+    if linux and _is_wayland():
+        img = _capture_with_tools()
+        if img is not None:
+            return img
+    try:
+        return _capture_with_mss()
+    except ScreenShotError:
+        if linux and not _is_wayland():
+            img = _capture_with_tools()
+            if img is not None:
+                return img
     raise ValueError("Unable to capture screenshot")
 
 
