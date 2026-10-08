@@ -231,51 +231,55 @@ fn info_to_json(info: &Info) -> Value {
 macro_rules! with_ctap2 {
     ($fido_conn:expr, |$session:ident| $body:expr) => {
         match $fido_conn {
-            FidoConn::Hid { conn, .. } => match conn.take() {
-                None => Err(RpcError::new("connection-error", "Connection in use")),
-                Some(c) => match CtapSession::new_fido(c) {
-                    Err((e, c)) => {
-                        *conn = Some(c);
-                        Err(RpcError::new("device-error", format!("{e}")))
-                    }
-                    Ok(ctap) => match Ctap2Session::new(ctap) {
-                        Err((e, s)) => {
-                            *conn = Some(s.into_connection());
+            FidoConn::Hid { conn, shared } => {
+                match conn.take().or_else(|| shared.lock().unwrap().take()) {
+                    None => Err(RpcError::new("connection-error", "Connection in use")),
+                    Some(c) => match CtapSession::new_fido(c) {
+                        Err((e, c)) => {
+                            *conn = Some(c);
                             Err(RpcError::new("device-error", format!("{e}")))
                         }
-                        Ok($session) => {
-                            let (result, returned_c) = { $body };
-                            *conn = Some(returned_c);
-                            result
-                        }
+                        Ok(ctap) => match Ctap2Session::new(ctap) {
+                            Err((e, s)) => {
+                                *conn = Some(s.into_connection());
+                                Err(RpcError::new("device-error", format!("{e}")))
+                            }
+                            Ok($session) => {
+                                let (result, returned_c) = { $body };
+                                *conn = Some(returned_c);
+                                result
+                            }
+                        },
                     },
-                },
-            },
-            FidoConn::SmartCard { conn, .. } => match conn.take() {
-                None => Err(RpcError::new("connection-error", "Connection in use")),
-                Some(c) => match CtapSession::new(c) {
-                    Err((e, c)) => {
-                        *conn = Some(c);
-                        Err(RpcError::new("device-error", format!("{e}")))
-                    }
-                    Ok(ctap) => match Ctap2Session::new(ctap) {
-                        Err((e, s)) => {
-                            *conn = Some(s.into_connection());
+                }
+            }
+            FidoConn::SmartCard { conn, shared } => {
+                match conn.take().or_else(|| shared.lock().unwrap().take()) {
+                    None => Err(RpcError::new("connection-error", "Connection in use")),
+                    Some(c) => match CtapSession::new(c) {
+                        Err((e, c)) => {
+                            *conn = Some(c);
                             Err(RpcError::new("device-error", format!("{e}")))
                         }
-                        Ok($session) => {
-                            let (result, returned_c) = { $body };
-                            *conn = Some(returned_c);
-                            result
-                        }
+                        Ok(ctap) => match Ctap2Session::new(ctap) {
+                            Err((e, s)) => {
+                                *conn = Some(s.into_connection());
+                                Err(RpcError::new("device-error", format!("{e}")))
+                            }
+                            Ok($session) => {
+                                let (result, returned_c) = { $body };
+                                *conn = Some(returned_c);
+                                result
+                            }
+                        },
                     },
-                },
-            },
+                }
+            }
         }
     };
 }
 
-/// Same as `with_ctap2!` but for `FidoDeviceType`, also tries the shared connection.
+/// Same as `with_ctap2!` but for `FidoDeviceType`.
 macro_rules! with_ctap2_dev {
     ($device_type:expr, |$session:ident| $body:expr) => {
         match $device_type {
@@ -1094,6 +1098,28 @@ enum FidoConn {
 }
 
 impl FidoConn {
+    fn take_for_child(&mut self) -> Result<Self, RpcError> {
+        // Keep the parent's transport and return channel when lending to a child.
+        match self {
+            FidoConn::Hid { conn, shared } => Ok(Self::Hid {
+                conn: Some(
+                    conn.take()
+                        .or_else(|| shared.lock().unwrap().take())
+                        .ok_or_else(|| RpcError::new("connection-error", "Connection in use"))?,
+                ),
+                shared: shared.clone(),
+            }),
+            FidoConn::SmartCard { conn, shared } => Ok(Self::SmartCard {
+                conn: Some(
+                    conn.take()
+                        .or_else(|| shared.lock().unwrap().take())
+                        .ok_or_else(|| RpcError::new("connection-error", "Connection in use"))?,
+                ),
+                shared: shared.clone(),
+            }),
+        }
+    }
+
     fn close(&mut self) {
         match self {
             FidoConn::Hid { conn, shared } => {
@@ -1281,13 +1307,7 @@ impl RpcNode for CredentialsRpsNode {
             }
         })?;
 
-        let fido_conn = std::mem::replace(
-            &mut self.fido_conn,
-            FidoConn::Hid {
-                conn: None,
-                shared: Arc::new(std::sync::Mutex::new(None)),
-            },
-        );
+        let fido_conn = self.fido_conn.take_for_child()?;
 
         Ok(Box::new(CredentialsRpNode {
             fido_conn,
@@ -1334,13 +1354,7 @@ impl RpcNode for CredentialsRpNode {
         let cred_data = self.creds.get(name).unwrap().clone();
         let cred_id_hex = name.to_string();
 
-        let fido_conn = std::mem::replace(
-            &mut self.fido_conn,
-            FidoConn::Hid {
-                conn: None,
-                shared: Arc::new(std::sync::Mutex::new(None)),
-            },
-        );
+        let fido_conn = self.fido_conn.take_for_child()?;
 
         Ok(Box::new(CredentialNode {
             fido_conn,
@@ -1582,13 +1596,7 @@ impl RpcNode for FingerprintsNode {
         let fp_name = templates.get(name).unwrap().clone();
         drop(templates);
 
-        let fido_conn = std::mem::replace(
-            &mut self.fido_conn,
-            FidoConn::Hid {
-                conn: None,
-                shared: Arc::new(std::sync::Mutex::new(None)),
-            },
-        );
+        let fido_conn = self.fido_conn.take_for_child()?;
 
         Ok(Box::new(FingerprintNode {
             fido_conn,
@@ -1775,6 +1783,10 @@ mod pin_tests {
         readonly: bool,
         token_requests: u32,
         last_permissions: Option<i64>,
+        fail_credentials: bool,
+        fail_delete: bool,
+        deleted_credentials: Vec<u8>,
+        fingerprints: BTreeMap<u8, String>,
     }
 
     fn response(value: CborValue) -> Vec<u8> {
@@ -1798,6 +1810,7 @@ mod pin_tests {
                         CborValue::Map(vec![
                             (CborValue::Text("clientPin".into()), CborValue::Bool(true)),
                             (CborValue::Text("credMgmt".into()), CborValue::Bool(true)),
+                            (CborValue::Text("bioEnroll".into()), CborValue::Bool(true)),
                             (
                                 CborValue::Text("pinUvAuthToken".into()),
                                 CborValue::Bool(true),
@@ -1822,6 +1835,7 @@ mod pin_tests {
                                 CborValue::Int(i64::from(self.power_cycle)),
                             ),
                         ])),
+                        7 => response(CborValue::Map(vec![(CborValue::Int(5), CborValue::Int(8))])),
                         2 => {
                             // Private key 1 makes the shared point equal to the peer's public key.
                             let x = hex::decode(
@@ -1871,6 +1885,109 @@ mod pin_tests {
                             )]))
                         }
                         _ => panic!("Unexpected ClientPIN command: {command}"),
+                    }
+                }
+                0x09 => {
+                    let args = yubikit::cbor::decode(&data[1..]).unwrap();
+                    let command = args.map_get_int(2).unwrap().as_int().unwrap();
+                    match command {
+                        4 => response(CborValue::Map(vec![(
+                            CborValue::Int(7),
+                            CborValue::Array(
+                                self.fingerprints
+                                    .iter()
+                                    .map(|(id, name)| {
+                                        CborValue::Map(vec![
+                                            (CborValue::Int(1), CborValue::Bytes(vec![*id])),
+                                            (CborValue::Int(2), CborValue::Text(name.clone())),
+                                        ])
+                                    })
+                                    .collect(),
+                            ),
+                        )])),
+                        5 | 6 => {
+                            let params = args.map_get_int(3).unwrap();
+                            let id = params.map_get_int(1).unwrap().as_bytes().unwrap()[0];
+                            if command == 5 {
+                                let name = params.map_get_int(2).unwrap().as_text().unwrap();
+                                self.fingerprints.insert(id, name.to_string());
+                            } else {
+                                self.fingerprints.remove(&id);
+                            }
+                            vec![0]
+                        }
+                        _ => panic!("Unexpected bio enrollment command: {command}"),
+                    }
+                }
+                0x0a => {
+                    let args = yubikit::cbor::decode(&data[1..]).unwrap();
+                    let command = args.map_get_int(1).unwrap().as_int().unwrap();
+                    match command {
+                        1 => response(CborValue::Map(vec![
+                            (
+                                CborValue::Int(1),
+                                CborValue::Int(2 - self.deleted_credentials.len() as i64),
+                            ),
+                            (CborValue::Int(2), CborValue::Int(98)),
+                        ])),
+                        2 | 3 => {
+                            let id = if command == 2 { 1 } else { 2 };
+                            response(CborValue::Map(vec![
+                                (
+                                    CborValue::Int(3),
+                                    CborValue::Map(vec![(
+                                        CborValue::Text("id".into()),
+                                        CborValue::Text(format!("site{id}.example")),
+                                    )]),
+                                ),
+                                (CborValue::Int(4), CborValue::Bytes(vec![id; 32])),
+                                (CborValue::Int(5), CborValue::Int(2)),
+                            ]))
+                        }
+                        4 if self.fail_credentials => vec![CtapStatus::Other as u8],
+                        4 => {
+                            let params = args.map_get_int(2).unwrap();
+                            let id = params.map_get_int(1).unwrap().as_bytes().unwrap()[0];
+                            if self.deleted_credentials.contains(&id) {
+                                return response(CborValue::Map(vec![(
+                                    CborValue::Int(9),
+                                    CborValue::Int(0),
+                                )]));
+                            }
+                            response(CborValue::Map(vec![
+                                (
+                                    CborValue::Int(6),
+                                    CborValue::Map(vec![
+                                        (CborValue::Text("id".into()), CborValue::Bytes(vec![id])),
+                                        (
+                                            CborValue::Text("name".into()),
+                                            CborValue::Text(format!("user{id}")),
+                                        ),
+                                    ]),
+                                ),
+                                (
+                                    CborValue::Int(7),
+                                    CborValue::Map(vec![
+                                        (CborValue::Text("id".into()), CborValue::Bytes(vec![id])),
+                                        (
+                                            CborValue::Text("type".into()),
+                                            CborValue::Text("public-key".into()),
+                                        ),
+                                    ]),
+                                ),
+                                (CborValue::Int(8), CborValue::Map(vec![])),
+                                (CborValue::Int(9), CborValue::Int(1)),
+                            ]))
+                        }
+                        6 if self.fail_delete => vec![CtapStatus::Other as u8],
+                        6 => {
+                            let params = args.map_get_int(2).unwrap();
+                            let descriptor = params.map_get_int(2).unwrap();
+                            let id = descriptor.map_get_text("id").unwrap().as_bytes().unwrap()[0];
+                            self.deleted_credentials.push(id);
+                            vec![0]
+                        }
+                        _ => panic!("Unexpected credential management command: {command}"),
                     }
                 }
                 command => panic!("Unexpected CTAP2 command: {command:02x}"),
@@ -1946,6 +2063,10 @@ mod pin_tests {
             readonly: false,
             token_requests: 0,
             last_permissions: None,
+            fail_credentials: false,
+            fail_delete: false,
+            deleted_credentials: vec![],
+            fingerprints: BTreeMap::from([(1, "First".into()), (2, "Second".into())]),
         }));
         let node = if smartcard {
             Ctap2Node::new_smartcard(
@@ -1966,6 +2087,139 @@ mod pin_tests {
 
     fn action(node: &mut Ctap2Node, action: &str, params: Value) -> Result<RpcResponse, RpcError> {
         node.call_action(action, &params, &|_, _| {}, &AtomicBool::new(false))
+    }
+
+    fn rpc_call(
+        host: &mut crate::rpc::NodeHost,
+        action: &str,
+        target: &[&str],
+        params: Value,
+    ) -> Result<RpcResponse, RpcError> {
+        host.call(
+            action,
+            &target
+                .iter()
+                .map(|part| part.to_string())
+                .collect::<Vec<_>>(),
+            &params,
+            &|_, _| {},
+            &AtomicBool::new(false),
+        )
+    }
+
+    #[test]
+    fn fingerprint_children_preserve_shared_connection_when_switching() {
+        for smartcard in [false, true] {
+            let (mut node, state) = node(smartcard);
+            action(&mut node, "unlock", json!({"pin": "123456"})).unwrap();
+            let mut host = crate::rpc::NodeHost::new(Box::new(node));
+            rpc_call(&mut host, "fingerprints", &[], json!({})).unwrap();
+            for id in ["01", "02", "01"] {
+                rpc_call(
+                    &mut host,
+                    "rename",
+                    &["fingerprints", id],
+                    json!({"name": "Renamed"}),
+                )
+                .unwrap();
+            }
+            rpc_call(&mut host, "delete", &["fingerprints", "02"], json!({})).unwrap();
+            assert_eq!(
+                state.lock().unwrap().fingerprints,
+                BTreeMap::from([(1, "Renamed".into())])
+            );
+            rpc_call(&mut host, "close", &[], json!({"child": "fingerprints"})).unwrap();
+            rpc_call(&mut host, "unlock", &[], json!({"pin": "123456"})).unwrap();
+        }
+    }
+
+    #[test]
+    fn lists_multiple_relying_parties_and_returns_connection_after_deletion() {
+        for smartcard in [false, true] {
+            let (mut node, state) = node(smartcard);
+            action(&mut node, "unlock", json!({"pin": "123456"})).unwrap();
+            let mut host = crate::rpc::NodeHost::new(Box::new(node));
+            let rps = rpc_call(&mut host, "credentials", &[], json!({})).unwrap();
+            assert_eq!(rps.body["children"].as_object().unwrap().len(), 2);
+
+            for _ in 0..2 {
+                for id in [1, 2] {
+                    let rp = format!("site{id}.example");
+                    let result = rpc_call(&mut host, &rp, &["credentials"], json!({})).unwrap();
+                    let credential = format!("{id:02x}");
+                    assert_eq!(
+                        result.body["children"][&credential]["user_name"],
+                        format!("user{id}")
+                    );
+                    let result = rpc_call(
+                        &mut host,
+                        "get",
+                        &["credentials", &rp, &credential],
+                        json!({}),
+                    )
+                    .unwrap();
+                    assert_eq!(result.body["data"]["user_id"], credential);
+                }
+            }
+
+            rpc_call(
+                &mut host,
+                "delete",
+                &["credentials", "site1.example", "01"],
+                json!({}),
+            )
+            .unwrap();
+            assert_eq!(state.lock().unwrap().deleted_credentials, vec![1]);
+            rpc_call(&mut host, "close", &[], json!({"child": "credentials"})).unwrap();
+            rpc_call(&mut host, "credentials", &[], json!({})).unwrap();
+            let result = rpc_call(&mut host, "site1.example", &["credentials"], json!({})).unwrap();
+            assert!(result.body["children"].as_object().unwrap().is_empty());
+            let result = rpc_call(&mut host, "site2.example", &["credentials"], json!({})).unwrap();
+            assert_eq!(result.body["children"].as_object().unwrap().len(), 1);
+            rpc_call(&mut host, "close", &[], json!({"child": "credentials"})).unwrap();
+            rpc_call(&mut host, "unlock", &[], json!({"pin": "123456"})).unwrap();
+        }
+    }
+
+    #[test]
+    fn credential_errors_allow_retrying_and_switching_relying_parties() {
+        for smartcard in [false, true] {
+            let (mut node, state) = node(smartcard);
+            action(&mut node, "unlock", json!({"pin": "123456"})).unwrap();
+            let mut host = crate::rpc::NodeHost::new(Box::new(node));
+            rpc_call(&mut host, "credentials", &[], json!({})).unwrap();
+            rpc_call(&mut host, "site1.example", &["credentials"], json!({})).unwrap();
+
+            state.lock().unwrap().fail_credentials = true;
+            let error = rpc_call(&mut host, "site2.example", &["credentials"], json!({}))
+                .err()
+                .unwrap();
+            assert_eq!(error.status, "device-error");
+            state.lock().unwrap().fail_credentials = false;
+            rpc_call(&mut host, "site2.example", &["credentials"], json!({})).unwrap();
+
+            state.lock().unwrap().fail_delete = true;
+            let error = rpc_call(
+                &mut host,
+                "delete",
+                &["credentials", "site2.example", "02"],
+                json!({}),
+            )
+            .err()
+            .unwrap();
+            assert_eq!(error.status, "device-error");
+            assert!(state.lock().unwrap().deleted_credentials.is_empty());
+            state.lock().unwrap().fail_delete = false;
+            rpc_call(&mut host, "site1.example", &["credentials"], json!({})).unwrap();
+            rpc_call(
+                &mut host,
+                "delete",
+                &["credentials", "site2.example", "02"],
+                json!({}),
+            )
+            .unwrap();
+            assert_eq!(state.lock().unwrap().deleted_credentials, vec![2]);
+        }
     }
 
     #[test]
