@@ -44,23 +44,25 @@ def _capture_screen():
             else:
                 env.pop("LD_LIBRARY_PATH", None)
             fd, fname = tempfile.mkstemp(suffix=".png")
+            os.close(fd)
 
+            # Try each tool in turn until one produces a usable image.
+            tools = [
+                ["gnome-screenshot", "-f", fname],  # GNOME
+                ["spectacle", "-b", "-n", "-o", fname],  # KDE
+                ["grim", fname],  # wlroots (Sway, Hyprland, ...)
+            ]
             try:
-                # Try using gnome-screenshot
-                rc = subprocess.call(["gnome-screenshot", "-f", fname], env=env)  # noqa: S603, S607
-                if rc == 0:
-                    return Image.open(fname)
-            except FileNotFoundError:
-                # Try using spectacle (KDE)
-                try:
-                    rc = subprocess.call(  # noqa: S603
-                        ["spectacle", "-b", "-n", "-o", fname],  # noqa: S607
-                        env=env,
-                    )
-                    if rc == 0:
-                        return Image.open(fname)
-                except FileNotFoundError:
-                    pass  # Fall through to ValueError
+                for cmd in tools:
+                    try:
+                        rc = subprocess.call(cmd, env=env)  # noqa: S603
+                        if rc != 0 or os.path.getsize(fname) == 0:
+                            continue
+                        with Image.open(fname) as img:
+                            img.load()
+                            return img.copy()
+                    except (OSError, UnidentifiedImageError):
+                        continue
             finally:
                 os.unlink(fname)
     raise ValueError("Unable to capture screenshot")

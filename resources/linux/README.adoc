@@ -10,7 +10,7 @@ On Ubuntu:
 
   sudo apt install pcscd
 
-Note that the QR scanning feature requires gnome-screenshot when using Wayland.
+Note that the QR scanning feature requires gnome-screenshot, spectacle or grim when using Wayland.
 
   sudo apt install gnome-screenshot
 
