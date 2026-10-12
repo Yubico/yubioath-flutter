@@ -145,10 +145,19 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
   @override
   void dispose() {
     _subscription?.cancel();
-    if (_fidoResetActive) {
-      _fidoResetController.state = false;
-    }
+    _finishFidoReset();
     super.dispose();
+  }
+
+  void _finishFidoReset() {
+    if (_fidoResetActive) {
+      _fidoResetActive = false;
+      Future.microtask(() {
+        if (_fidoResetController.mounted) {
+          _fidoResetController.state = false;
+        }
+      });
+    }
   }
 
   String _getMessage() {
@@ -268,6 +277,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                                   .reset()
                                   .listen(
                                     (event) {
+                                      if (!mounted) return;
                                       setState(() {
                                         _resetting = true;
                                         _currentStep++;
@@ -275,8 +285,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                                       });
                                     },
                                     onDone: () async {
-                                      _fidoResetActive = false;
-                                      _fidoResetController.state = false;
+                                      _finishFidoReset();
                                       if (!mounted) return;
                                       setState(() {
                                         _currentStep = _totalSteps;
@@ -296,8 +305,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                                       }
                                     },
                                     onError: (e) {
-                                      _fidoResetActive = false;
-                                      _fidoResetController.state = false;
+                                      _finishFidoReset();
                                       if (!mounted) {
                                         if (e is! CancellationException) {
                                           _log.error(

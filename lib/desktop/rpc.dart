@@ -36,7 +36,7 @@ class Signaler {
   Stream<String> get _sendStream => _send.stream;
 
   void cancel() {
-    _send.add('cancel');
+    if (!_send.isClosed) _send.add('cancel');
   }
 
   void _close() {

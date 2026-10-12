@@ -550,7 +550,10 @@ impl Ctap2Node {
                 },
                 &|| cancel.load(Ordering::Relaxed),
             )
-            .map_err(|e| RpcError::new("device-error", format!("{e}")))?;
+            .map_err(|e| match e {
+                DeviceError::Cancelled => RpcError::new("cancelled", "Operation cancelled"),
+                _ => RpcError::new("device-error", format!("{e}")),
+            })?;
 
         let is_cancelled = || cancel.load(Ordering::Relaxed);
         let mut keepalive = ResetKeepalive::default();
@@ -573,6 +576,11 @@ impl Ctap2Node {
                 let result = ctap2
                     .reset(Some(&mut on_keepalive), Some(&is_cancelled))
                     .map_err(|e| {
+                        if is_cancelled()
+                            || matches!(&e, Ctap2Error::StatusError(CtapStatus::KeepaliveCancel))
+                        {
+                            return RpcError::new("cancelled", "Operation cancelled");
+                        }
                         if matches!(&e, Ctap2Error::StatusError(CtapStatus::UserActionTimeout)) {
                             return RpcError::timeout();
                         }
@@ -595,6 +603,11 @@ impl Ctap2Node {
                 let result = ctap2
                     .reset(Some(&mut on_keepalive), Some(&is_cancelled))
                     .map_err(|e| {
+                        if is_cancelled()
+                            || matches!(&e, Ctap2Error::StatusError(CtapStatus::KeepaliveCancel))
+                        {
+                            return RpcError::new("cancelled", "Operation cancelled");
+                        }
                         if matches!(&e, Ctap2Error::StatusError(CtapStatus::UserActionTimeout)) {
                             return RpcError::timeout();
                         }

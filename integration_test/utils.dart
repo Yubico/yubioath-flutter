@@ -329,12 +329,12 @@ extension PatrolTesterUtils on PatrolTester {
 
         if (reader != null) {
           // Select the NFC reader
-          await $(DeviceRow).which<DeviceRow>((widget) {
-            return widget.node?.name.toLowerCase().contains(
-                  reader.toLowerCase(),
-                ) ==
-                true;
-          }).tap();
+          final node = read(attachedDevicesProvider).firstWhere(
+            (node) =>
+                node.transport == Transport.nfc &&
+                node.name.toLowerCase().contains(reader.toLowerCase()),
+          );
+          await $(find.byKey(ValueKey(node.path.key))).tap();
         } else {
           // Make sure USB is selected
           await $(DeviceRow).first.tap();

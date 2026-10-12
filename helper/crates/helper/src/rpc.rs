@@ -49,19 +49,30 @@ fn run_rpc_loop(
     mut recv: Box<dyn FnMut() -> Option<String> + Send>,
 ) {
     let mut host = NodeHost::new(root);
-    let cancel = Arc::new(AtomicBool::new(false));
-
-    // Spawn a reader thread that feeds lines into a channel.
-    let (tx, rx) = mpsc::channel::<String>();
+    let (tx, rx) = mpsc::channel();
     std::thread::spawn(move || {
+        let mut cancel = Arc::new(AtomicBool::new(false));
         while let Some(line) = recv() {
-            if tx.send(line).is_err() {
+            if let Ok(request) = serde_json::from_str::<Value>(&line) {
+                if request["kind"] == "signal" {
+                    // Interrupt commands here, rather than queuing behind their completion.
+                    if request["status"] == "cancel" {
+                        cancel.store(true, Ordering::Relaxed);
+                    }
+                    continue;
+                }
+                if request["kind"] == "command" {
+                    cancel = Arc::new(AtomicBool::new(false));
+                }
+            }
+            if tx.send((line, cancel.clone())).is_err() {
                 break;
             }
         }
+        cancel.store(true, Ordering::Relaxed);
     });
 
-    while let Ok(line) = rx.recv() {
+    while let Ok((line, cancel)) = rx.recv() {
         let request: Value = match serde_json::from_str(&line) {
             Ok(v) => v,
             Err(_) => {
@@ -72,18 +83,9 @@ fn run_rpc_loop(
             }
         };
 
-        match request.get("kind").and_then(|v| v.as_str()) {
-            Some("signal") => {
-                if request.get("status").and_then(|v| v.as_str()) == Some("cancel") {
-                    cancel.store(true, Ordering::Relaxed);
-                }
-                continue;
-            }
-            Some("command") => {}
-            _ => continue,
+        if request.get("kind").and_then(|v| v.as_str()) != Some("command") {
+            continue;
         }
-
-        cancel.store(false, Ordering::Relaxed);
 
         let action = request
             .get("action")
@@ -118,5 +120,78 @@ fn run_rpc_loop(
         };
 
         send(response_json);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::time::{Duration, Instant};
+
+    struct WaitingNode;
+
+    impl RpcNode for WaitingNode {
+        fn list_actions(&self) -> Vec<&'static str> {
+            vec!["wait"]
+        }
+
+        fn call_action(
+            &mut self,
+            _action: &str,
+            _params: &Value,
+            signal: SignalFn,
+            cancel: &AtomicBool,
+        ) -> Result<crate::error::RpcResponse, crate::error::RpcError> {
+            signal("ready", json!({}));
+            let deadline = Instant::now() + Duration::from_secs(2);
+            while !cancel.load(Ordering::Relaxed) {
+                if Instant::now() > deadline {
+                    return Err(crate::error::RpcError::timeout());
+                }
+                std::thread::sleep(Duration::from_millis(1));
+            }
+            Err(crate::error::RpcError::new(
+                "cancelled",
+                "Operation cancelled",
+            ))
+        }
+    }
+
+    #[test]
+    fn signals_interrupt_active_commands_without_cancelling_following_commands() {
+        let (requests, incoming) = mpsc::channel();
+        let (responses, outgoing) = mpsc::channel();
+        let server = std::thread::spawn(move || {
+            run_rpc_loop(
+                Box::new(WaitingNode),
+                Arc::new(move |response| responses.send(response).unwrap()),
+                Box::new(move || incoming.recv().ok()),
+            );
+        });
+        for _ in 0..2 {
+            requests
+                .send(json!({"kind": "command", "action": "wait"}).to_string())
+                .unwrap();
+            assert_eq!(
+                outgoing.recv_timeout(Duration::from_secs(3)).unwrap()["status"],
+                "ready"
+            );
+            requests
+                .send(json!({"kind": "signal", "status": "cancel"}).to_string())
+                .unwrap();
+            assert_eq!(
+                outgoing.recv_timeout(Duration::from_secs(3)).unwrap()["status"],
+                "cancelled"
+            );
+            requests
+                .send(json!({"kind": "command", "action": "get"}).to_string())
+                .unwrap();
+            assert_eq!(
+                outgoing.recv_timeout(Duration::from_secs(3)).unwrap()["kind"],
+                "success"
+            );
+        }
+        drop(requests);
+        server.join().unwrap();
     }
 }

@@ -46,6 +46,18 @@ class _FidoRpcNodeSession extends RpcNodeSession {
 
   List<String> _subpath = [];
 
+  Future<void> closeTransport() async {
+    final path = await subpath();
+    try {
+      await super.command('close', params: {'child': path.first});
+    } on RpcError catch (e) {
+      if (e.status != 'invalid-command' ||
+          e.message != 'No such node: ${devicePath.segments.last}') {
+        rethrow;
+      }
+    }
+  }
+
   Future<List<String>> subpath() async {
     // Ensure that the subpath is initialized
     if (_subpath.isNotEmpty) {
@@ -87,7 +99,7 @@ class _FidoRpcNodeSession extends RpcNodeSession {
 }
 
 final _sessionProvider = Provider.autoDispose
-    .family<RpcNodeSession, DevicePath>((ref, devicePath) {
+    .family<_FidoRpcNodeSession, DevicePath>((ref, devicePath) {
       // Refresh state when PIN is changed
       ref.watch(_pinProvider(devicePath));
       return _FidoRpcNodeSession(
@@ -98,7 +110,7 @@ final _sessionProvider = Provider.autoDispose
     });
 
 class DesktopFidoStateNotifier extends FidoStateNotifier {
-  late RpcNodeSession _session;
+  late _FidoRpcNodeSession _session;
   late StateController<String?> _pinController;
 
   DesktopFidoStateNotifier(super.devicePath);
@@ -157,9 +169,14 @@ class DesktopFidoStateNotifier extends FidoStateNotifier {
 
   @override
   Stream<InteractionEvent> reset() {
+    final session = _session;
+    final resetRef = ref;
+    final keepAlive = resetRef.keepAlive();
     final controller = StreamController<InteractionEvent>();
     final signaler = Signaler();
-    signaler.signals
+    var running = true;
+    var cancelled = false;
+    final signals = signaler.signals
         .where((s) => s.status == 'reset')
         .map(
           (signal) => InteractionEvent.values.firstWhere(
@@ -167,25 +184,39 @@ class DesktopFidoStateNotifier extends FidoStateNotifier {
           ),
         )
         .listen((event) {
-          if (!controller.isClosed) controller.add(event);
+          if (!cancelled && !controller.isClosed) controller.add(event);
         });
 
     controller.onCancel = () {
-      if (!controller.isClosed) {
+      if (running) {
+        cancelled = true;
         signaler.cancel();
       }
     };
     controller.onListen = () async {
       try {
-        await _session.command('reset', signal: signaler);
-        if (!controller.isClosed) await controller.close();
-        if (ref.mounted) ref.invalidateSelf();
-      } catch (e) {
-        if (!controller.isClosed && controller.hasListener) {
-          controller.addError(e);
-        } else {
+        await session.command('reset', signal: signaler);
+      } catch (e, stack) {
+        try {
+          await session.closeTransport();
+        } catch (cleanupError, cleanupStack) {
+          _log.error(
+            'Failed closing FIDO transport after reset',
+            cleanupError,
+            cleanupStack,
+          );
+        }
+        if (!cancelled && !controller.isClosed && controller.hasListener) {
+          controller.addError(e, stack);
+        } else if (e is! RpcError || e.status != 'cancelled') {
           _log.error('FIDO reset failed after cancellation', e);
         }
+      } finally {
+        running = false;
+        await signals.cancel();
+        if (resetRef.mounted) resetRef.invalidate(_sessionProvider(devicePath));
+        if (!controller.isClosed) unawaited(controller.close());
+        keepAlive.close();
       }
     };
 
@@ -261,7 +292,7 @@ class DesktopFidoStateNotifier extends FidoStateNotifier {
 }
 
 class DesktopFidoFingerprintsNotifier extends FidoFingerprintsNotifier {
-  late RpcNodeSession _session;
+  late _FidoRpcNodeSession _session;
 
   DesktopFidoFingerprintsNotifier(super.devicePath);
 
@@ -357,7 +388,7 @@ class DesktopFidoFingerprintsNotifier extends FidoFingerprintsNotifier {
 }
 
 class DesktopFidoCredentialsNotifier extends FidoCredentialsNotifier {
-  late RpcNodeSession _session;
+  late _FidoRpcNodeSession _session;
 
   DesktopFidoCredentialsNotifier(super.devicePath);
 

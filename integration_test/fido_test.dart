@@ -5,8 +5,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:patrol_finders/patrol_finders.dart';
 import 'package:yubico_authenticator/app/models.dart';
+import 'package:yubico_authenticator/app/state.dart';
 import 'package:yubico_authenticator/app/views/app_list_item.dart';
 import 'package:yubico_authenticator/app/views/keys.dart';
+import 'package:yubico_authenticator/app/views/reset_dialog.dart';
 import 'package:yubico_authenticator/fido/keys.dart';
 import 'package:yubico_authenticator/fido/models.dart';
 import 'package:yubico_authenticator/fido/state.dart';
@@ -201,6 +203,71 @@ void main() {
   }, condition: (info) => info.hasCapability(Capability.fido2));
 
   appGroup('FIDO - manual', (params) {
+    for (final phase in [
+      InteractionEvent.remove,
+      InteractionEvent.insert,
+      InteractionEvent.touch,
+    ]) {
+      testKey(
+        'Cancel FIDO reset while waiting for ${phase.name}',
+        params,
+        ($, data) async {
+          final pico = picoController!;
+          await $.navigateElevate(Section.passkeys);
+          final before = $.read(fidoStateProvider(data.node.path)).value!;
+          await $.navigate(Section.home);
+          await $.viewAction(yubikeyFactoryResetMenuButton);
+          await $(factoryResetPickResetFido2).tap();
+          await $.elevate();
+          await $(factoryResetReset).tap();
+
+          var removed = false;
+          try {
+            await $(RegExp(RegExp.escape($.l10n.l_unplug_yk)))
+                .waitUntilVisible(timeout: const Duration(seconds: 15));
+            if (phase != InteractionEvent.remove) {
+              await pico.remove();
+              removed = true;
+              await $(RegExp(RegExp.escape($.l10n.l_reinsert_yk)))
+                  .waitUntilVisible(timeout: const Duration(seconds: 15));
+            }
+            if (phase == InteractionEvent.touch) {
+              await pico.insert();
+              removed = false;
+              await $(
+                RegExp(
+                  '${RegExp.escape($.l10n.l_touch_button_now)}|'
+                  '${RegExp.escape($.l10n.l_long_touch_button_now)}',
+                ),
+              ).waitUntilVisible(timeout: const Duration(seconds: 15));
+            }
+            await $(closeButton).tap();
+            await $.condition(() => !$(ResetDialog).exists, settle: false);
+            expect($.read(fidoResetInProgressProvider), isFalse);
+          } finally {
+            await pico.release();
+            if (removed) await pico.insert();
+          }
+
+          await $.navigateElevate(Section.passkeys);
+          await $.condition(
+            () => $.read(fidoStateProvider(data.node.path)).value != null,
+            reason: 'FIDO state did not reload after cancelling reset',
+            settle: false,
+          );
+          final after = $.read(fidoStateProvider(data.node.path)).value!;
+          expect(
+            after.hasPin,
+            before.hasPin,
+            reason: 'Cancellation must not reset the PIN',
+          );
+          expect(after.pinRetries, before.pinRetries);
+        },
+        tags: 'manual',
+        skip: picoController == null,
+      );
+    }
+
     testKey('Factory Reset', params, ($, data) async {
       // Reset via Home screen
       await $.navigate(Section.home);
