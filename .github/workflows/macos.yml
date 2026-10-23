@@ -15,7 +15,7 @@ jobs:
     - name: Read variables from repo
       run: |
         cat .github/workflows/env >> $GITHUB_ENV
-        echo CACHE_KEY=${{ runner.os }}-${{ runner.arch }}-rust-2e54b85-${{ hashFiles('build-helper.sh', 'helper/**')}} >> $GITHUB_ENV
+        echo CACHE_KEY=${{ runner.os }}-${{ runner.arch }}-rust-99613a3-${{ hashFiles('build-helper.sh', 'helper/**')}} >> $GITHUB_ENV
 
     - name: Check app versions
       run: |
@@ -30,7 +30,7 @@ jobs:
     - name: Check out helper dependencies
       run: |
         git clone --filter=blob:none https://github.com/Yubico/yubikey-manager.git ../yubikit-rs
-        git -C ../yubikit-rs checkout 2e54b85c3499a69810f727cf023b1b1b293c8a11
+        git -C ../yubikit-rs checkout 99613a3e1cdbb144396fee1f803502f90dd9c2d3
 
     - name: Cache helper
       id: cache-helper
