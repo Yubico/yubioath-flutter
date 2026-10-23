@@ -15,7 +15,7 @@ from concurrent.futures import Future, ThreadPoolExecutor
 from fido2.client import DefaultClientDataCollector, Fido2Client, UserInteraction
 from fido2.ctap import CtapError
 from fido2.server import Fido2Server
-from ykman import scripting as s
+from yubikit import scripting as s
 from yubikit.core.fido import FidoConnection
 
 from controller import PicoController

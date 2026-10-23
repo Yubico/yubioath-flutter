@@ -28,7 +28,7 @@ jobs:
     - name: Check out helper dependencies
       run: |
         git clone --filter=blob:none https://github.com/Yubico/yubikey-manager.git ../yubikit-rs
-        git -C ../yubikit-rs checkout 9841da81b8b27206312a4d139aa2c927fb6c7920
+        git -C ../yubikit-rs checkout 2e54b85c3499a69810f727cf023b1b1b293c8a11
 
     - name: Cache helper
       id: cache-helper

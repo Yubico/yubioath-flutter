@@ -105,6 +105,16 @@ require an attached YubiKey to run, and will make modifications to the data
 stored on that YubiKey. For instructions on running these tests, see
 link:../integration_test/testdoc.adoc[these instructions].
 
+The Python integration-test runner uses `uv` and the native `yubikit` package
+from the SDK revision pinned in `integration_test/runner.py`. Keep that pin
+aligned with the build workflows. The first invocation builds the Python
+extension and requires Rust and the helper's native build dependencies:
+
+  uv run --script integration_test/runner.py --help
+
+Device discovery and scripting use `yubikit.device` and `yubikit.scripting`;
+the legacy `ykman` Python modules are no longer used.
+
 
 === Packaging for MacOS
 See link:MacOS_Packaging.adoc[MacOS Packaging].

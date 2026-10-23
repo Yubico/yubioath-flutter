@@ -22,7 +22,7 @@ List<KeyType> getSupportedKeyTypes(
   bool isFips, {
   GenerateType? generateType,
 }) => [
-  if (!isFips) KeyType.rsa1024,
+  if (!isFips && !version.isAtLeast(6, 0)) KeyType.rsa1024,
   KeyType.rsa2048,
   if (version.isAtLeast(5, 7)) ...[
     KeyType.rsa3072,
@@ -44,6 +44,16 @@ List<KeyType> getSupportedKeyTypes(
   ],
   KeyType.eccp256,
   if (version.isAtLeast(4, 0)) ...[KeyType.eccp384],
+];
+
+List<ManagementKeyType> getSupportedManagementKeyTypes(
+  Version version,
+  bool fipsCapable,
+) => [
+  if (!fipsCapable && !version.isAtLeast(6, 0)) ManagementKeyType.tdes,
+  ManagementKeyType.aes128,
+  ManagementKeyType.aes192,
+  ManagementKeyType.aes256,
 ];
 
 PinPolicy getPinPolicy(SlotId slot, bool match) {

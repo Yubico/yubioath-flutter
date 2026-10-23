@@ -1,6 +1,9 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["click", "yubikey-manager", "fido2", "pyscard", "hidapi"]
+# dependencies = ["click", "yubikit", "fido2"]
+#
+# [tool.uv.sources]
+# yubikit = { git = "https://github.com/Yubico/yubikey-manager.git", rev = "2e54b85c3499a69810f727cf023b1b1b293c8a11", subdirectory = "packages/yubikit" }
 # ///
 
 import json
@@ -16,10 +19,8 @@ from urllib.parse import urlparse
 import click
 from controller import PicoController
 from fido_prep import setup as setup_fido
-from ykman.device import list_all_devices
-from ykman.pcsc import list_devices
 from yubikit.core.smartcard import SmartCardConnection
-from yubikit.support import read_info
+from yubikit.device import list_all_devices
 
 from run_artifacts import RunArtifacts
 
@@ -43,7 +44,7 @@ def verify_controller(pico: PicoController, serial: int) -> None:
     try:
         pico.remove()
         time.sleep(1)
-        if any(info.serial == serial for _, info in list_all_devices()):
+        if any(device.info.serial == serial for device in list_all_devices()):
             raise click.ClickException(
                 f"YubiKey {serial} is still present after powering off Pico port {pico.port}"
             )
@@ -52,9 +53,9 @@ def verify_controller(pico: PicoController, serial: int) -> None:
 
     deadline = time.monotonic() + 10
     while time.monotonic() < deadline:
-        if any(info.serial == serial for _, info in list_all_devices()):
+        if any(device.info.serial == serial for device in list_all_devices()):
             time.sleep(2)
-            if any(info.serial == serial for _, info in list_all_devices()):
+            if any(device.info.serial == serial for device in list_all_devices()):
                 return
         time.sleep(0.5)
     raise click.ClickException(f"YubiKey {serial} did not return after restoring Pico power")
@@ -209,14 +210,16 @@ def _run_tests(
 
         if reader:
             dartvars["READER"] = reader
-            devs = list_devices(reader)
+            devs = [
+                device for device in list_all_devices([SmartCardConnection])
+                if device.reader_name and reader.lower() in device.reader_name.lower()
+            ]
             if not devs:
                 raise click.ClickException("No NFC reader found matching name")
             if len(devs) > 1:
                 raise click.ClickException("Multiple NFC readers found matching name")
             dev = devs[0]
-            with dev.open_connection(SmartCardConnection) as conn:
-                info = read_info(conn, dev.pid)
+            info = dev.info
         else:
             devs = list_all_devices()
             if not devs:
@@ -226,7 +229,8 @@ def _run_tests(
                     "Multiple devices found, please connect just one"
                 )
 
-            dev, info = devs[0]
+            dev = devs[0]
+            info = dev.info
 
         if serial:
             serial = int(serial)
@@ -304,7 +308,7 @@ def _run_tests(
             with artifacts.phase("controller_verification"):
                 verify_controller(pico, serial)
                 dev = next(
-                    (device for device, info in list_all_devices() if info.serial == serial),
+                    (device for device in list_all_devices() if device.info.serial == serial),
                     None,
                 )
                 if dev is None:

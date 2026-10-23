@@ -50,6 +50,7 @@ impl OathGlobalState {
 pub struct OathNode {
     session: Option<OathSession<Box<dyn SmartCardConnection + Send>>>,
     conn: SharedConn<Box<dyn SmartCardConnection + Send>>,
+    scp_params: Option<ScpKeyParams>,
     key_verifier: Option<([u8; 32], [u8; 32])>,
     cached_data: Value,
     cached_actions: Vec<&'static str>,
@@ -71,6 +72,7 @@ impl OathNode {
                 let mut node = Self {
                     session: Some(session),
                     conn,
+                    scp_params: scp_params.cloned(),
                     key_verifier: None,
                     cached_data: json!({}),
                     cached_actions: vec![],
@@ -241,19 +243,11 @@ impl RpcNode for OathNode {
                 self.cached_actions = self.list_actions();
                 let conn_arc = self.conn.clone();
                 let session = self.session.take().unwrap();
-                let conn = session.into_connection();
-                // Create new session for accounts node
-                match OathSession::new(conn) {
-                    Ok(new_session) => {
-                        // Store nothing in our session - it's now owned by child
-                        Ok(Box::new(CredentialsNode::new(new_session, conn_arc)))
-                    }
-                    Err((e, c)) => {
-                        // Put connection back and recreate our session
-                        *conn_arc.lock().unwrap() = Some(c);
-                        Err(RpcError::new("session-error", format!("{e}")))
-                    }
-                }
+                Ok(Box::new(CredentialsNode::new(
+                    session,
+                    conn_arc,
+                    self.scp_params.clone(),
+                )))
             }
             _ => Err(RpcError::no_such_node(name)),
         }
@@ -279,7 +273,11 @@ impl OathNode {
             .unwrap()
             .take()
             .ok_or_else(|| RpcError::new("session-error", "Connection not available"))?;
-        match OathSession::new(conn) {
+        let result = match &self.scp_params {
+            Some(scp) => OathSession::new_with_scp(conn, scp),
+            None => OathSession::new(conn),
+        };
+        match result {
             Ok(session) => {
                 self.session = Some(session);
                 self.try_auto_unlock();
@@ -395,12 +393,39 @@ impl OathNode {
                 Ok(RpcResponse::new(json!({})))
             }
             "reset" => {
-                let session = self.session.as_mut().unwrap();
-                session
-                    .reset()
-                    .map_err(|e| RpcError::new("device-error", format!("{e}")))?;
+                let session = self.session.take().unwrap();
+                let old_device_id = session.device_id().to_string();
+                let (result, conn) = match session.reset() {
+                    Ok(conn) => (Ok(()), conn),
+                    Err((error, conn)) => {
+                        (Err(RpcError::new("device-error", format!("{error}"))), conn)
+                    }
+                };
+                *self.conn.lock().unwrap() = Some(conn);
                 self.key_verifier = None;
-                self.remember_key(None);
+                // A failed reset can still have changed the application state.
+                self.cached_data = json!({});
+                self.cached_actions.clear();
+                if result.is_ok() {
+                    let mut state = OATH_STATE.lock().unwrap();
+                    if state.keys.contains(&old_device_id) {
+                        state
+                            .keys
+                            .remove(&old_device_id)
+                            .map_err(|e| RpcError::new("device-error", format!("{e}")))?;
+                    }
+                }
+                let reopened = self.ensure_session();
+                if let Err(error) = result {
+                    if let Err(reopen_error) = reopened {
+                        log::warn!(
+                            "Failed to reopen OATH after reset failure: {}",
+                            reopen_error.message
+                        );
+                    }
+                    return Err(error);
+                }
+                reopened?;
                 Ok(RpcResponse::with_flags(json!({}), vec!["device_info"]))
             }
             _ => Err(RpcError::no_such_action(action)),
@@ -413,6 +438,7 @@ impl OathNode {
 struct CredentialsNode {
     session: Option<OathSession<Box<dyn SmartCardConnection + Send>>>,
     conn: SharedConn<Box<dyn SmartCardConnection + Send>>,
+    scp_params: Option<ScpKeyParams>,
     creds: BTreeMap<Vec<u8>, Credential>,
 }
 
@@ -420,10 +446,12 @@ impl CredentialsNode {
     fn new(
         session: OathSession<Box<dyn SmartCardConnection + Send>>,
         conn: SharedConn<Box<dyn SmartCardConnection + Send>>,
+        scp_params: Option<ScpKeyParams>,
     ) -> Self {
         let mut node = Self {
             session: Some(session),
             conn,
+            scp_params,
             creds: BTreeMap::new(),
         };
         node.refresh();
@@ -457,7 +485,11 @@ impl CredentialsNode {
             .unwrap()
             .take()
             .ok_or_else(|| RpcError::new("session-error", "Connection not available"))?;
-        match OathSession::new(conn) {
+        let result = match &self.scp_params {
+            Some(scp) => OathSession::new_with_scp(conn, scp),
+            None => OathSession::new(conn),
+        };
+        match result {
             Ok(session) => {
                 self.session = Some(session);
                 Ok(())
@@ -894,6 +926,107 @@ fn percent_decode(s: &str) -> String {
 mod tests {
     use super::*;
     use std::sync::{Arc, Mutex};
+    use yubikit::core::{Connection, Transport};
+    use yubikit::smartcard::SmartCardError;
+
+    struct ResetConnection {
+        status: Option<u16>,
+        reset: bool,
+        fail_reopen: bool,
+    }
+
+    impl Connection for ResetConnection {
+        type Error = SmartCardError;
+
+        fn close(&mut self) {}
+    }
+
+    impl SmartCardConnection for ResetConnection {
+        fn transport(&self) -> Transport {
+            Transport::Usb
+        }
+
+        fn send_and_receive(&mut self, apdu: &[u8]) -> Result<(Vec<u8>, u16), SmartCardError> {
+            match apdu[1] {
+                0xa4 => {
+                    if self.reset && self.fail_reopen {
+                        self.fail_reopen = false;
+                        return Ok((vec![], 0x6985));
+                    }
+                    Ok((
+                        vec![0x79, 3, 5, 7, 2, 0x71, 1, u8::from(self.reset)],
+                        0x9000,
+                    ))
+                }
+                0x04 => {
+                    assert_eq!(&apdu[..4], &[0, 4, 0xde, 0xad]);
+                    match self.status {
+                        Some(status) => {
+                            self.reset = status == 0x9000;
+                            Ok((vec![], status))
+                        }
+                        None => Err(SmartCardError::Transport(Box::new(std::io::Error::other(
+                            "reset transport failure",
+                        )))),
+                    }
+                }
+                _ => panic!("Unexpected APDU: {apdu:x?}"),
+            }
+        }
+    }
+
+    fn reset_node(status: Option<u16>, fail_reopen: bool) -> OathNode {
+        OathNode::new(
+            Box::new(ResetConnection {
+                status,
+                reset: false,
+                fail_reopen,
+            }),
+            Arc::new(Mutex::new(None)),
+            None,
+        )
+        .unwrap()
+    }
+
+    #[test]
+    fn reset_reopens_session_on_success_status_error_and_transport_error() {
+        for status in [Some(0x9000), Some(0x6982), None] {
+            let mut node = reset_node(status, false);
+            let old_id = node.get_data()["device_id"].clone();
+            node.set_key_verifier(b"old access key");
+
+            let result = node.call_action_inner("reset", &json!({}));
+            assert_eq!(result.is_ok(), status == Some(0x9000));
+            if let Err(error) = result {
+                assert_eq!(error.status, "device-error");
+            }
+            assert!(node.session.is_some());
+            assert!(node.key_verifier.is_none());
+            assert_eq!(
+                node.get_data()["device_id"] != old_id,
+                status == Some(0x9000)
+            );
+            assert!(node.list_actions().contains(&"reset"));
+        }
+    }
+
+    #[test]
+    fn reset_preserves_connection_when_reopening_fails() {
+        let mut node = reset_node(Some(0x9000), true);
+        let old_id = node.get_data()["device_id"].clone();
+
+        assert_eq!(
+            node.call_action_inner("reset", &json!({}))
+                .err()
+                .unwrap()
+                .status,
+            "session-error"
+        );
+        assert!(node.session.is_none());
+        assert!(node.conn.lock().unwrap().is_some());
+        node.ensure_session().unwrap();
+        assert_ne!(node.get_data()["device_id"], old_id);
+    }
 
     #[test]
     fn returns_oath_state_while_accounts_owns_the_session() {
@@ -908,6 +1041,7 @@ mod tests {
         let node = OathNode {
             session: None,
             conn: Arc::new(Mutex::new(None)),
+            scp_params: None,
             key_verifier: None,
             cached_data: data.clone(),
             cached_actions: vec!["derive", "set_key"],
@@ -922,6 +1056,7 @@ mod tests {
         let mut node = CredentialsNode {
             session: None,
             conn: Arc::new(Mutex::new(None)),
+            scp_params: None,
             creds: BTreeMap::new(),
         };
 
