@@ -80,18 +80,34 @@ void main() {
     });
   });
 
-  test('Android native green matches the default primary color', () {
-    // Used for the launch screen and the native theme before Flutter draws.
-    final colors = File(
-      'android/app/src/main/res/values/colors.xml',
-    ).readAsStringSync();
-    final match = RegExp(
-      r'<color name="yubico_green">#([0-9A-Fa-f]{6})</color>',
-    ).firstMatch(colors);
-    expect(match, isNotNull);
-    expect(
-      Color(0xFF000000 | int.parse(match!.group(1)!, radix: 16)),
-      defaultPrimaryColor,
-    );
+  group('Android native colors', () {
+    test('green matches the default primary color', () {
+      // Used for the native theme before Flutter draws.
+      expect(_androidColor('values', 'yubico_green'), defaultPrimaryColor);
+    });
+
+    test('launch screen background matches the first Flutter frame', () {
+      // A mismatch shows as a flash when the launch screen hands over.
+      expect(
+        _androidColor('values', 'splash_background'),
+        AppTheme.getLightTheme(defaultPrimaryColor).colorScheme.surface,
+      );
+      expect(
+        _androidColor('values-night', 'splash_background'),
+        AppTheme.getDarkTheme(defaultPrimaryColor).colorScheme.surface,
+      );
+    });
   });
+}
+
+/// An opaque `#RRGGBB` color resource from the Android app.
+Color _androidColor(String valuesDir, String name) {
+  final colors = File(
+    'android/app/src/main/res/$valuesDir/colors.xml',
+  ).readAsStringSync();
+  final match = RegExp(
+    '<color name="$name">#([0-9A-Fa-f]{6})</color>',
+  ).firstMatch(colors);
+  expect(match, isNotNull, reason: '$name is missing in $valuesDir');
+  return Color(0xFF000000 | int.parse(match!.group(1)!, radix: 16));
 }

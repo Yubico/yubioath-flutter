@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="yubico_green">#286B2A</color>
+    <!-- Launch screen background: the surface Flutter draws first, so there is no flash. -->
+    <color name="splash_background">#F7FBF1</color>
 </resources>

@@ -2,8 +2,7 @@
 <!--
   Single-colour glyph (designer's "Vector-Filled" SVG, 106 viewBox ~ the 108dp adaptive canvas).
   Used, via ic_launcher_monochrome, as the themed (monochrome) launcher layer, whose colour
-  Android ignores, and on the pre-Android 12 launch screen. The coloured launcher icon itself is
-  ic_launcher_background.
+  Android ignores. The coloured launcher icon itself is ic_launcher_background.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
