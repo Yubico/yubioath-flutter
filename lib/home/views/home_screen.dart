@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2025 Yubico.
+ * Copyright (C) 2024-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import '../../core/models.dart';
 import '../../core/state.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
+import '../../theme.dart';
 import '../../widgets/focus_border.dart';
 import 'key_actions.dart';
 import 'manage_label_dialog.dart';
@@ -238,7 +239,7 @@ class _DeviceContent extends ConsumerWidget {
                                 Colors.yellow: l10n.s_color_yellow,
                                 if (isAndroid &&
                                     ref.read(androidSdkVersionProvider) >= 31)
-                                  Colors.lightGreen: l10n.s_color_green,
+                                  defaultPrimaryColor: l10n.s_color_green,
                               };
                               final collapsedMessage = l10n.s_collapsed;
                               final view = View.of(context);
