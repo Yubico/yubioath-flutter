@@ -59,7 +59,11 @@ void main() {
         await $
             .read(fidoStateProvider(data.node.path).notifier)
             .setPin(normalPin);
-        await $.pumpAndSettle();
+        await $.condition(
+          () => $.read(fidoStateProvider(data.node.path)).value?.hasPin == true,
+          reason: 'FIDO state did not refresh after setting the PIN',
+          settle: false,
+        );
         state = $.read(fidoStateProvider(data.node.path)).value!;
       }
       expect(state.hasPin, isTrue, reason: 'FIDO PIN not set');

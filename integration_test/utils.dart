@@ -342,7 +342,16 @@ extension PatrolTesterUtils on PatrolTester {
       }
 
       // Wait for the current device data to be set
-      await condition(() async => read(currentDeviceDataProvider).hasValue);
+      final timeout = isDesktop && reader == null
+          ? const Duration(seconds: 5)
+          : const Duration(seconds: 30);
+      await condition(
+        () => read(currentDeviceDataProvider).hasValue,
+        timeout: timeout,
+        reason:
+            'No YubiKey became available within ${timeout.inSeconds} seconds',
+        settle: false,
+      );
     }
 
     // We have a YubiKey, wait for the UI to be ready and verify the serial

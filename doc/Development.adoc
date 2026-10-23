@@ -100,6 +100,11 @@ The unit tests can be run with the command:
 
 These do not require a YubiKey, and are relatively quick to run.
 
+Desktop USB integration tests wait up to five seconds for a YubiKey before each
+test, then fail with a device-availability error instead of the usual 30-second wait.
+Android and NFC tests retain a 30-second wait to allow manual presentation.
+This does not shorten explicit removal, reinsertion, or touch waits within tests.
+
 The integration tests are slower but cover more end-to-end functionality. The
 require an attached YubiKey to run, and will make modifications to the data
 stored on that YubiKey. For instructions on running these tests, see
