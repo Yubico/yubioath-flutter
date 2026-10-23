@@ -5,6 +5,8 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: windows-latest
+    env:
+      CARGO_PROFILE_DEV_DEBUG: "2"
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -12,7 +14,7 @@ jobs:
         shell: bash
         run: |
           cat .github/workflows/env >> $GITHUB_ENV
-          echo CACHE_KEY=${{ runner.os }}-${{ runner.arch }}-rust-9841da8-svc1-${{ hashFiles('build-helper.bat', 'helper/**')}} >> $GITHUB_ENV
+          echo CACHE_KEY=${{ runner.os }}-${{ runner.arch }}-rust-2e54b85-svc1-${{ hashFiles('build-helper.bat', 'helper/**')}} >> $GITHUB_ENV
 
       - name: Check app versions
         run: |
@@ -40,7 +42,16 @@ jobs:
 
       - name: Install Rust toolchain
         if: steps.cache-helper.outputs.cache-hit != 'true'
-        uses: dtolnay/rust-toolchain@6bed0761d98439e5a578e2877258200ad565ba87 # stable
+        uses: actions-rust-lang/setup-rust-toolchain@ecabd13d1c56bd1345c230e542e9144811ad706f # v2.0.0
+        with:
+          toolchain: stable
+          build-warnings: ""
+          rustflags: ""
+          cache: true
+          cache-workspaces: |
+            helper
+            ../yubikit-rs
+          cache-save-if: ${{ github.event_name == 'push' }}
 
       - name: Install cargo-about
         if: steps.cache-helper.outputs.cache-hit != 'true'

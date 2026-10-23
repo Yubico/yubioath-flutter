@@ -4,6 +4,8 @@ on: [push, pull_request]
 
 jobs:
   build:
+    env:
+      CARGO_PROFILE_DEV_DEBUG: "2"
 
     runs-on: ubuntu-22.04-arm
 
@@ -15,7 +17,7 @@ jobs:
     - name: Read variables from repo
       run: |
         cat .github/workflows/env >> $GITHUB_ENV
-        echo CACHE_KEY=${{ runner.os }}-${{ runner.arch }}-rust-9841da8-${{ hashFiles('build-helper.sh', 'helper/**')}} >> $GITHUB_ENV
+        echo CACHE_KEY=${{ runner.os }}-${{ runner.arch }}-rust-2e54b85-${{ hashFiles('build-helper.sh', 'helper/**')}} >> $GITHUB_ENV
 
     - name: Install dependencies
       run: |
@@ -46,7 +48,14 @@ jobs:
 
     - name: Install Rust toolchain
       if: steps.cache-helper.outputs.cache-hit != 'true'
-      uses: dtolnay/rust-toolchain@6bed0761d98439e5a578e2877258200ad565ba87 # stable
+      uses: actions-rust-lang/setup-rust-toolchain@ecabd13d1c56bd1345c230e542e9144811ad706f # v2.0.0
+      with:
+        toolchain: stable
+        build-warnings: ""
+        rustflags: ""
+        cache: true
+        cache-workspaces: helper
+        cache-save-if: ${{ github.event_name == 'push' }}
 
     - name: Install cargo-about
       if: steps.cache-helper.outputs.cache-hit != 'true'
