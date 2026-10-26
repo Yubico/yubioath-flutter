@@ -55,6 +55,7 @@ class DevicesNotifier extends StateNotifier<List<YubiKeyDeviceNode>> {
   final RpcSession? _rpc;
   final bool Function() _fidoResetInProgress;
   Timer? _pollTimer;
+  bool _active = true;
   Map<String, String> _lastChildren = {};
   DevicesNotifier(this._rpc, this._fidoResetInProgress) : super([]);
 
@@ -65,13 +66,29 @@ class DevicesNotifier extends StateNotifier<List<YubiKeyDeviceNode>> {
   }
 
   void _notifyWindowState(WindowState windowState) {
+    _active = windowState.active;
     if (windowState.active) {
       _pollDevices();
     } else {
       _pollTimer?.cancel();
       // Release any held device
       if (!_fidoResetInProgress()) {
-        _rpc?.command('get', ['devices']);
+        _releaseDevices();
+      }
+    }
+  }
+
+  // Closing the device nodes drops their connections, which releases the
+  // device lock (held by ykman-svc on Windows).
+  Future<void> _releaseDevices() async {
+    final rpc = _rpc;
+    if (rpc == null) return;
+    for (final id in _lastChildren.keys) {
+      if (id.startsWith(_phantomKeyPrefix)) continue;
+      try {
+        await rpc.command('close', ['devices'], params: {'child': id});
+      } on RpcError catch (e) {
+        _log.error('Error releasing device', jsonEncode(e));
       }
     }
   }
@@ -84,7 +101,7 @@ class DevicesNotifier extends StateNotifier<List<YubiKeyDeviceNode>> {
 
   void _pollDevices() async {
     _pollTimer?.cancel();
-    if (!mounted) return;
+    if (!mounted || !_active) return;
     if (_fidoResetInProgress()) {
       _pollTimer = Timer(_pollDelay, _pollDevices);
       return;
@@ -200,7 +217,7 @@ class DevicesNotifier extends StateNotifier<List<YubiKeyDeviceNode>> {
       _log.error('Error polling devices', jsonEncode(e));
     }
 
-    if (mounted) {
+    if (mounted && _active) {
       _pollTimer = Timer(_pollDelay, _pollDevices);
     }
   }
