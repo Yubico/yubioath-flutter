@@ -44,6 +44,21 @@ class CliInteraction(UserInteraction):
         return True
 
 
+def _open_ctap_device(dev):
+    """Opens a CTAP device over USB (HID) or, for NFC readers, over PC/SC."""
+    if dev.reader_name:
+        from fido2.pcsc import CtapPcscDevice
+
+        devices = list(CtapPcscDevice.list_devices(dev.reader_name))
+        if not devices:
+            raise ValueError(
+                f"Unable to open FIDO over reader {dev.reader_name}. On Windows, "
+                "FIDO over NFC requires running the test runner as administrator."
+            )
+        return devices[0]
+    return dev.open_connection(FidoConnection)
+
+
 def setup(dev, num_users=3, controller: PicoController | None = None):
     server = Fido2Server(
         {"id": "delete.example.com", "name": "Example RP"}, attestation="none"
@@ -53,7 +68,7 @@ def setup(dev, num_users=3, controller: PicoController | None = None):
         for i in range(num_users):
             interaction = CliInteraction(controller, executor)
             try:
-                with dev.open_connection(FidoConnection) as conn:
+                with _open_ctap_device(dev) as conn:
                     client = Fido2Client(
                         conn,
                         client_data_collector=DefaultClientDataCollector(

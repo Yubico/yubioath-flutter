@@ -108,6 +108,10 @@ void main() {
       await $(confirmPin).enterText(normalPin);
       await $(saveButton).tap();
       await $.condition(() => !$(ResponsiveDialog).exists);
+      await $.condition(
+        () => $.read(fidoStateProvider(data.node.path)).value?.pinRetries == 8,
+        reason: 'FIDO PIN attempts not restored',
+      );
 
       state = $.read(fidoStateProvider(data.node.path)).value!;
       expect(state.pinRetries, 8);

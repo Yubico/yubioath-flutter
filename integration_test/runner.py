@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["click", "yubikit", "fido2"]
+# dependencies = ["click", "yubikit", "fido2", "pyscard"]
 #
 # [tool.uv.sources]
 # yubikit = { git = "https://github.com/Yubico/yubikey-manager.git", rev = "99613a3e1cdbb144396fee1f803502f90dd9c2d3", subdirectory = "packages/yubikit" }
