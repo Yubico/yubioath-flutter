@@ -1,5 +1,6 @@
 use std::collections::BTreeMap;
 use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::{Arc, Mutex};
 
 use serde_json::{Value, json};
 
@@ -13,11 +14,16 @@ use crate::connection::SharedConn;
 use crate::error::{RpcError, RpcResponse};
 use crate::rpc::{RpcNode, SignalFn};
 
+/// Config state shared between a YubiOTP node and its slot children, so the
+/// parent reports changes made by a child that currently owns the session.
+type SharedState = Arc<Mutex<ConfigState>>;
+
 // --- YubiOtpCcidNode ---
 
 pub struct YubiOtpCcidNode {
     session: Option<YubiOtpSession<Box<dyn SmartCardConnection + Send>>>,
     conn: SharedConn<Box<dyn SmartCardConnection + Send>>,
+    state: SharedState,
 }
 
 impl YubiOtpCcidNode {
@@ -33,6 +39,7 @@ impl YubiOtpCcidNode {
         };
         match result {
             Ok(session) => Ok(Self {
+                state: Arc::new(Mutex::new(session.get_config_state())),
                 session: Some(session),
                 conn,
             }),
@@ -42,15 +49,31 @@ impl YubiOtpCcidNode {
             }
         }
     }
+
+    /// Re-acquire the session if a slot child has taken it and been closed.
+    fn ensure_session(&mut self) -> Result<(), RpcError> {
+        if self.session.is_none()
+            && let Some(conn) = self.conn.lock().unwrap().take()
+        {
+            match YubiOtpSession::new(conn) {
+                Ok(session) => self.session = Some(session),
+                Err((e, c)) => {
+                    *self.conn.lock().unwrap() = Some(c);
+                    return Err(RpcError::new("session-error", format!("{e}")));
+                }
+            }
+        }
+        if self.session.is_some() {
+            Ok(())
+        } else {
+            Err(RpcError::new("session-error", "No active YubiOTP session"))
+        }
+    }
 }
 
 impl RpcNode for YubiOtpCcidNode {
     fn get_data(&self) -> Value {
-        if let Some(ref session) = self.session {
-            config_state_to_json(session.get_config_state())
-        } else {
-            json!({})
-        }
+        config_state_to_json(self.state.lock().unwrap().clone())
     }
 
     fn list_actions(&self) -> Vec<&'static str> {
@@ -79,10 +102,12 @@ impl RpcNode for YubiOtpCcidNode {
     ) -> Result<RpcResponse, RpcError> {
         match action {
             "swap" => {
+                self.ensure_session()?;
                 let session = self.session.as_mut().unwrap();
                 session
                     .swap_slots()
                     .map_err(|e| RpcError::new("device-error", format!("{e}")))?;
+                *self.state.lock().unwrap() = session.get_config_state();
                 Ok(RpcResponse::new(json!({})))
             }
             "serial_modhex" | "generate_static" | "keyboard_layouts" | "format_yubiotp_csv" => {
@@ -105,25 +130,12 @@ impl RpcNode for YubiOtpCcidNode {
             "two" => Slot::Two,
             _ => return Err(RpcError::no_such_node(name)),
         };
-        // Re-acquire session from shared conn if needed
-        if self.session.is_none()
-            && let Some(conn) = self.conn.lock().unwrap().take()
-        {
-            match YubiOtpSession::new(conn) {
-                Ok(session) => self.session = Some(session),
-                Err((e, c)) => {
-                    *self.conn.lock().unwrap() = Some(c);
-                    return Err(RpcError::new("session-error", format!("{e}")));
-                }
-            }
-        }
-        let session = self
-            .session
-            .take()
-            .ok_or_else(|| RpcError::new("session-error", "No active YubiOTP session"))?;
+        self.ensure_session()?;
+        let session = self.session.take().unwrap();
         Ok(Box::new(OtpCcidSlotNode::new(
             session,
             self.conn.clone(),
+            self.state.clone(),
             slot,
         )))
     }
@@ -141,6 +153,7 @@ impl RpcNode for YubiOtpCcidNode {
 pub struct YubiOtpOtpNode {
     session: Option<YubiOtpSession<Box<dyn OtpConnection + Send>>>,
     conn: SharedConn<Box<dyn OtpConnection + Send>>,
+    state: SharedState,
 }
 
 impl YubiOtpOtpNode {
@@ -150,6 +163,7 @@ impl YubiOtpOtpNode {
     ) -> Result<Self, RpcError> {
         match YubiOtpSession::new_otp(connection) {
             Ok(session) => Ok(Self {
+                state: Arc::new(Mutex::new(session.get_config_state())),
                 session: Some(session),
                 conn,
             }),
@@ -159,15 +173,31 @@ impl YubiOtpOtpNode {
             }
         }
     }
+
+    /// Re-acquire the session if a slot child has taken it and been closed.
+    fn ensure_session(&mut self) -> Result<(), RpcError> {
+        if self.session.is_none()
+            && let Some(conn) = self.conn.lock().unwrap().take()
+        {
+            match YubiOtpSession::new_otp(conn) {
+                Ok(session) => self.session = Some(session),
+                Err((e, c)) => {
+                    *self.conn.lock().unwrap() = Some(c);
+                    return Err(RpcError::new("session-error", format!("{e}")));
+                }
+            }
+        }
+        if self.session.is_some() {
+            Ok(())
+        } else {
+            Err(RpcError::new("session-error", "No active YubiOTP session"))
+        }
+    }
 }
 
 impl RpcNode for YubiOtpOtpNode {
     fn get_data(&self) -> Value {
-        if let Some(ref session) = self.session {
-            config_state_to_json(session.get_config_state())
-        } else {
-            json!({})
-        }
+        config_state_to_json(self.state.lock().unwrap().clone())
     }
 
     fn list_actions(&self) -> Vec<&'static str> {
@@ -196,10 +226,12 @@ impl RpcNode for YubiOtpOtpNode {
     ) -> Result<RpcResponse, RpcError> {
         match action {
             "swap" => {
+                self.ensure_session()?;
                 let session = self.session.as_mut().unwrap();
                 session
                     .swap_slots()
                     .map_err(|e| RpcError::new("device-error", format!("{e}")))?;
+                *self.state.lock().unwrap() = session.get_config_state();
                 Ok(RpcResponse::new(json!({})))
             }
             "serial_modhex" | "generate_static" | "keyboard_layouts" | "format_yubiotp_csv" => {
@@ -222,25 +254,12 @@ impl RpcNode for YubiOtpOtpNode {
             "two" => Slot::Two,
             _ => return Err(RpcError::no_such_node(name)),
         };
-        // Re-acquire session from shared conn if needed
-        if self.session.is_none()
-            && let Some(conn) = self.conn.lock().unwrap().take()
-        {
-            match YubiOtpSession::new_otp(conn) {
-                Ok(session) => self.session = Some(session),
-                Err((e, c)) => {
-                    *self.conn.lock().unwrap() = Some(c);
-                    return Err(RpcError::new("session-error", format!("{e}")));
-                }
-            }
-        }
-        let session = self
-            .session
-            .take()
-            .ok_or_else(|| RpcError::new("session-error", "No active YubiOTP session"))?;
+        self.ensure_session()?;
+        let session = self.session.take().unwrap();
         Ok(Box::new(OtpOtpSlotNode::new(
             session,
             self.conn.clone(),
+            self.state.clone(),
             slot,
         )))
     }
@@ -258,6 +277,7 @@ impl RpcNode for YubiOtpOtpNode {
 struct OtpCcidSlotNode {
     session: Option<YubiOtpSession<Box<dyn SmartCardConnection + Send>>>,
     conn: SharedConn<Box<dyn SmartCardConnection + Send>>,
+    state: SharedState,
     slot: Slot,
     is_configured: bool,
     is_touch_triggered: bool,
@@ -267,14 +287,16 @@ impl OtpCcidSlotNode {
     fn new(
         session: YubiOtpSession<Box<dyn SmartCardConnection + Send>>,
         conn: SharedConn<Box<dyn SmartCardConnection + Send>>,
+        state: SharedState,
         slot: Slot,
     ) -> Self {
-        let state = session.get_config_state();
-        let is_configured = state.is_configured(slot).unwrap_or(false);
-        let is_touch_triggered = state.is_touch_triggered(slot).unwrap_or(false);
+        let cfg = session.get_config_state();
+        let is_configured = cfg.is_configured(slot).unwrap_or(false);
+        let is_touch_triggered = cfg.is_touch_triggered(slot).unwrap_or(false);
         Self {
             session: Some(session),
             conn,
+            state,
             slot,
             is_configured,
             is_touch_triggered,
@@ -310,7 +332,7 @@ impl RpcNode for OtpCcidSlotNode {
         _cancel: &AtomicBool,
     ) -> Result<RpcResponse, RpcError> {
         let session = self.session.as_mut().unwrap();
-        match action {
+        let result = match action {
             "delete" => {
                 let cur_acc_code = get_acc_code(params, "curr_acc_code")?;
                 session
@@ -372,7 +394,14 @@ impl RpcNode for OtpCcidSlotNode {
                 Ok(RpcResponse::new(json!({})))
             }
             _ => Err(RpcError::no_such_action(action)),
+        };
+        if result.is_ok() && matches!(action, "delete" | "put" | "update") {
+            let cfg = session.get_config_state();
+            self.is_configured = cfg.is_configured(self.slot).unwrap_or(false);
+            self.is_touch_triggered = cfg.is_touch_triggered(self.slot).unwrap_or(false);
+            *self.state.lock().unwrap() = cfg;
         }
+        result
     }
 
     fn close(&mut self) {
@@ -388,6 +417,7 @@ impl RpcNode for OtpCcidSlotNode {
 struct OtpOtpSlotNode {
     session: Option<YubiOtpSession<Box<dyn OtpConnection + Send>>>,
     conn: SharedConn<Box<dyn OtpConnection + Send>>,
+    state: SharedState,
     slot: Slot,
     is_configured: bool,
     is_touch_triggered: bool,
@@ -397,14 +427,16 @@ impl OtpOtpSlotNode {
     fn new(
         session: YubiOtpSession<Box<dyn OtpConnection + Send>>,
         conn: SharedConn<Box<dyn OtpConnection + Send>>,
+        state: SharedState,
         slot: Slot,
     ) -> Self {
-        let state = session.get_config_state();
-        let is_configured = state.is_configured(slot).unwrap_or(false);
-        let is_touch_triggered = state.is_touch_triggered(slot).unwrap_or(false);
+        let cfg = session.get_config_state();
+        let is_configured = cfg.is_configured(slot).unwrap_or(false);
+        let is_touch_triggered = cfg.is_touch_triggered(slot).unwrap_or(false);
         Self {
             session: Some(session),
             conn,
+            state,
             slot,
             is_configured,
             is_touch_triggered,
@@ -440,7 +472,7 @@ impl RpcNode for OtpOtpSlotNode {
         cancel: &AtomicBool,
     ) -> Result<RpcResponse, RpcError> {
         let session = self.session.as_mut().unwrap();
-        match action {
+        let result = match action {
             "delete" => {
                 let cur_acc_code = get_acc_code(params, "curr_acc_code")?;
                 session
@@ -508,7 +540,14 @@ impl RpcNode for OtpOtpSlotNode {
                 Ok(RpcResponse::new(json!({})))
             }
             _ => Err(RpcError::no_such_action(action)),
+        };
+        if result.is_ok() && matches!(action, "delete" | "put" | "update") {
+            let cfg = session.get_config_state();
+            self.is_configured = cfg.is_configured(self.slot).unwrap_or(false);
+            self.is_touch_triggered = cfg.is_touch_triggered(self.slot).unwrap_or(false);
+            *self.state.lock().unwrap() = cfg;
         }
+        result
     }
 
     fn close(&mut self) {

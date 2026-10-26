@@ -110,11 +110,13 @@ void main() {
           await $.toggleUsbCapability(Capability.otp, !initiallyEnabled);
           final current = $.read(currentDeviceDataProvider).requireValue;
           expect(current.info.serial, data.info.serial);
-          expect(
-            current.node.pid,
-            isNot(data.node.pid),
-            reason: 'USB interface change should re-enumerate the device',
-          );
+          if (data.node.transport == Transport.usb) {
+            expect(
+              current.node.pid,
+              isNot(data.node.pid),
+              reason: 'USB interface change should re-enumerate the device',
+            );
+          }
           expect(
             current.info.config.enabledCapabilities[Transport.usb],
             original ^ Capability.otp.value,
