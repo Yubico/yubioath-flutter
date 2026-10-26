@@ -964,7 +964,8 @@ impl Ctap2Node {
                 self.refresh_data()?;
                 let refreshed: Result<Option<yubikit::management::DeviceInfo>, RpcError> =
                     with_ctap2_dev!(&mut self.device_type, |ctap2| {
-                        let (info, conn) = ctap2.into_session().into_connection().read_device_info();
+                        let (info, conn) =
+                            ctap2.into_session().into_connection().read_device_info();
                         (Ok(info), conn)
                     });
                 let info = refreshed
