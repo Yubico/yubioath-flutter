@@ -328,19 +328,22 @@ extension PatrolTesterUtils on PatrolTester {
         }
 
         if (reader != null) {
-          // Select the NFC reader, waiting for it to be detected. When using
-          // ykman-svc, NFC nodes are named after the YubiKey, not the reader.
-          bool isNfc(DeviceNode node) => node.transport == Transport.nfc;
-          bool isReader(DeviceNode node) =>
-              isNfc(node) &&
-              node.name.toLowerCase().contains(reader.toLowerCase());
+          YubiKeyDeviceNode? nfcDevice() =>
+              read(attachedDevicesProvider)
+                  .whereType<YubiKeyDeviceNode>()
+                  .where(
+                    (node) =>
+                        node.transport == Transport.nfc &&
+                        expectedSerials.contains(node.info?.serial ?? 0),
+                  )
+                  .firstOrNull;
           await condition(
-            () => read(attachedDevicesProvider).any(isNfc),
-            reason: 'NFC reader "$reader" not detected',
+            () => nfcDevice() != null,
+            reason:
+                'No expected YubiKey became available on NFC reader $reader',
+            settle: false,
           );
-          final nodes = read(attachedDevicesProvider);
-          final node = nodes.where(isReader).firstOrNull ??
-              nodes.firstWhere(isNfc);
+          final node = nfcDevice()!;
           await $(find.byKey(ValueKey(node.path.key))).tap();
         } else {
           // Make sure USB is selected

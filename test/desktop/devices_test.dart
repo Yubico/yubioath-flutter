@@ -8,6 +8,8 @@ class _DeviceRpc extends RpcSession {
   int pid = 0x407;
   String transport = 'usb';
   bool present = true;
+  bool reverseCapabilities = false;
+  int deviceReads = 0;
 
   _DeviceRpc() : super('unused');
 
@@ -19,6 +21,7 @@ class _DeviceRpc extends RpcSession {
     Signaler? signal,
   }) async {
     if (target?.length == 2) {
+      deviceReads++;
       return {
         'data': {
           'name': 'YubiKey',
@@ -34,8 +37,9 @@ class _DeviceRpc extends RpcSession {
             },
             'config': {
               'enabled_capabilities': {
+                if (transport == 'nfc' && reverseCapabilities) 'nfc': enabled,
                 'usb': enabled,
-                if (transport == 'nfc') 'nfc': enabled,
+                if (transport == 'nfc' && !reverseCapabilities) 'nfc': enabled,
               },
               'auto_eject_timeout': null,
               'challenge_response_timeout': null,
@@ -67,8 +71,9 @@ class _DeviceRpc extends RpcSession {
             'transport': transport,
             'pid': transport == 'usb' ? pid : null,
             'enabled_capabilities': {
+              if (transport == 'nfc' && reverseCapabilities) 'nfc': enabled,
               'usb': enabled,
-              if (transport == 'nfc') 'nfc': enabled,
+              if (transport == 'nfc' && !reverseCapabilities) 'nfc': enabled,
             },
           },
       },
@@ -77,6 +82,22 @@ class _DeviceRpc extends RpcSession {
 }
 
 void main() {
+  test('ignores capability map ordering when polling devices', () async {
+    final rpc = _DeviceRpc()..transport = 'nfc';
+    final notifier = DevicesNotifier(rpc, () => false);
+    addTearDown(notifier.dispose);
+
+    final initial = notifier.stream.firstWhere((devices) => devices.isNotEmpty);
+    notifier.refresh();
+    final devices = await initial.timeout(const Duration(seconds: 2));
+
+    rpc.reverseCapabilities = true;
+    await Future<void>.delayed(const Duration(milliseconds: 1100));
+
+    expect(notifier.state.single, same(devices.single));
+    expect(rpc.deviceReads, 1);
+  });
+
   test(
     'updates device info when capabilities change without changing ID',
     () async {

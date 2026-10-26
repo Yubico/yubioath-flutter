@@ -56,7 +56,7 @@ class DevicesNotifier extends StateNotifier<List<YubiKeyDeviceNode>> {
   final bool Function() _fidoResetInProgress;
   Timer? _pollTimer;
   bool _active = true;
-  Map<String, String> _lastChildren = {};
+  Map<String, Object?> _lastChildren = {};
   DevicesNotifier(this._rpc, this._fidoResetInProgress) : super([]);
 
   void refresh() {
@@ -152,16 +152,12 @@ class DevicesNotifier extends StateNotifier<List<YubiKeyDeviceNode>> {
       }
 
       final effectiveKeys = childrenKeys.union(phantomPids.keys.toSet());
-      final children = <String, String>{
-        for (final id in childrenKeys) id: jsonEncode(childrenMap[id]),
-        for (final entry in phantomPids.entries)
-          entry.key: entry.value.toString(),
+      final children = <String, Object?>{
+        for (final id in childrenKeys) id: childrenMap[id],
+        for (final entry in phantomPids.entries) entry.key: entry.value,
       };
 
-      if (!const MapEquality<String, String>().equals(
-        _lastChildren,
-        children,
-      )) {
+      if (!const DeepCollectionEquality().equals(_lastChildren, children)) {
         _log.info('Devices state change', jsonEncode(devicesResult));
         _lastChildren = children;
         List<YubiKeyDeviceNode> devices = [];

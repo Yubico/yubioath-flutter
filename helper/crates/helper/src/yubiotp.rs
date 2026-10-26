@@ -23,6 +23,7 @@ type SharedState = Arc<Mutex<ConfigState>>;
 pub struct YubiOtpCcidNode {
     session: Option<YubiOtpSession<Box<dyn SmartCardConnection + Send>>>,
     conn: SharedConn<Box<dyn SmartCardConnection + Send>>,
+    scp_params: Option<ScpKeyParams>,
     state: SharedState,
 }
 
@@ -42,6 +43,7 @@ impl YubiOtpCcidNode {
                 state: Arc::new(Mutex::new(session.get_config_state())),
                 session: Some(session),
                 conn,
+                scp_params: scp_params.cloned(),
             }),
             Err((e, c)) => {
                 *conn.lock().unwrap() = Some(c);
@@ -52,22 +54,29 @@ impl YubiOtpCcidNode {
 
     /// Re-acquire the session if a slot child has taken it and been closed.
     fn ensure_session(&mut self) -> Result<(), RpcError> {
-        if self.session.is_none()
-            && let Some(conn) = self.conn.lock().unwrap().take()
-        {
-            match YubiOtpSession::new(conn) {
-                Ok(session) => self.session = Some(session),
+        if self.session.is_none() {
+            let conn = self
+                .conn
+                .lock()
+                .unwrap()
+                .take()
+                .ok_or_else(|| RpcError::new("session-error", "No active YubiOTP session"))?;
+            let result = match &self.scp_params {
+                Some(scp) => YubiOtpSession::new_with_scp(conn, scp),
+                None => YubiOtpSession::new(conn),
+            };
+            match result {
+                Ok(session) => {
+                    *self.state.lock().unwrap() = session.get_config_state();
+                    self.session = Some(session);
+                }
                 Err((e, c)) => {
                     *self.conn.lock().unwrap() = Some(c);
                     return Err(RpcError::new("session-error", format!("{e}")));
                 }
             }
         }
-        if self.session.is_some() {
-            Ok(())
-        } else {
-            Err(RpcError::new("session-error", "No active YubiOTP session"))
-        }
+        Ok(())
     }
 }
 
@@ -176,22 +185,25 @@ impl YubiOtpOtpNode {
 
     /// Re-acquire the session if a slot child has taken it and been closed.
     fn ensure_session(&mut self) -> Result<(), RpcError> {
-        if self.session.is_none()
-            && let Some(conn) = self.conn.lock().unwrap().take()
-        {
+        if self.session.is_none() {
+            let conn = self
+                .conn
+                .lock()
+                .unwrap()
+                .take()
+                .ok_or_else(|| RpcError::new("session-error", "No active YubiOTP session"))?;
             match YubiOtpSession::new_otp(conn) {
-                Ok(session) => self.session = Some(session),
+                Ok(session) => {
+                    *self.state.lock().unwrap() = session.get_config_state();
+                    self.session = Some(session);
+                }
                 Err((e, c)) => {
                     *self.conn.lock().unwrap() = Some(c);
                     return Err(RpcError::new("session-error", format!("{e}")));
                 }
             }
         }
-        if self.session.is_some() {
-            Ok(())
-        } else {
-            Err(RpcError::new("session-error", "No active YubiOTP session"))
-        }
+        Ok(())
     }
 }
 
@@ -918,6 +930,172 @@ fn apply_options(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::rpc::NodeHost;
+    use yubikit::core::{Connection, Transport};
+    use yubikit::smartcard::SmartCardError;
+
+    #[derive(Default)]
+    struct OtpState {
+        sequence: u8,
+        flags: u8,
+        fail_select: bool,
+    }
+
+    struct OtpCard(Arc<Mutex<OtpState>>);
+
+    impl Connection for OtpCard {
+        type Error = SmartCardError;
+
+        fn close(&mut self) {}
+    }
+
+    impl SmartCardConnection for OtpCard {
+        fn transport(&self) -> Transport {
+            Transport::Nfc
+        }
+
+        fn send_and_receive(&mut self, apdu: &[u8]) -> Result<(Vec<u8>, u16), SmartCardError> {
+            let mut state = self.0.lock().unwrap();
+            match apdu[1] {
+                0xa4 if state.fail_select => return Ok((vec![], 0x6985)),
+                0xa4 => {}
+                0x01 => {
+                    match apdu[2] {
+                        0x03 => {
+                            state.flags = if apdu[5..57].iter().any(|byte| *byte != 0) {
+                                2
+                            } else {
+                                0
+                            };
+                        }
+                        0x06 => {
+                            state.flags = ((state.flags & 1) << 1) | ((state.flags & 2) >> 1);
+                        }
+                        command => panic!("Unexpected OTP command: {command}"),
+                    }
+                    state.sequence = state.sequence.wrapping_add(1);
+                }
+                instruction => panic!("Unexpected instruction: {instruction}"),
+            }
+            Ok((vec![5, 7, 2, state.sequence, state.flags, 0], 0x9000))
+        }
+    }
+
+    fn call(
+        host: &mut NodeHost,
+        action: &str,
+        target: &[&str],
+        params: Value,
+    ) -> Result<RpcResponse, RpcError> {
+        host.call(
+            action,
+            &target
+                .iter()
+                .map(|part| part.to_string())
+                .collect::<Vec<_>>(),
+            &params,
+            &|_, _| {},
+            &AtomicBool::new(false),
+        )
+    }
+
+    #[test]
+    fn slot_writes_keep_parent_and_child_state_current() {
+        let state = Arc::new(Mutex::new(OtpState::default()));
+        let connection = Box::new(OtpCard(state));
+        let shared = Arc::new(Mutex::new(None));
+        let node = YubiOtpCcidNode::new(connection, shared, None).unwrap();
+        let mut host = NodeHost::new(Box::new(node));
+
+        let empty = call(&mut host, "get", &[], json!({})).unwrap().body["data"].clone();
+        call(&mut host, "get", &["two"], json!({})).unwrap();
+        assert_eq!(
+            call(&mut host, "get", &[], json!({})).unwrap().body["data"],
+            empty
+        );
+
+        call(
+            &mut host,
+            "put",
+            &["two"],
+            json!({"type": "hmac_sha1", "key": "cafed00d"}),
+        )
+        .unwrap();
+        assert_eq!(
+            call(&mut host, "get", &[], json!({})).unwrap().body["data"]["slot2_configured"],
+            true
+        );
+        let slot = call(&mut host, "get", &["two"], json!({})).unwrap().body;
+        assert_eq!(slot["data"]["is_configured"], true);
+        assert!(
+            slot["actions"]
+                .as_array()
+                .unwrap()
+                .contains(&json!("delete"))
+        );
+
+        call(&mut host, "delete", &["two"], json!({})).unwrap();
+        assert_eq!(
+            call(&mut host, "get", &[], json!({})).unwrap().body["data"],
+            empty
+        );
+        assert_eq!(
+            call(&mut host, "get", &["two"], json!({})).unwrap().body["data"]["is_configured"],
+            false
+        );
+    }
+
+    #[test]
+    fn parent_recovers_session_for_swaps_and_slot_switches() {
+        let state = Arc::new(Mutex::new(OtpState::default()));
+        let shared = Arc::new(Mutex::new(None));
+        let node = YubiOtpCcidNode::new(Box::new(OtpCard(state)), shared.clone(), None).unwrap();
+        let mut host = NodeHost::new(Box::new(node));
+        call(
+            &mut host,
+            "put",
+            &["two"],
+            json!({"type": "hmac_sha1", "key": "cafed00d"}),
+        )
+        .unwrap();
+        call(&mut host, "swap", &[], json!({})).unwrap();
+        let data = call(&mut host, "get", &[], json!({})).unwrap().body["data"].clone();
+        assert_eq!(data["slot1_configured"], true);
+        assert_eq!(data["slot2_configured"], false);
+        call(&mut host, "get", &["one"], json!({})).unwrap();
+        call(&mut host, "get", &["two"], json!({})).unwrap();
+        drop(host);
+        assert!(shared.lock().unwrap().is_some());
+    }
+
+    #[test]
+    fn recovered_session_refreshes_shared_state() {
+        let state = Arc::new(Mutex::new(OtpState::default()));
+        let shared = Arc::new(Mutex::new(None));
+        let node = YubiOtpCcidNode::new(Box::new(OtpCard(state.clone())), shared, None).unwrap();
+        let mut host = NodeHost::new(Box::new(node));
+        call(&mut host, "get", &["two"], json!({})).unwrap();
+        state.lock().unwrap().flags = 1;
+        call(&mut host, "get", &["one"], json!({})).unwrap();
+        assert_eq!(
+            call(&mut host, "get", &[], json!({})).unwrap().body["data"]["slot1_configured"],
+            true
+        );
+    }
+
+    #[test]
+    fn failed_session_recovery_preserves_connection_and_reports_error() {
+        let state = Arc::new(Mutex::new(OtpState::default()));
+        let shared = Arc::new(Mutex::new(None));
+        let node =
+            YubiOtpCcidNode::new(Box::new(OtpCard(state.clone())), shared.clone(), None).unwrap();
+        let mut host = NodeHost::new(Box::new(node));
+        call(&mut host, "get", &["two"], json!({})).unwrap();
+        state.lock().unwrap().fail_select = true;
+        let error = call(&mut host, "swap", &[], json!({})).err().unwrap();
+        assert_eq!(error.status, "session-error");
+        assert!(shared.lock().unwrap().is_some());
+    }
 
     #[test]
     fn yubiotp_public_id_uses_modhex() {

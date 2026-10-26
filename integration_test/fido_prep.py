@@ -16,6 +16,7 @@ from fido2.client import DefaultClientDataCollector, Fido2Client, UserInteractio
 from fido2.ctap import CtapError
 from fido2.server import Fido2Server
 from yubikit import scripting as s
+from yubikit.core import TRANSPORT
 from yubikit.core.fido import FidoConnection
 
 from controller import PicoController
@@ -46,16 +47,16 @@ class CliInteraction(UserInteraction):
 
 def _open_ctap_device(dev):
     """Opens a CTAP device over USB (HID) or, for NFC readers, over PC/SC."""
-    if dev.reader_name:
+    if dev.transport == TRANSPORT.NFC:
         from fido2.pcsc import CtapPcscDevice
 
-        devices = list(CtapPcscDevice.list_devices(dev.reader_name))
-        if not devices:
+        connection = next(CtapPcscDevice.list_devices(dev.reader_name), None)
+        if connection is None:
             raise ValueError(
                 f"Unable to open FIDO over reader {dev.reader_name}. On Windows, "
                 "FIDO over NFC requires running the test runner as administrator."
             )
-        return devices[0]
+        return connection
     return dev.open_connection(FidoConnection)
 
 
