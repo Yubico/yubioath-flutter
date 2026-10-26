@@ -28,7 +28,9 @@ use yubikit::smartcard::ScpKeyParams;
 use yubikit::smartcard::SmartCardConnection;
 
 use crate::connection::SharedConn;
+use crate::devices::info_to_json;
 use crate::error::{RpcError, RpcResponse};
+use crate::management::ReadDeviceInfo;
 use crate::rpc::{RpcNode, SignalFn};
 use crate::util::version_to_json;
 
@@ -81,6 +83,7 @@ impl PinAttempts {
 pub struct PivNode {
     session: SharedPivSession,
     conn: SharedConn<Box<dyn SmartCardConnection + Send>>,
+    scp_params: Option<ScpKeyParams>,
     authenticated: bool,
     pin_attempts: SharedPinAttempts,
 }
@@ -108,6 +111,7 @@ impl PivNode {
                 Ok(Self {
                     session: Arc::new(Mutex::new(Some(session))),
                     conn,
+                    scp_params: scp_params.cloned(),
                     authenticated: false,
                     pin_attempts: Arc::new(Mutex::new(pin_attempts)),
                 })
@@ -116,6 +120,38 @@ impl PivNode {
                 *conn.lock().unwrap() = Some(c);
                 Err(RpcError::new("session-error", format!("{e}")))
             }
+        }
+    }
+
+    /// Re-read device info over management, as PIV state affects FIPS status.
+    /// Reselecting PIV drops PIN and management key authentication, so the
+    /// caller must restore whatever it can afterwards.
+    fn refreshed_info(&mut self) -> Value {
+        let Some(session) = self.session.lock().unwrap().take() else {
+            return Value::Null;
+        };
+        let (info, conn) = session.into_connection().read_device_info();
+        let reopened = match &self.scp_params {
+            Some(scp) => PivSession::new_with_scp(conn, scp),
+            None => PivSession::new(conn),
+        };
+        match reopened {
+            Ok(session) => *self.session.lock().unwrap() = Some(session),
+            Err((e, conn)) => {
+                log::warn!("Failed to reopen PIV after refreshing device info: {e}");
+                *self.conn.lock().unwrap() = Some(conn);
+            }
+        }
+        self.authenticated = false;
+        info.as_ref().map(info_to_json).unwrap_or(Value::Null)
+    }
+
+    /// Restore PIN verification lost by [`Self::refreshed_info`].
+    fn reverify_pin(&self, pin: &PivPin) {
+        if let Some(session) = self.session.lock().unwrap().as_mut()
+            && let Err(e) = self.pin_attempts.lock().unwrap().verify_pin(session, pin)
+        {
+            log::warn!("Failed to re-verify PIV PIN after refreshing device info: {e}");
         }
     }
 
@@ -357,8 +393,18 @@ impl PivNode {
                 let session = session_guard.as_mut().unwrap();
                 pivman_set_mgm_key(session, key_type, &key, false, store_key)
                     .map_err(|e| RpcError::new("device-error", e.to_string()))?;
-                self.authenticated = true;
-                Ok(RpcResponse::with_flags(json!({}), vec!["device_info"]))
+                drop(session_guard);
+                let info = self.refreshed_info();
+                if let Some(session) = self.session.lock().unwrap().as_mut()
+                    && let Ok(mgmt_key) = ManagementKey::new(key_type, &key)
+                    && session.authenticate(&mgmt_key).is_ok()
+                {
+                    self.authenticated = true;
+                }
+                Ok(RpcResponse::with_flags(
+                    json!({ "info": info }),
+                    vec!["device_info"],
+                ))
             }
             "change_pin" => {
                 let pin = params
@@ -378,7 +424,13 @@ impl PivNode {
                 session
                     .change_pin(&old_piv_pin, &new_piv_pin)
                     .map_err(handle_pin_error)?;
-                Ok(RpcResponse::with_flags(json!({}), vec!["device_info"]))
+                drop(session_guard);
+                let info = self.refreshed_info();
+                self.reverify_pin(&new_piv_pin);
+                Ok(RpcResponse::with_flags(
+                    json!({ "info": info }),
+                    vec!["device_info"],
+                ))
             }
             "change_puk" => {
                 let puk = params
@@ -398,7 +450,12 @@ impl PivNode {
                 session
                     .change_puk(&old_piv_puk, &new_piv_puk)
                     .map_err(handle_pin_error)?;
-                Ok(RpcResponse::with_flags(json!({}), vec!["device_info"]))
+                drop(session_guard);
+                let info = self.refreshed_info();
+                Ok(RpcResponse::with_flags(
+                    json!({ "info": info }),
+                    vec!["device_info"],
+                ))
             }
             "unblock_pin" => {
                 let puk = params
@@ -418,7 +475,12 @@ impl PivNode {
                 session
                     .unblock_pin(&piv_puk, &piv_new_pin)
                     .map_err(handle_pin_error)?;
-                Ok(RpcResponse::with_flags(json!({}), vec!["device_info"]))
+                drop(session_guard);
+                let info = self.refreshed_info();
+                Ok(RpcResponse::with_flags(
+                    json!({ "info": info }),
+                    vec!["device_info"],
+                ))
             }
             "reset" => {
                 let mut session_guard = self.session.lock().unwrap();
@@ -431,7 +493,12 @@ impl PivNode {
                     total: 3,
                 };
                 self.authenticated = false;
-                Ok(RpcResponse::with_flags(json!({}), vec!["device_info"]))
+                drop(session_guard);
+                let info = self.refreshed_info();
+                Ok(RpcResponse::with_flags(
+                    json!({ "info": info }),
+                    vec!["device_info"],
+                ))
             }
             "validate_rfc4514" => {
                 let data = params

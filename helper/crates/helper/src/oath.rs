@@ -11,7 +11,9 @@ use yubikit::smartcard::SmartCardConnection;
 
 use crate::appdata::AppData;
 use crate::connection::SharedConn;
+use crate::devices::info_to_json;
 use crate::error::{RpcError, RpcResponse, SecretStore};
+use crate::management::ReadDeviceInfo;
 use crate::rpc::{RpcNode, SignalFn};
 use crate::util::version_to_json;
 
@@ -262,6 +264,26 @@ impl RpcNode for OathNode {
 }
 
 impl OathNode {
+    /// Re-read device info over management, as the application state affects
+    /// FIPS status. Reselecting OATH drops authentication, so it is restored
+    /// with the given key when there is one.
+    fn refreshed_info(&mut self, key: Option<&OathAccessKey>) -> Value {
+        let Some(session) = self.session.take() else {
+            return Value::Null;
+        };
+        let (info, conn) = session.into_connection().read_device_info();
+        *self.conn.lock().unwrap() = Some(conn);
+        if let Err(e) = self.ensure_session() {
+            log::warn!("Failed to reopen OATH after refreshing device info: {e:?}");
+        } else if let (Some(key), Some(session)) = (key, self.session.as_mut())
+            && session.locked()
+            && let Err(e) = session.validate(key)
+        {
+            log::warn!("Failed to re-authenticate OATH after refreshing device info: {e}");
+        }
+        info.as_ref().map(info_to_json).unwrap_or(Value::Null)
+    }
+
     /// Re-acquire the OATH session from SharedConn if it was given to a child.
     fn ensure_session(&mut self) -> Result<(), RpcError> {
         if self.session.is_some() {
@@ -378,8 +400,9 @@ impl OathNode {
                     false
                 };
 
+                let info = self.refreshed_info(Some(&key));
                 Ok(RpcResponse::with_flags(
-                    json!({ "remembered": remembered }),
+                    json!({ "remembered": remembered, "info": info }),
                     vec!["device_info"],
                 ))
             }
@@ -390,7 +413,11 @@ impl OathNode {
                     .map_err(|e| RpcError::new("device-error", format!("{e}")))?;
                 self.key_verifier = None;
                 self.remember_key(None);
-                Ok(RpcResponse::new(json!({})))
+                let info = self.refreshed_info(None);
+                Ok(RpcResponse::with_flags(
+                    json!({ "info": info }),
+                    vec!["device_info"],
+                ))
             }
             "reset" => {
                 let session = self.session.take().unwrap();
@@ -426,7 +453,11 @@ impl OathNode {
                     return Err(error);
                 }
                 reopened?;
-                Ok(RpcResponse::with_flags(json!({}), vec!["device_info"]))
+                let info = self.refreshed_info(None);
+                Ok(RpcResponse::with_flags(
+                    json!({ "info": info }),
+                    vec!["device_info"],
+                ))
             }
             _ => Err(RpcError::no_such_action(action)),
         }

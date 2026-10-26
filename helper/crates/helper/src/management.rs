@@ -54,6 +54,44 @@ fn refreshed_info<C: Connection + 'static>(
     })
 }
 
+/// Connections that can be borrowed briefly to re-read device info, e.g. to
+/// pick up changed FIPS status after an application changes its credentials.
+pub trait ReadDeviceInfo: Sized {
+    /// Returns the freshly read info (if available) and always hands the
+    /// connection back.
+    fn read_device_info(self) -> (Option<DeviceInfo>, Self);
+}
+
+fn read_info_from<C: Connection + 'static, E: std::fmt::Display>(
+    opened: Result<ManagementSession<C>, (E, C)>,
+) -> (Option<DeviceInfo>, C) {
+    match opened {
+        Ok(mut session) => {
+            let info = session
+                .read_device_info()
+                .map_err(|e| log::warn!("Failed to refresh device info: {e}"))
+                .ok();
+            (info, session.into_connection())
+        }
+        Err((e, conn)) => {
+            log::warn!("Failed to open management session: {e}");
+            (None, conn)
+        }
+    }
+}
+
+impl ReadDeviceInfo for Box<dyn SmartCardConnection + Send> {
+    fn read_device_info(self) -> (Option<DeviceInfo>, Self) {
+        read_info_from(ManagementSession::new(self))
+    }
+}
+
+impl ReadDeviceInfo for Box<dyn FidoConnection + Send> {
+    fn read_device_info(self) -> (Option<DeviceInfo>, Self) {
+        read_info_from(ManagementSession::new_fido(self))
+    }
+}
+
 // --- ManagementCcidNode ---
 
 pub struct ManagementCcidNode {

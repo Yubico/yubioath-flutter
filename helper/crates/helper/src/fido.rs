@@ -19,6 +19,7 @@ use yubikit::smartcard::SmartCardConnection;
 use crate::appdata::AppData;
 use crate::connection::SharedConn;
 use crate::error::{RpcError, RpcResponse, SecretStore};
+use crate::management::ReadDeviceInfo;
 use crate::rpc::{RpcNode, SignalFn};
 
 use std::sync::Mutex as StdMutex;
@@ -961,7 +962,20 @@ impl Ctap2Node {
                 self.pin_token = None;
                 self.delete_ppuat();
                 self.refresh_data()?;
-                Ok(RpcResponse::with_flags(json!({}), vec!["device_info"]))
+                let refreshed: Result<Option<yubikit::management::DeviceInfo>, RpcError> =
+                    with_ctap2_dev!(&mut self.device_type, |ctap2| {
+                        let (info, conn) = ctap2.into_session().into_connection().read_device_info();
+                        (Ok(info), conn)
+                    });
+                let info = refreshed
+                    .map_err(|e| log::warn!("Failed to refresh device info: {}", e.message))
+                    .ok()
+                    .flatten()
+                    .map(|info| crate::devices::info_to_json(&info));
+                Ok(RpcResponse::with_flags(
+                    json!({ "info": info }),
+                    vec!["device_info"],
+                ))
             }
             "enable_ep_attestation" => {
                 let has_pin = self
@@ -2023,7 +2037,10 @@ mod pin_tests {
             _on_keepalive: Option<&mut dyn FnMut(u8)>,
             _cancel: Option<&dyn Fn() -> bool>,
         ) -> Result<Vec<u8>, FidoError> {
-            assert_eq!(cmd, 0x10);
+            if cmd != 0x10 {
+                // Management (device info refresh) is not emulated
+                return Err(FidoError::ConnectionClosed);
+            }
             Ok(self.0.lock().unwrap().call(data))
         }
 
