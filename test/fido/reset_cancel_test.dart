@@ -90,6 +90,31 @@ class _ResetRpc extends RpcSession {
   }
 }
 
+class _PinRpc extends RpcSession {
+  bool locked = true;
+  int unlocks = 0;
+
+  _PinRpc() : super('unused');
+
+  @override
+  Future<Map<String, dynamic>> command(
+    String action,
+    List<String>? target, {
+    Map? params,
+    Signaler? signal,
+  }) async {
+    if (action == 'unlock') {
+      expect(params?['pin'], '123456');
+      locked = false;
+      unlocks++;
+      return {};
+    }
+    return {
+      'data': {..._state, 'unlocked': !locked, 'unlocked_read': !locked},
+    };
+  }
+}
+
 class _ResetState extends FidoStateNotifier {
   final InteractionEvent phase;
   bool cancelled = false;
@@ -123,6 +148,47 @@ class _ResetState extends FidoStateNotifier {
 }
 
 void main() {
+  testWidgets('FIDO cache renews on reuse but not on state observation', (
+    tester,
+  ) async {
+    final rpc = _PinRpc();
+    final container = ProviderContainer(
+      overrides: [
+        rpcProvider.overrideWithValue(AsyncData(rpc)),
+        currentDeviceProvider.overrideWith(_CurrentDevice.new),
+        fidoStateProvider(_path)
+            .overrideWith(() => DesktopFidoStateNotifier(_path)),
+      ],
+    );
+    try {
+      container.listen(fidoStateProvider(_path), (_, _) {});
+      await container.read(fidoStateProvider(_path).future);
+      await container.read(fidoStateProvider(_path).notifier).unlock('123456');
+      await container.read(fidoStateProvider(_path).future);
+      expect(rpc.unlocks, 1);
+
+      await tester.pump(const Duration(minutes: 2));
+      rpc.locked = true;
+      container.invalidate(fidoStateProvider(_path));
+      expect(
+        (await container.read(fidoStateProvider(_path).future)).unlocked,
+        isTrue,
+      );
+      expect(rpc.unlocks, 2);
+
+      rpc.locked = true;
+      await tester.pump(const Duration(minutes: 3));
+      container.invalidate(fidoStateProvider(_path));
+      expect(
+        (await container.read(fidoStateProvider(_path).future)).unlocked,
+        isFalse,
+      );
+      expect(rpc.unlocks, 2);
+    } finally {
+      container.dispose();
+    }
+  });
+
   test('cancelled reset closes its transport and reloads state', () async {
     final rpc = _ResetRpc();
     final container = ProviderContainer(

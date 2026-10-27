@@ -27,17 +27,22 @@ import '../../app/state.dart';
 import '../../core/models.dart';
 import '../../fido/models.dart';
 import '../../fido/state.dart';
+import '../credential_cache.dart';
 import '../models.dart';
 import '../rpc.dart';
 import '../state.dart';
 
 final _log = Logger('desktop.fido.state');
 
-final _pinProvider = StateProvider.family<String?, DevicePath>((ref, _) {
-  // Clear PIN if current device is changed
-  ref.watch(currentDeviceProvider);
-  return null;
-});
+final _pinProvider =
+    StateNotifierProvider.family<CachedCredential, String?, DevicePath>((
+      ref,
+      _,
+    ) {
+      // Clear PIN if current device is changed
+      ref.watch(currentDeviceProvider);
+      return CachedCredential();
+    });
 
 void clearCachedFidoPins(Ref ref) => ref.invalidate(_pinProvider);
 
@@ -111,7 +116,7 @@ final _sessionProvider = Provider.autoDispose
 
 class DesktopFidoStateNotifier extends FidoStateNotifier {
   late _FidoRpcNodeSession _session;
-  late StateController<String?> _pinController;
+  late CachedCredential _pinController;
 
   DesktopFidoStateNotifier(super.devicePath);
 
@@ -119,7 +124,7 @@ class DesktopFidoStateNotifier extends FidoStateNotifier {
     var result = await _session.command('get');
     FidoState fidoState = FidoState.fromJson(result['data']);
     if (fidoState.hasPin && !fidoState.unlocked) {
-      final pin = ref.read(_pinProvider(devicePath));
+      final pin = ref.read(_pinProvider(devicePath).notifier).value;
       if (pin != null) {
         await _unlock(pin, refresh: false);
         result = await _session.command('get');
@@ -150,7 +155,7 @@ class DesktopFidoStateNotifier extends FidoStateNotifier {
       ref.invalidate(_sessionProvider(devicePath));
     });
     _session.setErrorHandler('auth-required', (e) async {
-      final pin = ref.read(_pinProvider(devicePath));
+      final pin = ref.read(_pinProvider(devicePath).notifier).value;
       if (pin != null) {
         await _unlock(pin, refresh: false);
       } else {
@@ -235,7 +240,7 @@ class DesktopFidoStateNotifier extends FidoStateNotifier {
       return result;
     } on RpcError catch (e) {
       if (e.status == 'pin-validation') {
-        _pinController.state = null;
+        _pinController.value = null;
         ref.invalidateSelf();
         return PinResult.failed(
           FidoPinFailureReason.invalidPin(
@@ -265,13 +270,13 @@ class DesktopFidoStateNotifier extends FidoStateNotifier {
         'unlock',
         params: {'pin': pin, 'remember': remember},
       );
-      _pinController.state = pin;
+      _pinController.value = pin;
       if (refresh) ref.invalidateSelf();
 
       return PinResult.success();
     } on RpcError catch (e) {
       if (e.status == 'pin-validation') {
-        _pinController.state = null;
+        _pinController.value = null;
         ref.invalidateSelf();
         return PinResult.failed(
           FidoPinFailureReason.invalidPin(

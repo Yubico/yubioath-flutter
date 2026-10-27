@@ -34,6 +34,7 @@ import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
 import '../../oath/models.dart';
 import '../../oath/state.dart';
+import '../credential_cache.dart';
 import '../models.dart';
 import '../rpc.dart';
 import '../state.dart';
@@ -60,25 +61,13 @@ final _sessionProvider = Provider.autoDispose
       ]);
     });
 
-// This remembers the key for all devices for the duration of the process.
+// Retain transient keys across device changes until they expire.
 final _oathLockKeyProvider =
-    StateNotifierProvider.family<_LockKeyNotifier, String?, DevicePath>(
-      (ref, devicePath) => _LockKeyNotifier(null),
+    StateNotifierProvider.family<CachedCredential, String?, DevicePath>(
+      (ref, devicePath) => CachedCredential(),
     );
 
 void clearCachedOathKeys(Ref ref) => ref.invalidate(_oathLockKeyProvider);
-
-class _LockKeyNotifier extends StateNotifier<String?> {
-  _LockKeyNotifier(super.state);
-
-  void setKey(String key) {
-    state = key;
-  }
-
-  void unsetKey() {
-    state = null;
-  }
-}
 
 class DesktopOathStateNotifier extends OathStateNotifier {
   late RpcNodeSession _session;
@@ -93,7 +82,9 @@ class DesktopOathStateNotifier extends OathStateNotifier {
         ref.invalidate(_sessionProvider(devicePath));
       })
       ..setErrorHandler('auth-required', (e) async {
-        final key = ref.read(_oathLockKeyProvider(_session.devicePath));
+        final key = ref
+            .read(_oathLockKeyProvider(_session.devicePath).notifier)
+            .value;
         if (key != null) {
           final result = await _session.command(
             'validate',
@@ -103,9 +94,8 @@ class DesktopOathStateNotifier extends OathStateNotifier {
             ref.invalidateSelf();
             return;
           } else {
-            ref
-                .read(_oathLockKeyProvider(_session.devicePath).notifier)
-                .unsetKey();
+            ref.read(_oathLockKeyProvider(_session.devicePath).notifier).value =
+                null;
           }
         }
         throw e;
@@ -123,7 +113,7 @@ class DesktopOathStateNotifier extends OathStateNotifier {
   @override
   Future<void> reset() async {
     await _session.command('reset');
-    ref.read(_oathLockKeyProvider(_session.devicePath).notifier).unsetKey();
+    ref.read(_oathLockKeyProvider(_session.devicePath).notifier).value = null;
     ref.invalidate(_sessionProvider(_session.devicePath));
   }
 
@@ -142,7 +132,7 @@ class DesktopOathStateNotifier extends OathStateNotifier {
     final bool remembered = validate['remembered'];
     if (valid) {
       _log.debug('applet unlocked');
-      ref.read(_oathLockKeyProvider(_session.devicePath).notifier).setKey(key);
+      ref.read(_oathLockKeyProvider(_session.devicePath).notifier).value = key;
       setData(state.value!.copyWith(locked: false, remembered: remembered));
     }
     return (valid, remembered);
@@ -183,7 +173,7 @@ class DesktopOathStateNotifier extends OathStateNotifier {
       );
       var key = derive['key'];
       await _session.command('set_key', params: {'key': key});
-      ref.read(_oathLockKeyProvider(_session.devicePath).notifier).setKey(key);
+      ref.read(_oathLockKeyProvider(_session.devicePath).notifier).value = key;
     }
     _log.debug('OATH key set');
 
@@ -202,7 +192,7 @@ class DesktopOathStateNotifier extends OathStateNotifier {
       }
     }
     await _session.command('unset_key');
-    ref.read(_oathLockKeyProvider(_session.devicePath).notifier).unsetKey();
+    ref.read(_oathLockKeyProvider(_session.devicePath).notifier).value = null;
     setData(oathState.copyWith(hasKey: false, locked: false));
     return true;
   }
@@ -210,7 +200,7 @@ class DesktopOathStateNotifier extends OathStateNotifier {
   @override
   Future<void> forgetPassword() async {
     await _session.command('forget');
-    ref.read(_oathLockKeyProvider(_session.devicePath).notifier).unsetKey();
+    ref.read(_oathLockKeyProvider(_session.devicePath).notifier).value = null;
     setData(state.value!.copyWith(remembered: false));
   }
 }

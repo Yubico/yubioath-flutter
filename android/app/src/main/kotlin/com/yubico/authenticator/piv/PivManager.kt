@@ -17,6 +17,7 @@
 package com.yubico.authenticator.piv
 
 import com.yubico.authenticator.AppContextManager
+import com.yubico.authenticator.CredentialCache
 import com.yubico.authenticator.OperationContext
 import com.yubico.authenticator.device.DeviceManager
 import com.yubico.authenticator.piv.KeyMaterialParser.getLeafCertificates
@@ -79,13 +80,23 @@ class PivManager(
     private val pivViewModel: PivViewModel
 ) : AppContextManager(deviceManager) {
 
-    private val managementKeyStorage: MutableMap<String, ByteArray> = mutableMapOf()
-    private val pinStorage: MutableMap<String, CharArray> = mutableMapOf()
+    private val managementKeyStorage = CredentialCache<String, ByteArray>(
+        copy = { it.clone() },
+        clearValue = { it.fill(0) },
+        onExpired = { pivViewModel.expireAuthentication(it) }
+    )
+    private val pinStorage = CredentialCache<String, CharArray>(
+        copy = { it.clone() },
+        clearValue = { it.fill(0.toChar()) },
+        onExpired = {
+            if (pivmanData?.hasProtectedKey == true) {
+                pivViewModel.expireAuthentication(it)
+            }
+        }
+    )
 
     fun clearCachedCredentials() {
-        pinStorage.values.forEach { it.fill(0.toChar()) }
         pinStorage.clear()
-        managementKeyStorage.values.forEach { it.fill(0) }
         managementKeyStorage.clear()
         pivViewModel.clearState()
     }
@@ -384,7 +395,8 @@ class PivManager(
             // cannot use key from managementKeyStorage
             // has to use PIN to get the key from the session
 
-            val pin = pinStorage[serial] ?: defaultPin
+            val pin = pinStorage[serial]
+                ?: throw ApduException(byteArrayOf(), SW.SECURITY_CONDITION_NOT_SATISFIED)
             piv.verifyPin(pin)
 
             val key = if (pivmanData?.hasDerivedKey ?: false) {
@@ -484,7 +496,7 @@ class PivManager(
         try {
             val piv = getPivSession(it)
             val serial = pivViewModel.currentSerial()
-            pinStorage[serial] = pin.clone()
+            pinStorage[serial] = pin
             handlePinPukErrors { doVerifyPin(piv, serial) }
         } finally {
             Arrays.fill(pin, 0.toChar())

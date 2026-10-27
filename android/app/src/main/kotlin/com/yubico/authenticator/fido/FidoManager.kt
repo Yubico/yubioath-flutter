@@ -97,7 +97,17 @@ class FidoManager(
 
     private val logger = LoggerFactory.getLogger(FidoManager::class.java)
 
-    private val pinStore = FidoPinStore()
+    private val pinStore = FidoPinStore(onExpired = {
+        if (persistentPinUvAuthToken == null) {
+            fidoViewModel.updateCredentials(null)
+            fidoViewModel.updateFingerprints(emptyList())
+        }
+        fidoViewModel.currentSession()?.let {
+            fidoViewModel.setSessionState(
+                it.copy(unlocked = false, unlockedRead = persistentPinUvAuthToken != null)
+            )
+        }
+    })
 
     fun clearCachedCredentials() {
         pinStore.setPin(null)
@@ -294,14 +304,12 @@ class FidoManager(
                 infoData.getIdentifier(ppuat)
             }
 
-        val pinUvAuthToken = if (pinStore.hasPin()) {
+        val pinUvAuthToken = pinStore.getPinOrNull()?.let { pin ->
             clientPin.getPinToken(
-                pinStore.getPin(),
+                pin,
                 getPinPermissionsCM(fidoSession) or getPinPermissionsBE(fidoSession),
                 null
             )
-        } else {
-            null
         }
 
         val token = pinUvAuthToken ?: persistentPinUvAuthToken
@@ -749,14 +757,12 @@ class FidoManager(
             try {
                 val uvAuthProtocol = getPreferredPinUvAuthProtocol(fidoSession.cachedInfo)
                 val clientPin = ClientPin(fidoSession, uvAuthProtocol)
-                val token = if (pinStore.hasPin()) {
+                val token = pinStore.getPinOrNull()?.let { pin ->
                     clientPin.getPinToken(
-                        pinStore.getPin(),
+                        pin,
                         ClientPin.PIN_PERMISSION_ACFG,
                         null
                     )
-                } else {
-                    null
                 }
 
                 val config = Config(fidoSession, uvAuthProtocol, token)
