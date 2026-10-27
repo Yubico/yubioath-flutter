@@ -4,14 +4,30 @@ on: [push, pull_request]
 
 jobs:
   build:
+    name: Build - ${{ matrix.arch }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x64
+            os: ubuntu-latest
+            container: ubuntu:20.04
+            sudo: ''
+            channel: stable
+            suffix: ''
+          - arch: arm64
+            os: ubuntu-22.04-arm
+            container: ''
+            sudo: sudo
+            # https://github.com/subosito/flutter-action/issues/268
+            channel: main
+            suffix: '-arm64'
     env:
       CARGO_PROFILE_DEV_DEBUG: "2"
+      DEBIAN_FRONTEND: noninteractive
 
-    runs-on: ubuntu-latest
-    container:
-      image: ubuntu:20.04
-      env:
-        DEBIAN_FRONTEND: noninteractive
+    runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
 
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -21,17 +37,22 @@ jobs:
     - name: Read variables from repo
       run: |
         cat .github/workflows/env >> $GITHUB_ENV
-        echo CACHE_KEY=${{ runner.os }}-${{ runner.arch }}-rust-d520107-${{ hashFiles('build-helper.sh', 'helper/**')}} >> $GITHUB_ENV
 
     - name: Install dependencies
       run: |
-        apt-get update
-        apt-get install -qq curl software-properties-common libnotify-dev python3-venv
-        add-apt-repository -y ppa:git-core/ppa
-        apt-get install -qq git
+        ${{ matrix.sudo }} apt-get update
+        ${{ matrix.sudo }} apt-get install -qq curl libnotify-dev
+        if [ '${{ matrix.arch }}' = 'x64' ]; then
+          apt-get install -qq software-properties-common python3-venv
+          add-apt-repository -y ppa:git-core/ppa
+          apt-get install -qq git
+        fi
         git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+    - name: Set helper cache key
+      run: echo CACHE_KEY=${{ runner.os }}-${{ runner.arch }}-rust-d520107-${{ hashFiles('build-helper.sh', 'helper/**')}} >> $GITHUB_ENV
 
     - name: Check app versions
       run: |
@@ -73,16 +94,16 @@ jobs:
     - name: Build the Helper
       if: steps.cache-helper.outputs.cache-hit != 'true'
       run: |
-        apt-get install -qq libpcsclite-dev libudev-dev libdbus-1-dev build-essential cmake pkg-config libssl-dev
+        ${{ matrix.sudo }} apt-get install -qq libpcsclite-dev libudev-dev libdbus-1-dev build-essential cmake pkg-config libssl-dev
         ./build-helper.sh
 
     - name: Install Flutter dependencies
       run: |
-        apt-get install -qq clang cmake ninja-build pkg-config libgtk-3-dev libx11-dev libxi-dev jq lld
+        ${{ matrix.sudo }} apt-get install -qq unzip clang cmake ninja-build pkg-config libgtk-3-dev libx11-dev libxi-dev jq lld
 
     - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
       with:
-        channel: 'stable'
+        channel: ${{ matrix.channel }}
         flutter-version: ${{ env.FLUTTER }}
         cache: true
         pub-cache: true
@@ -101,18 +122,20 @@ jobs:
       run: git diff --exit-code
 
     - name: Rename and archive app
+      shell: bash
       run: |
-        export REF=$(echo ${GITHUB_REF} | cut -d '/' -f 3)
-        export BASENAME="yubioath-desktop-${REF}-linux"
+        REF="${GITHUB_REF_NAME//\//-}"
+        BASENAME="yubioath-desktop-${REF}-linux${{ matrix.suffix }}"
         mkdir deploy
-        mv build/linux/x64/release/bundle "build/${BASENAME}"
+        mv build/linux/${{ matrix.arch }}/release/bundle "build/${BASENAME}"
         tar -czf deploy/${BASENAME}.tar.gz -C build "${BASENAME}"
 
     - name: Upload artifact
       uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       with:
-        name: yubioath-desktop-linux
+        name: yubioath-desktop-linux${{ matrix.suffix }}
         path: deploy
+        if-no-files-found: error
 
   test-helper:
     name: Rust helper checks (no hardware)
