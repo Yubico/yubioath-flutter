@@ -1,8 +1,8 @@
 # Windows service packaging
 
 Both MSI installers consume the canonical service merge module from the pinned
-`yubikit-rs` checkout. The Windows build artifacts carry its source and build
-script in `service-module/`; the MSI jobs build it using the signed service
+`yubikey-manager` submodule. The Windows build artifacts carry its source and build
+scripts in `service-module/`; the MSI jobs build it using the signed service
 executable. The service lives outside either application's install directory
 and stays installed and running until its last MSI consumer is removed.
 Use matching architectures for the two MSI applications.

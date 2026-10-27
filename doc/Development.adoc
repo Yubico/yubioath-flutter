@@ -16,26 +16,31 @@ SDK, from the "stable" channel.
 This project uses dependencies specified in `pubspec.yaml` and
 `helper/crates/helper/Cargo.toml`. The corresponding `pubspec.lock` and
 `helper/Cargo.lock` files pin the versions used when building the app.
-The Rust helper also uses crates from the sibling `yubikit-rs` checkout.
+The Rust helper also uses crates from the `yubikey-manager` Git submodule.
 
 ==== Versioning (important for package maintainers!)
 We recommend bundling this application with all its dependencies, using the
-versions specified in the lock files. Keep the sibling `yubikit-rs` checkout
-at the revision used by the build workflows.
+versions specified in the lock files and the submodule revision pinned by this
+repository.
 
 === Building the Yubico Authenticator Helper
 The GUI requires a compiled version of Helper to run, which is built from the
-sources in `helper/` in this repository. Install Rust and Cargo and check out
-https://github.com/Yubico/yubikey-manager/[yubikit-rs] next to this repository
-at the commit pinned in the build workflows. Install `cargo-about` with
+sources in `helper/` in this repository. Install Rust and Cargo and initialize the
+https://github.com/Yubico/yubikey-manager/[YubiKey Manager] submodule from the
+repository root:
+
+    git submodule update --init --recursive
+
+Alternatively, clone this repository with `git clone --recurse-submodules`.
+Install `cargo-about` with
 `cargo install cargo-about --version 0.9.2 --locked --features cli`.
 Build the helper before running `flutter build` or `flutter run`.
 
 ==== Windows
 
-For Windows packaging, also build `ykman-svc` from the sibling checkout:
+For Windows packaging, also build `ykman-svc` from the submodule:
 
-    cargo build --release --manifest-path ..\yubikit-rs\Cargo.toml -p ykman-svc
+    cargo build --release --manifest-path yubikey-manager\Cargo.toml -p ykman-svc
 
 The local `resources/win/release-win.ps1` packaging script expects the resulting
 `ykman-svc.exe` next to the unpacked Windows build artifact.

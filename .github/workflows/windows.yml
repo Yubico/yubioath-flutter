@@ -20,12 +20,14 @@ jobs:
       CARGO_PROFILE_DEV_DEBUG: "2"
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: true
 
       - name: Read variables from repo
         shell: bash
         run: |
           cat .github/workflows/env >> $GITHUB_ENV
-          echo CACHE_KEY=${{ runner.os }}-${{ runner.arch }}-rust-d520107-svc1-${{ hashFiles('build-helper.bat', 'helper/**')}} >> $GITHUB_ENV
+          echo CACHE_KEY=${{ runner.os }}-${{ runner.arch }}-rust-$(git -C yubikey-manager rev-parse HEAD)-svc1-${{ hashFiles('build-helper.bat', 'helper/**')}} >> $GITHUB_ENV
 
       - name: Check app versions
         run: |
@@ -34,12 +36,6 @@ jobs:
 
       - name: Test signing artifact handling
         run: python -m unittest discover -s .github/scripts -p 'test_*.py'
-
-      - name: Check out helper dependencies
-        shell: bash
-        run: |
-          git clone --filter=blob:none https://github.com/Yubico/yubikey-manager.git ../yubikit-rs
-          git -C ../yubikit-rs checkout d520107a63458bc35e49c56cc455cd9a726e4c73
 
       - name: Cache helper
         id: cache-helper
@@ -61,7 +57,7 @@ jobs:
           cache: true
           cache-workspaces: |
             helper
-            ../yubikit-rs
+            yubikey-manager
           cache-save-if: ${{ github.event_name == 'push' }}
 
       - name: Install cargo-about
@@ -78,8 +74,8 @@ jobs:
       - name: Build ykman-svc
         if: steps.cache-helper.outputs.cache-hit != 'true'
         run: |
-          cargo build --release --manifest-path ..\yubikit-rs\Cargo.toml -p ykman-svc
-          Copy-Item ..\yubikit-rs\target\release\ykman-svc.exe build\windows\ykman-svc.exe
+          cargo build --release --manifest-path yubikey-manager\Cargo.toml -p ykman-svc
+          Copy-Item yubikey-manager\target\release\ykman-svc.exe build\windows\ykman-svc.exe
 
       - name: Install Flutter
         uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
@@ -130,7 +126,7 @@ jobs:
           Move-Item build\windows\${{ matrix.arch }}\runner\Release\* $dest\
           Copy-Item build\windows\ykman-svc.exe deploy\
           New-Item -ItemType Directory deploy\service-module | Out-Null
-          Copy-Item ..\yubikit-rs\resources\win\make_service_msm.ps1, ..\yubikit-rs\resources\win\ykman-service.wxs deploy\service-module\
+          Copy-Item yubikey-manager\resources\win\make_service_msm.ps1, yubikey-manager\resources\win\get_msi_version.ps1, yubikey-manager\resources\win\ykman-service.wxs deploy\service-module\
 
       - name: Copy x64 release support files
         if: matrix.arch == 'x64'

@@ -11,11 +11,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        submodules: true
 
     - name: Read variables from repo
       run: |
         cat .github/workflows/env >> $GITHUB_ENV
-        echo CACHE_KEY=${{ runner.os }}-${{ runner.arch }}-rust-d520107-${{ hashFiles('build-helper.sh', 'helper/**')}} >> $GITHUB_ENV
+        echo CACHE_KEY=${{ runner.os }}-${{ runner.arch }}-rust-$(git -C yubikey-manager rev-parse HEAD)-${{ hashFiles('build-helper.sh', 'helper/**')}} >> $GITHUB_ENV
 
     - name: Check app versions
       run: |
@@ -26,11 +28,6 @@ jobs:
       uses: maxim-lobanov/setup-cocoapods@8e97e1e98e6ccf42564fdf5622c8feec74199377 # v1.4.0
       with:
         podfile-path: macos/Podfile.lock
-
-    - name: Check out helper dependencies
-      run: |
-        git clone --filter=blob:none https://github.com/Yubico/yubikey-manager.git ../yubikit-rs
-        git -C ../yubikit-rs checkout d520107a63458bc35e49c56cc455cd9a726e4c73
 
     - name: Cache helper
       id: cache-helper

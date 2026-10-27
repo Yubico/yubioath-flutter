@@ -9,6 +9,8 @@ jobs:
       CARGO_PROFILE_DEV_DEBUG: "2"
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: true
 
       - name: Read variables from repo
         run: cat .github/workflows/env >> $GITHUB_ENV
@@ -40,11 +42,6 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -qq libpcsclite-dev libudev-dev libdbus-1-dev build-essential cmake pkg-config libssl-dev
-
-      - name: Check out helper Rust dependencies
-        run: |
-          git clone --filter=blob:none https://github.com/Yubico/yubikey-manager.git ../yubikit-rs
-          git -C ../yubikit-rs checkout d520107a63458bc35e49c56cc455cd9a726e4c73
 
       - name: Install Rust toolchain
         uses: actions-rust-lang/setup-rust-toolchain@ecabd13d1c56bd1345c230e542e9144811ad706f # v2.0.0

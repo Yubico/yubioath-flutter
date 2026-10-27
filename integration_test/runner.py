@@ -3,7 +3,7 @@
 # dependencies = ["click", "yubikit", "fido2", "pyscard"]
 #
 # [tool.uv.sources]
-# yubikit = { git = "https://github.com/Yubico/yubikey-manager.git", rev = "d520107a63458bc35e49c56cc455cd9a726e4c73", subdirectory = "packages/yubikit" }
+# yubikit = { path = "../yubikey-manager/packages/yubikit" }
 # ///
 
 import json
