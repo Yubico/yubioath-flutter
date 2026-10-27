@@ -301,9 +301,13 @@ class _FidoUnlockedPageState extends ConsumerState<_FidoUnlockedPage> {
       );
     }
 
-    final data = ref
-        .watch(credentialProvider(widget.deviceData.node.path))
-        .asData;
+    final credentialsState = ref.watch(
+      credentialProvider(widget.deviceData.node.path),
+    );
+    if (credentialsState.hasError && !credentialsState.hasValue) {
+      return AppFailurePage(cause: credentialsState.error!);
+    }
+    final data = credentialsState.asData;
     if (data == null) {
       return _buildLoadingPage(context);
     }

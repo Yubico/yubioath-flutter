@@ -68,6 +68,11 @@ class AppFailurePage extends ConsumerWidget {
               message = l10n.p_try_reinsert_yk;
           }
           break;
+        case 'reinsert-required':
+          graphic = Icon(Symbols.contactless, size: 96);
+          header = l10n.l_reinsert_yk_nfc_required;
+          message = l10n.p_reinsert_yk_nfc_required;
+          break;
         case 'fido-blocked-error':
           if (Platform.isWindows) {
             header = l10n.l_admin_privileges_required;

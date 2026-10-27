@@ -106,6 +106,15 @@ fn handle_pin_error<E: std::error::Error + Send + Sync + 'static>(
     RpcError::new("device-error", format!("{e}"))
 }
 
+/// Maps a rejected PIN/UV auth token to `auth-required` so the caller can unlock again.
+fn token_aware_error<E: std::error::Error + Send + Sync + 'static>(e: &Ctap2Error<E>) -> RpcError {
+    if matches!(e, Ctap2Error::StatusError(CtapStatus::PinAuthInvalid)) {
+        RpcError::auth_required()
+    } else {
+        RpcError::new("device-error", format!("{e}"))
+    }
+}
+
 fn open_fido_after_reinsert(
     device: &dyn YubiKeyDevice,
 ) -> Result<Box<dyn FidoConnection + Send>, RpcError> {
@@ -345,6 +354,7 @@ pub struct Ctap2Node {
     ppuat: Option<Vec<u8>>,
     ident: Option<Vec<u8>>,
     cached_data: Value,
+    token_fresh: bool,
 }
 
 enum FidoDeviceType {
@@ -376,6 +386,7 @@ impl Ctap2Node {
             ppuat: None,
             ident: None,
             cached_data: json!({}),
+            token_fresh: false,
         };
         if let Err(e) = node.refresh_data() {
             node.close();
@@ -405,6 +416,7 @@ impl Ctap2Node {
             ppuat: None,
             ident: None,
             cached_data: json!({}),
+            token_fresh: false,
         };
         if let Err(e) = node.refresh_data() {
             node.close();
@@ -722,11 +734,24 @@ impl RpcNode for Ctap2Node {
 
     fn create_child(&mut self, name: &str) -> Result<Box<dyn RpcNode>, RpcError> {
         let result = self.do_create_child(name);
+        let token_fresh = std::mem::take(&mut self.token_fresh);
         if let Err(ref e) = result
             && e.status == "auth-required"
-            && self.pin_token.is_none()
         {
-            self.delete_ppuat();
+            // The token was rejected; drop it so the next unlock obtains a fresh one.
+            if self.pin_token.take().is_some() {
+                // Some YubiKeys over NFC can get into a state where newly issued tokens
+                // are rejected until the card loses power. Unlocking again won't help.
+                if token_fresh && self.transport == Transport::Nfc {
+                    log::warn!("Newly issued PIN token rejected over NFC");
+                    return Err(RpcError::new(
+                        "reinsert-required",
+                        "The YubiKey rejected a new PIN token, re-place it on the reader",
+                    ));
+                }
+            } else {
+                self.delete_ppuat();
+            }
         }
         result
     }
@@ -870,6 +895,7 @@ impl Ctap2Node {
                 let (token, protocol, ppuat_data) = result?;
                 self.pin_token = Some(token);
                 self.pin_protocol = Some(protocol);
+                self.token_fresh = true;
 
                 // Store the PPUAT if we got one
                 if let Some((ppuat, ident)) = ppuat_data {
@@ -1239,7 +1265,7 @@ impl CredentialsRpsNode {
                         let result = (|| -> Result<_, RpcError> {
                             let (existing, _) = credman
                                 .get_metadata()
-                                .map_err(|e| RpcError::new("device-error", format!("{e}")))?;
+                                .map_err(|e| token_aware_error(&e))?;
 
                             if existing == 0 {
                                 return Ok((BTreeMap::new(), BTreeMap::new()));
@@ -1247,7 +1273,7 @@ impl CredentialsRpsNode {
 
                             let rps = credman
                                 .enumerate_rps()
-                                .map_err(|e| RpcError::new("device-error", format!("{e}")))?;
+                                .map_err(|e| token_aware_error(&e))?;
 
                             let mut rp_map = BTreeMap::new();
                             let mut hash_map = BTreeMap::new();
@@ -1309,7 +1335,7 @@ impl RpcNode for CredentialsRpsNode {
                     let result = (|| -> Result<_, RpcError> {
                         let cred_list = credman
                             .enumerate_creds(&rp_id_hash)
-                            .map_err(|e| RpcError::new("device-error", format!("{e}")))?;
+                            .map_err(|e| token_aware_error(&e))?;
 
                         let mut creds = BTreeMap::new();
                         for cred_info in &cred_list {
@@ -1445,7 +1471,7 @@ impl RpcNode for CredentialNode {
                             };
                             let result = credman
                                 .delete_cred(&cred_id)
-                                .map_err(|e| RpcError::new("device-error", format!("{e}")));
+                                .map_err(|e| token_aware_error(&e));
                             let conn = credman.into_session().into_session().into_connection();
                             (result, conn)
                         }

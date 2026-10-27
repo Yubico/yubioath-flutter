@@ -206,6 +206,8 @@
     "l_replace_yk_on_reader": "Place your YubiKey back on the reader",
     "l_remove_yk_from_reader": "Remove your YubiKey from the NFC reader",
     "p_try_reinsert_yk": "Try to remove and reinsert your YubiKey.",
+    "l_reinsert_yk_nfc_required": "YubiKey needs to be placed on the reader again",
+    "p_reinsert_yk_nfc_required": "Your YubiKey could not complete the request. Remove it from the NFC reader, then place it back to continue.",
     "s_touch_required": "Touch required",
     "l_touch_button_now": "Touch the button on your YubiKey now",
     "l_long_touch_button_now": "Press and hold the button on your YubiKey for 5 seconds now",

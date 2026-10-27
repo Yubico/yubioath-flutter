@@ -273,6 +273,7 @@ class RpcNodeSession {
     required List<String> target,
     Map<dynamic, dynamic>? params,
     Signaler? signal,
+    bool recovered = false,
   }) async {
     bool wrapped = false;
     try {
@@ -288,7 +289,9 @@ class RpcNodeSession {
       );
     } on RpcError catch (e) {
       final handler = _errorHandlers[e.status];
-      if (handler != null) {
+      // Recover at most once per command; repeating a rejected recovery would
+      // loop forever and can lock the authenticator out (PinAuthBlocked).
+      if (handler != null && !recovered) {
         _log.info('Attempting recovery on "${e.status}"');
         await handler(e);
         return await _command(
@@ -296,6 +299,7 @@ class RpcNodeSession {
           target: target,
           params: params,
           signal: signal,
+          recovered: true,
         );
       }
       rethrow;

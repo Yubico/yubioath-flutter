@@ -80,6 +80,14 @@ abstract class FidoFingerprintsNotifier
 final credentialProvider = AsyncNotifierProvider.autoDispose
     .family<FidoCredentialsNotifier, List<FidoCredential>, DevicePath>(
       (_) => throw UnimplementedError(),
+      retry: (retryCount, error) {
+        // Retrying won't help until the YubiKey is placed on the reader again.
+        if (error is RpcError && error.status == 'reinsert-required') {
+          return null;
+        }
+        final cappedRetryCount = retryCount < 4 ? retryCount : 4;
+        return Duration(milliseconds: 200 * (1 << cappedRetryCount));
+      },
     );
 
 abstract class FidoCredentialsNotifier
