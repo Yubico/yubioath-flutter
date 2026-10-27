@@ -206,6 +206,8 @@
     "l_replace_yk_on_reader": "Поверніть свій YubiKey на зчитувач",
     "l_remove_yk_from_reader": "Вийміть свій YubiKey зі зчитувача NFC",
     "p_try_reinsert_yk": "Спробуйте вийняти та знову вставити свій YubiKey.",
+    "l_reinsert_yk_nfc_required": null,
+    "p_reinsert_yk_nfc_required": null,
     "s_touch_required": "Потрібен дотик",
     "l_touch_button_now": "Натисніть кнопку на вашому YubiKey зараз",
     "l_long_touch_button_now": "Натисніть і утримуйте кнопку на вашому YubiKey протягом 5 секунд",

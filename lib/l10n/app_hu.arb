@@ -206,6 +206,8 @@
     "l_replace_yk_on_reader": "Helyezze vissza a YubiKey-t az olvasóra.",
     "l_remove_yk_from_reader": "Távolítsa el a YubiKey-t az NFC-olvasóról",
     "p_try_reinsert_yk": "Próbálja meg eltávolítani és újra behelyezni a YubiKey-t.",
+    "l_reinsert_yk_nfc_required": null,
+    "p_reinsert_yk_nfc_required": null,
     "s_touch_required": "Érintés szükséges",
     "l_touch_button_now": "Most érintse meg a gombot a YubiKey-n",
     "l_long_touch_button_now": "Most tartsa nyomva a gombot a YubiKey-n 5 másodpercig",

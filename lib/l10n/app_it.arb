@@ -206,6 +206,8 @@
     "l_replace_yk_on_reader": "Riposiziona la YubiKey sul lettore",
     "l_remove_yk_from_reader": "Rimuovi la YubiKey dal lettore NFC",
     "p_try_reinsert_yk": "Prova a rimuovere e a reinserire la YubiKey.",
+    "l_reinsert_yk_nfc_required": null,
+    "p_reinsert_yk_nfc_required": null,
     "s_touch_required": "Tocco richiesto",
     "l_touch_button_now": "Tocca ora il pulsante sulla YubiKey",
     "l_long_touch_button_now": "Premi e tieni premuto il pulsante sulla YubiKey per cinque secondi",

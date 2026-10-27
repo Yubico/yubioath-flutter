@@ -206,6 +206,8 @@
     "l_replace_yk_on_reader": "Đặt lại YubiKey của bạn lên đầu đọc",
     "l_remove_yk_from_reader": "Rút YubiKey của bạn khỏi đầu đọc NFC",
     "p_try_reinsert_yk": "Hãy thử rút và cắm lại YubiKey của bạn.",
+    "l_reinsert_yk_nfc_required": null,
+    "p_reinsert_yk_nfc_required": null,
     "s_touch_required": "Yêu cầu chạm",
     "l_touch_button_now": "Chạm vào nút trên YubiKey của bạn ngay bây giờ",
     "l_long_touch_button_now": null,

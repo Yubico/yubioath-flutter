@@ -1263,17 +1263,14 @@ impl CredentialsRpsNode {
                     }
                     Ok(mut credman) => {
                         let result = (|| -> Result<_, RpcError> {
-                            let (existing, _) = credman
-                                .get_metadata()
-                                .map_err(|e| token_aware_error(&e))?;
+                            let (existing, _) =
+                                credman.get_metadata().map_err(|e| token_aware_error(&e))?;
 
                             if existing == 0 {
                                 return Ok((BTreeMap::new(), BTreeMap::new()));
                             }
 
-                            let rps = credman
-                                .enumerate_rps()
-                                .map_err(|e| token_aware_error(&e))?;
+                            let rps = credman.enumerate_rps().map_err(|e| token_aware_error(&e))?;
 
                             let mut rp_map = BTreeMap::new();
                             let mut hash_map = BTreeMap::new();

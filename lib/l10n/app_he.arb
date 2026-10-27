@@ -206,6 +206,8 @@
     "l_replace_yk_on_reader": "יש להציב את ה־YubiKey שלך בקורא בחזרה",
     "l_remove_yk_from_reader": "יש להסיר את ה־YubiKey שלך מקורא ה־NFC",
     "p_try_reinsert_yk": "נא לנסות לנתק ולחבר את ה־YubiKey שלך מחדש.",
+    "l_reinsert_yk_nfc_required": null,
+    "p_reinsert_yk_nfc_required": null,
     "s_touch_required": "צריך לגעת",
     "l_touch_button_now": "נא לגעת בכפתור שעל ה־YubiKey שלך כעת",
     "l_long_touch_button_now": "יש ללחוץ ולהחזיק את הכפתור שב־YubiKey שלך למשך 5 שניות מעתה",

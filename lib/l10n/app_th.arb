@@ -206,6 +206,8 @@
     "l_replace_yk_on_reader": "วาง ยูบิคีย์ ของคุณกลับไปที่เครื่องอ่าน เอ็นเอฟซี อีกครั้ง",
     "l_remove_yk_from_reader": "นำ ยูบิคีย์ ของคุณออกจากเครื่องอ่าน เอ็นเอฟซี",
     "p_try_reinsert_yk": "ลองถอดและเสียบ ยูบิคีย์ ของคุณใหม่อีกครั้ง",
+    "l_reinsert_yk_nfc_required": null,
+    "p_reinsert_yk_nfc_required": null,
     "s_touch_required": "ต้องสัมผัส ยูบิคีย์",
     "l_touch_button_now": "แตะปุ่มบน ยูบิคีย์ ของคุณตอนนี้",
     "l_long_touch_button_now": "กดปุ่มบน ยูบิคีย์ ของคุณค้างไว้เป็นเวลา 5 วินาที",

@@ -206,6 +206,8 @@
     "l_replace_yk_on_reader": "YubiKey'inizi NFC okuyucunun arkasına yerleştirin",
     "l_remove_yk_from_reader": "YubiKey'inizi NFC okuyucudan kaldırın",
     "p_try_reinsert_yk": "YubiKey'inizi çıkarıp ardından yeniden takmayı deneyin.",
+    "l_reinsert_yk_nfc_required": null,
+    "p_reinsert_yk_nfc_required": null,
     "s_touch_required": "Dokunma gerekli",
     "l_touch_button_now": "Şimdi YubiKey'inizdeki düğmeye dokunun",
     "l_long_touch_button_now": "YubiKey'inizdeki düğmeyi 5 saniye basılı tutun",

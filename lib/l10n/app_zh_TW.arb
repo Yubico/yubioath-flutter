@@ -206,6 +206,8 @@
     "l_replace_yk_on_reader": "將你的 YubiKey 放回讀卡機上",
     "l_remove_yk_from_reader": "將你的 YubiKey 從 NFC 讀卡機上移除",
     "p_try_reinsert_yk": "請嘗試移除並重新插入你的 YubiKey。",
+    "l_reinsert_yk_nfc_required": null,
+    "p_reinsert_yk_nfc_required": null,
     "s_touch_required": "需要觸控",
     "l_touch_button_now": "現在請輕觸你的 YubiKey 按鈕",
     "l_long_touch_button_now": "現在請按住 YubiKey 按鈕 5 秒",

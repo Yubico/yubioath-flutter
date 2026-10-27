@@ -206,6 +206,8 @@
     "l_replace_yk_on_reader": "YubiKey をもう一度 NFC リーダーに合わせてください",
     "l_remove_yk_from_reader": "YubiKey を NFC リーダーから外してください",
     "p_try_reinsert_yk": "YubiKey を取り外して、もう一度挿入してください。",
+    "l_reinsert_yk_nfc_required": null,
+    "p_reinsert_yk_nfc_required": null,
     "s_touch_required": "タッチが必要です",
     "l_touch_button_now": "YubiKey のボタンにタッチしてください",
     "l_long_touch_button_now": "YubiKey のボタンを 5 秒間長押してください",
