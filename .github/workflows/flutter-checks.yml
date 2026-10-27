@@ -44,7 +44,7 @@ jobs:
       - name: Check out helper Rust dependencies
         run: |
           git clone --filter=blob:none https://github.com/Yubico/yubikey-manager.git ../yubikit-rs
-          git -C ../yubikit-rs checkout 99613a3e1cdbb144396fee1f803502f90dd9c2d3
+          git -C ../yubikit-rs checkout d520107a63458bc35e49c56cc455cd9a726e4c73
 
       - name: Install Rust toolchain
         uses: actions-rust-lang/setup-rust-toolchain@ecabd13d1c56bd1345c230e542e9144811ad706f # v2.0.0
