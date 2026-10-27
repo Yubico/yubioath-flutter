@@ -23,7 +23,20 @@ import 'models.dart';
 final pivStateProvider = AsyncNotifierProvider.autoDispose
     .family<PivStateNotifier, PivState, DevicePath>(
       (_) => throw UnimplementedError(),
+      retry: _retry,
     );
+
+Duration? _retry(int count, Object error) => error is PivStateReadException
+    ? null
+    : ProviderContainer.defaultRetry(count, error);
+
+class PivStateReadException implements Exception {
+  const PivStateReadException(this.cause);
+  final Object cause;
+
+  @override
+  String toString() => 'Failed to read PIV state: $cause';
+}
 
 abstract class PivStateNotifier extends ApplicationStateNotifier<PivState> {
   PivStateNotifier(this.devicePath);
@@ -46,6 +59,7 @@ abstract class PivStateNotifier extends ApplicationStateNotifier<PivState> {
 final pivSlotsProvider = AsyncNotifierProvider.autoDispose
     .family<PivSlotsNotifier, List<PivSlot>, DevicePath>(
       (_) => throw UnimplementedError(),
+      retry: _retry,
     );
 
 abstract class PivSlotsNotifier extends AsyncNotifier<List<PivSlot>> {

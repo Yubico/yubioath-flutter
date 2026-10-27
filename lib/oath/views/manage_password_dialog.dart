@@ -17,8 +17,10 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
+import '../../app/logging.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
@@ -32,6 +34,8 @@ import '../../widgets/visibility_toggle_button.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
+
+final _log = Logger('oath.manage_password');
 
 class ManagePasswordDialog extends ConsumerStatefulWidget {
   final DevicePath path;
@@ -72,6 +76,17 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
     _currentPasswordFocus.unfocus();
     _newPasswordFocus.unfocus();
     _confirmPasswordFocus.unfocus();
+  }
+
+  Future<void> _runOperation(Future<void> Function() operation) async {
+    try {
+      await operation();
+    } on CancellationException catch (_) {
+      // ignored
+    } on Exception catch (error, stack) {
+      _log.error('Failed to manage OATH password', error, stack);
+      if (mounted) showExceptionMessage(context, error);
+    }
   }
 
   Future<void> _submit() async {
@@ -137,6 +152,9 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
       }
     } on CancellationException catch (_) {
       // ignored
+    } on Exception catch (error, stack) {
+      _log.error('Failed to set OATH password', error, stack);
+      if (mounted) showExceptionMessage(context, error);
     }
   }
 
@@ -216,7 +234,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                             if (!fipsCapable)
                               OutlinedButton(
                                 key: keys.removePasswordButton,
-                                onPressed: () async {
+                                onPressed: () => _runOperation(() async {
                                   if (_currentPasswordController.text.isEmpty) {
                                     setState(() {
                                       _currentIsWrong = true;
@@ -261,13 +279,13 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                                           l10n.p_wrong_password;
                                     });
                                   }
-                                },
+                                }),
                                 child: Text(l10n.s_remove_password),
                               ),
                             if (widget.state.remembered)
                               OutlinedButton(
                                 child: Text(l10n.s_clear_saved_password),
-                                onPressed: () async {
+                                onPressed: () => _runOperation(() async {
                                   await ref
                                       .read(
                                         oathStateProvider(widget.path).notifier,
@@ -284,7 +302,7 @@ class _ManagePasswordDialogState extends ConsumerState<ManagePasswordDialog> {
                                       );
                                     });
                                   }
-                                },
+                                }),
                               ),
                           ],
                         ),

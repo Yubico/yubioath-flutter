@@ -24,6 +24,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../../app/models.dart';
 import '../../app/shortcuts.dart';
 import '../../app/state.dart';
+import '../../core/models.dart';
 import '../../core/state.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/circle_timer.dart';
@@ -69,7 +70,9 @@ class AccountHelper {
       .maybeWhen(
         data: (data) {
           final manual =
-              credential.touchRequired || credential.oathType == OathType.hotp;
+              credential.touchRequired ||
+              credential.oathType == OathType.hotp ||
+              (isIOS && data.node.transport == Transport.nfc);
           final ready = expired || credential.oathType == OathType.hotp;
           final pinned = _ref.watch(favoritesProvider).contains(credential.id);
           final l10n = AppLocalizations.of(_context);

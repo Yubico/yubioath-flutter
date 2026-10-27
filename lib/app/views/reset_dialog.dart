@@ -96,11 +96,14 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
     _application = !_globalReset ? widget.application : null;
 
     // on Android & USB we have to query the FIDO reset parameters
-    if (isAndroid && !nfc) {
+    if ((isAndroid || Platform.isIOS) && !nfc) {
       Future.microtask(() {
-        MethodChannel(
-          'android.fido.methods',
-        ).invokeMethod('getFidoResetProperties').then((response) {
+        final channel = MethodChannel(
+          Platform.isIOS
+              ? 'com.yubico.authenticator/fido'
+              : 'android.fido.methods',
+        );
+        channel.invokeMethod('getFidoResetProperties').then((response) {
           try {
             final fidoResetProperties = jsonDecode(response);
             if (fidoResetProperties['success'] == true) {

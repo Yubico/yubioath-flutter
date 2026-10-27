@@ -17,7 +17,9 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 
+import '../../app/logging.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/shortcuts.dart';
@@ -31,6 +33,8 @@ import '../state.dart';
 import 'delete_account_dialog.dart';
 import 'rename_account_dialog.dart';
 
+final _log = Logger('oath.actions');
+
 class TogglePinIntent extends Intent {
   final OathCredential target;
   const TogglePinIntent(this.target);
@@ -41,11 +45,18 @@ Future<OathCode?> _calculateCode(
   WidgetRef ref,
 ) async {
   final node = ref.read(currentDeviceProvider)!;
+  final withContext = ref.read(withContextProvider);
   try {
     return await ref
         .read(credentialListProvider(node.path).notifier)
         .calculate(credential);
   } on CancellationException catch (_) {
+    return null;
+  } on Exception catch (error, stack) {
+    _log.error('Failed to calculate OATH code', error, stack);
+    await withContext((context) async {
+      showExceptionMessage(context, error);
+    });
     return null;
   }
 }

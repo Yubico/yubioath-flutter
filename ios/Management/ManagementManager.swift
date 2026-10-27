@@ -13,16 +13,9 @@ import YubiKit
 
 /// MethodChannel + EventChannel handler for the Management application.
 ///
-/// Mirrors `android/.../management/ManagementManager.kt` plus the
-/// `android/.../device/DeviceManager.kt` device-event stream. Tier 2 scope:
-///  - emit `DeviceInfo` events when a wired YubiKey is attached / detached
-///  - read `DeviceInfo` over NFC on demand
-///  - write a `DeviceConfig` (toggle applications, lock code, reboot)
-///  - factory-reset the management application
-///
 /// The wired-connection lifecycle is owned by `UsbCoordinator` so the USB
 /// monitor can release and reacquire the connection around write operations.
-final class ManagementManager: NSObject, AppContextManager {
+final class ManagementManager: NSObject {
     static let channelSuffix = "management"
     static let channelName = "com.yubico.authenticator/management"
     static let deviceEventsChannelName = "ios.devices.deviceInfo"
@@ -50,16 +43,6 @@ final class ManagementManager: NSObject, AppContextManager {
         let ec = FlutterEventChannel(name: Self.deviceEventsChannelName, binaryMessenger: messenger)
         ec.setStreamHandler(deviceEventsHandler)
         deviceEventsChannel = ec
-    }
-
-    // MARK: - AppContextManager
-
-    func processYubiKey(_ connection: any SmartCardConnection) async throws {
-        // Tier 2 owns its own connection lifecycle via `UsbCoordinator`.
-    }
-
-    func onPause() {
-        // Tier 2: nothing to drop yet.
     }
 
     // MARK: - Method dispatch
@@ -192,6 +175,7 @@ final class ManagementManager: NSObject, AppContextManager {
     /// or to a one-shot NFC scan, depending on whether a wired YubiKey is
     /// currently held by the monitor.
     private func runManagementOperation<T: Sendable>(
+        successMessage: String = "Configuration updated",
         body: @Sendable @escaping (any SmartCardConnection) async throws -> T
     ) async throws -> (T, Bool) {
         if await coordinator.hasWiredDevice {
@@ -199,12 +183,22 @@ final class ManagementManager: NSObject, AppContextManager {
             return (value, false)
         } else {
             let value = try await ConnectionHelper.withNFCConnection(
-                successMessage: "Configuration updated"
+                successMessage: successMessage
             ) { connection in
                 try await body(connection)
             }
             return (value, true)
         }
+    }
+
+    func runApplicationOperation<T: Sendable>(
+        body: @Sendable @escaping (any SmartCardConnection) async throws -> T
+    ) async throws -> (T, Bool) {
+        try await runManagementOperation(successMessage: "Done", body: body)
+    }
+
+    func hasWiredDevice() async -> Bool {
+        await coordinator.hasWiredDevice
     }
 
     // MARK: - USB monitor

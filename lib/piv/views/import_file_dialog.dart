@@ -18,8 +18,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
+import '../../app/logging.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
@@ -34,6 +36,8 @@ import '../state.dart';
 import 'cert_info_view.dart';
 import 'overwrite_confirm_dialog.dart';
 import 'utils.dart';
+
+final _log = Logger('piv.import');
 
 class ImportFileDialog extends ConsumerStatefulWidget {
   final DevicePath devicePath;
@@ -65,6 +69,7 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
   String? _passwordError;
   bool _importing = false;
   bool _isObscure = true;
+  String? _loadError;
 
   @override
   void initState() {
@@ -82,23 +87,41 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
   }
 
   void _init() async {
-    final bytes = await widget.file.readAsBytes();
-    _data = bytes.map((e) => e.toRadixString(16).padLeft(2, '0')).join();
-    _examine();
+    try {
+      final bytes = await widget.file.readAsBytes();
+      if (!mounted) return;
+      _data = bytes.map((e) => e.toRadixString(16).padLeft(2, '0')).join();
+      await _examine();
+    } on Exception catch (error, stack) {
+      _showLoadError(error, stack);
+    }
   }
 
-  void _examine() async {
+  void _showLoadError(Exception error, StackTrace stack) {
+    _log.error('Failed to examine PIV import file', error, stack);
+    if (mounted) setState(() => _loadError = error.toString());
+  }
+
+  Future<void> _examine() async {
     setState(() {
       _state = null;
+      _loadError = null;
     });
     final password = _passwordController.text;
-    final result = await ref
-        .read(pivSlotsProvider(widget.devicePath).notifier)
-        .examine(
-          widget.pivSlot.slot,
-          _data,
-          password: password.isNotEmpty ? password : null,
-        );
+    final PivExamineResult result;
+    try {
+      result = await ref
+          .read(pivSlotsProvider(widget.devicePath).notifier)
+          .examine(
+            widget.pivSlot.slot,
+            _data,
+            password: password.isNotEmpty ? password : null,
+          );
+    } on Exception catch (error, stack) {
+      _showLoadError(error, stack);
+      return;
+    }
+    if (!mounted) return;
 
     final passwordIsWrong = switch (result) {
       PivExamineResultInvalidPassword() => password.isNotEmpty,
@@ -132,6 +155,13 @@ class _ImportFileDialogState extends ConsumerState<ImportFileDialog> {
     // This is what TextInput errors look like
     final errorStyle = textTheme.labelLarge!.copyWith(color: colorScheme.error);
     final state = _state;
+    if (_loadError case final error?) {
+      return ResponsiveDialog(
+        title: Text(l10n.l_import_file),
+        builder: (context, _) =>
+            Padding(padding: const EdgeInsets.all(18), child: Text(error)),
+      );
+    }
     if (state == null) {
       return ResponsiveDialog(
         title: Text(l10n.l_import_file),

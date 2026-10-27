@@ -8,13 +8,6 @@
  *       http://www.apache.org/licenses/LICENSE-2.0
  */
 
-// iOS-specific cross-cutting providers. Mirrors `lib/android/state.dart`.
-//
-// Tier 1 scope: surface the device announced by the Swift `ManagementManager`
-// over MethodChannel + EventChannel and expose the providers required by
-// `MainPage`. Per-application state (oath/fido/piv/management) ships in
-// later tiers.
-
 import 'dart:async';
 import 'dart:convert';
 

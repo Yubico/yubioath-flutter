@@ -8,12 +8,6 @@
  *       http://www.apache.org/licenses/LICENSE-2.0
  */
 
-// iOS app bootstrap. Mirrors `lib/android/init.dart`.
-//
-// Tier 1 scope: render `MainPage` driven by `ManagementManager` events.
-// Tier 2 scope: wire `managementStateProvider` so the home tab key actions
-// (toggle applications / device reset) work over USB and NFC.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -23,8 +17,17 @@ import '../app/models.dart';
 import '../app/state.dart';
 import '../app/views/main_page.dart';
 import '../core/state.dart';
+import '../fido/state.dart';
 import '../management/state.dart';
+import '../oath/state.dart';
+import '../otp/state.dart';
+import '../piv/state.dart';
+import 'fido/state.dart';
 import 'management/state.dart';
+import 'oath/state.dart';
+import 'otp/state.dart';
+import 'piv/state.dart';
+import 'qr_scanner.dart';
 import 'state.dart';
 
 Future<Widget> initialize() async {
@@ -39,8 +42,10 @@ Future<Widget> initialize() async {
       supportedSectionsProvider.overrideWithValue(const [
         Section.home,
         Section.accounts,
+        Section.fingerprints,
         Section.passkeys,
         Section.certificates,
+        Section.slots,
         Section.settings,
       ]),
       attachedDevicesProvider.overrideWith(() => IosAttachedDevicesNotifier()),
@@ -52,7 +57,18 @@ Future<Widget> initialize() async {
         (ref) => iosCurrentSectionNotifier(ref),
       ),
       clipboardProvider.overrideWith((ref) => ref.watch(iosClipboardProvider)),
+      qrScannerProvider.overrideWith(
+        (ref) => IosQrScanner(ref.watch(withContextProvider)),
+      ),
       managementStateProvider.overrideWith2(IosManagementStateNotifier.new),
+      fidoStateProvider.overrideWith2(IosFidoStateNotifier.new),
+      fingerprintProvider.overrideWith2(IosFidoFingerprintsNotifier.new),
+      credentialProvider.overrideWith2(IosFidoCredentialsNotifier.new),
+      oathStateProvider.overrideWith2(IosOathStateNotifier.new),
+      credentialListProvider.overrideWith(buildIosCredentialList),
+      pivStateProvider.overrideWith2(IosPivStateNotifier.new),
+      pivSlotsProvider.overrideWith2(IosPivSlotsNotifier.new),
+      otpStateProvider.overrideWith2(IosOtpStateNotifier.new),
     ],
     child: const YubicoAuthenticatorApp(page: MainPage()),
   );

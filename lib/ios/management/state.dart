@@ -8,11 +8,6 @@
  *       http://www.apache.org/licenses/LICENSE-2.0
  */
 
-// iOS Management state providers. Mirrors `lib/android/management/state.dart`.
-//
-// Delegates to `com.yubico.authenticator/management` →
-// `ios/Management/ManagementManager.swift`.
-
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';

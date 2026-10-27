@@ -39,7 +39,18 @@ class YubiOtpOutputNotifier extends StateNotifier<File?> {
 final otpStateProvider = AsyncNotifierProvider.autoDispose
     .family<OtpStateNotifier, OtpState, DevicePath>(
       (_) => throw UnimplementedError(),
+      retry: (count, error) => error is OtpStateReadException
+          ? null
+          : ProviderContainer.defaultRetry(count, error),
     );
+
+class OtpStateReadException implements Exception {
+  const OtpStateReadException(this.cause);
+  final Object cause;
+
+  @override
+  String toString() => 'Failed to read OTP slot state: $cause';
+}
 
 abstract class OtpStateNotifier extends ApplicationStateNotifier<OtpState> {
   OtpStateNotifier(this.devicePath);

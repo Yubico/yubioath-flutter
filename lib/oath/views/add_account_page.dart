@@ -520,23 +520,47 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                                               _scanning = true;
                                             });
 
-                                            final qrData = await qrScanner
-                                                .scanQr();
-                                            if (qrData != null) {
-                                              handleQrData(qrData, withContext);
-                                            } else {
-                                              await withContext((
-                                                context,
-                                              ) async {
+                                            try {
+                                              final qrData = await qrScanner
+                                                  .scanQr();
+                                              if (!mounted ||
+                                                  !context.mounted) {
+                                                return;
+                                              }
+                                              if (qrData != null) {
+                                                handleQrData(
+                                                  qrData,
+                                                  withContext,
+                                                );
+                                              } else {
                                                 showMessage(
                                                   context,
                                                   l10n.l_qr_not_found,
                                                 );
-                                              });
+                                              }
+                                            } on CancellationException {
+                                              // Closing the scanner leaves manual entry available.
+                                            } catch (error, stack) {
+                                              _log.error(
+                                                'QR scan failed',
+                                                error,
+                                                stack,
+                                              );
+                                              if (context.mounted) {
+                                                showMessage(
+                                                  context,
+                                                  l10n.l_qr_not_read(
+                                                    error.toString(),
+                                                  ),
+                                                );
+                                              }
+                                            } finally {
+                                              if (mounted) {
+                                                setState(() {
+                                                  _scanning = false;
+                                                });
+                                              }
                                             }
-                                            setState(() {
-                                              _scanning = false;
-                                            });
                                           }
                                         },
                                       ),

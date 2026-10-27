@@ -170,7 +170,9 @@ class _ConfigureYubiOtpDialogState
     final publicIdFormatValid = Format.modhex.isValid(publicId);
 
     final outputFile = ref.read(yubiOtpOutputProvider);
-    final exportSelected = isAndroid ? _exportRequested : outputFile != null;
+    final exportSelected = isAndroid || isIOS
+        ? _exportRequested
+        : outputFile != null;
 
     void submit() async {
       _removeFocus();
@@ -283,7 +285,7 @@ class _ConfigureYubiOtpDialogState
           secret,
         );
 
-        if (isAndroid) {
+        if (isAndroid || isIOS) {
           // Only now, with the CSV in hand, can the destination be picked: the SAF dialog
           // both creates the document and writes to it in one shot.
           final fileName = 'yubico-otp-$publicId.csv';
@@ -587,7 +589,7 @@ class _ConfigureYubiOtpDialogState
                                     });
                                   } else if (value ==
                                       OutputActions.selectFile) {
-                                    if (isAndroid) {
+                                    if (isAndroid || isIOS) {
                                       setState(() {
                                         _action = value;
                                         _exportRequested = true;

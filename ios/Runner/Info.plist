@@ -28,6 +28,8 @@
 	<true/>
 	<key>NFCReaderUsageDescription</key>
 	<string>Yubico Authenticator needs access to NFC to communicate with your YubiKey.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Yubico Authenticator uses the camera to scan QR codes when adding accounts.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

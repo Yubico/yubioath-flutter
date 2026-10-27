@@ -45,12 +45,24 @@ final fidoStateProvider = AsyncNotifierProvider.autoDispose
     .family<FidoStateNotifier, FidoState, DevicePath>(
       (_) => throw UnimplementedError(),
       retry: (retryCount, error) {
+        if (error is FidoStateLoadException) {
+          return null;
+        }
         if (error is RpcError && error.status == 'fido-blocked-error') {
           return null;
         }
         return Duration(milliseconds: 200 * (1 << retryCount));
       },
     );
+
+class FidoStateLoadException implements Exception {
+  const FidoStateLoadException(this.cause);
+
+  final Object cause;
+
+  @override
+  String toString() => 'Failed to read FIDO authenticator state: $cause';
+}
 
 abstract class FidoStateNotifier extends ApplicationStateNotifier<FidoState> {
   FidoStateNotifier(this.devicePath);

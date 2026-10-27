@@ -37,6 +37,15 @@
       }
     },
     {
+      "identity" : "swift-log",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-log",
+      "state" : {
+        "revision" : "c9c6bb9d275ec0d95c3ad16391f3f045dc623104",
+        "version" : "1.16.2"
+      }
+    },
+    {
       "identity" : "swiftygif",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/kirualex/SwiftyGif.git",
@@ -59,8 +68,7 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Yubico/yubikit-swift",
       "state" : {
-        "branch" : "main",
-        "revision" : "f5a01653ec07530ffd300a02fc9818aa1298f13e"
+        "revision" : "e19212f2efbca9af280e57542e669885de5acdc1"
       }
     }
   ],

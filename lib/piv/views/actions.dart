@@ -182,12 +182,12 @@ class PivActions extends ConsumerWidget {
                       fileName: fileName,
                       allowedExtensions: [fileExt],
                       type: FileType.custom,
-                      bytes: isAndroid
+                      bytes: isAndroid || isIOS
                           ? Uint8List.fromList(utf8.encode(data!))
                           : null,
                       lockParentWindow: true,
                     );
-                    if (!isAndroid && filePath != null) {
+                    if (!isAndroid && !isIOS && filePath != null) {
                       // Windows only: Append extension if missing
                       if (Platform.isWindows &&
                           !filePath.toLowerCase().endsWith('.$fileExt')) {
@@ -259,6 +259,11 @@ class PivActions extends ConsumerWidget {
                     .read(intent.slot.slot);
               } on CancellationException catch (_) {
                 return false;
+              } on Exception catch (error) {
+                await withContext((context) async {
+                  showExceptionMessage(context, error);
+                });
+                return false;
               }
 
               String title;
@@ -289,7 +294,7 @@ class PivActions extends ConsumerWidget {
                   fileName: '$typeName-${intent.slot.slot.hexId}.$fileExt',
                   allowedExtensions: [fileExt],
                   type: FileType.custom,
-                  bytes: isAndroid
+                  bytes: isAndroid || isIOS
                       ? Uint8List.fromList(utf8.encode(data))
                       : null,
                   lockParentWindow: true,
@@ -300,7 +305,7 @@ class PivActions extends ConsumerWidget {
                 return false;
               }
 
-              if (!isAndroid) {
+              if (!isAndroid && !isIOS) {
                 // Windows only: Append extension if missing
                 if (Platform.isWindows &&
                     !filePath.toLowerCase().endsWith('.$fileExt')) {
