@@ -111,3 +111,94 @@ fn decode_qr(gray: &image::GrayImage) -> Result<Option<String>, String> {
     }
     Ok(None)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use base64::{Engine, engine::general_purpose::STANDARD};
+    use image::{GrayImage, ImageFormat, Luma};
+    use std::io::Cursor;
+
+    fn qr_image() -> GrayImage {
+        let modules = [
+            "111111101101001111111",
+            "100000101001101000001",
+            "101110101110101011101",
+            "101110101111001011101",
+            "101110100111001011101",
+            "100000101011101000001",
+            "111111101010101111111",
+            "000000000000000000000",
+            "110011100001100101111",
+            "000110010000010011100",
+            "001110101110000010010",
+            "101010011011000110010",
+            "010001110001110100010",
+            "000000001101000110100",
+            "111111100010010011110",
+            "100000101000010010000",
+            "101110101011000000011",
+            "101110100010011010001",
+            "101110100011010010000",
+            "100000101011110000000",
+            "111111101100100110001",
+        ];
+        let mut image = GrayImage::from_pixel(116, 116, Luma([255]));
+        for (y, row) in modules.iter().enumerate() {
+            for (x, module) in row.bytes().enumerate() {
+                if module == b'1' {
+                    for dy in 0..4 {
+                        for dx in 0..4 {
+                            image.put_pixel(
+                                (x as u32 + 4) * 4 + dx,
+                                (y as u32 + 4) * 4 + dy,
+                                Luma([0]),
+                            );
+                        }
+                    }
+                }
+            }
+        }
+        image
+    }
+
+    fn png_base64(image: GrayImage) -> String {
+        let mut bytes = Cursor::new(Vec::new());
+        image.write_to(&mut bytes, ImageFormat::Png).unwrap();
+        STANDARD.encode(bytes.into_inner())
+    }
+
+    #[test]
+    fn decodes_qr_image() {
+        let data = png_base64(qr_image());
+        assert_eq!(
+            scan_qr(Some(&data)).unwrap().as_deref(),
+            Some("yubioath-qr-test")
+        );
+    }
+
+    #[test]
+    fn blank_image_has_no_qr_code() {
+        let data = png_base64(GrayImage::from_pixel(116, 116, Luma([255])));
+        assert_eq!(scan_qr(Some(&data)).unwrap(), None);
+    }
+
+    #[test]
+    fn truncated_qr_image_is_unreadable() {
+        let image = qr_image();
+        let truncated = image::imageops::crop_imm(&image, 0, 0, 116, 58).to_image();
+        let data = png_base64(truncated);
+        assert_eq!(scan_qr(Some(&data)).unwrap(), None);
+    }
+
+    #[test]
+    fn rejects_invalid_base64() {
+        assert_eq!(scan_qr(Some("%%%")), Err("invalid-image".to_string()));
+    }
+
+    #[test]
+    fn rejects_non_image_data() {
+        let data = STANDARD.encode(b"not an image");
+        assert_eq!(scan_qr(Some(&data)), Err("invalid-image".to_string()));
+    }
+}
