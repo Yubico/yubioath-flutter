@@ -37,6 +37,7 @@ import javax.security.auth.x500.X500Principal
 import org.bouncycastle.asn1.ASN1ObjectIdentifier
 import org.bouncycastle.asn1.edec.EdECObjectIdentifiers
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier
+import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo
 import org.bouncycastle.cert.X509CertificateHolder
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder
@@ -47,7 +48,7 @@ import org.bouncycastle.pkcs.PKCS10CertificationRequest
 import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequestBuilder
 
 /**
- * Hash algorithms supported for RSA/ECDSA. Ignored for Ed25519.
+ * Hash algorithms supported for RSA/ECDSA. Ignored for Ed25519 and ML-DSA.
  */
 enum class HashAlgorithm {
     SHA256,
@@ -56,12 +57,13 @@ enum class HashAlgorithm {
 }
 
 /**
- * Abstracts the key algorithm class (RSA, EC, Ed25519).
+ * Abstracts the key algorithm class (RSA, EC, Ed25519, ML-DSA).
  */
 enum class KeyAlgorithm {
     RSA,
     EC,
-    ED25519;
+    ED25519,
+    MLDSA;
 
     companion object {
         fun fromPublicKey(publicKey: PublicKey): KeyAlgorithm =
@@ -73,10 +75,19 @@ enum class KeyAlgorithm {
                 // Android/JCA may report Ed25519 as "Ed25519" or "EdDSA"
                 "ED25519", "EDDSA" -> ED25519
 
+                // BouncyCastle reports the parameter set, for example "ML-DSA-65"
+                "ML-DSA", "ML-DSA-44", "ML-DSA-65", "ML-DSA-87" -> MLDSA
+
                 // X25519 ("XDH", "X25519") is key agreement only and cannot sign
                 "X25519", "XDH" -> throw UnsupportedOperationException(
                     "X25519/XDH cannot be used for signing (CSR/cert)."
                 )
+
+                // ML-KEM is key encapsulation only and cannot sign
+                "ML-KEM", "ML-KEM-512", "ML-KEM-768", "ML-KEM-1024" ->
+                    throw UnsupportedOperationException(
+                        "ML-KEM cannot be used for signing (CSR/cert)."
+                    )
 
                 else -> {
                     // Try to detect by encoded OID if the algorithm string is unexpected.
@@ -139,6 +150,13 @@ sealed class SignatureAlgorithm(val jcaName: String, val fixedAlgId: ASN1ObjectI
         )
 
     object Ed25519 : SignatureAlgorithm("Ed25519", EdECObjectIdentifiers.id_Ed25519)
+
+    /**
+     * Pure ML-DSA, which hashes the message internally. The signature algorithm OID is the
+     * same as the OID of the public key, which identifies the parameter set.
+     */
+    class MlDsa(parameterSetOid: ASN1ObjectIdentifier) :
+        SignatureAlgorithm("ML-DSA", parameterSetOid)
 }
 
 /**
@@ -146,12 +164,19 @@ sealed class SignatureAlgorithm(val jcaName: String, val fixedAlgId: ASN1ObjectI
  * - RSA -> SHAxxxwithRSA (PKCS#1 v1.5)
  * - EC  -> SHAxxxwithECDSA
  * - Ed25519 -> Ed25519 (hash ignored)
+ * - ML-DSA -> ML-DSA with the parameter set of the key (hash ignored)
  */
 fun resolveSignatureAlgorithm(publicKey: PublicKey, hash: HashAlgorithm): SignatureAlgorithm =
     when (KeyAlgorithm.fromPublicKey(publicKey)) {
         KeyAlgorithm.RSA -> SignatureAlgorithm.Rsa(hash)
+
         KeyAlgorithm.EC -> SignatureAlgorithm.EcDsa(hash)
+
         KeyAlgorithm.ED25519 -> SignatureAlgorithm.Ed25519
+
+        KeyAlgorithm.MLDSA -> SignatureAlgorithm.MlDsa(
+            SubjectPublicKeyInfo.getInstance(publicKey.encoded).algorithm.algorithm
+        )
     }
 
 class PivContentSigner(
@@ -163,7 +188,7 @@ class PivContentSigner(
 
     private val buffer = ByteArrayOutputStream()
     private val algId: AlgorithmIdentifier = run {
-        // For Ed25519 we must emit the Ed25519 OID; for others, use the default finder.
+        // Ed25519 and ML-DSA have a fixed OID; for others, use the default finder.
         val maybeOid = signatureAlgorithm.fixedAlgId
         if (maybeOid != null) {
             AlgorithmIdentifier(maybeOid)

@@ -201,7 +201,7 @@ object KeyMaterialParser {
             PKCS8EncodedKeySpec(bytes)
         }
 
-        for (alg in listOf("RSA", "EC", "DSA", "Ed25519", "X25519")) {
+        for (alg in listOf("RSA", "EC", "DSA", "Ed25519", "X25519", "ML-DSA", "ML-KEM")) {
             try {
                 return KeyFactory.getInstance(alg).generatePrivate(keySpec)
             } catch (_: Exception) {
