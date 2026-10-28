@@ -161,11 +161,10 @@ jobs:
         cache-save-if: ${{ github.event_name == 'push' }}
 
     - name: Check Rust formatting
-      run: cargo fmt --manifest-path helper/Cargo.toml --all -- --check
+      run: cargo fmt --manifest-path helper/Cargo.toml -- --check
 
     - name: Run non-hardware helper tests
-      run: cargo test --manifest-path helper/Cargo.toml --locked --workspace --bins
+      run: cargo test --manifest-path helper/Cargo.toml --locked
 
     - name: Check helper with Clippy
-      # Existing helper code triggers these three lints; keep all other warnings fatal.
-      run: cargo clippy --manifest-path helper/Cargo.toml --locked --workspace --all-targets -- -D warnings -A clippy::items_after_test_module -A clippy::type_complexity -A clippy::needless_borrow
+      run: cargo clippy --manifest-path helper/Cargo.toml --locked --all-targets -- -D warnings

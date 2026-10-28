@@ -14,7 +14,7 @@ SDK, from the "stable" channel.
 
 === Dependencies
 This project uses dependencies specified in `pubspec.yaml` and
-`helper/crates/helper/Cargo.toml`. The corresponding `pubspec.lock` and
+`helper/Cargo.toml`. The corresponding `pubspec.lock` and
 `helper/Cargo.lock` files pin the versions used when building the app.
 The Rust helper also uses crates from the `yubikey-manager` Git submodule.
 Helper builds use `--locked`; when updating Rust dependencies, run
@@ -29,6 +29,8 @@ including dependencies from incompatible platform branches. It runs when helper
 manifests, the lockfile, the policy, its check scripts, or the SDK submodule
 revision change. The policy follows the SDK's baseline, additionally allows ISC
 for `rqrr`, and leaves duplicate dependency versions as warnings.
+The Clippy hook also runs when the SDK submodule revision changes to check
+API compatibility.
 
 ==== Versioning (important for package maintainers!)
 We recommend bundling this application with all its dependencies, using the

@@ -1494,7 +1494,7 @@ mod tests {
 
     fn import_fixture(name: &str) -> Vec<u8> {
         let directory = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("../../../yubikey-manager/crates/ykman-cli/tests/fixtures");
+            .join("../yubikey-manager/crates/ykman-cli/tests/fixtures");
         std::fs::read(directory.join(name)).unwrap()
     }
 

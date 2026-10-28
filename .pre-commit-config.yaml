@@ -55,15 +55,17 @@ repos:
     - id: cargo-fmt-helper
       name: cargo fmt (helper)
       language: system
-      entry: cargo fmt --manifest-path helper/Cargo.toml --all -- --check
+      entry: cargo fmt --manifest-path helper/Cargo.toml -- --check
       files: ^helper/.*\.rs$
       pass_filenames: false
       require_serial: true
     - id: cargo-clippy-helper
       name: cargo clippy (helper)
       language: system
-      entry: cargo clippy --manifest-path helper/Cargo.toml --locked --workspace --all-targets -- -D warnings
-      files: ^helper/(.*\.rs|(.*/)?Cargo\.(toml|lock))$
+      entry: cargo clippy --manifest-path helper/Cargo.toml --locked --all-targets -- -D warnings
+      files: ^(helper/(.*\.rs|(.*/)?Cargo\.(toml|lock))|yubikey-manager)$
+      # The SDK submodule is a directory, not a regular file.
+      types: []
       pass_filenames: false
       require_serial: true
     - id: cargo-deny-helper
@@ -71,5 +73,6 @@ repos:
       language: script
       entry: .github/scripts/cargo_deny.py
       files: ^(helper/((.*/)?Cargo\.(toml|lock)|deny\.toml)|\.github/scripts/(test_)?cargo_deny\.py|yubikey-manager)$
+      types: []
       pass_filenames: false
       require_serial: true
