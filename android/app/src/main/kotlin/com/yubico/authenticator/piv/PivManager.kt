@@ -89,7 +89,7 @@ class PivManager(
         copy = { it.clone() },
         clearValue = { it.fill(0.toChar()) },
         onExpired = {
-            if (pivmanData?.hasProtectedKey == true) {
+            if (pivmanData?.hasStoredKey == true) {
                 pivViewModel.expireAuthentication(it)
             }
         }
@@ -351,7 +351,6 @@ class PivManager(
         return PivState(
             piv,
             authenticated = false,
-            derivedKey = pivmanData?.hasDerivedKey ?: false,
             storedKey = pivmanData?.hasStoredKey ?: false,
             pinAttempts = pinAttempts,
             supportsBio = supportsBio,
@@ -389,9 +388,7 @@ class PivManager(
     private fun doAuthenticate(piv: PivSession, serial: String) = try {
         var authenticated = false
 
-        val hasProtectedKey = pivmanData?.hasProtectedKey ?: false
-
-        if (hasProtectedKey) {
+        if (pivmanData?.hasStoredKey == true) {
             // cannot use key from managementKeyStorage
             // has to use PIN to get the key from the session
 
@@ -399,14 +396,7 @@ class PivManager(
                 ?: throw ApduException(byteArrayOf(), SW.SECURITY_CONDITION_NOT_SATISFIED)
             piv.verifyPin(pin)
 
-            val key = if (pivmanData?.hasDerivedKey ?: false) {
-                PivmanUtils.deriveManagementKey(pin, pivmanData?.salt!!)
-            } else if (pivmanData?.hasStoredKey ?: false) {
-                val pivmanProtectedData = PivmanUtils.getPivmanProtectedData(piv)
-                pivmanProtectedData.key
-            } else {
-                null
-            }
+            val key = PivmanUtils.getPivmanProtectedData(piv).key
 
             key?.let { key ->
                 try {
@@ -460,9 +450,7 @@ class PivManager(
         pinStorage[serial]?.let { pin ->
             piv.verifyPin(pin)
 
-            val key = if (pivmanData?.hasDerivedKey ?: false) {
-                PivmanUtils.deriveManagementKey(pin, pivmanData?.salt!!)
-            } else if (pivmanData?.hasStoredKey ?: false) {
+            val key = if (pivmanData?.hasStoredKey == true) {
                 val pivmanProtectedData = PivmanUtils.getPivmanProtectedData(piv)
                 pivmanProtectedData.key
             } else {
@@ -510,7 +498,7 @@ class PivManager(
         ) {
             try {
                 val piv = getPivSession(it)
-                handlePinPukErrors { PivmanUtils.pivmanChangePin(piv, pin, newPin) }
+                handlePinPukErrors { piv.changePin(pin, newPin) }
             } finally {
                 Arrays.fill(newPin, 0.toChar())
                 Arrays.fill(pin, 0.toChar())

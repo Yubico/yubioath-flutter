@@ -1709,7 +1709,7 @@ $PinMetadataCopyWith<$Res> get pukMetadata {
 /// @nodoc
 mixin _$PivState {
 
- Version get version; bool get authenticated; bool get derivedKey; bool get storedKey; int get pinAttempts; bool get supportsBio; String? get chuid; String? get ccc; PivStateMetadata? get metadata;
+ Version get version; bool get authenticated; bool get storedKey; int get pinAttempts; bool get supportsBio; String? get chuid; String? get ccc; PivStateMetadata? get metadata;
 /// Create a copy of PivState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1723,20 +1723,20 @@ $PivStateCopyWith<PivState> get copyWith => _$PivStateCopyWithImpl<PivState>(thi
 @override
 bool operator ==(Object other) {
   final _this = this as PivState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PivState&&(identical(other.version, _this.version) || other.version == _this.version)&&(identical(other.authenticated, _this.authenticated) || other.authenticated == _this.authenticated)&&(identical(other.derivedKey, _this.derivedKey) || other.derivedKey == _this.derivedKey)&&(identical(other.storedKey, _this.storedKey) || other.storedKey == _this.storedKey)&&(identical(other.pinAttempts, _this.pinAttempts) || other.pinAttempts == _this.pinAttempts)&&(identical(other.supportsBio, _this.supportsBio) || other.supportsBio == _this.supportsBio)&&(identical(other.chuid, _this.chuid) || other.chuid == _this.chuid)&&(identical(other.ccc, _this.ccc) || other.ccc == _this.ccc)&&(identical(other.metadata, _this.metadata) || other.metadata == _this.metadata));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PivState&&(identical(other.version, _this.version) || other.version == _this.version)&&(identical(other.authenticated, _this.authenticated) || other.authenticated == _this.authenticated)&&(identical(other.storedKey, _this.storedKey) || other.storedKey == _this.storedKey)&&(identical(other.pinAttempts, _this.pinAttempts) || other.pinAttempts == _this.pinAttempts)&&(identical(other.supportsBio, _this.supportsBio) || other.supportsBio == _this.supportsBio)&&(identical(other.chuid, _this.chuid) || other.chuid == _this.chuid)&&(identical(other.ccc, _this.ccc) || other.ccc == _this.ccc)&&(identical(other.metadata, _this.metadata) || other.metadata == _this.metadata));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as PivState;
-  return Object.hash(runtimeType,_this.version,_this.authenticated,_this.derivedKey,_this.storedKey,_this.pinAttempts,_this.supportsBio,_this.chuid,_this.ccc,_this.metadata);
+  return Object.hash(runtimeType,_this.version,_this.authenticated,_this.storedKey,_this.pinAttempts,_this.supportsBio,_this.chuid,_this.ccc,_this.metadata);
 }
 
 @override
 String toString() {
   final _this = this as PivState;
-  return 'PivState(version: ${_this.version}, authenticated: ${_this.authenticated}, derivedKey: ${_this.derivedKey}, storedKey: ${_this.storedKey}, pinAttempts: ${_this.pinAttempts}, supportsBio: ${_this.supportsBio}, chuid: ${_this.chuid}, ccc: ${_this.ccc}, metadata: ${_this.metadata})';
+  return 'PivState(version: ${_this.version}, authenticated: ${_this.authenticated}, storedKey: ${_this.storedKey}, pinAttempts: ${_this.pinAttempts}, supportsBio: ${_this.supportsBio}, chuid: ${_this.chuid}, ccc: ${_this.ccc}, metadata: ${_this.metadata})';
 }
 
 
@@ -1747,7 +1747,7 @@ abstract mixin class $PivStateCopyWith<$Res>  {
   factory $PivStateCopyWith(PivState value, $Res Function(PivState) _then) = _$PivStateCopyWithImpl;
 @useResult
 $Res call({
- Version version, bool authenticated, bool derivedKey, bool storedKey, int pinAttempts, bool supportsBio, String? chuid, String? ccc, PivStateMetadata? metadata
+ Version version, bool authenticated, bool storedKey, int pinAttempts, bool supportsBio, String? chuid, String? ccc, PivStateMetadata? metadata
 });
 
 
@@ -1764,11 +1764,10 @@ class _$PivStateCopyWithImpl<$Res>
 
 /// Create a copy of PivState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? version = null,Object? authenticated = null,Object? derivedKey = null,Object? storedKey = null,Object? pinAttempts = null,Object? supportsBio = null,Object? chuid = freezed,Object? ccc = freezed,Object? metadata = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? version = null,Object? authenticated = null,Object? storedKey = null,Object? pinAttempts = null,Object? supportsBio = null,Object? chuid = freezed,Object? ccc = freezed,Object? metadata = freezed,}) {
   return _then(PivState(
 version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
 as Version,authenticated: null == authenticated ? _self.authenticated : authenticated // ignore: cast_nullable_to_non_nullable
-as bool,derivedKey: null == derivedKey ? _self.derivedKey : derivedKey // ignore: cast_nullable_to_non_nullable
 as bool,storedKey: null == storedKey ? _self.storedKey : storedKey // ignore: cast_nullable_to_non_nullable
 as bool,pinAttempts: null == pinAttempts ? _self.pinAttempts : pinAttempts // ignore: cast_nullable_to_non_nullable
 as int,supportsBio: null == supportsBio ? _self.supportsBio : supportsBio // ignore: cast_nullable_to_non_nullable
@@ -1881,10 +1880,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Version version,  bool authenticated,  bool derivedKey,  bool storedKey,  int pinAttempts,  bool supportsBio,  String? chuid,  String? ccc,  PivStateMetadata? metadata)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Version version,  bool authenticated,  bool storedKey,  int pinAttempts,  bool supportsBio,  String? chuid,  String? ccc,  PivStateMetadata? metadata)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PivState() when $default != null:
-return $default(_that.version,_that.authenticated,_that.derivedKey,_that.storedKey,_that.pinAttempts,_that.supportsBio,_that.chuid,_that.ccc,_that.metadata);case _:
+return $default(_that.version,_that.authenticated,_that.storedKey,_that.pinAttempts,_that.supportsBio,_that.chuid,_that.ccc,_that.metadata);case _:
   return orElse();
 
 }
@@ -1902,10 +1901,10 @@ return $default(_that.version,_that.authenticated,_that.derivedKey,_that.storedK
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Version version,  bool authenticated,  bool derivedKey,  bool storedKey,  int pinAttempts,  bool supportsBio,  String? chuid,  String? ccc,  PivStateMetadata? metadata)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Version version,  bool authenticated,  bool storedKey,  int pinAttempts,  bool supportsBio,  String? chuid,  String? ccc,  PivStateMetadata? metadata)  $default,) {final _that = this;
 switch (_that) {
 case _PivState():
-return $default(_that.version,_that.authenticated,_that.derivedKey,_that.storedKey,_that.pinAttempts,_that.supportsBio,_that.chuid,_that.ccc,_that.metadata);case _:
+return $default(_that.version,_that.authenticated,_that.storedKey,_that.pinAttempts,_that.supportsBio,_that.chuid,_that.ccc,_that.metadata);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1922,10 +1921,10 @@ return $default(_that.version,_that.authenticated,_that.derivedKey,_that.storedK
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Version version,  bool authenticated,  bool derivedKey,  bool storedKey,  int pinAttempts,  bool supportsBio,  String? chuid,  String? ccc,  PivStateMetadata? metadata)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Version version,  bool authenticated,  bool storedKey,  int pinAttempts,  bool supportsBio,  String? chuid,  String? ccc,  PivStateMetadata? metadata)?  $default,) {final _that = this;
 switch (_that) {
 case _PivState() when $default != null:
-return $default(_that.version,_that.authenticated,_that.derivedKey,_that.storedKey,_that.pinAttempts,_that.supportsBio,_that.chuid,_that.ccc,_that.metadata);case _:
+return $default(_that.version,_that.authenticated,_that.storedKey,_that.pinAttempts,_that.supportsBio,_that.chuid,_that.ccc,_that.metadata);case _:
   return null;
 
 }
@@ -1937,12 +1936,11 @@ return $default(_that.version,_that.authenticated,_that.derivedKey,_that.storedK
 @JsonSerializable()
 
 class _PivState extends PivState {
-   _PivState({required this.version, required this.authenticated, required this.derivedKey, required this.storedKey, required this.pinAttempts, required this.supportsBio, this.chuid, this.ccc, this.metadata}): super._();
+   _PivState({required this.version, required this.authenticated, required this.storedKey, required this.pinAttempts, required this.supportsBio, this.chuid, this.ccc, this.metadata}): super._();
   factory _PivState.fromJson(Map<String, dynamic> json) => _$PivStateFromJson(json);
 
 @override final  Version version;
 @override final  bool authenticated;
-@override final  bool derivedKey;
 @override final  bool storedKey;
 @override final  int pinAttempts;
 @override final  bool supportsBio;
@@ -1963,18 +1961,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _PivState&&(identical(other.version, version) || other.version == version)&&(identical(other.authenticated, authenticated) || other.authenticated == authenticated)&&(identical(other.derivedKey, derivedKey) || other.derivedKey == derivedKey)&&(identical(other.storedKey, storedKey) || other.storedKey == storedKey)&&(identical(other.pinAttempts, pinAttempts) || other.pinAttempts == pinAttempts)&&(identical(other.supportsBio, supportsBio) || other.supportsBio == supportsBio)&&(identical(other.chuid, chuid) || other.chuid == chuid)&&(identical(other.ccc, ccc) || other.ccc == ccc)&&(identical(other.metadata, metadata) || other.metadata == metadata));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _PivState&&(identical(other.version, version) || other.version == version)&&(identical(other.authenticated, authenticated) || other.authenticated == authenticated)&&(identical(other.storedKey, storedKey) || other.storedKey == storedKey)&&(identical(other.pinAttempts, pinAttempts) || other.pinAttempts == pinAttempts)&&(identical(other.supportsBio, supportsBio) || other.supportsBio == supportsBio)&&(identical(other.chuid, chuid) || other.chuid == chuid)&&(identical(other.ccc, ccc) || other.ccc == ccc)&&(identical(other.metadata, metadata) || other.metadata == metadata));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,version,authenticated,derivedKey,storedKey,pinAttempts,supportsBio,chuid,ccc,metadata);
+    return Object.hash(runtimeType,version,authenticated,storedKey,pinAttempts,supportsBio,chuid,ccc,metadata);
 }
 
 @override
 String toString() {
-    return 'PivState(version: $version, authenticated: $authenticated, derivedKey: $derivedKey, storedKey: $storedKey, pinAttempts: $pinAttempts, supportsBio: $supportsBio, chuid: $chuid, ccc: $ccc, metadata: $metadata)';
+    return 'PivState(version: $version, authenticated: $authenticated, storedKey: $storedKey, pinAttempts: $pinAttempts, supportsBio: $supportsBio, chuid: $chuid, ccc: $ccc, metadata: $metadata)';
 }
 
 
@@ -1985,7 +1983,7 @@ abstract mixin class _$PivStateCopyWith<$Res> implements $PivStateCopyWith<$Res>
   factory _$PivStateCopyWith(_PivState value, $Res Function(_PivState) _then) = __$PivStateCopyWithImpl;
 @override @useResult
 $Res call({
- Version version, bool authenticated, bool derivedKey, bool storedKey, int pinAttempts, bool supportsBio, String? chuid, String? ccc, PivStateMetadata? metadata
+ Version version, bool authenticated, bool storedKey, int pinAttempts, bool supportsBio, String? chuid, String? ccc, PivStateMetadata? metadata
 });
 
 
@@ -2002,11 +2000,10 @@ class __$PivStateCopyWithImpl<$Res>
 
 /// Create a copy of PivState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? version = null,Object? authenticated = null,Object? derivedKey = null,Object? storedKey = null,Object? pinAttempts = null,Object? supportsBio = null,Object? chuid = freezed,Object? ccc = freezed,Object? metadata = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? version = null,Object? authenticated = null,Object? storedKey = null,Object? pinAttempts = null,Object? supportsBio = null,Object? chuid = freezed,Object? ccc = freezed,Object? metadata = freezed,}) {
   return _then(_PivState(
 version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
 as Version,authenticated: null == authenticated ? _self.authenticated : authenticated // ignore: cast_nullable_to_non_nullable
-as bool,derivedKey: null == derivedKey ? _self.derivedKey : derivedKey // ignore: cast_nullable_to_non_nullable
 as bool,storedKey: null == storedKey ? _self.storedKey : storedKey // ignore: cast_nullable_to_non_nullable
 as bool,pinAttempts: null == pinAttempts ? _self.pinAttempts : pinAttempts // ignore: cast_nullable_to_non_nullable
 as int,supportsBio: null == supportsBio ? _self.supportsBio : supportsBio // ignore: cast_nullable_to_non_nullable

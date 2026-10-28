@@ -89,7 +89,7 @@ class DesktopPivStateNotifier extends PivStateNotifier {
       })
       ..setErrorHandler('auth-required', (e) async {
         try {
-          if (state.value?.protectedKey == true) {
+          if (state.value?.storedKey == true) {
             final String? pin;
             if (state.value?.metadata?.pinMetadata.defaultValue == true) {
               pin = defaultPin;
@@ -201,7 +201,7 @@ class DesktopPivStateNotifier extends PivStateNotifier {
     final signaler = Signaler();
     UserInteractionController? controller;
     try {
-      if (pivState?.protectedKey == true) {
+      if (pivState?.storedKey == true) {
         // Might require touch as this will also authenticate
         final withContext = ref.watch(withContextProvider);
         signaler.signals.listen((signal) async {

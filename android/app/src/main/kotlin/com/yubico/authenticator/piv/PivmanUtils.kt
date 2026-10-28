@@ -22,10 +22,6 @@ import com.yubico.yubikit.core.smartcard.ApduException
 import com.yubico.yubikit.core.smartcard.SW
 import com.yubico.yubikit.piv.ManagementKeyType
 import com.yubico.yubikit.piv.ObjectId
-import java.security.SecureRandom
-import java.security.spec.KeySpec
-import javax.crypto.SecretKeyFactory
-import javax.crypto.spec.PBEKeySpec
 import org.slf4j.LoggerFactory
 
 object PivmanUtils {
@@ -113,11 +109,6 @@ object PivmanUtils {
 
         piv.setManagementKey(algorithm, newKey, touch)
 
-        if (pivman.hasDerivedKey) {
-            logger.trace("Clearing salt in pivman data")
-            pivman.salt = null
-        }
-
         pivman.mgmKeyProtected = storeOnDevice
 
         val pivmanBytes = pivman.getBytes()
@@ -143,30 +134,6 @@ object PivmanUtils {
     }
 
     /**
-     * Changes the PIN on the YubiKey and, if applicable, updates the derived management key.
-     *
-     * @param piv The YubiKitPivSession to operate on.
-     * @param oldPin The current PIN as a [CharArray].
-     * @param newPin The new PIN as a [CharArray].
-     * @throws ApduException if an error occurs during PIN change.
-     */
-    internal fun pivmanChangePin(piv: YubiKitPivSession, oldPin: CharArray, newPin: CharArray) {
-        piv.changePin(oldPin, newPin)
-
-        val pivmanData = getPivmanData(piv)
-        if (pivmanData.hasDerivedKey) {
-            logger.trace("Has derived management key, update for new PIN")
-            piv.authenticate(deriveManagementKey(oldPin, pivmanData.salt!!))
-            piv.verifyPin(newPin)
-            val newSalt = SecureRandom().generateSeed(16)
-            val newKey = deriveManagementKey(newPin, newSalt)
-            piv.setManagementKey(ManagementKeyType.TDES, newKey, false)
-            pivmanData.salt = newSalt
-            piv.putObject(ObjectId.PIVMAN_DATA, pivmanData.getBytes())
-        }
-    }
-
-    /**
      * Sets the maximum number of PIN and PUK attempts on the YubiKey and clears the blocked status if needed.
      *
      * @param piv The YubiKitPivSession to operate on.
@@ -181,27 +148,5 @@ object PivmanUtils {
             pivman.pukBlocked = false
             piv.putObject(ObjectId.PIVMAN_DATA, pivman.getBytes())
         }
-    }
-
-    /**
-     * Derives a management key from the user's PIN and a salt using PBKDF2.
-     *
-     * **Deprecated:** This method of derivation is deprecated! Protect the management key using [PivmanProtectedData] instead.
-     *
-     * @param pin The PIN as a [CharArray].
-     * @param salt The salt as a [ByteArray].
-     * @return The derived management key as a [ByteArray].
-     */
-    @Deprecated(
-        "This method of derivation is deprecated! Protect the management key using PivmanProtectedData instead.",
-        ReplaceWith("PivmanProtectedData")
-    )
-    internal fun deriveManagementKey(pin: CharArray, salt: ByteArray): ByteArray {
-        val iterations = 10000
-        val keyLength = 24 * 8 // 24 bytes = 192 bits (for TDES)
-        val factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1")
-        val spec: KeySpec = PBEKeySpec(pin, salt, iterations, keyLength)
-        val key = factory.generateSecret(spec).encoded
-        return key
     }
 }

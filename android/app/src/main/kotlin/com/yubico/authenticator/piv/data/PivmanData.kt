@@ -25,21 +25,18 @@ private const val FLAG_MGM_KEY_PROTECTED = 0x02
 
 private const val TLV_TAG_PIVMAN_DATA = 0x80
 private const val TLV_TAG_FLAGS = 0x81
-private const val TLV_TAG_SALT = 0x82
 private const val TLV_TAG_TIMESTAMP = 0x83
 
 class PivmanData(rawData: ByteArray = Tlv(TLV_TAG_PIVMAN_DATA, null).bytes) {
 
+    private val data = Tlvs.decodeMap(Tlv.parse(rawData).value)
     private var flags: Int? = null
-    var salt: ByteArray? = null
     var pinTimestamp: Int? = null
 
     init {
-        val data = Tlvs.decodeMap(Tlv.parse(rawData).value)
         flags = data[TLV_TAG_FLAGS]?.let {
             ByteBuffer.wrap(it).get().toInt() and 0xFF
         }
-        salt = data[TLV_TAG_SALT]
         pinTimestamp = data[TLV_TAG_TIMESTAMP]?.let { ByteBuffer.wrap(it).int }
     }
 
@@ -61,27 +58,24 @@ class PivmanData(rawData: ByteArray = Tlv(TLV_TAG_PIVMAN_DATA, null).bytes) {
         get() = getFlag(FLAG_MGM_KEY_PROTECTED)
         set(value) = setFlag(FLAG_MGM_KEY_PROTECTED, value)
 
-    val hasProtectedKey: Boolean
-        get() = hasDerivedKey || hasStoredKey
-
-    val hasDerivedKey: Boolean
-        get() = salt != null
-
     val hasStoredKey: Boolean
         get() = mgmKeyProtected
 
     fun getBytes(): ByteArray {
-        var data = ByteArray(0)
+        val entries = data.toMutableMap()
         if (flags != null) {
             val flagBytes = ByteBuffer.allocate(1).put(flags!!.toByte()).array()
-            data += Tlv(TLV_TAG_FLAGS, flagBytes).bytes
-        }
-        if (salt != null) {
-            data += Tlv(TLV_TAG_SALT, salt).bytes
+            entries[TLV_TAG_FLAGS] = flagBytes
         }
         if (pinTimestamp != null) {
             val tsBytes = ByteBuffer.allocate(4).putInt(pinTimestamp!!).array()
-            data += Tlv(TLV_TAG_TIMESTAMP, tsBytes).bytes
+            entries[TLV_TAG_TIMESTAMP] = tsBytes
+        } else {
+            entries.remove(TLV_TAG_TIMESTAMP)
+        }
+        var data = ByteArray(0)
+        for ((tag, value) in entries) {
+            data += Tlv(tag, value).bytes
         }
         return if (data.isNotEmpty()) Tlv(TLV_TAG_PIVMAN_DATA, data).bytes else ByteArray(0)
     }

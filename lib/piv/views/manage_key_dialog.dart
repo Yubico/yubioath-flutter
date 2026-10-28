@@ -84,7 +84,7 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
         widget.pivState.metadata?.managementKeyMetadata.defaultValue ?? false;
     _defaultPinUsed =
         widget.pivState.metadata?.pinMetadata.defaultValue ?? false;
-    _usesStoredKey = widget.pivState.protectedKey;
+    _usesStoredKey = widget.pivState.storedKey;
     if (!_usesStoredKey && _defaultKeyUsed) {
       _currentController.text = defaultManagementKey;
     } else if (_usesStoredKey && _defaultPinUsed) {

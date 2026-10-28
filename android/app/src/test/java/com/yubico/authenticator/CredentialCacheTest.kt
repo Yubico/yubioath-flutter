@@ -197,7 +197,6 @@ class CredentialCacheTest {
         val state = PivState(
             Version(5, 7, 1),
             authenticated = true,
-            derivedKey = false,
             storedKey = true,
             pinAttempts = 3,
             supportsBio = false,

@@ -4435,7 +4435,6 @@ dependencies = [
  "dbus-secret-service-keyring-store",
  "dirs",
  "fernet",
- "getrandom 0.4.3",
  "hex",
  "keyring-core",
  "log",

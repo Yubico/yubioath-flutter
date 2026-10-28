@@ -301,7 +301,6 @@ abstract class PivState with _$PivState {
   factory PivState({
     required Version version,
     required bool authenticated,
-    required bool derivedKey,
     required bool storedKey,
     required int pinAttempts,
     required bool supportsBio,
@@ -310,7 +309,6 @@ abstract class PivState with _$PivState {
     PivStateMetadata? metadata,
   }) = _PivState;
 
-  bool get protectedKey => derivedKey || storedKey;
   bool get needsAuth =>
       !authenticated && metadata?.managementKeyMetadata.defaultValue != true;
   bool get supportsMetadata => version.isAtLeast(5, 3);

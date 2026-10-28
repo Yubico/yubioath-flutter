@@ -70,7 +70,7 @@ Future<bool> _authIfNeeded(
   PivState pivState,
 ) async {
   if (pivState.needsAuth) {
-    if (pivState.protectedKey &&
+    if (pivState.storedKey &&
         pivState.metadata?.pinMetadata.defaultValue == true) {
       return await ref
               .read(pivStateProvider(devicePath).notifier)
@@ -79,7 +79,7 @@ Future<bool> _authIfNeeded(
     }
     return await showBlurDialog(
           context: context,
-          builder: (context) => pivState.protectedKey
+          builder: (context) => pivState.storedKey
               ? PinDialog(devicePath, pivState)
               : AuthenticationDialog(devicePath, pivState),
         ) ??
@@ -119,7 +119,7 @@ class PivActions extends ConsumerWidget {
               }
               // Verify PIN, unless already done above
               // TODO: Avoid asking for PIN if not needed?
-              if (!pivState.protectedKey) {
+              if (!pivState.storedKey) {
                 bool verified;
                 if (pivState.metadata?.pinMetadata.defaultValue == true) {
                   verified =
@@ -384,7 +384,7 @@ List<ActionItem> buildSlotActions(
   final pinIsBlocked = pivState.pinAttempts == 0;
   final defaultPin = pivState.metadata?.pinMetadata.defaultValue == true;
   final requiresPinAuth =
-      pivState.needsAuth && pivState.protectedKey && !defaultPin;
+      pivState.needsAuth && pivState.storedKey && !defaultPin;
   return [
     if (!slot.slot.isRetired) ...[
       ActionItem(
@@ -396,7 +396,7 @@ List<ActionItem> buildSlotActions(
         subtitle: l10n.l_generate_desc,
         intent:
             (pinIsBlocked &&
-                (requiresPinAuth || (!pivState.protectedKey && !defaultPin)))
+                (requiresPinAuth || (!pivState.storedKey && !defaultPin)))
             ? null
             : GenerateIntent(slot),
       ),

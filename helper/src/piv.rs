@@ -15,14 +15,13 @@ use x509_cert::serial_number::SerialNumber;
 use x509_cert::spki::SubjectPublicKeyInfoOwned;
 use x509_cert::time::Validity;
 
-use ykman::piv::{
-    TAG_PIVMAN_KEY, TAG_PIVMAN_SALT, get_pivman_data, get_pivman_protected_data, has_stored_key,
-    pivman_set_mgm_key,
-};
 use yubikit::keys::{PrivateKey, PublicKey};
 use yubikit::piv::{
     HashAlgorithm, KeyType, ManagementKey, ManagementKeyType, ObjectId, PinPolicy, PivError,
     PivPin, PivSession, PivSignature, PivSigner, Slot, TouchPolicy,
+};
+use yubikit::piv_util::{
+    TAG_PIVMAN_KEY, get_pivman_data, get_pivman_protected_data, has_stored_key, pivman_set_mgm_key,
 };
 use yubikit::smartcard::ScpKeyParams;
 use yubikit::smartcard::SmartCardConnection;
@@ -86,6 +85,7 @@ pub struct PivNode {
     scp_params: Option<ScpKeyParams>,
     authenticated: bool,
     pin_attempts: SharedPinAttempts,
+    pivman_data: Vec<(u32, Vec<u8>)>,
 }
 
 impl PivNode {
@@ -101,8 +101,10 @@ impl PivNode {
         };
         match result {
             Ok(mut session) => {
-                let pin_attempts = match PinAttempts::new(&mut session) {
-                    Ok(attempts) => attempts,
+                let (pin_attempts, pivman_data) = match PinAttempts::new(&mut session)
+                    .and_then(|attempts| get_pivman_data(&mut session).map(|data| (attempts, data)))
+                {
+                    Ok(state) => state,
                     Err(e) => {
                         *conn.lock().unwrap() = Some(session.into_connection());
                         return Err(RpcError::new("device-error", format!("{e}")));
@@ -114,6 +116,7 @@ impl PivNode {
                     scp_params: scp_params.cloned(),
                     authenticated: false,
                     pin_attempts: Arc::new(Mutex::new(pin_attempts)),
+                    pivman_data,
                 })
             }
             Err((e, c)) => {
@@ -158,11 +161,10 @@ impl PivNode {
     fn fetch_data(
         session: &mut PivSession<Box<dyn SmartCardConnection + Send>>,
         pin_attempts: &mut PinAttempts,
+        pivman: &[(u32, Vec<u8>)],
     ) -> Value {
         let version = session.version();
-        let pivman = get_pivman_data(session);
-        let derived_key = pivman.iter().any(|(t, _)| *t == TAG_PIVMAN_SALT);
-        let stored_key = has_stored_key(&pivman);
+        let stored_key = has_stored_key(pivman);
 
         let supports_bio = session.get_bio_metadata().is_ok();
 
@@ -175,7 +177,6 @@ impl PivNode {
 
         let mut data = json!({
             "version": version_to_json(&version),
-            "derived_key": derived_key,
             "stored_key": stored_key,
             "supports_bio": supports_bio,
             "chuid": chuid,
@@ -234,10 +235,23 @@ impl PivNode {
 }
 
 impl RpcNode for PivNode {
+    fn prepare_get(&mut self) -> Result<(), RpcError> {
+        if let Some(session) = self.session.lock().unwrap().as_mut() {
+            // Read fallible metadata before the infallible get_data snapshot.
+            self.pivman_data = get_pivman_data(session)
+                .map_err(|e| RpcError::new("device-error", e.to_string()))?;
+        }
+        Ok(())
+    }
+
     fn get_data(&self) -> Value {
         let mut session_guard = self.session.lock().unwrap();
         let mut data = if let Some(ref mut session) = *session_guard {
-            Self::fetch_data(session, &mut self.pin_attempts.lock().unwrap())
+            Self::fetch_data(
+                session,
+                &mut self.pin_attempts.lock().unwrap(),
+                &self.pivman_data,
+            )
         } else {
             json!({})
         };
@@ -327,15 +341,17 @@ impl PivNode {
                     .map_err(handle_pin_error)?;
 
                 // Try to auto-authenticate with stored management key
-                let pivman = get_pivman_data(session);
-                if has_stored_key(&pivman) {
-                    let prot = get_pivman_protected_data(session);
-                    if let Some((_, key)) = prot.iter().find(|(t, _)| *t == TAG_PIVMAN_KEY) {
-                        let mgmt_key = ManagementKey::new(session.management_key_type(), key);
-                        if let Ok(mgmt_key) = mgmt_key
-                            && session.authenticate(&mgmt_key).is_ok()
+                self.pivman_data = get_pivman_data(session)
+                    .map_err(|e| RpcError::new("device-error", e.to_string()))?;
+                if has_stored_key(&self.pivman_data) {
+                    let prot = get_pivman_protected_data(session)
+                        .map_err(|e| RpcError::new("device-error", e.to_string()))?;
+                    if let Some((_, key)) = prot.iter().rfind(|(t, _)| *t == TAG_PIVMAN_KEY) {
+                        match ManagementKey::new(session.management_key_type(), key)
+                            .and_then(|key| session.authenticate(&key))
                         {
-                            self.authenticated = true;
+                            Ok(()) => self.authenticated = true,
+                            Err(e) => log::warn!("Failed to authenticate with stored PIV key: {e}"),
                         }
                         // Re-verify PIN so it was the last operation
                         self.pin_attempts
@@ -1489,6 +1505,7 @@ fn public_key_match(cert_der: &[u8], metadata: &yubikit::piv::SlotMetadata) -> b
 #[cfg(test)]
 mod tests {
     use super::*;
+    use yubikit::__internal::tlv::tlv_encode;
     use yubikit::core::{Connection, Transport};
     use yubikit::smartcard::SmartCardError;
 
@@ -1591,6 +1608,8 @@ mod tests {
         verified: bool,
         read_error: bool,
         supports_metadata: bool,
+        objects: BTreeMap<u32, (Vec<u8>, u16)>,
+        sent: Vec<Vec<u8>>,
     }
 
     struct MockPivConnection(Arc<Mutex<PinState>>);
@@ -1603,6 +1622,7 @@ mod tests {
     impl SmartCardConnection for MockPivConnection {
         fn send_and_receive(&mut self, apdu: &[u8]) -> Result<(Vec<u8>, u16), SmartCardError> {
             let mut state = self.0.lock().unwrap();
+            state.sent.push(apdu.to_vec());
             let response = match apdu[1] {
                 0xa4 => (vec![], 0x9000),
                 0xfd if state.supports_metadata => (vec![5, 3, 0], 0x9000),
@@ -1615,7 +1635,12 @@ mod tests {
                     (vec![0x01, 0x01, 0x03, 0x02, 0x02, 0x00, 0x01], 0x9000)
                 }
                 0xf7 => (vec![], 0x6d00),
-                0xcb => (vec![], 0x6a82),
+                0xcb => state
+                    .objects
+                    .iter()
+                    .find(|(id, _)| apdu.windows(3).any(|bytes| bytes == &id.to_be_bytes()[1..]))
+                    .map(|(_, response)| response.clone())
+                    .unwrap_or((vec![], 0x6a82)),
                 0x20 if state.read_error => {
                     return Err(SmartCardError::Transport(Box::new(std::io::Error::other(
                         "test read failure",
@@ -1700,11 +1725,220 @@ mod tests {
             verified: false,
             read_error: false,
             supports_metadata,
+            objects: BTreeMap::new(),
+            sent: Vec::new(),
         }));
         let connection: Box<dyn SmartCardConnection + Send> =
             Box::new(MockPivConnection(state.clone()));
         let node = PivNode::new(connection, Arc::new(Mutex::new(None)), None).unwrap();
         (node, state)
+    }
+
+    fn pivman_object(tag: u32, entries: &[(u32, Vec<u8>)]) -> (Vec<u8>, u16) {
+        let inner: Vec<u8> = entries
+            .iter()
+            .flat_map(|(tag, value)| tlv_encode(*tag, value))
+            .collect();
+        (tlv_encode(0x53, &tlv_encode(tag, &inner)), 0x9000)
+    }
+
+    fn pivman_read_errors() -> Vec<(Vec<u8>, u16)> {
+        vec![
+            (vec![], 0x6982),
+            (vec![], 0x6a80),
+            (vec![0x53, 0x01, 0xff], 0x9000),
+        ]
+    }
+
+    #[test]
+    fn pivman_state_reads_report_errors_and_refresh_stored_key_flags() {
+        let (node, state) = node(3);
+        let mut host = crate::rpc::NodeHost::new(Box::new(node));
+        let cancel = AtomicBool::new(false);
+        for response in pivman_read_errors() {
+            state.lock().unwrap().objects.insert(0x5fff00, response);
+            let error = host
+                .call("get", &[], &json!({}), &|_, _| {}, &cancel)
+                .err()
+                .expect("Pivman read errors must not return unprotected state");
+            assert_eq!(error.status, "device-error");
+
+            state.lock().unwrap().objects.insert(
+                0x5fff00,
+                pivman_object(0x80, &[(0x81, vec![2]), (0x82, vec![1; 16])]),
+            );
+            let response = host
+                .call("get", &[], &json!({}), &|_, _| {}, &cancel)
+                .unwrap();
+            let data = response.body["data"].as_object().unwrap();
+            assert_eq!(data.len(), 8);
+            for field in [
+                "version",
+                "authenticated",
+                "stored_key",
+                "pin_attempts",
+                "supports_bio",
+                "chuid",
+                "ccc",
+                "metadata",
+            ] {
+                assert!(data.contains_key(field), "Missing {field}");
+            }
+            assert_eq!(response.body["data"]["stored_key"], true);
+
+            state.lock().unwrap().objects.clear();
+            let response = host
+                .call("get", &[], &json!({}), &|_, _| {}, &cancel)
+                .unwrap();
+            assert_eq!(response.body["data"]["stored_key"], false);
+        }
+    }
+
+    #[test]
+    fn unknown_metadata_does_not_protect_the_management_key() {
+        let (mut node, state) = node(3);
+        state
+            .lock()
+            .unwrap()
+            .objects
+            .insert(0x5fff00, pivman_object(0x80, &[(0x82, vec![1; 16])]));
+        node.prepare_get().unwrap();
+        let data = node.get_data();
+        assert_eq!(data["stored_key"], false);
+
+        state.lock().unwrap().sent.clear();
+        let response = node
+            ._call_action("verify_pin", &json!({"pin": "123456"}))
+            .unwrap();
+        assert_eq!(response.body["status"], true);
+        assert_eq!(response.body["authenticated"], false);
+        assert_eq!(
+            state
+                .lock()
+                .unwrap()
+                .sent
+                .iter()
+                .map(|apdu| apdu[1])
+                .collect::<Vec<_>>(),
+            [0x20, 0xcb],
+        );
+    }
+
+    #[test]
+    fn initial_pivman_read_failure_returns_the_connection() {
+        for response in pivman_read_errors() {
+            let (mut node, state) = node(3);
+            node.close();
+            state.lock().unwrap().objects.insert(0x5fff00, response);
+            let connection = node.conn.lock().unwrap().take().unwrap();
+            let error = PivNode::new(connection, node.conn.clone(), None)
+                .err()
+                .expect("Initial pivman read must fail");
+            assert_eq!(error.status, "device-error");
+            assert!(node.conn.lock().unwrap().is_some());
+        }
+    }
+
+    #[test]
+    fn pin_verification_reports_public_and_protected_pivman_read_errors() {
+        for protected in [false, true] {
+            for response in pivman_read_errors() {
+                let expected_status = if response.1 == 0x6982 {
+                    "auth-required"
+                } else {
+                    "device-error"
+                };
+                let (mut node, state) = node(1);
+                {
+                    let mut state = state.lock().unwrap();
+                    if protected {
+                        state
+                            .objects
+                            .insert(0x5fff00, pivman_object(0x80, &[(0x81, vec![2])]));
+                        state.objects.insert(ObjectId::Printed as u32, response);
+                    } else {
+                        state.objects.insert(0x5fff00, response);
+                    }
+                    state.sent.clear();
+                }
+                let error = node
+                    .call_action(
+                        "verify_pin",
+                        &json!({"pin": "123456"}),
+                        &|_, _| {},
+                        &AtomicBool::new(false),
+                    )
+                    .err()
+                    .expect("Pivman read errors must be reported after PIN verification");
+                assert_eq!(error.status, expected_status);
+                assert!(!node.authenticated);
+                assert_eq!(node.pin_attempts.lock().unwrap().remaining, 3);
+                let state = state.lock().unwrap();
+                assert!(state.verified);
+                assert!(!state.sent.iter().any(|apdu| apdu[1] == 0x87));
+                assert_eq!(state.sent.iter().filter(|apdu| apdu[1] == 0x20).count(), 1);
+            }
+        }
+    }
+
+    #[test]
+    fn stored_key_auto_authentication_uses_last_key_and_reverifies_pin() {
+        let (mut node, state) = node(1);
+        {
+            let mut state = state.lock().unwrap();
+            state
+                .objects
+                .insert(0x5fff00, pivman_object(0x80, &[(0x81, vec![2])]));
+            state.objects.insert(
+                ObjectId::Printed as u32,
+                pivman_object(
+                    0x88,
+                    &[(TAG_PIVMAN_KEY, vec![0]), (TAG_PIVMAN_KEY, vec![1; 24])],
+                ),
+            );
+            state.sent.clear();
+        }
+        let response = node
+            ._call_action("verify_pin", &json!({"pin": "123456"}))
+            .unwrap();
+        assert_eq!(response.body["status"], true);
+        // The mock does not complete management-key authentication.
+        assert_eq!(response.body["authenticated"], false);
+        assert_eq!(
+            state
+                .lock()
+                .unwrap()
+                .sent
+                .iter()
+                .map(|apdu| apdu[1])
+                .collect::<Vec<_>>(),
+            [0x20, 0xcb, 0xcb, 0x87, 0x20],
+        );
+        assert_eq!(node.pin_attempts.lock().unwrap().remaining, 3);
+    }
+
+    #[test]
+    fn management_key_changes_stop_before_writing_if_pivman_cannot_be_read() {
+        for response in pivman_read_errors() {
+            let (mut node, state) = node(3);
+            state.lock().unwrap().objects.insert(0x5fff00, response);
+            let error = node
+                ._call_action(
+                    "set_key",
+                    &json!({"key": hex::encode([1; 24]), "store_key": false}),
+                )
+                .err()
+                .expect("Unreadable pivman data must prevent changing the key");
+            assert_eq!(error.status, "device-error");
+            assert!(
+                !state
+                    .lock()
+                    .unwrap()
+                    .sent
+                    .iter()
+                    .any(|apdu| matches!(apdu[1], 0xff | 0xdb))
+            );
+        }
     }
 
     #[test]
@@ -1861,6 +2095,8 @@ mod tests {
             verified: false,
             read_error: true,
             supports_metadata: false,
+            objects: BTreeMap::new(),
+            sent: Vec::new(),
         }));
         let connection: Box<dyn SmartCardConnection + Send> = Box::new(MockPivConnection(state));
         let returned_connection = Arc::new(Mutex::new(None));
