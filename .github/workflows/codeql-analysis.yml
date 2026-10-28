@@ -50,6 +50,7 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
+      # Cache Gradle dependencies without bypassing CodeQL's compilation tracer.
       - name: Set up Gradle
         if: matrix.language == 'kotlin'
         uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
@@ -81,6 +82,8 @@ jobs:
         name: Build the App
         run: android/scripts/build.sh
         env:
+          # Disable the Gradle build cache so CodeQL always traces a real
+          # compilation; a cached KotlinCompile would drop classes from the DB.
           GRADLE_OPTS: -Dorg.gradle.caching=false
           YUBIOATH_STORE_BASE64: ${{ secrets.YUBIOATH_STORE_BASE64 }}
           YUBIOATH_KEY_ALIAS: ${{ secrets.YUBIOATH_KEY_ALIAS }}

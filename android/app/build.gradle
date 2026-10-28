@@ -75,6 +75,22 @@ android {
             excludes += 'META-INF/versions/9/OSGI-INF/MANIFEST.MF'
             excludes += 'META-INF/versions/9/OSGI-INF/bcprov.provider.bc.Licenses'
             excludes += 'META-INF/versions/9/OSGI-INF/bcpkix.provider.bc.Licenses'
+            // Unused BouncyCastle Picnic LowMC matrices (~1.2 MB). R8 and resource
+            // shrinking don't strip jar resources, so exclude them explicitly.
+            excludes += 'org/bouncycastle/pqc/legacy/picnic/lowmcL1.bin.properties'
+            excludes += 'org/bouncycastle/pqc/legacy/picnic/lowmcL3.bin.properties'
+            excludes += 'org/bouncycastle/pqc/legacy/picnic/lowmcL5.bin.properties'
+        }
+    }
+
+    // Emit per-ABI and universal APKs from a single assemble, so the release
+    // build needs one `flutter build apk` instead of two.
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'armeabi-v7a', 'arm64-v8a', 'x86_64'
+            universalApk true
         }
     }
 
