@@ -62,7 +62,7 @@ jobs:
 
       - name: Install cargo-about
         if: steps.cache-helper.outputs.cache-hit != 'true'
-        uses: taiki-e/install-action@83ac0ad63c0167e6f06796fab0fce28db1bf3db0 # v2.87.22
+        uses: taiki-e/install-action@5488ac5a951645ce95062214902ac4b6bc1a1037 # v2.87.32
         with:
           tool: cargo-about@0.9.2
           fallback: none
@@ -155,7 +155,7 @@ jobs:
           }
 
       - name: Upload artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: yubioath-desktop-windows${{ matrix.suffix }}
           path: deploy
@@ -182,7 +182,7 @@ jobs:
         run: python3 -m unittest discover -s .github/scripts -p 'test_*.py'
 
       - name: Download successful builds
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           pattern: yubioath-desktop-windows*
           path: artifacts
@@ -192,7 +192,7 @@ jobs:
         run: python3 .github/scripts/windows_signing.py prepare binaries artifacts signing-input >> "$GITHUB_OUTPUT"
 
       - name: Docker login
-        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
         with:
           registry: ghcr.io
           username: ci@yubico.com
@@ -229,7 +229,7 @@ jobs:
 
       - name: Upload signed x64 files
         if: contains(fromJSON(steps.prepare.outputs.architectures), 'x64')
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: signed-files
           path: artifacts/yubioath-desktop-windows
@@ -238,7 +238,7 @@ jobs:
 
       - name: Upload signed ARM64 files
         if: contains(fromJSON(steps.prepare.outputs.architectures), 'arm64')
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: signed-files-windows-arm64
           path: artifacts/yubioath-desktop-windows-arm64
@@ -261,7 +261,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Download signed files
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: signed-files${{ env.ARTIFACT_SUFFIX }}
           path: signed-files
@@ -303,7 +303,7 @@ jobs:
           Move-Item yubioath-desktop${{ env.SUFFIX }}.msi installer\
 
       - name: Upload unsigned MSI
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: installer${{ env.ARTIFACT_SUFFIX }}
           path: installer
@@ -325,7 +325,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Download signed files
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: signed-files${{ env.ARTIFACT_SUFFIX }}
           path: signed-files
@@ -355,7 +355,7 @@ jobs:
           Move-Item yubioath-desktop${{ env.SUFFIX }}.msix msix-installer\
 
       - name: Upload Store MSIX
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: store-msix${{ env.ARTIFACT_SUFFIX }}
           path: msix-installer
@@ -374,7 +374,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Download successful MSI builds
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           pattern: installer*
           path: artifacts
@@ -384,7 +384,7 @@ jobs:
         run: python3 .github/scripts/windows_signing.py prepare installers artifacts signing-input >> "$GITHUB_OUTPUT"
 
       - name: Docker login
-        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
         with:
           registry: ghcr.io
           username: ci@yubico.com
@@ -421,7 +421,7 @@ jobs:
 
       - name: Upload signed x64 installer
         if: contains(fromJSON(steps.prepare.outputs.architectures), 'x64')
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: signed-installer
           path: artifacts/installer/yubioath-desktop.msi
@@ -430,7 +430,7 @@ jobs:
 
       - name: Upload signed ARM64 installer
         if: contains(fromJSON(steps.prepare.outputs.architectures), 'arm64')
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: signed-installer-windows-arm64
           path: artifacts/installer-windows-arm64/yubioath-desktop-arm64.msi
@@ -453,13 +453,13 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Download signed files
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: signed-files${{ env.ARTIFACT_SUFFIX }}
           path: signed-files
 
       - name: Download signed MSI
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: signed-installer${{ env.ARTIFACT_SUFFIX }}
           path: signed-installer
