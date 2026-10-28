@@ -30,24 +30,26 @@ Visit https://yubico.com to learn more.
 
 *Best-effort* - the app is expected to work, but development is supported through community testing and full functionality cannot be guaranteed.
 
+The operating system versions below are minimum versions for each support level.
+
 |===
 ||Supported|Best-effort
 
 |Windows
-|Windows 10 & above, x64
-|Windows 10 & above, x64
+|Windows 11 (x64, ARM64)
+|Windows 10 version 2004 (x64, ARM64)
 
 |macOS
-|macOS 13 (Ventura) & above
-|macOS 12 (Monterey)
+|macOS 13 (ARM64)
+|macOS 12 (x64, ARM64)
 
 |Linux
-|Ubuntu 22.04 & above
-|Ubuntu 20.04 (or equivalent)
+|Ubuntu 22.04 (x64, ARM64)
+|Ubuntu 20.04 or equivalent (x64)
 
 |Android
-|Android 13 & above
-|Android 7 (Nougat)
+|Android 13
+|Android 7
 |===
 
 === Installation
