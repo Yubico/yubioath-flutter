@@ -218,9 +218,9 @@ class _DeviceContent extends ConsumerWidget {
                             tooltip: l10n.s_set_color,
                             icon: Icon(
                               Symbols.palette,
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.onSurfaceVariant,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
                               semanticLabel: l10n.s_set_color,
                             ),
                             onPressed: () {
@@ -258,9 +258,9 @@ class _DeviceContent extends ConsumerWidget {
                                   child: Material(
                                     elevation: 8,
                                     borderRadius: BorderRadius.circular(12),
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.surfaceContainer,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .surfaceContainer,
                                     child: Padding(
                                       padding: const EdgeInsets.all(16),
                                       child: SizedBox(
@@ -321,9 +321,8 @@ class _DeviceContent extends ConsumerWidget {
                         width: 24.0,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8.0),
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.primary.withValues(alpha: 0.9),
+                          color: Theme.of(context).colorScheme.primary
+                              .withValues(alpha: 0.9),
                         ),
                       ),
                     ],
@@ -337,16 +336,14 @@ class _DeviceContent extends ConsumerWidget {
         if (serial != null)
           Text(
             l10n.l_serial_number(serial),
-            style: Theme.of(context).textTheme.titleSmall?.apply(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
+            style: Theme.of(context).textTheme.titleSmall
+                ?.apply(color: Theme.of(context).colorScheme.onSurfaceVariant),
           ),
         if (version != const Version(0, 0, 0))
           Text(
             l10n.l_firmware_version(deviceData.info.getVersionName()),
-            style: Theme.of(context).textTheme.titleSmall?.apply(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
+            style: Theme.of(context).textTheme.titleSmall
+                ?.apply(color: Theme.of(context).colorScheme.onSurfaceVariant),
           ),
         if (deviceData.info.pinComplexity)
           Padding(

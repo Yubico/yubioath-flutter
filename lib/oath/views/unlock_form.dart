@@ -158,9 +158,9 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
                                 children: [
                                   Icon(
                                     Symbols.warning_amber,
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.tertiary,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .tertiary,
                                   ),
                                   Text(l10n.l_keystore_unavailable),
                                 ],

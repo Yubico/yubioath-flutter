@@ -38,6 +38,7 @@ import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
 import 'pin_dialog.dart';
+import 'utils.dart';
 
 class ManageKeyDialog extends ConsumerStatefulWidget {
   final DevicePath path;
@@ -67,14 +68,18 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
   final _keyController = TextEditingController();
   bool _isObscure = true;
 
+  ManagementKeyType get _currentKeyType =>
+      widget.pivState.metadata?.managementKeyMetadata.keyType ??
+      (widget.pivState.version.isAtLeast(6, 0)
+          ? ManagementKeyType.aes192
+          : defaultManagementKeyType);
+
   @override
   void initState() {
     super.initState();
 
     _hasMetadata = widget.pivState.metadata != null;
-    _keyType =
-        widget.pivState.metadata?.managementKeyMetadata.keyType ??
-        defaultManagementKeyType;
+    _keyType = _currentKeyType;
     _defaultKeyUsed =
         widget.pivState.metadata?.managementKeyMetadata.defaultValue ?? false;
     _defaultPinUsed =
@@ -240,22 +245,16 @@ class _ManageKeyDialogState extends ConsumerState<ManageKeyDialog> {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final currentType =
-        widget.pivState.metadata?.managementKeyMetadata.keyType ??
-        defaultManagementKeyType;
+    final currentType = _currentKeyType;
     final hexLength = _keyType.keyLength * 2;
+    final info = ref.watch(currentDeviceDataProvider).value?.info;
     final (fipsCapable, fipsApproved) =
-        ref
-            .watch(currentDeviceDataProvider)
-            .value
-            ?.info
-            .getFipsStatus(Capability.piv) ??
-        (false, false);
+        info?.getFipsStatus(Capability.piv) ?? (false, false);
     final fipsUnready = fipsCapable && !fipsApproved;
-    final managementKeyTypes = ManagementKeyType.values.toList();
-    if (fipsCapable) {
-      managementKeyTypes.remove(ManagementKeyType.tdes);
-    }
+    final managementKeyTypes = getSupportedManagementKeyTypes(
+      info?.version ?? widget.pivState.version,
+      fipsCapable,
+    );
 
     return ResponsiveDialog(
       title: Text(l10n.l_change_management_key),

@@ -4,46 +4,61 @@ on: [push, pull_request]
 
 jobs:
   build:
+    name: Build - ${{ matrix.arch }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x64
+            os: ubuntu-latest
+            container: ubuntu:20.04
+            sudo: ''
+            channel: stable
+            suffix: ''
+          - arch: arm64
+            os: ubuntu-22.04-arm
+            container: ''
+            sudo: sudo
+            # https://github.com/subosito/flutter-action/issues/268
+            channel: main
+            suffix: '-arm64'
+    env:
+      CARGO_PROFILE_DEV_DEBUG: "2"
+      DEBIAN_FRONTEND: noninteractive
 
-    runs-on: ubuntu-latest
-    container:
-      image: ubuntu:20.04
-      env:
-        DEBIAN_FRONTEND: noninteractive
+    runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
 
     steps:
-    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
         sparse-checkout: .github/workflows/env
 
     - name: Read variables from repo
       run: |
-        export $(cat .github/workflows/env)
         cat .github/workflows/env >> $GITHUB_ENV
-        echo CACHE_KEY=${{ runner.os }}-py$PYVER-${{ hashFiles('build-helper.sh', 'helper/**')}} >> $GITHUB_ENV
 
     - name: Install dependencies
       run: |
-        apt-get update
-        apt-get install -qq curl software-properties-common libnotify-dev libayatana-appindicator3-dev patchelf
-        add-apt-repository -y ppa:git-core/ppa
-        apt-get install -qq git
+        ${{ matrix.sudo }} apt-get update
+        ${{ matrix.sudo }} apt-get install -qq curl libnotify-dev
+        if [ '${{ matrix.arch }}' = 'x64' ]; then
+          apt-get install -qq software-properties-common python3-venv
+          add-apt-repository -y ppa:git-core/ppa
+          apt-get install -qq git
+        fi
         git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
-    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-
-    - name: Install uv
-      uses: astral-sh/setup-uv@f98e06938123ccabd21905ea5d0069192241f9f1 # v8.3.1
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
-        enable-cache: true
+        submodules: true
 
-    - name: Install Python
-      run: |
-        uv python install $PYVER
+    - name: Set helper cache key
+      run: echo CACHE_KEY=${{ runner.os }}-${{ runner.arch }}-rust-$(git -C yubikey-manager rev-parse HEAD)-${{ hashFiles('build-helper.sh', 'helper/**')}} >> $GITHUB_ENV
 
     - name: Check app versions
       run: |
-        uv run python set-version.py
+        python3 set-version.py
         git diff --exit-code
 
     - name: Cache helper
@@ -52,27 +67,43 @@ jobs:
       with:
         path: |
           build/linux/helper
-          assets/licenses/helper.json
+          assets/licenses/helper.txt
         key: ${{ env.CACHE_KEY }}
+
+    - name: Install Rust toolchain
+      if: steps.cache-helper.outputs.cache-hit != 'true'
+      uses: actions-rust-lang/setup-rust-toolchain@ecabd13d1c56bd1345c230e542e9144811ad706f # v2.0.0
+      with:
+        toolchain: stable
+        build-warnings: ""
+        rustflags: ""
+        cache: true
+        cache-workspaces: helper
+        cache-save-if: ${{ github.event_name == 'push' }}
+
+    - name: Install cargo-about
+      if: steps.cache-helper.outputs.cache-hit != 'true'
+      uses: taiki-e/install-action@5488ac5a951645ce95062214902ac4b6bc1a1037 # v2.87.32
+      with:
+        tool: cargo-about@0.9.2
+        fallback: none
 
     - name: Build the Helper
       if: steps.cache-helper.outputs.cache-hit != 'true'
       run: |
-        add-apt-repository ppa:ubuntu-toolchain-r/test -y
-        apt update -y
-        apt-get install -qq swig libpcsclite-dev build-essential cmake gcc-13 g++-13
-        update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 60 --slave /usr/bin/g++ g++ /usr/bin/g++-13 
-        update-alternatives --config gcc
+        ${{ matrix.sudo }} apt-get install -qq libpcsclite-dev libudev-dev libdbus-1-dev build-essential cmake pkg-config libssl-dev
         ./build-helper.sh
 
     - name: Install Flutter dependencies
       run: |
-        apt-get install -qq clang cmake ninja-build pkg-config libgtk-3-dev jq lld
+        ${{ matrix.sudo }} apt-get install -qq unzip clang cmake ninja-build pkg-config libgtk-3-dev libx11-dev libxi-dev jq lld
 
     - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
       with:
-        channel: 'stable'
+        channel: ${{ matrix.channel }}
         flutter-version: ${{ env.FLUTTER }}
+        cache: true
+        pub-cache: true
 
     - name: Configure Flutter
       run: |
@@ -81,41 +112,59 @@ jobs:
         flutter --version
         flutter pub get
 
-    - name: Run lints/tests
-      env:
-        SKIP: ${{ steps.cache-helper.outputs.cache-hit == 'true' && 'mypy,ruff check,ruff format' || ''}}
-      run: |
-        uvx pre-commit run --all-files
-        flutter test
-
     - name: Build the app
       run: flutter build linux
 
     - name: Check generated files
       run: git diff --exit-code
 
-    - name: Embedd appindicator
-      run: |
-        patchelf --set-rpath '$ORIGIN' build/linux/x64/release/bundle/lib/libtray_manager_plugin.so
-        cp -L /usr/lib/x86_64-linux-gnu/libayatana-appindicator3.so.1 build/linux/x64/release/bundle/lib/
-        patchelf --set-rpath '$ORIGIN' build/linux/x64/release/bundle/lib/libayatana-appindicator3.so.1
-        cp -L /usr/lib/x86_64-linux-gnu/libayatana-indicator3.so.7 build/linux/x64/release/bundle/lib/
-        patchelf --set-rpath '$ORIGIN' build/linux/x64/release/bundle/lib/libayatana-indicator3.so.7
-        cp -L /usr/lib/x86_64-linux-gnu/libdbusmenu-glib.so.4 build/linux/x64/release/bundle/lib/
-        patchelf --set-rpath '$ORIGIN' build/linux/x64/release/bundle/lib/libdbusmenu-glib.so.4
-        cp -L /usr/lib/x86_64-linux-gnu/libdbusmenu-gtk3.so.4 build/linux/x64/release/bundle/lib/
-        patchelf --set-rpath '$ORIGIN' build/linux/x64/release/bundle/lib/libdbusmenu-gtk3.so.4
-
     - name: Rename and archive app
+      shell: bash
       run: |
-        export REF=$(echo ${GITHUB_REF} | cut -d '/' -f 3)
-        export BASENAME="yubioath-desktop-${REF}-linux"
+        REF="${GITHUB_REF_NAME//\//-}"
+        BASENAME="yubioath-desktop-${REF}-linux${{ matrix.suffix }}"
         mkdir deploy
-        mv build/linux/x64/release/bundle "build/${BASENAME}"
+        mv build/linux/${{ matrix.arch }}/release/bundle "build/${BASENAME}"
         tar -czf deploy/${BASENAME}.tar.gz -C build "${BASENAME}"
 
     - name: Upload artifact
-      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
       with:
-        name: yubioath-desktop-linux
+        name: yubioath-desktop-linux${{ matrix.suffix }}
         path: deploy
+        if-no-files-found: error
+
+  test-helper:
+    name: Rust helper checks (no hardware)
+    runs-on: ubuntu-latest
+    env:
+      CARGO_PROFILE_DEV_DEBUG: "2"
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        submodules: true
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -qq libpcsclite-dev libudev-dev libdbus-1-dev build-essential cmake pkg-config libssl-dev
+
+    - name: Install Rust toolchain
+      uses: actions-rust-lang/setup-rust-toolchain@ecabd13d1c56bd1345c230e542e9144811ad706f # v2.0.0
+      with:
+        toolchain: stable
+        components: clippy,rustfmt
+        build-warnings: ""
+        rustflags: ""
+        cache: true
+        cache-workspaces: helper
+        cache-save-if: ${{ github.event_name == 'push' }}
+
+    - name: Check Rust formatting
+      run: cargo fmt --manifest-path helper/Cargo.toml -- --check
+
+    - name: Run non-hardware helper tests
+      run: cargo test --manifest-path helper/Cargo.toml --locked
+
+    - name: Check helper with Clippy
+      run: cargo clippy --manifest-path helper/Cargo.toml --locked --all-targets -- -D warnings

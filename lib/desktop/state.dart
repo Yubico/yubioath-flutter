@@ -48,7 +48,7 @@ final rpcStateProvider = StateNotifierProvider<_RpcStateNotifier, RpcState>(
 class _RpcStateNotifier extends StateNotifier<RpcState> {
   final RpcSession? _rpc;
 
-  _RpcStateNotifier(this._rpc) : super(const RpcState('unknown', false)) {
+  _RpcStateNotifier(this._rpc) : super(const RpcState('unknown')) {
     _init();
   }
 
@@ -180,9 +180,8 @@ class _DesktopClipboard extends AppClipboard {
         }
         await windowManager.focus();
         // Window focus isn't immediate, wait until focused with 10s timeout
-        await Future.doWhile(
-          () async => !await windowManager.isFocused(),
-        ).timeout(const Duration(seconds: 10));
+        await Future.doWhile(() async => !await windowManager.isFocused())
+            .timeout(const Duration(seconds: 10));
       }
       await Clipboard.setData(ClipboardData(text: toClipboard));
     } finally {
@@ -205,27 +204,21 @@ class DesktopCurrentDeviceNotifier extends CurrentDeviceNotifier {
   DeviceNode? build() {
     SharedPreferences prefs = ref.watch(prefProvider);
     final devices = ref.watch(attachedDevicesProvider);
-    final hidden = ref.watch(hiddenDevicesProvider);
     final lastDevice = prefs.getString(_lastDevice) ?? '';
 
-    // Ensure hidden devices are deselected
-    var node = devices
-        .where(
-          (dev) => dev.path.key == lastDevice && !hidden.contains(dev.path.key),
-        )
-        .firstOrNull;
+    var node = devices.where((dev) => dev.path.key == lastDevice).firstOrNull;
 
     if (node == null) {
       final parts = lastDevice.split('/');
       if (parts.firstOrNull == 'pid') {
         node = devices
-            .whereType<UsbYubiKeyNode>()
-            .where((e) => e.pid.value.toString() == parts[1])
+            .whereType<YubiKeyDeviceNode>()
+            .where((e) => e.pid?.value.toString() == parts[1])
             .firstOrNull;
       }
     }
 
-    node = node ?? devices.whereType<UsbYubiKeyNode>().firstOrNull;
+    node = node ?? devices.whereType<YubiKeyDeviceNode>().firstOrNull;
 
     final devicePaths = devices.map((dev) => dev.path.key);
     if (node != null && !devicePaths.contains(lastDevice)) {

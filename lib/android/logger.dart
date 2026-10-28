@@ -16,6 +16,7 @@
 
 import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
+
 import '../app/logging.dart';
 
 final _log = Logger('android.logger');
@@ -23,7 +24,7 @@ final _log = Logger('android.logger');
 class AndroidLogger extends LogLevelNotifier {
   final MethodChannel _channel = const MethodChannel('android.log.redirect');
 
-  AndroidLogger() : super() {
+  AndroidLogger() : super(() async {}) {
     Logger.root.onRecord.listen((record) {
       if (record.level >= Logger.root.level) {
         log(record);
@@ -33,9 +34,9 @@ class AndroidLogger extends LogLevelNotifier {
   }
 
   @override
-  void setLogLevel(Level level) {
-    super.setLogLevel(level);
-    _channel.invokeMethod('setLevel', {'level': level.name});
+  Future<void> setLogLevel(Level level) async {
+    await _channel.invokeMethod<void>('setLevel', {'level': level.name});
+    await super.setLogLevel(level);
   }
 
   @override

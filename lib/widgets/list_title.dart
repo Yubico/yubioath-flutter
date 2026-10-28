@@ -28,9 +28,8 @@ class ListTitle extends StatelessWidget {
       title.toUpperCase(),
       style:
           textStyle ??
-          Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Theme.of(context).colorScheme.primary,
-          ),
+          Theme.of(context).textTheme.bodyMedium
+              ?.copyWith(color: Theme.of(context).colorScheme.primary),
     ),
   );
 }

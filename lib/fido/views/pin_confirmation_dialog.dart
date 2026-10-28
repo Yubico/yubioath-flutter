@@ -28,6 +28,7 @@ import '../../widgets/visibility_toggle_button.dart';
 import '../keys.dart';
 import '../models.dart';
 import '../state.dart';
+import '../validation.dart';
 
 class FidoPinConfirmationDialog extends ConsumerStatefulWidget {
   final DevicePath devicePath;
@@ -69,7 +70,7 @@ class _FidoPinConfirmationDialog
   void _submit() async {
     final pin = _pinController.text;
 
-    if (pin.isEmpty) {
+    if (!isValidFidoPinLength(pin)) {
       setState(() {
         _pinIsWrong = true;
       });
@@ -86,6 +87,7 @@ class _FidoPinConfirmationDialog
       final result = await ref
           .read(fidoStateProvider(widget.devicePath).notifier)
           .unlock(_pinController.text);
+      if (!mounted) return;
       switch (result) {
         case PinResultFailure(:final reason):
           {
@@ -121,6 +123,9 @@ class _FidoPinConfirmationDialog
     final l10n = AppLocalizations.of(context);
     if (_pinController.text.isEmpty) {
       return l10n.l_field_required;
+    }
+    if (!isValidFidoPinLength(_pinController.text)) {
+      return l10n.s_invalid_length;
     }
     if (_retries == 0) {
       return l10n.l_pin_blocked_reset;

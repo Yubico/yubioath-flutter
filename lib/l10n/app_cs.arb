@@ -162,10 +162,6 @@
     "@_yubikey_selection": {},
 
     "s_select_to_scan": "Vyberte pro skenování",
-    "s_hide_reader": "Skrýt čtečku",
-    "s_show_hidden_readers": "Zobrazit skryté čtečky",
-    "s_toggle_readers": "Přepnout čtečky",
-    "l_toggle_readers_desc": "Zobrazit nebo skrýt čtečky",
     "s_sn_serial": "S/N: {serial}",
     "@s_sn_serial": {
         "placeholders": {
@@ -210,6 +206,8 @@
     "l_replace_yk_on_reader": "Položte YubiKey zpět na čtečku",
     "l_remove_yk_from_reader": "Odeberte YubiKey z NFC čtečky",
     "p_try_reinsert_yk": "Zkuste odpojit a znovu připojit YubiKey.",
+    "l_reinsert_yk_nfc_required": null,
+    "p_reinsert_yk_nfc_required": null,
     "s_touch_required": "Vyžaduje se dotyk",
     "l_touch_button_now": "Dotkněte se tlačítka na vašem YubiKey",
     "l_long_touch_button_now": "Stiskněte a podržte tlačítko na vašem YubiKey po dobu 5 sekund",
@@ -858,6 +856,7 @@
     "s_private_id": "Soukromé ID",
     "s_use_serial": "Použít sériové číslo",
     "l_select_file": "Vybrat soubor",
+    "l_create_export_file": null,
     "l_no_export_file": "Žádný exportovaný soubor",
     "s_no_export": "Žádný export",
     "s_export": "Exportovat",
@@ -871,6 +870,8 @@
         }
     },
     "s_keyboard_layout": "Rozložení klávesnice",
+    "s_keyboard_variant": null,
+    "s_keyboard_variant_default": null,
     "l_keyboard_layout": "Klávesnice {layout}",
     "@l_keyboard_layout": {
         "placeholders": {

@@ -305,12 +305,10 @@ class _AppPageState extends ConsumerState<AppPage> {
                 widget.alternativeTitle ?? widget.title!,
                 style: Theme.of(context).textTheme.displaySmall!.copyWith(
                   color: widget.alternativeTitle != null
-                      ? Theme.of(
-                          context,
-                        ).colorScheme.onSurfaceVariant.withValues(alpha: 0.6)
-                      : Theme.of(
-                          context,
-                        ).colorScheme.primary.withValues(alpha: 0.9),
+                      ? Theme.of(context).colorScheme.onSurfaceVariant
+                            .withValues(alpha: 0.6)
+                      : Theme.of(context).colorScheme.primary
+                            .withValues(alpha: 0.9),
                 ),
                 overflow: .ellipsis,
               ),
@@ -474,9 +472,8 @@ class _AppPageState extends ConsumerState<AppPage> {
             child: Align(
               alignment: Alignment.center,
               child: ScrollConfiguration(
-                behavior: ScrollConfiguration.of(
-                  context,
-                ).copyWith(scrollbars: false),
+                behavior: ScrollConfiguration.of(context)
+                    .copyWith(scrollbars: false),
                 child: SingleChildScrollView(
                   padding: isAndroid
                       ? EdgeInsets.only(

@@ -26,7 +26,6 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../../android/app_methods.dart';
 import '../../android/models.dart';
 import '../../android/state.dart';
-import '../../core/models.dart';
 import '../../core/state.dart';
 import '../../desktop/state.dart';
 import '../../generated/l10n/app_localizations.dart';
@@ -35,7 +34,6 @@ import '../../widgets/basic_dialog.dart';
 import '../../widgets/info_popup_button.dart';
 import '../../widgets/list_title.dart';
 import '../../widgets/responsive_dialog.dart';
-import '../../widgets/tooltip_if_truncated.dart';
 import '../app_url_launcher.dart';
 import '../icon_provider/icon_pack.dart';
 import '../icon_provider/icon_pack_manager.dart';
@@ -71,7 +69,6 @@ enum SettingsSection {
   theme(),
   customIcons(),
   language(),
-  readers(),
   debugging(),
   help(),
   nfcAndUsb(),
@@ -345,14 +342,14 @@ class _IconsViewState extends ConsumerState<_IconsView> {
     if (isAndroid) {
       await preserveConnectedDeviceWhenPaused();
     }
-    final result = await FilePicker.platform.pickFiles(
+    final result = await FilePicker.pickFile(
       allowedExtensions: ['zip'],
       type: FileType.custom,
-      allowMultiple: false,
-      lockParentWindow: true,
+      windowsOptions: const WindowsOptions(lockParentWindow: true),
+      linuxOptions: const LinuxOptions(lockParentWindow: true),
       dialogTitle: l10n.s_choose_icon_pack,
     );
-    if (result != null && result.files.isNotEmpty) {
+    if (result != null) {
       if (iconPack != null) {
         setState(() {
           _replacing = true;
@@ -360,7 +357,10 @@ class _IconsViewState extends ConsumerState<_IconsView> {
       }
       final importStatus = await ref
           .read(iconPackProvider.notifier)
-          .importPack(l10n, result.paths.first!);
+          .importPack(
+            l10n,
+            result.path ?? (throw StateError('Selected icon pack has no path')),
+          );
       await ref.read(withContextProvider)((context) async {
         if (importStatus) {
           showMessage(context, l10n.l_icon_pack_imported);
@@ -660,79 +660,6 @@ class _LanguageItem extends ConsumerWidget {
   }
 }
 
-class _ToggleReadersView extends ConsumerWidget {
-  final bool isDialog;
-
-  const _ToggleReadersView({required this.isDialog});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-    final textTheme = theme.textTheme;
-    final hidden = ref.watch(hiddenDevicesProvider);
-    final nfcDevices = ref
-        .watch(attachedDevicesProvider)
-        .where((e) => e.transport == Transport.nfc);
-    if (nfcDevices.isEmpty && isDialog) {
-      Navigator.of(context).pop();
-    }
-
-    final items = nfcDevices.map(
-      (e) => SwitchListTile(
-        value: !hidden.contains(e.path.key),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(isDialog ? 0 : 48.0),
-        ),
-        contentPadding: EdgeInsets.symmetric(horizontal: 26),
-        onChanged: (show) {
-          if (!show) {
-            ref.read(hiddenDevicesProvider.notifier).hideDevice(e.path);
-          } else {
-            ref.read(hiddenDevicesProvider.notifier).showDevice(e.path);
-          }
-        },
-        title: Transform.translate(
-          offset: Offset(6, 0),
-          child: TooltipIfTruncated(
-            text: e.name,
-            style: TextStyle(fontSize: textTheme.bodyMedium?.fontSize),
-          ),
-        ),
-        secondary: Icon(Symbols.contactless),
-      ),
-    );
-    if (isDialog) {
-      return ResponsiveDialog(
-        title: Text(l10n.s_toggle_readers),
-        builder: (context, fullScreen) => Column(children: [...items]),
-      );
-    } else {
-      return Column(children: [ListTitle(l10n.s_toggle_readers), ...items]);
-    }
-  }
-}
-
-class _ToggleReadersItem extends StatelessWidget {
-  final SettingsSection? selected;
-  final bool expanded;
-
-  const _ToggleReadersItem({required this.selected, required this.expanded});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return _SettingsSectionItem(
-      SettingsSection.readers,
-      selected: selected,
-      expanded: expanded,
-      icon: Symbols.contactless,
-      title: l10n.s_toggle_readers,
-      subtitle: l10n.l_toggle_readers_desc,
-    );
-  }
-}
-
 class _LogsView extends ConsumerStatefulWidget {
   final bool isDialog;
 
@@ -745,6 +672,17 @@ class _LogsView extends ConsumerStatefulWidget {
 class _LogsViewState extends ConsumerState<_LogsView> {
   bool _diagnosing = false;
 
+  Future<void> _setLogLevel(Level level) async {
+    try {
+      await ref.read(logLevelProvider.notifier).setLogLevel(level);
+    } on Exception catch (e) {
+      _log.error('Failed to change log level', e);
+      if (mounted) {
+        showExceptionMessage(context, e);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -754,7 +692,7 @@ class _LogsViewState extends ConsumerState<_LogsView> {
       groupValue: logLevel,
       onChanged: (value) {
         if (value != null) {
-          ref.read(logLevelProvider.notifier).setLogLevel(value);
+          _setLogLevel(value);
         }
       },
       child: Column(
@@ -774,7 +712,7 @@ class _LogsViewState extends ConsumerState<_LogsView> {
                 child: Text('${e.name[0]}${e.name.substring(1).toLowerCase()}'),
               ),
               onTap: () {
-                ref.read(logLevelProvider.notifier).setLogLevel(e);
+                _setLogLevel(e);
               },
             ),
           ),
@@ -1192,9 +1130,8 @@ class _ConfirmResetDialog extends StatelessWidget {
       ],
       content: Text(
         l10n.p_reset_settings_confirmation_desc,
-        style: Theme.of(
-          context,
-        ).textTheme.bodyMedium?.copyWith(fontWeight: .w700),
+        style: Theme.of(context).textTheme.bodyMedium
+            ?.copyWith(fontWeight: .w700),
       ),
     );
   }
@@ -1223,7 +1160,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       SettingsSection.language => _LanguageView(isDialog: isDialog),
       SettingsSection.theme => _ThemeModeView(isDialog: isDialog),
       SettingsSection.debugging => _LogsView(isDialog: isDialog),
-      SettingsSection.readers => _ToggleReadersView(isDialog: isDialog),
       SettingsSection.customIcons => _IconsView(isDialog: isDialog),
       SettingsSection.help => _HelpView(isDialog: isDialog),
       SettingsSection.nfcAndUsb => _NfcAndUsbView(isDialog: isDialog),
@@ -1234,14 +1170,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    ref.listen(attachedDevicesProvider, (prev, next) {
-      final nfcDevices = next.where((e) => e.transport == Transport.nfc);
-      if (nfcDevices.isEmpty && _selected == SettingsSection.readers) {
-        setState(() {
-          _selected = null;
-        });
-      }
-    });
     return Actions(
       actions: {
         EscapeIntent: CallbackAction<EscapeIntent>(
@@ -1293,9 +1221,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             ? (context) => _buildSectionView(_selected!, false)
             : null,
         builder: (context, expanded) {
-          final nfcDevices = ref
-              .watch(attachedDevicesProvider)
-              .where((e) => e.transport == Transport.nfc);
           return Actions(
             actions: {
               OpenIntent<SettingsSection>:
@@ -1324,8 +1249,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   _LanguageItem(selected: _selected, expanded: expanded),
                   if (isAndroid)
                     _NfcAndUsbItem(selected: _selected, expanded: expanded),
-                  if (nfcDevices.isNotEmpty && isDesktop)
-                    _ToggleReadersItem(selected: _selected, expanded: expanded),
                   const SizedBox(height: 16.0),
                   Column(
                     crossAxisAlignment: .start,

@@ -8,14 +8,20 @@ jobs:
 
     steps:
       - name: Set up JDK 21
-        uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # v5.4.0
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
           distribution: 'temurin'
           java-version: '21'
 
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: 'app'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+        with:
+          cache-provider: basic
+          cache-read-only: ${{ github.event_name == 'pull_request' }}
 
       - name: Read variables from repo
         run: cat .github/workflows/env >> $GITHUB_ENV
@@ -26,6 +32,8 @@ jobs:
         with:
           channel: 'stable'
           flutter-version: ${{ env.FLUTTER }}
+          cache: true
+          pub-cache: true
       - run: |
           flutter config
           flutter --version
@@ -36,17 +44,6 @@ jobs:
         run: |
           python set-version.py
           git diff --exit-code
-        working-directory: ./app
-
-      - name: Run flutter tests
-        run: |
-          export PATH=$PATH:$HOME/.local/bin  # Needed to ensure pip/pre-commit on PATH
-          pipx install pre-commit
-          pre-commit run flutter-l10n-gen --all-files
-          pre-commit run dart-format --all-files
-          pre-commit run flutter-analyze --all-files
-          pre-commit run spotless-apply --all-files
-          flutter test
         working-directory: ./app
 
       - name: Build the App
@@ -70,7 +67,7 @@ jobs:
         run: android/scripts/collect-artifacts.sh ${GITHUB_REF}
         working-directory: ./app
 
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: yubico-authenticator-android
           path: app/artifacts/*

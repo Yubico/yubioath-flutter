@@ -41,6 +41,13 @@ class PivViewModel : ViewModel() {
         _state.postValue(ViewModelData.Value(state))
     }
 
+    fun expireAuthentication(serial: String) {
+        if (currentSerial() != serial) return
+        val state = (_state.value as? ViewModelData.Value<*>)?.data as? PivState ?: return
+        // Dart may have locally marked this state authenticated after an unlock.
+        setState(state.copy(authenticated = false))
+    }
+
     fun clearState() {
         _state.postValue(ViewModelData.Empty)
     }

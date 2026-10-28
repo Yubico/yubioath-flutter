@@ -102,12 +102,10 @@ void main() {
 
 /// An opaque `#RRGGBB` color resource from the Android app.
 Color _androidColor(String valuesDir, String name) {
-  final colors = File(
-    'android/app/src/main/res/$valuesDir/colors.xml',
-  ).readAsStringSync();
-  final match = RegExp(
-    '<color name="$name">#([0-9A-Fa-f]{6})</color>',
-  ).firstMatch(colors);
+  final colors = File('android/app/src/main/res/$valuesDir/colors.xml')
+      .readAsStringSync();
+  final match = RegExp('<color name="$name">#([0-9A-Fa-f]{6})</color>')
+      .firstMatch(colors);
   expect(match, isNotNull, reason: '$name is missing in $valuesDir');
   return Color(0xFF000000 | int.parse(match!.group(1)!, radix: 16));
 }

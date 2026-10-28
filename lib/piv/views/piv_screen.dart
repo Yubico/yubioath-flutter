@@ -302,9 +302,8 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                               actions: [
                                 TextButton(
                                   onPressed: () {
-                                    Navigator.of(
-                                      context,
-                                    ).popUntil((route) => route.isFirst);
+                                    Navigator.of(context)
+                                        .popUntil((route) => route.isFirst);
                                     showBlurDialog(
                                       context: context,
                                       builder: (context) => pukAttempts == 0
@@ -355,9 +354,8 @@ class _PivScreenState extends ConsumerState<PivScreen> {
                                 ),
                                 TextButton(
                                   onPressed: () {
-                                    Navigator.of(
-                                      context,
-                                    ).popUntil((route) => route.isFirst);
+                                    Navigator.of(context)
+                                        .popUntil((route) => route.isFirst);
                                     showBlurDialog(
                                       context: context,
                                       builder: (context) => ManagePinPukDialog(

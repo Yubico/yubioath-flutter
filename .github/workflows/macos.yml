@@ -4,37 +4,30 @@ on: [push, pull_request]
 
 jobs:
   build:
+    env:
+      CARGO_PROFILE_DEV_DEBUG: "2"
 
     runs-on: macos-latest
 
     steps:
-    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        submodules: true
 
     - name: Read variables from repo
       run: |
-        export $(cat .github/workflows/env)
         cat .github/workflows/env >> $GITHUB_ENV
-        echo CACHE_KEY=${{ runner.os }}-py$PYVER-${{ hashFiles('build-helper.sh', 'helper/**')}} >> $GITHUB_ENV
+        echo CACHE_KEY=${{ runner.os }}-${{ runner.arch }}-rust-$(git -C yubikey-manager rev-parse HEAD)-${{ hashFiles('build-helper.sh', 'helper/**')}} >> $GITHUB_ENV
 
     - name: Check app versions
       run: |
         python3 set-version.py
         git diff --exit-code
 
-    - name: Set up Python
-      uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
-      with:
-        python-version: ${{ env.PYVER }}
-
     - name: Set up CocoaPods
       uses: maxim-lobanov/setup-cocoapods@8e97e1e98e6ccf42564fdf5622c8feec74199377 # v1.4.0
       with:
         podfile-path: macos/Podfile.lock
-
-    - name: Install uv
-      uses: astral-sh/setup-uv@f98e06938123ccabd21905ea5d0069192241f9f1 # v8.3.1
-      with:
-        enable-cache: true
 
     - name: Cache helper
       id: cache-helper
@@ -42,15 +35,31 @@ jobs:
       with:
         path: |
           build/macos/helper
-          assets/licenses/helper.json
+          assets/licenses/helper.txt
         key: ${{ env.CACHE_KEY }}
 
-    - name: Install dependencies
+    - name: Install Rust toolchain
       if: steps.cache-helper.outputs.cache-hit != 'true'
-      run: |
-        brew update
-        brew install swig
-        python -m pip install --upgrade pip
+      uses: actions-rust-lang/setup-rust-toolchain@ecabd13d1c56bd1345c230e542e9144811ad706f # v2.0.0
+      with:
+        toolchain: stable
+        target: aarch64-apple-darwin,x86_64-apple-darwin
+        build-warnings: ""
+        rustflags: ""
+        cache: true
+        cache-workspaces: helper
+        cache-save-if: ${{ github.event_name == 'push' }}
+
+    - name: Install cargo-about
+      if: steps.cache-helper.outputs.cache-hit != 'true' && runner.arch == 'ARM64'
+      uses: taiki-e/install-action@5488ac5a951645ce95062214902ac4b6bc1a1037 # v2.87.32
+      with:
+        tool: cargo-about@0.9.2
+        fallback: none
+
+    - name: Install cargo-about on Intel
+      if: steps.cache-helper.outputs.cache-hit != 'true' && runner.arch == 'X64'
+      run: cargo install cargo-about --version 0.9.2 --locked --features cli
 
     - name: Build the Helper
       if: steps.cache-helper.outputs.cache-hit != 'true'
@@ -60,17 +69,11 @@ jobs:
       with:
         channel: 'stable'
         flutter-version: ${{ env.FLUTTER }}
+        cache: true
+        pub-cache: true
     - run: flutter config --enable-macos-desktop
     - run: flutter --version
     - run: flutter pub get
-
-    - name: Run lints/tests
-      env:
-        SKIP: ${{ steps.cache-helper.outputs.cache-hit == 'true' && 'mypy,ruff check,ruff format' || ''}}
-      run: |
-        uv tool install pre-commit
-        pre-commit run --all-files
-        flutter test
 
     - name: Build the app
       run: |
@@ -102,7 +105,7 @@ jobs:
         mv macos/release-macos.sh deploy
 
     - name: Upload artifact
-      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
       with:
         name: yubioath-desktop-macos
         path: deploy

@@ -162,10 +162,6 @@
     "@_yubikey_selection": {},
 
     "s_select_to_scan": "Välj att skanna",
-    "s_hide_reader": "Göm läsare",
-    "s_show_hidden_readers": "Visa dolda läsare",
-    "s_toggle_readers": "Växla läsare",
-    "l_toggle_readers_desc": "Visa eller dölj läsare",
     "s_sn_serial": "S/N: {serial}",
     "@s_sn_serial": {
         "placeholders": {
@@ -210,6 +206,8 @@
     "l_replace_yk_on_reader": "Sätt tillbaka din YubiKey på läsaren",
     "l_remove_yk_from_reader": "Ta bort din YubiKey från NFC-läsaren",
     "p_try_reinsert_yk": "Försök att ta ut och sätta i YubiKey igen.",
+    "l_reinsert_yk_nfc_required": null,
+    "p_reinsert_yk_nfc_required": null,
     "s_touch_required": "Beröring krävs",
     "l_touch_button_now": "Tryck på knappen på din YubiKey nu",
     "l_long_touch_button_now": "Tryck och håll in knappen på din YubiKey i 5 sekunder nu",
@@ -858,6 +856,7 @@
     "s_private_id": "Privat ID",
     "s_use_serial": "Använd seriell",
     "l_select_file": "Välj fil",
+    "l_create_export_file": null,
     "l_no_export_file": "Ingen exportfil",
     "s_no_export": "Ingen export",
     "s_export": "Export",
@@ -871,6 +870,8 @@
         }
     },
     "s_keyboard_layout": null,
+    "s_keyboard_variant": null,
+    "s_keyboard_variant_default": null,
     "l_keyboard_layout": "Tangentbord {layout}",
     "@l_keyboard_layout": {
         "placeholders": {

@@ -55,7 +55,7 @@ kotlin {
 }
 
 dependencies {
-    def camerax_version = "1.6.1"
+    def camerax_version = "1.6.2"
     implementation "androidx.camera:camera-lifecycle:${camerax_version}"
     implementation "androidx.camera:camera-view:${camerax_version}"
     implementation "androidx.camera:camera-camera2:${camerax_version}"
@@ -63,4 +63,3 @@ dependencies {
     implementation "com.google.zxing:core:3.5.4"
     implementation "com.google.zxing:android-core:3.3.0"
 }
-

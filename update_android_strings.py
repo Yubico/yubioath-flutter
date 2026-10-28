@@ -56,6 +56,29 @@ def get_lang_file(lang, region):
     return p.join(get_lang_file_dir(lang, region), "strings.xml")
 
 
+def indent_xml(tree):
+    """Match ElementTree.indent on Python 3.8, which lacks it."""
+    if hasattr(ET, "indent"):
+        ET.indent(tree, "    ")
+        return
+
+    def indent_children(element, level):
+        if not len(element):
+            return
+        padding = "\n" + "    " * level
+        child_padding = padding + "    "
+        if not element.text or not element.text.strip():
+            element.text = child_padding
+        for child in element:
+            indent_children(child, level + 1)
+            if not child.tail or not child.tail.strip():
+                child.tail = child_padding
+        if not child.tail.strip():
+            child.tail = padding
+
+    indent_children(tree.getroot(), 0)
+
+
 def process_android_res(lang, region, arb, keys_to_translate):
     """Generate or update Android string resource for lang.
 
@@ -89,7 +112,7 @@ def process_android_res(lang, region, arb, keys_to_translate):
             else:
                 ET.SubElement(res, "string", name=f"{key}").text = escaped_val
     tree = ET.ElementTree(res)
-    ET.indent(tree, "    ")
+    indent_xml(tree)
     tree.write(res_path, encoding="utf-8", xml_declaration=True)
     return True
 

@@ -162,10 +162,6 @@
     "@_yubikey_selection": {},
 
     "s_select_to_scan": "Wybierz, aby zeskanować",
-    "s_hide_reader": "Ukryj czytnik",
-    "s_show_hidden_readers": "Pokaż ukryte czytniki",
-    "s_toggle_readers": "Przełącz czytniki",
-    "l_toggle_readers_desc": "Pokaż lub ukryj czytniki",
     "s_sn_serial": "S/N: {serial}",
     "@s_sn_serial": {
         "placeholders": {
@@ -210,6 +206,8 @@
     "l_replace_yk_on_reader": "Zbliż klucz YubiKey do czytnika",
     "l_remove_yk_from_reader": "Odsuń klucz YubiKey od czytnika NFC",
     "p_try_reinsert_yk": "Spróbuj podłączyć ponownie klucz YubiKey.",
+    "l_reinsert_yk_nfc_required": null,
+    "p_reinsert_yk_nfc_required": null,
     "s_touch_required": "Dotknięcie wymagane",
     "l_touch_button_now": "Dotknij przycisku na kluczu YubiKey",
     "l_long_touch_button_now": "Przytrzymaj przycisk klucza YubiKey przez 5 sekund",
@@ -858,6 +856,7 @@
     "s_private_id": "Private ID",
     "s_use_serial": "Użyj numeru seryjnego",
     "l_select_file": "Wybierz plik",
+    "l_create_export_file": null,
     "l_no_export_file": "Brak pliku eksportu",
     "s_no_export": "Brak eksportu",
     "s_export": "Eksportuj",
@@ -871,6 +870,8 @@
         }
     },
     "s_keyboard_layout": "Układ klawiatury",
+    "s_keyboard_variant": null,
+    "s_keyboard_variant_default": null,
     "l_keyboard_layout": "Klawiatura {layout}",
     "@l_keyboard_layout": {
         "placeholders": {

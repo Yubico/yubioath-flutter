@@ -226,17 +226,12 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                           child: RadioGroup(
                             groupValue: _generateType,
                             onChanged: (generateType) {
-                              if (generateType != null) {
-                                (_keyType == KeyType.x25519 &&
-                                            generateType ==
-                                                GenerateType.publicKey) ||
-                                        _keyType != KeyType.x25519
-                                    ? {
-                                        setState(() {
-                                          _generateType = generateType;
-                                        }),
-                                      }
-                                    : null;
+                              if (generateType != null &&
+                                  (_keyType.supportsSigning ||
+                                      generateType == GenerateType.publicKey)) {
+                                setState(() {
+                                  _generateType = generateType;
+                                });
                               }
                             },
                             child: Column(
@@ -302,7 +297,7 @@ class _GenerateKeyDialogState extends ConsumerState<GenerateKeyDialog> {
                                         _subjectFocus.unfocus();
                                         setState(() {
                                           _keyType = value;
-                                          if (value == KeyType.x25519) {
+                                          if (!value.supportsSigning) {
                                             _generateType =
                                                 GenerateType.publicKey;
                                           }

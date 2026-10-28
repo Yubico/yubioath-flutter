@@ -76,6 +76,12 @@ const _$KeyTypeEnumMap = {
   KeyType.eccp384: 20,
   KeyType.ed25519: 224,
   KeyType.x25519: 225,
+  KeyType.mlDsa44: 226,
+  KeyType.mlDsa65: 227,
+  KeyType.mlDsa87: 228,
+  KeyType.mlKem512: 229,
+  KeyType.mlKem768: 230,
+  KeyType.mlKem1024: 231,
 };
 
 const _$PinPolicyEnumMap = {

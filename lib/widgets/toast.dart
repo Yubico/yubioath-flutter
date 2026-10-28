@@ -113,9 +113,9 @@ void Function() showToast(
           colorScheme.surface,
         );
 
-  final textStyle = ThemeData(
-    brightness: isThemeDark ? .light : .dark,
-  ).textTheme.titleMedium;
+  final textStyle = ThemeData(brightness: isThemeDark ? .light : .dark)
+      .textTheme
+      .titleMedium;
 
   OverlayEntry? entry;
   void close() {

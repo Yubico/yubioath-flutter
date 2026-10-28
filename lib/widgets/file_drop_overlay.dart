@@ -12,9 +12,8 @@ class FileDropOverlay extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(
-          context,
-        ).colorScheme.secondaryContainer.withValues(alpha: 0.95),
+        color: Theme.of(context).colorScheme.secondaryContainer
+            .withValues(alpha: 0.95),
         border: Border.all(color: Theme.of(context).colorScheme.primary),
         borderRadius: const BorderRadius.all(Radius.circular(20.0)),
       ),

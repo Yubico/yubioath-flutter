@@ -104,12 +104,12 @@ class DesktopOtpStateNotifier extends OtpStateNotifier {
   }
 
   @override
-  Future<Map<String, List<String>>> getKeyboardLayouts() async {
+  Future<Map<String, KeyboardLayout>> getKeyboardLayouts() async {
     final result = await _session.command('keyboard_layouts', target: _subpath);
-    return Map<String, List<String>>.from(
-      result.map(
-        (key, value) =>
-            MapEntry(key, (value as List<dynamic>).cast<String>().toList()),
+    return result.map(
+      (key, value) => MapEntry(
+        key,
+        KeyboardLayout.fromJson(key, value as Map<String, dynamic>),
       ),
     );
   }

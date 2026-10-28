@@ -19,7 +19,7 @@ allprojects {
         targetSdkVersion = 37
         compileSdkVersion = 37
 
-        yubiKitVersion = "3.2.0"
+        yubiKitVersion = "3.2.1"
         junitVersion = "4.13.2"
         mockitoVersion = "5.23.0"
     }
@@ -28,6 +28,14 @@ allprojects {
 rootProject.layout.buildDirectory = '../build'
 subprojects {
     project.layout.buildDirectory = "${rootProject.layout.buildDirectory.get()}/${project.name}"
+}
+subprojects {
+    if (project.name == 'desktop_drop') {
+        // Its bundled Kotlin plugin omits compiled classes from AGP's compile jar.
+        buildscript.configurations.classpath.resolutionStrategy.force(
+            'org.jetbrains.kotlin:kotlin-gradle-plugin:2.3.21'
+        )
+    }
 }
 subprojects {
     project.evaluationDependsOn(':app')

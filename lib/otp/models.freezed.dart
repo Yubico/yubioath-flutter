@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'models.dart';
@@ -9,6 +9,7 @@ part of 'models.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -28,16 +29,21 @@ $OtpStateCopyWith<OtpState> get copyWith => _$OtpStateCopyWithImpl<OtpState>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is OtpState&&(identical(other.slot1Configured, slot1Configured) || other.slot1Configured == slot1Configured)&&(identical(other.slot2Configured, slot2Configured) || other.slot2Configured == slot2Configured));
+  final _this = this as OtpState;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OtpState&&(identical(other.slot1Configured, _this.slot1Configured) || other.slot1Configured == _this.slot1Configured)&&(identical(other.slot2Configured, _this.slot2Configured) || other.slot2Configured == _this.slot2Configured));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,slot1Configured,slot2Configured);
+int get hashCode {
+  final _this = this as OtpState;
+  return Object.hash(runtimeType,_this.slot1Configured,_this.slot2Configured);
+}
 
 @override
 String toString() {
-  return 'OtpState(slot1Configured: $slot1Configured, slot2Configured: $slot2Configured)';
+  final _this = this as OtpState;
+  return 'OtpState(slot1Configured: ${_this.slot1Configured}, slot2Configured: ${_this.slot2Configured})';
 }
 
 
@@ -66,7 +72,7 @@ class _$OtpStateCopyWithImpl<$Res>
 /// Create a copy of OtpState
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? slot1Configured = null,Object? slot2Configured = null,}) {
-  return _then(_self.copyWith(
+  return _then(OtpState(
 slot1Configured: null == slot1Configured ? _self.slot1Configured : slot1Configured // ignore: cast_nullable_to_non_nullable
 as bool,slot2Configured: null == slot2Configured ? _self.slot2Configured : slot2Configured // ignore: cast_nullable_to_non_nullable
 as bool,
@@ -229,16 +235,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OtpState&&(identical(other.slot1Configured, slot1Configured) || other.slot1Configured == slot1Configured)&&(identical(other.slot2Configured, slot2Configured) || other.slot2Configured == slot2Configured));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _OtpState&&(identical(other.slot1Configured, slot1Configured) || other.slot1Configured == slot1Configured)&&(identical(other.slot2Configured, slot2Configured) || other.slot2Configured == slot2Configured));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,slot1Configured,slot2Configured);
+int get hashCode {
+    return Object.hash(runtimeType,slot1Configured,slot2Configured);
+}
 
 @override
 String toString() {
-  return 'OtpState(slot1Configured: $slot1Configured, slot2Configured: $slot2Configured)';
+    return 'OtpState(slot1Configured: $slot1Configured, slot2Configured: $slot2Configured)';
 }
 
 
@@ -291,16 +299,21 @@ $OtpSlotCopyWith<OtpSlot> get copyWith => _$OtpSlotCopyWithImpl<OtpSlot>(this as
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is OtpSlot&&(identical(other.slot, slot) || other.slot == slot)&&(identical(other.isConfigured, isConfigured) || other.isConfigured == isConfigured));
+  final _this = this as OtpSlot;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OtpSlot&&(identical(other.slot, _this.slot) || other.slot == _this.slot)&&(identical(other.isConfigured, _this.isConfigured) || other.isConfigured == _this.isConfigured));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,slot,isConfigured);
+int get hashCode {
+  final _this = this as OtpSlot;
+  return Object.hash(runtimeType,_this.slot,_this.isConfigured);
+}
 
 @override
 String toString() {
-  return 'OtpSlot(slot: $slot, isConfigured: $isConfigured)';
+  final _this = this as OtpSlot;
+  return 'OtpSlot(slot: ${_this.slot}, isConfigured: ${_this.isConfigured})';
 }
 
 
@@ -329,7 +342,7 @@ class _$OtpSlotCopyWithImpl<$Res>
 /// Create a copy of OtpSlot
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? slot = null,Object? isConfigured = null,}) {
-  return _then(_self.copyWith(
+  return _then(OtpSlot(
 slot: null == slot ? _self.slot : slot // ignore: cast_nullable_to_non_nullable
 as SlotId,isConfigured: null == isConfigured ? _self.isConfigured : isConfigured // ignore: cast_nullable_to_non_nullable
 as bool,
@@ -489,16 +502,18 @@ _$OtpSlotCopyWith<_OtpSlot> get copyWith => __$OtpSlotCopyWithImpl<_OtpSlot>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OtpSlot&&(identical(other.slot, slot) || other.slot == slot)&&(identical(other.isConfigured, isConfigured) || other.isConfigured == isConfigured));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _OtpSlot&&(identical(other.slot, slot) || other.slot == slot)&&(identical(other.isConfigured, isConfigured) || other.isConfigured == isConfigured));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,slot,isConfigured);
+int get hashCode {
+    return Object.hash(runtimeType,slot,isConfigured);
+}
 
 @override
 String toString() {
-  return 'OtpSlot(slot: $slot, isConfigured: $isConfigured)';
+    return 'OtpSlot(slot: $slot, isConfigured: $isConfigured)';
 }
 
 
@@ -554,16 +569,21 @@ $SlotConfigurationOptionsCopyWith<SlotConfigurationOptions> get copyWith => _$Sl
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SlotConfigurationOptions&&(identical(other.digits8, digits8) || other.digits8 == digits8)&&(identical(other.requireTouch, requireTouch) || other.requireTouch == requireTouch)&&(identical(other.appendCr, appendCr) || other.appendCr == appendCr));
+  final _this = this as SlotConfigurationOptions;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SlotConfigurationOptions&&(identical(other.digits8, _this.digits8) || other.digits8 == _this.digits8)&&(identical(other.requireTouch, _this.requireTouch) || other.requireTouch == _this.requireTouch)&&(identical(other.appendCr, _this.appendCr) || other.appendCr == _this.appendCr));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,digits8,requireTouch,appendCr);
+int get hashCode {
+  final _this = this as SlotConfigurationOptions;
+  return Object.hash(runtimeType,_this.digits8,_this.requireTouch,_this.appendCr);
+}
 
 @override
 String toString() {
-  return 'SlotConfigurationOptions(digits8: $digits8, requireTouch: $requireTouch, appendCr: $appendCr)';
+  final _this = this as SlotConfigurationOptions;
+  return 'SlotConfigurationOptions(digits8: ${_this.digits8}, requireTouch: ${_this.requireTouch}, appendCr: ${_this.appendCr})';
 }
 
 
@@ -592,7 +612,7 @@ class _$SlotConfigurationOptionsCopyWithImpl<$Res>
 /// Create a copy of SlotConfigurationOptions
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? digits8 = freezed,Object? requireTouch = freezed,Object? appendCr = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(SlotConfigurationOptions(
 digits8: freezed == digits8 ? _self.digits8 : digits8 // ignore: cast_nullable_to_non_nullable
 as bool?,requireTouch: freezed == requireTouch ? _self.requireTouch : requireTouch // ignore: cast_nullable_to_non_nullable
 as bool?,appendCr: freezed == appendCr ? _self.appendCr : appendCr // ignore: cast_nullable_to_non_nullable
@@ -757,16 +777,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SlotConfigurationOptions&&(identical(other.digits8, digits8) || other.digits8 == digits8)&&(identical(other.requireTouch, requireTouch) || other.requireTouch == requireTouch)&&(identical(other.appendCr, appendCr) || other.appendCr == appendCr));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SlotConfigurationOptions&&(identical(other.digits8, digits8) || other.digits8 == digits8)&&(identical(other.requireTouch, requireTouch) || other.requireTouch == requireTouch)&&(identical(other.appendCr, appendCr) || other.appendCr == appendCr));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,digits8,requireTouch,appendCr);
+int get hashCode {
+    return Object.hash(runtimeType,digits8,requireTouch,appendCr);
+}
 
 @override
 String toString() {
-  return 'SlotConfigurationOptions(digits8: $digits8, requireTouch: $requireTouch, appendCr: $appendCr)';
+    return 'SlotConfigurationOptions(digits8: $digits8, requireTouch: $requireTouch, appendCr: $appendCr)';
 }
 
 
@@ -854,16 +876,21 @@ $SlotConfigurationCopyWith<SlotConfiguration> get copyWith => _$SlotConfiguratio
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SlotConfiguration&&(identical(other.options, options) || other.options == options));
+  final _this = this as SlotConfiguration;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SlotConfiguration&&(identical(other.options, _this.options) || other.options == _this.options));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,options);
+int get hashCode {
+  final _this = this as SlotConfiguration;
+  return Object.hash(runtimeType,_this.options);
+}
 
 @override
 String toString() {
-  return 'SlotConfiguration(options: $options)';
+  final _this = this as SlotConfiguration;
+  return 'SlotConfiguration(options: ${_this.options})';
 }
 
 
@@ -1065,7 +1092,7 @@ return yubiotp(_that.publicId,_that.privateId,_that.key,_that.options);case _:
 
 @JsonSerializable(explicitToJson: true, includeIfNull: false)
 class _SlotConfigurationHotp extends SlotConfiguration {
-  const _SlotConfigurationHotp({required this.key, this.options, final  String? $type}): $type = $type ?? 'hotp',super._();
+  const _SlotConfigurationHotp({required this.key, this.options,  String? $type}): $type = $type ?? 'hotp',super._();
   factory _SlotConfigurationHotp.fromJson(Map<String, dynamic> json) => _$SlotConfigurationHotpFromJson(json);
 
  final  String key;
@@ -1088,16 +1115,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SlotConfigurationHotp&&(identical(other.key, key) || other.key == key)&&(identical(other.options, options) || other.options == options));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SlotConfigurationHotp&&(identical(other.key, key) || other.key == key)&&(identical(other.options, options) || other.options == options));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,key,options);
+int get hashCode {
+    return Object.hash(runtimeType,key,options);
+}
 
 @override
 String toString() {
-  return 'SlotConfiguration.hotp(key: $key, options: $options)';
+    return 'SlotConfiguration.hotp(key: $key, options: $options)';
 }
 
 
@@ -1152,7 +1181,7 @@ $SlotConfigurationOptionsCopyWith<$Res>? get options {
 
 @JsonSerializable(explicitToJson: true, includeIfNull: false)
 class _SlotConfigurationHmacSha1 extends SlotConfiguration {
-  const _SlotConfigurationHmacSha1({required this.key, this.options, final  String? $type}): $type = $type ?? 'hmac_sha1',super._();
+  const _SlotConfigurationHmacSha1({required this.key, this.options,  String? $type}): $type = $type ?? 'hmac_sha1',super._();
   factory _SlotConfigurationHmacSha1.fromJson(Map<String, dynamic> json) => _$SlotConfigurationHmacSha1FromJson(json);
 
  final  String key;
@@ -1175,16 +1204,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SlotConfigurationHmacSha1&&(identical(other.key, key) || other.key == key)&&(identical(other.options, options) || other.options == options));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SlotConfigurationHmacSha1&&(identical(other.key, key) || other.key == key)&&(identical(other.options, options) || other.options == options));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,key,options);
+int get hashCode {
+    return Object.hash(runtimeType,key,options);
+}
 
 @override
 String toString() {
-  return 'SlotConfiguration.chalresp(key: $key, options: $options)';
+    return 'SlotConfiguration.chalresp(key: $key, options: $options)';
 }
 
 
@@ -1239,7 +1270,7 @@ $SlotConfigurationOptionsCopyWith<$Res>? get options {
 
 @JsonSerializable(explicitToJson: true, includeIfNull: false)
 class _SlotConfigurationStaticPassword extends SlotConfiguration {
-  const _SlotConfigurationStaticPassword({required this.password, required this.keyboardLayout, this.options, final  String? $type}): $type = $type ?? 'static_password',super._();
+  const _SlotConfigurationStaticPassword({required this.password, required this.keyboardLayout, this.options,  String? $type}): $type = $type ?? 'static_password',super._();
   factory _SlotConfigurationStaticPassword.fromJson(Map<String, dynamic> json) => _$SlotConfigurationStaticPasswordFromJson(json);
 
  final  String password;
@@ -1263,16 +1294,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SlotConfigurationStaticPassword&&(identical(other.password, password) || other.password == password)&&(identical(other.keyboardLayout, keyboardLayout) || other.keyboardLayout == keyboardLayout)&&(identical(other.options, options) || other.options == options));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SlotConfigurationStaticPassword&&(identical(other.password, password) || other.password == password)&&(identical(other.keyboardLayout, keyboardLayout) || other.keyboardLayout == keyboardLayout)&&(identical(other.options, options) || other.options == options));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,password,keyboardLayout,options);
+int get hashCode {
+    return Object.hash(runtimeType,password,keyboardLayout,options);
+}
 
 @override
 String toString() {
-  return 'SlotConfiguration.static(password: $password, keyboardLayout: $keyboardLayout, options: $options)';
+    return 'SlotConfiguration.static(password: $password, keyboardLayout: $keyboardLayout, options: $options)';
 }
 
 
@@ -1328,7 +1361,7 @@ $SlotConfigurationOptionsCopyWith<$Res>? get options {
 
 @JsonSerializable(explicitToJson: true, includeIfNull: false)
 class _SlotConfigurationYubiOtp extends SlotConfiguration {
-  const _SlotConfigurationYubiOtp({required this.publicId, required this.privateId, required this.key, this.options, final  String? $type}): $type = $type ?? 'yubiotp',super._();
+  const _SlotConfigurationYubiOtp({required this.publicId, required this.privateId, required this.key, this.options,  String? $type}): $type = $type ?? 'yubiotp',super._();
   factory _SlotConfigurationYubiOtp.fromJson(Map<String, dynamic> json) => _$SlotConfigurationYubiOtpFromJson(json);
 
  final  String publicId;
@@ -1353,16 +1386,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SlotConfigurationYubiOtp&&(identical(other.publicId, publicId) || other.publicId == publicId)&&(identical(other.privateId, privateId) || other.privateId == privateId)&&(identical(other.key, key) || other.key == key)&&(identical(other.options, options) || other.options == options));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SlotConfigurationYubiOtp&&(identical(other.publicId, publicId) || other.publicId == publicId)&&(identical(other.privateId, privateId) || other.privateId == privateId)&&(identical(other.key, key) || other.key == key)&&(identical(other.options, options) || other.options == options));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,publicId,privateId,key,options);
+int get hashCode {
+    return Object.hash(runtimeType,publicId,privateId,key,options);
+}
 
 @override
 String toString() {
-  return 'SlotConfiguration.yubiotp(publicId: $publicId, privateId: $privateId, key: $key, options: $options)';
+    return 'SlotConfiguration.yubiotp(publicId: $publicId, privateId: $privateId, key: $key, options: $options)';
 }
 
 

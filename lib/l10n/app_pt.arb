@@ -162,10 +162,6 @@
     "@_yubikey_selection": {},
 
     "s_select_to_scan": "Selecione para digitalizar",
-    "s_hide_reader": "Ocultar leitor",
-    "s_show_hidden_readers": "Exibir leitores ocultos",
-    "s_toggle_readers": "Alternar leitores",
-    "l_toggle_readers_desc": "Exibir ou ocultar leitores",
     "s_sn_serial": "S/N: {serial}",
     "@s_sn_serial": {
         "placeholders": {
@@ -210,6 +206,8 @@
     "l_replace_yk_on_reader": "Coloque sua YubiKey de volta no leitor",
     "l_remove_yk_from_reader": "Remova sua YubiKey do leitor de NFC",
     "p_try_reinsert_yk": "Tente remover e reinserir sua YubiKey.",
+    "l_reinsert_yk_nfc_required": null,
+    "p_reinsert_yk_nfc_required": null,
     "s_touch_required": "Toque necessário",
     "l_touch_button_now": "Toque no botão da sua YubiKey agora",
     "l_long_touch_button_now": "Pressione e segure o botão da sua YubiKey por 5 segundos agora",
@@ -858,6 +856,7 @@
     "s_private_id": "ID Privado",
     "s_use_serial": "Usar serial",
     "l_select_file": "Selecionar arquivo",
+    "l_create_export_file": null,
     "l_no_export_file": "Nenhum arquivo de exportação",
     "s_no_export": "Sem exportação",
     "s_export": "Exportar",
@@ -871,6 +870,8 @@
         }
     },
     "s_keyboard_layout": null,
+    "s_keyboard_variant": null,
+    "s_keyboard_variant_default": null,
     "l_keyboard_layout": "Teclado {layout}",
     "@l_keyboard_layout": {
         "placeholders": {

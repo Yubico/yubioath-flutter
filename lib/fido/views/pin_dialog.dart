@@ -35,6 +35,7 @@ import '../../widgets/visibility_toggle_button.dart';
 import '../keys.dart';
 import '../models.dart';
 import '../state.dart';
+import '../validation.dart';
 
 final _log = Logger('fido.views.pin_dialog');
 
@@ -86,9 +87,8 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
 
     final hasPinComplexity = deviceData?.info.pinComplexity ?? false;
     final pinRetries = ref.watch(
-      fidoStateProvider(
-        widget.devicePath,
-      ).select((s) => s.whenOrNull(data: (state) => state.pinRetries)),
+      fidoStateProvider(widget.devicePath)
+          .select((s) => s.whenOrNull(data: (state) => state.pinRetries)),
     );
 
     final isBio = widget.state.bioEnroll != null;
@@ -294,6 +294,10 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
       _currentPinError = l10n.l_field_required;
       _currentIsWrong = true;
       valid = false;
+    } else if (hasPin && !isValidFidoPinLength(_currentPinController.text)) {
+      _currentPinError = l10n.s_invalid_length;
+      _currentIsWrong = true;
+      valid = false;
     }
 
     if (_newPinController.text.isEmpty) {
@@ -329,6 +333,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
       final result = await ref
           .read(fidoStateProvider(widget.devicePath).notifier)
           .setPin(newPin, oldPin: oldPin);
+      if (!mounted) return;
       switch (result) {
         case PinResultSuccess():
           {
@@ -383,6 +388,7 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
       // ignored
     } catch (e) {
       _log.error('Failed to set PIN', e);
+      if (!mounted) return;
       final String errorMessage;
       // TODO: Make this cleaner than importing desktop specific RpcError.
       if (e is RpcError) {

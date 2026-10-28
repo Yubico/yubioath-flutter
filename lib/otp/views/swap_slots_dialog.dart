@@ -63,9 +63,8 @@ class SwapSlotsDialog extends ConsumerWidget {
       ],
       content: Text(
         l10n.p_swap_slots_desc,
-        style: Theme.of(
-          context,
-        ).textTheme.bodyMedium?.copyWith(fontWeight: .w700),
+        style: Theme.of(context).textTheme.bodyMedium
+            ?.copyWith(fontWeight: .w700),
       ),
     );
   }

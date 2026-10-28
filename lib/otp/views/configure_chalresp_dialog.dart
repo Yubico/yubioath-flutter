@@ -231,9 +231,9 @@ class _ConfigureChalrespDialogState
                           padding: const EdgeInsets.symmetric(vertical: 4.0),
                           child: Icon(
                             Symbols.tune,
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onSurfaceVariant,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurfaceVariant,
                           ),
                         ),
                         const SizedBox(width: 16.0),

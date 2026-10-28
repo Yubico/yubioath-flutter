@@ -56,9 +56,10 @@ class CredentialDialog extends ConsumerWidget {
           DeleteIntent<FidoCredential>:
               CallbackAction<DeleteIntent<FidoCredential>>(
                 onInvoke: (intent) async {
-                  final deleted =
-                      await (Actions.invoke(context, intent)
-                          as Future<dynamic>?);
+                  final deleted = await (Actions.invoke(
+                    context,
+                    intent,
+                  ) as Future<dynamic>?);
                   // Pop the account dialog if deleted
                   if (deleted == true) {
                     await ref.read(withContextProvider)((context) async {

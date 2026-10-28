@@ -138,12 +138,12 @@ class _AccountViewState extends ConsumerState<AccountView> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
-                selectedTileColor: Theme.of(
-                  context,
-                ).colorScheme.secondaryContainer,
-                selectedColor: Theme.of(
-                  context,
-                ).colorScheme.onSecondaryContainer,
+                selectedTileColor: Theme.of(context)
+                    .colorScheme
+                    .secondaryContainer,
+                selectedColor: Theme.of(context)
+                    .colorScheme
+                    .onSecondaryContainer,
                 selected: widget.selected,
                 tileColor: Theme.of(context).hoverColor,
                 contentPadding: const EdgeInsets.symmetric(
@@ -168,9 +168,9 @@ class _AccountViewState extends ConsumerState<AccountView> {
                                 helper.title,
                                 style: Theme.of(context).textTheme.bodyLarge
                                     ?.copyWith(
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.onSurface,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface,
                                     ),
                                 overflow: .fade,
                                 maxLines: 1,
@@ -181,9 +181,9 @@ class _AccountViewState extends ConsumerState<AccountView> {
                                   subtitle,
                                   style: Theme.of(context).textTheme.bodyMedium
                                       ?.copyWith(
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.onSurfaceVariant,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurfaceVariant,
                                       ),
                                   overflow: .fade,
                                   maxLines: 1,

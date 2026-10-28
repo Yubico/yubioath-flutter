@@ -25,9 +25,10 @@ repos:
     - id: flutter-analyze
       name: Flutter Code Analyze
       language: system
-      entry: env -u GIT_DIR flutter analyze
+      entry: env -u GIT_DIR sh -c 'dart pub get -C lint && flutter analyze'
       files: \.dart$
       exclude: lib/generated
+      pass_filenames: false
       require_serial: true
 - repo: local
   hooks:
@@ -49,21 +50,29 @@ repos:
       language: script
       entry: spotless_apply.py
       require_serial: true
-
-# Python
 - repo: local
   hooks:
-    - id: mypy
-      name: mypy
-      files: helper/
-      language: script
-      entry: run-mypy.sh
+    - id: cargo-fmt-helper
+      name: cargo fmt (helper)
+      language: system
+      entry: cargo fmt --manifest-path helper/Cargo.toml -- --check
+      files: ^helper/.*\.rs$
+      pass_filenames: false
       require_serial: true
-- repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.12.0
-  hooks:
-    # Run the linter, organize imports
-    - id: ruff-check
-      args: [ --fix ]
-    # Run the formatter
-    - id: ruff-format
+    - id: cargo-clippy-helper
+      name: cargo clippy (helper)
+      language: system
+      entry: cargo clippy --manifest-path helper/Cargo.toml --locked --all-targets -- -D warnings
+      files: ^(helper/(.*\.rs|(.*/)?Cargo\.(toml|lock))|yubikey-manager)$
+      # The SDK submodule is a directory, not a regular file.
+      types: []
+      pass_filenames: false
+      require_serial: true
+    - id: cargo-deny-helper
+      name: cargo deny (helper)
+      language: script
+      entry: .github/scripts/cargo_deny.py
+      files: ^(helper/((.*/)?Cargo\.(toml|lock)|deny\.toml)|\.github/scripts/(test_)?cargo_deny\.py|yubikey-manager)$
+      types: []
+      pass_filenames: false
+      require_serial: true

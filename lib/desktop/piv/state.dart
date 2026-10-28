@@ -33,39 +33,46 @@ import '../../core/models.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../piv/models.dart';
 import '../../piv/state.dart';
+import '../credential_cache.dart';
 import '../models.dart';
 import '../rpc.dart';
 import '../state.dart';
 
 final _log = Logger('desktop.piv.state');
 
-final _managementKeyProvider = StateProvider.autoDispose
-    .family<String?, DevicePath>((ref, _) => null);
+final _managementKeyProvider = StateNotifierProvider.autoDispose
+    .family<CachedCredential, String?, DevicePath>(
+      (ref, _) => CachedCredential(),
+    );
 
-final _pinProvider = StateProvider.autoDispose.family<String?, DevicePath>(
-  (ref, _) => null,
-);
+final _pinProvider = StateNotifierProvider.autoDispose
+    .family<CachedCredential, String?, DevicePath>(
+      (ref, _) => CachedCredential(),
+    );
 
-final _sessionProvider = Provider.autoDispose.family<RpcNodeSession, DevicePath>((
-  ref,
-  devicePath,
-) {
-  // Make sure the managementKey and PIN are held for the duration of the session.
-  ref.watch(_managementKeyProvider(devicePath));
-  ref.watch(_pinProvider(devicePath));
-  // Reset the state if resetBlocked is toggled from != 0 to == 0 (as on Global Reset)
-  ref.listen(currentDeviceDataProvider, (prev, next) {
-    final prevResetBlocked = prev?.value?.info.resetBlocked;
-    final nextResetBlocked = next.value?.info.resetBlocked;
-    if (prevResetBlocked != 0 && nextResetBlocked == 0) {
-      ref.invalidateSelf();
-    }
-  });
-  return RpcNodeSession(ref.watch(rpcProvider).requireValue, devicePath, [
-    'ccid',
-    'piv',
-  ]);
-});
+void clearCachedPivCredentials(Ref ref) {
+  ref.invalidate(_managementKeyProvider);
+  ref.invalidate(_pinProvider);
+}
+
+final _sessionProvider = Provider.autoDispose
+    .family<RpcNodeSession, DevicePath>((ref, devicePath) {
+      // Make sure the managementKey and PIN are held for the duration of the session.
+      ref.watch(_managementKeyProvider(devicePath));
+      ref.watch(_pinProvider(devicePath));
+      // Reset the state if resetBlocked is toggled from != 0 to == 0 (as on Global Reset)
+      ref.listen(currentDeviceDataProvider, (prev, next) {
+        final prevResetBlocked = prev?.value?.info.resetBlocked;
+        final nextResetBlocked = next.value?.info.resetBlocked;
+        if (prevResetBlocked != 0 && nextResetBlocked == 0) {
+          ref.invalidateSelf();
+        }
+      });
+      return RpcNodeSession(ref.watch(rpcProvider).requireValue, devicePath, [
+        'ccid',
+        'piv',
+      ]);
+    });
 
 class DesktopPivStateNotifier extends PivStateNotifier {
   late RpcNodeSession _session;
@@ -87,13 +94,13 @@ class DesktopPivStateNotifier extends PivStateNotifier {
             if (state.value?.metadata?.pinMetadata.defaultValue == true) {
               pin = defaultPin;
             } else {
-              pin = ref.read(_pinProvider(devicePath));
+              pin = ref.read(_pinProvider(devicePath).notifier).value;
             }
             if (pin != null) {
               if (await verifyPin(pin) is PinSuccess) {
                 return;
               } else {
-                ref.read(_pinProvider(devicePath).notifier).state = null;
+                ref.read(_pinProvider(devicePath).notifier).value = null;
               }
             }
           } else {
@@ -102,13 +109,15 @@ class DesktopPivStateNotifier extends PivStateNotifier {
                 true) {
               mgmtKey = defaultManagementKey;
             } else {
-              mgmtKey = ref.read(_managementKeyProvider(devicePath));
+              mgmtKey = ref
+                  .read(_managementKeyProvider(devicePath).notifier)
+                  .value;
             }
             if (mgmtKey != null) {
               if (await authenticate(mgmtKey)) {
                 return;
               } else {
-                ref.read(_managementKeyProvider(devicePath).notifier).state =
+                ref.read(_managementKeyProvider(devicePath).notifier).value =
                     null;
               }
             }
@@ -138,7 +147,7 @@ class DesktopPivStateNotifier extends PivStateNotifier {
 
     if (!ref.mounted) return;
 
-    ref.read(_managementKeyProvider(_devicePath).notifier).state = null;
+    ref.read(_managementKeyProvider(_devicePath).notifier).value = null;
     ref.invalidate(_sessionProvider(_session.devicePath));
   }
 
@@ -170,7 +179,7 @@ class DesktopPivStateNotifier extends PivStateNotifier {
       );
 
       if (result['status']) {
-        ref.read(_managementKeyProvider(_devicePath).notifier).state =
+        ref.read(_managementKeyProvider(_devicePath).notifier).value =
             managementKey;
         final oldState = state.value;
         if (oldState != null) {
@@ -215,7 +224,7 @@ class DesktopPivStateNotifier extends PivStateNotifier {
         signal: signaler,
       );
 
-      ref.read(_pinProvider(_devicePath).notifier).state = pin;
+      ref.read(_pinProvider(_devicePath).notifier).value = pin;
 
       return const PinVerificationStatus.success();
     } on RpcError catch (e) {
@@ -238,7 +247,7 @@ class DesktopPivStateNotifier extends PivStateNotifier {
         'change_pin',
         params: {'pin': pin, 'new_pin': newPin},
       );
-      ref.read(_pinProvider(_devicePath).notifier).state = null;
+      ref.read(_pinProvider(_devicePath).notifier).value = null;
       return const PinVerificationStatus.success();
     } on RpcError catch (e) {
       if (e.status == 'invalid-pin') {
@@ -296,7 +305,7 @@ class DesktopPivStateNotifier extends PivStateNotifier {
         'store_key': storeKey,
       },
     );
-    ref.read(_managementKeyProvider(_devicePath).notifier).state =
+    ref.read(_managementKeyProvider(_devicePath).notifier).value =
         managementKey;
     ref.invalidateSelf();
   }
@@ -430,7 +439,7 @@ class DesktopPivSlotsNotifier extends PivSlotsNotifier {
         ),
       };
 
-      final pin = ref.read(_pinProvider(_session.devicePath));
+      final pin = ref.read(_pinProvider(_session.devicePath).notifier).value;
 
       final result = await _session.command(
         'generate',

@@ -34,6 +34,8 @@ import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
 import '../../oath/models.dart';
 import '../../oath/state.dart';
+import '../credential_cache.dart';
+import '../models.dart';
 import '../rpc.dart';
 import '../state.dart';
 
@@ -59,23 +61,13 @@ final _sessionProvider = Provider.autoDispose
       ]);
     });
 
-// This remembers the key for all devices for the duration of the process.
+// Retain transient keys across device changes until they expire.
 final _oathLockKeyProvider =
-    StateNotifierProvider.family<_LockKeyNotifier, String?, DevicePath>(
-      (ref, devicePath) => _LockKeyNotifier(null),
+    StateNotifierProvider.family<CachedCredential, String?, DevicePath>(
+      (ref, devicePath) => CachedCredential(),
     );
 
-class _LockKeyNotifier extends StateNotifier<String?> {
-  _LockKeyNotifier(super.state);
-
-  void setKey(String key) {
-    state = key;
-  }
-
-  void unsetKey() {
-    state = null;
-  }
-}
+void clearCachedOathKeys(Ref ref) => ref.invalidate(_oathLockKeyProvider);
 
 class DesktopOathStateNotifier extends OathStateNotifier {
   late RpcNodeSession _session;
@@ -90,7 +82,9 @@ class DesktopOathStateNotifier extends OathStateNotifier {
         ref.invalidate(_sessionProvider(devicePath));
       })
       ..setErrorHandler('auth-required', (e) async {
-        final key = ref.read(_oathLockKeyProvider(_session.devicePath));
+        final key = ref
+            .read(_oathLockKeyProvider(_session.devicePath).notifier)
+            .value;
         if (key != null) {
           final result = await _session.command(
             'validate',
@@ -100,9 +94,8 @@ class DesktopOathStateNotifier extends OathStateNotifier {
             ref.invalidateSelf();
             return;
           } else {
-            ref
-                .read(_oathLockKeyProvider(_session.devicePath).notifier)
-                .unsetKey();
+            ref.read(_oathLockKeyProvider(_session.devicePath).notifier).value =
+                null;
           }
         }
         throw e;
@@ -120,7 +113,7 @@ class DesktopOathStateNotifier extends OathStateNotifier {
   @override
   Future<void> reset() async {
     await _session.command('reset');
-    ref.read(_oathLockKeyProvider(_session.devicePath).notifier).unsetKey();
+    ref.read(_oathLockKeyProvider(_session.devicePath).notifier).value = null;
     ref.invalidate(_sessionProvider(_session.devicePath));
   }
 
@@ -139,7 +132,7 @@ class DesktopOathStateNotifier extends OathStateNotifier {
     final bool remembered = validate['remembered'];
     if (valid) {
       _log.debug('applet unlocked');
-      ref.read(_oathLockKeyProvider(_session.devicePath).notifier).setKey(key);
+      ref.read(_oathLockKeyProvider(_session.devicePath).notifier).value = key;
       setData(state.value!.copyWith(locked: false, remembered: remembered));
     }
     return (valid, remembered);
@@ -180,7 +173,7 @@ class DesktopOathStateNotifier extends OathStateNotifier {
       );
       var key = derive['key'];
       await _session.command('set_key', params: {'key': key});
-      ref.read(_oathLockKeyProvider(_session.devicePath).notifier).setKey(key);
+      ref.read(_oathLockKeyProvider(_session.devicePath).notifier).value = key;
     }
     _log.debug('OATH key set');
 
@@ -199,7 +192,7 @@ class DesktopOathStateNotifier extends OathStateNotifier {
       }
     }
     await _session.command('unset_key');
-    ref.read(_oathLockKeyProvider(_session.devicePath).notifier).unsetKey();
+    ref.read(_oathLockKeyProvider(_session.devicePath).notifier).value = null;
     setData(oathState.copyWith(hasKey: false, locked: false));
     return true;
   }
@@ -207,7 +200,7 @@ class DesktopOathStateNotifier extends OathStateNotifier {
   @override
   Future<void> forgetPassword() async {
     await _session.command('forget');
-    ref.read(_oathLockKeyProvider(_session.devicePath).notifier).unsetKey();
+    ref.read(_oathLockKeyProvider(_session.devicePath).notifier).value = null;
     setData(state.value!.copyWith(remembered: false));
   }
 }
@@ -220,16 +213,20 @@ DesktopCredentialListNotifier buildDesktopOathCredentialListProvider(
     ref.watch(withContextProvider),
     ref.watch(_sessionProvider(devicePath)),
     ref.watch(
-      oathStateProvider(
-        devicePath,
-      ).select((r) => r.whenOrNull(data: (state) => state.locked) ?? true),
+      oathStateProvider(devicePath)
+          .select((r) => r.whenOrNull(data: (state) => state.locked) ?? true),
     ),
   );
   ref.listen<WindowState>(windowStateProvider, (_, windowState) {
-    notifier._rescheduleTimer(windowState.active);
+    notifier._rescheduleTimer(
+      windowState.active &&
+          ref.read(currentSectionProvider) == Section.accounts,
+    );
   }, fireImmediately: true);
   ref.listen(currentSectionProvider, (_, section) {
-    notifier._rescheduleTimer(section == Section.accounts);
+    notifier._rescheduleTimer(
+      section == Section.accounts && ref.read(windowStateProvider).active,
+    );
   });
 
   return notifier;
@@ -259,11 +256,13 @@ class DesktopCredentialListNotifier extends OathCredentialListNotifier {
   final RpcNodeSession _session;
   final bool _locked;
   Timer? _timer;
+  bool _active = false;
 
   DesktopCredentialListNotifier(this._withContext, this._session, this._locked)
     : super();
 
   void _rescheduleTimer(bool active) {
+    _active = active;
     if (_locked) return;
     if (active) {
       _scheduleRefresh();
@@ -426,12 +425,23 @@ class DesktopCredentialListNotifier extends OathCredentialListNotifier {
     }
   }
 
+  void _refreshScheduled() async {
+    try {
+      await refresh();
+    } on RpcError catch (e) {
+      _log.warning('OATH credential refresh failed', e);
+      if (mounted && _active) {
+        _timer = Timer(const Duration(seconds: 1), _refreshScheduled);
+      }
+    }
+  }
+
   void _scheduleRefresh() {
     _timer?.cancel();
-    if (_locked) return;
+    if (_locked || !_active) return;
     if (state == null) {
       _log.debug('No OATH state, refresh immediately');
-      refresh();
+      _refreshScheduled();
     } else if (mounted) {
       final expirations = (state ?? [])
           .where(
@@ -450,10 +460,13 @@ class DesktopCredentialListNotifier extends OathCredentialListNotifier {
         final now = DateTime.now().millisecondsSinceEpoch;
         if (earliest < now) {
           _log.debug('Already expired, refresh immediately');
-          refresh();
+          _refreshScheduled();
         } else {
           _log.debug('Schedule refresh in ${earliest - now}ms');
-          _timer = Timer(Duration(milliseconds: earliest - now), refresh);
+          _timer = Timer(
+            Duration(milliseconds: earliest - now),
+            _refreshScheduled,
+          );
         }
       }
     }

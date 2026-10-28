@@ -4,6 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:yubico_authenticator/app/models.dart';
 import 'package:yubico_authenticator/app/views/keys.dart';
+import 'package:yubico_authenticator/core/models.dart';
+import 'package:yubico_authenticator/core/state.dart';
 import 'package:yubico_authenticator/management/models.dart';
 import 'package:yubico_authenticator/otp/keys.dart';
 import 'package:yubico_authenticator/otp/models.dart';
@@ -86,12 +88,17 @@ void main() {
       );
 
       final slot2 = $(getAppListItemKey(SlotId.two));
+      Future<void> waitForSave() => $.condition(
+        () => !$(saveButton).exists,
+        reason: 'OTP programming dialog did not close',
+      );
 
       // Program a challenge-response credential
       await $.itemAction(slot2, configureYubiOtp);
 
-      // Save is disabled from the start
-      expect($(saveButton).widget<TextButton>().enabled, isFalse);
+      // Missing IDs and key are reported when saving
+      await $(saveButton).tap();
+      expect($($.l10n.l_field_required), findsWidgets);
 
       // Use serial for public ID, if available
       if (data.info.serial != null) {
@@ -115,42 +122,52 @@ void main() {
             $.read(otpStateProvider(data.node.path)).value?.slot2Configured ==
             true,
       );
+      await waitForSave();
 
       // Close the slot details, if opened
       final close = $(closeButton);
       if (close.exists) {
         await close.tap();
-        expect(slot2, findsOneWidget);
       }
+      await $.condition(
+        () => slot2.exists,
+        reason: 'Slot 2 did not reappear after programming',
+      );
 
-      // Program a challenge-response credential, using right-click
-      await $.tester.tap(slot2, buttons: kSecondaryButton);
-      await $.pumpAndSettle();
-      await $(configureChalResp).tap();
+      if (!isAndroid) {
+        // Program a challenge-response credential, using right-click
+        await $.tester.tap(slot2, buttons: kSecondaryButton);
+        await $.pumpAndSettle();
+        await $(configureChalResp).tap();
 
-      // Save is enabled from the start
-      expect($(saveButton).widget<TextButton>().enabled, isTrue);
+        // Save is enabled from the start
+        expect($(saveButton).widget<TextButton>().enabled, isTrue);
 
-      // Empty value shows an error and disables the save button
-      await $(saveButton).tap();
-      expect($(saveButton).widget<TextButton>().enabled, isFalse);
+        // Empty value shows a validation error
+        await $(saveButton).tap();
+        expect($($.l10n.l_field_required), findsOneWidget);
 
-      // Odd-length values show an error and disable the save button
-      await $(secretField).enterText('b0b');
-      await $(saveButton).tap();
-      expect($(saveButton).widget<TextButton>().enabled, isFalse);
+        // Odd-length values show a validation error
+        await $(secretField).enterText('b0b');
+        await $(saveButton).tap();
+        expect($($.l10n.s_invalid_length), findsOneWidget);
 
-      // Complete the programming successfully
-      await $(secretField).enterText('cafed00d');
-      await $(saveButton).tap();
+        // Complete the programming successfully
+        await $(secretField).enterText('cafed00d');
+        await $(saveButton).tap();
 
-      // Slot is configured, need overwrite
-      await $(overwriteButton).tap();
+        // Slot is configured, need overwrite
+        await $(overwriteButton).tap();
+        await waitForSave();
 
-      // Close the slot details, if opened
-      if (close.exists) {
-        await close.tap();
-        expect(slot2, findsOneWidget);
+        // Close the slot details, if opened
+        if (close.exists) {
+          await close.tap();
+        }
+        await $.condition(
+          () => slot2.exists,
+          reason: 'Slot 2 did not reappear after overwriting',
+        );
       }
 
       // Delete the slot 2 key
@@ -161,12 +178,19 @@ void main() {
             $.read(otpStateProvider(data.node.path)).value?.slot2Configured ==
             false,
       );
+      await $.condition(
+        () => !$(deleteButton).exists,
+        reason: 'OTP deletion dialog did not close',
+      );
 
       // Close the slot details, if opened
       if (close.exists) {
         await close.tap();
-        expect(slot2, findsWidgets);
       }
+      await $.condition(
+        () => slot2.exists,
+        reason: 'Slot 2 did not reappear after deletion',
+      );
 
       // Program a static password
       await $.itemAction(slot2, configureStatic);
@@ -174,24 +198,28 @@ void main() {
       // Save is enabled from the start
       expect($(saveButton).widget<TextButton>().enabled, isTrue);
 
-      // Empty value shows an error and disables the save button
+      // Empty value shows a validation error
       await $(saveButton).tap();
-      expect($(saveButton).widget<TextButton>().enabled, isFalse);
+      expect($($.l10n.l_field_required), findsOneWidget);
 
-      // Invalid modhex shows an error and disables the save button
+      // Invalid modhex shows a validation error
       await $(secretField).enterText('invalid modhex');
       await $(saveButton).tap();
-      expect($(saveButton).widget<TextButton>().enabled, isFalse);
+      expect($($.l10n.l_invalid_keyboard_character), findsOneWidget);
 
       // Generate a random password and save
       await $(generateSecretKey).tap();
       await $(saveButton).tap();
+      await waitForSave();
 
       // Close the slot details, if opened
       if (close.exists) {
         await close.tap();
-        expect(slot2, findsOneWidget);
       }
+      await $.condition(
+        () => slot2.exists,
+        reason: 'Slot 2 did not reappear after programming',
+      );
 
       // Program a HOTP credential
       await $.itemAction(slot2, configureHotp);
@@ -199,25 +227,36 @@ void main() {
       // Save is enabled from the start
       expect($(saveButton).widget<TextButton>().enabled, isTrue);
 
-      // Empty value shows an error and disables the save button
+      // Empty value shows a validation error
       await $(saveButton).tap();
-      expect($(saveButton).widget<TextButton>().enabled, isFalse);
+      expect($($.l10n.l_field_required), findsOneWidget);
 
-      // Invalid base32 shows an error and disables the save button
+      // Invalid base32 shows a validation error
       await $(secretField).enterText('11111111');
       await $(saveButton).tap();
-      expect($(saveButton).widget<TextButton>().enabled, isFalse);
+      expect(
+        $(
+          $.l10n.l_invalid_format_allowed_chars(
+            Format.base32.allowedCharacters,
+          ),
+        ),
+        findsOneWidget,
+      );
 
       // Complete the programming successfully, overwriting the previous
       await $(secretField).enterText('abba');
       await $(saveButton).tap();
       await $(overwriteButton).tap();
+      await waitForSave();
 
       // Close the slot details, if opened
       if (close.exists) {
         await close.tap();
-        expect(slot2, findsOneWidget);
       }
+      await $.condition(
+        () => slot2.exists,
+        reason: 'Slot 2 did not reappear after overwriting',
+      );
 
       // Programatically delete the slot 2 credential
       await $

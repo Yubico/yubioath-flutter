@@ -1,4 +1,5 @@
 import 'fido_test.dart' as fido;
+import 'management_test.dart' as management;
 import 'oath_test.dart' as oath;
 import 'otp_test.dart' as otp;
 import 'piv_test.dart' as piv;
@@ -8,6 +9,7 @@ const testApps = String.fromEnvironment('TEST_APPS');
 const tests = {
   'oath': oath.main,
   'fido': fido.main,
+  'management': management.main,
   'piv': piv.main,
   'otp': otp.main,
 };

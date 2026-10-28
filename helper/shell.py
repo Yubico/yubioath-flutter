@@ -22,8 +22,6 @@ import sys
 from threading import Thread
 from typing import IO, cast
 
-import click
-
 logger = logging.getLogger(__name__)
 
 
@@ -41,6 +39,88 @@ def yellow(value):
 
 def cyan(value):
     return f"\u001b[36;1m{value}\u001b[0m"
+
+
+def _is_named_pipe(path: str) -> bool:
+    """Return True if *path* looks like a Windows Named Pipe path."""
+    normalized = path.replace("/", "\\").lower()
+    return normalized.startswith("\\\\.\\pipe\\")
+
+
+class NamedPipeStream:
+    """Bidirectional text stream backed by a Windows Named Pipe.
+
+    Used as both the *stdin* and *stdout* arguments to :class:`RpcShell`
+    so that a single pipe connection handles both send and receive.
+    """
+
+    def __init__(self, path: str) -> None:
+        # Open in binary, unbuffered read/write mode.
+        self._pipe = open(path, "r+b", buffering=0)  # noqa: WPS515
+        self._buf = b""
+
+    # ---- write-side (stdin interface) --------------------------------
+
+    def write(self, text: str) -> None:
+        self._pipe.write(text.encode("utf-8"))
+
+    def flush(self) -> None:
+        pass  # Pipe is unbuffered; nothing to flush.
+
+    # ---- read-side (stdout interface) --------------------------------
+
+    def readline(self) -> str:
+        """Block until a newline-terminated line is available and return it."""
+        while b"\n" not in self._buf:
+            chunk = self._pipe.read(4096)
+            if not chunk:
+                return ""
+            self._buf += chunk
+        idx = self._buf.index(b"\n")
+        line, self._buf = self._buf[: idx + 1], self._buf[idx + 1 :]
+        return line.decode("utf-8")
+
+    def close(self) -> None:
+        self._pipe.close()
+
+
+class UnixSocketStream:
+    """Bidirectional text stream backed by a Unix domain socket.
+
+    Used as both the *stdin* and *stdout* arguments to :class:`RpcShell`
+    so that a single socket connection handles both send and receive.
+    """
+
+    def __init__(self, path: str) -> None:
+        import socket
+
+        self._sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        self._sock.connect(path)
+        self._buf = b""
+
+    # ---- write-side (stdin interface) --------------------------------
+
+    def write(self, text: str) -> None:
+        self._sock.sendall(text.encode("utf-8"))
+
+    def flush(self) -> None:
+        pass  # Socket sends immediately; nothing to flush.
+
+    # ---- read-side (stdout interface) --------------------------------
+
+    def readline(self) -> str:
+        """Block until a newline-terminated line is available and return it."""
+        while b"\n" not in self._buf:
+            chunk = self._sock.recv(4096)
+            if not chunk:
+                return ""
+            self._buf += chunk
+        idx = self._buf.index(b"\n")
+        line, self._buf = self._buf[: idx + 1], self._buf[idx + 1 :]
+        return line.decode("utf-8")
+
+    def close(self) -> None:
+        self._sock.close()
 
 
 class RpcShell(cmd.Cmd):
@@ -113,6 +193,7 @@ class RpcShell(cmd.Cmd):
 
     def emptyline(self):
         self.do_ls(None)
+        return False
 
     def get_node(self, target):
         logger.debug("sending get: %r", target)
@@ -147,6 +228,27 @@ class RpcShell(cmd.Cmd):
             self._path = target
             logger.debug("set path %r", target)
 
+    def do_close(self, args):
+        if not self._path:
+            print(red("Cannot close: already at root"))
+            return
+        child = self._path[-1]
+        parent = self._path[:-1]
+        self._send(
+            {
+                "kind": "command",
+                "action": "close",
+                "target": parent,
+                "body": {"child": child},
+            }
+        )
+        result = self._recv()
+        if result["kind"] == "success":
+            self._path = parent
+            print(f"Closed '{child}'")
+        else:
+            print(red(f"{result.get('status', 'error')}: {result.get('message', '')}"))
+
     def complete_cd(self, cmd, text, *args):
         return self.completepath(text[3:], True)
 
@@ -168,7 +270,8 @@ class RpcShell(cmd.Cmd):
                         print(yellow(f"  {k}: {v}"))
 
             for name in self._node.get("actions", []):
-                if name != "get":  # Don't show get, always available
+                # Don't show get or close, always available
+                if name not in ("get", "close"):
                     print(cyan(f"{name}"))
         elif kind == "error":
             status = result["status"]
@@ -240,26 +343,55 @@ def log_stderr(stderr):
             logger.exception(f"Failed to parse error: {line}")
 
 
-@click.command()
-@click.argument("executable", nargs=-1)
-def shell(executable):
-    """A basic shell for interacting with the Yubico Authenticator Helper."""
-    helper = subprocess.Popen(  # noqa: S603
-        executable or [sys.executable, "authenticator-helper.py"],
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        encoding="utf8",
-    )
+def _is_unix_socket(path: str) -> bool:
+    """Return True if *path* is an existing Unix domain socket."""
+    import os
+    import stat
 
-    Thread(daemon=True, target=log_stderr, args=(helper.stderr,)).start()
+    try:
+        return stat.S_ISSOCK(os.stat(path).st_mode)
+    except OSError:
+        return False
 
-    click.echo("Shell starting...")
-    shell = RpcShell(helper.stdin, cast(IO[str], helper.stdout))
-    shell.cmdloop()
-    click.echo("Stopping...")
-    helper.communicate()
+
+def main():
+    if len(sys.argv) == 2 and _is_named_pipe(sys.argv[1]):
+        pipe_path = sys.argv[1]
+        print(f"Connecting to {pipe_path}...")
+        stream = NamedPipeStream(pipe_path)
+        try:
+            shell = RpcShell(stream, stream)
+            shell.cmdloop()
+        finally:
+            stream.close()
+        print("Stopping...")
+    elif len(sys.argv) == 2 and _is_unix_socket(sys.argv[1]):
+        sock_path = sys.argv[1]
+        print(f"Connecting to {sock_path}...")
+        stream = UnixSocketStream(sock_path)
+        try:
+            shell = RpcShell(stream, stream)
+            shell.cmdloop()
+        finally:
+            stream.close()
+        print("Stopping...")
+    else:
+        helper = subprocess.Popen(  # noqa: S603
+            sys.argv[1:],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            encoding="utf8",
+        )
+
+        Thread(daemon=True, target=log_stderr, args=(helper.stderr,)).start()
+
+        print("Shell starting...")
+        shell = RpcShell(helper.stdin, cast(IO[str], helper.stdout))
+        shell.cmdloop()
+        print("Stopping...")
+        helper.communicate()
 
 
 if __name__ == "__main__":
-    shell()
+    main()
