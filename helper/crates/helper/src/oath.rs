@@ -126,7 +126,7 @@ impl OathNode {
     }
 
     fn set_key_verifier(&mut self, key: &[u8]) {
-        use hmac::{Hmac, Mac};
+        use hmac::{Hmac, KeyInit, Mac};
         use sha2::Sha256;
         let mut salt = [0u8; 32];
         getrandom::fill(&mut salt).unwrap();
@@ -357,7 +357,7 @@ impl OathNode {
                         Err(_) => false,
                     }
                 } else if let Some((salt, digest)) = &self.key_verifier {
-                    use hmac::{Hmac, Mac};
+                    use hmac::{Hmac, KeyInit, Mac};
                     use sha2::Sha256;
                     let mut mac = Hmac::<Sha256>::new_from_slice(salt).unwrap();
                     mac.update(&access_key_bytes);
@@ -1017,6 +1017,45 @@ mod tests {
             None,
         )
         .unwrap()
+    }
+
+    #[test]
+    fn cached_key_verifier_accepts_only_the_original_key() {
+        let mut node = reset_node(Some(0x9000), false);
+        let key = b"0123456789abcdef";
+        node.set_key_verifier(key);
+
+        for (candidate, valid) in [
+            (key.as_slice(), true),
+            (b"incorrect key!!!".as_slice(), false),
+            (b"".as_slice(), false),
+            (key.as_slice(), true),
+        ] {
+            let response = node
+                .call_action_inner("validate", &json!({"key": hex::encode(candidate)}))
+                .unwrap();
+            assert_eq!(response.body, json!({"valid": valid, "remembered": false}));
+        }
+    }
+
+    #[test]
+    fn cached_key_verifier_matches_known_hmac_sha256_digest() {
+        let mut node = reset_node(Some(0x9000), false);
+        let salt = std::array::from_fn(|i| i as u8);
+        let digest =
+            hex::decode("75de808a0aacf75b83f1158ec2a4d3c2d60bd190f438a9a580d2bb27c32005d7")
+                .unwrap()
+                .try_into()
+                .unwrap();
+        node.key_verifier = Some((salt, digest));
+
+        let response = node
+            .call_action_inner(
+                "validate",
+                &json!({"key": hex::encode(b"0123456789abcdef")}),
+            )
+            .unwrap();
+        assert_eq!(response.body, json!({"valid": true, "remembered": false}));
     }
 
     #[test]

@@ -62,7 +62,7 @@ repos:
     - id: cargo-clippy-helper
       name: cargo clippy (helper)
       language: system
-      entry: cargo clippy --manifest-path helper/Cargo.toml --workspace --all-targets -- -D warnings
+      entry: cargo clippy --manifest-path helper/Cargo.toml --locked --workspace --all-targets -- -D warnings
       files: ^helper/(.*\.rs|(.*/)?Cargo\.(toml|lock))$
       pass_filenames: false
       require_serial: true

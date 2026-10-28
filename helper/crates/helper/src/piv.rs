@@ -1492,6 +1492,98 @@ mod tests {
     use yubikit::core::{Connection, Transport};
     use yubikit::smartcard::SmartCardError;
 
+    fn import_fixture(name: &str) -> Vec<u8> {
+        let directory = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../../../yubikey-manager/crates/ykman-cli/tests/fixtures");
+        std::fs::read(directory.join(name)).unwrap()
+    }
+
+    #[test]
+    fn imports_pkcs12_keys_and_certificates() {
+        for (file, prefix, password) in [
+            ("ec_p256.p12", "ec_p256", None),
+            ("ec_p384.p12", "ec_p384", None),
+            ("rsa_2048.p12", "rsa_2048", None),
+            ("ec_p256_enc.p12", "ec_p256", Some("test123")),
+            ("rsa_2048_enc.p12", "rsa_2048", Some("test123")),
+            ("ec_p256_modern.p12", "ec_p256", Some("test123")),
+        ] {
+            let parsed = parse_file(&import_fixture(file), password);
+            assert!(!parsed.password_required, "{file}");
+            let private_key = parsed.private_key.expect(file);
+            assert!(PrivateKey::from_pkcs8(&private_key).is_ok(), "{file}");
+            assert_eq!(private_key, import_fixture(&format!("{prefix}_key.der")));
+            assert_eq!(
+                parsed.certificate,
+                Some(import_fixture(&format!("{prefix}_cert.der"))),
+                "{file}",
+            );
+        }
+    }
+
+    #[test]
+    fn encrypted_pkcs12_requests_a_password_when_missing_or_wrong() {
+        for file in ["ec_p256_enc.p12", "rsa_2048_enc.p12", "ec_p256_modern.p12"] {
+            for password in [None, Some("wrong password")] {
+                let parsed = parse_file(&import_fixture(file), password);
+                assert!(parsed.password_required, "{file}");
+                assert!(parsed.private_key.is_none(), "{file}");
+                assert!(parsed.certificate.is_none(), "{file}");
+            }
+        }
+    }
+
+    #[test]
+    fn imports_encrypted_pkcs8_pem_and_preserves_password_errors() {
+        for prefix in ["ec_p256", "rsa_2048"] {
+            let encrypted = import_fixture(&format!("{prefix}_key_enc.pem"));
+            let parsed = parse_file(&encrypted, Some("test123"));
+            assert!(!parsed.password_required);
+            assert_eq!(
+                parsed.private_key,
+                Some(import_fixture(&format!("{prefix}_key.der"))),
+            );
+            assert!(parsed.certificate.is_none());
+
+            for password in [None, Some("wrong password")] {
+                let parsed = parse_file(&encrypted, password);
+                assert!(parsed.password_required);
+                assert!(parsed.private_key.is_none());
+            }
+            assert_eq!(
+                decrypt_pem_private_key(std::str::from_utf8(&encrypted).unwrap(), "wrong password")
+                    .unwrap_err()
+                    .status,
+                "wrong-password",
+            );
+        }
+    }
+
+    #[test]
+    fn imports_unencrypted_pem_and_der() {
+        for prefix in ["ec_p256", "ec_p384", "rsa_2048"] {
+            for extension in ["pem", "der"] {
+                let parsed =
+                    parse_file(&import_fixture(&format!("{prefix}_key.{extension}")), None);
+                assert!(!parsed.password_required);
+                assert_eq!(
+                    parsed.private_key,
+                    Some(import_fixture(&format!("{prefix}_key.der"))),
+                );
+                assert!(parsed.certificate.is_none());
+
+                let parsed =
+                    parse_file(&import_fixture(&format!("{prefix}_cert.{extension}")), None);
+                assert!(!parsed.password_required);
+                assert!(parsed.private_key.is_none());
+                assert_eq!(
+                    parsed.certificate,
+                    Some(import_fixture(&format!("{prefix}_cert.der"))),
+                );
+            }
+        }
+    }
+
     struct PinState {
         attempts: u32,
         total_attempts: u32,

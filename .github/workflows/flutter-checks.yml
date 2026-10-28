@@ -54,6 +54,11 @@ jobs:
           cache-workspaces: helper
           cache-save-if: ${{ github.event_name == 'push' }}
 
+      - name: Install cargo-deny
+        uses: taiki-e/install-action@83ac0ad63c0167e6f06796fab0fce28db1bf3db0 # v2.87.22
+        with:
+          tool: cargo-deny
+
       - name: Run lints and tests
         run: |
           pipx run pre-commit run --all-files

@@ -36,8 +36,8 @@ cd helper
 
 if [ "$OS" = "macos" ]; then
 	# Build universal binary for macOS
-	cargo build $CARGO_FLAGS --target aarch64-apple-darwin
-	cargo build $CARGO_FLAGS --target x86_64-apple-darwin
+	cargo build --locked $CARGO_FLAGS --target aarch64-apple-darwin
+	cargo build --locked $CARGO_FLAGS --target x86_64-apple-darwin
 
 	rm -rf ../$OUTPUT/helper
 	mkdir -p ../$OUTPUT/helper
@@ -50,7 +50,7 @@ if [ "$OS" = "macos" ]; then
 	# Adhoc sign executable
 	codesign -f --timestamp --entitlements ../macos/helper.entitlements --sign - ../$OUTPUT/helper/authenticator-helper
 else
-	cargo build $CARGO_FLAGS
+	cargo build --locked $CARGO_FLAGS
 
 	rm -rf ../$OUTPUT/helper
 	mkdir -p ../$OUTPUT/helper
@@ -63,7 +63,7 @@ else
 fi
 
 echo "Generating license files..."
-cargo about generate about.hbs --config about.toml -o ../assets/licenses/helper.txt
+cargo about generate --locked about.hbs --config about.toml -o ../assets/licenses/helper.txt
 
 cd ..
 

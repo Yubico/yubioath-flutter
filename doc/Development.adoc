@@ -17,6 +17,9 @@ This project uses dependencies specified in `pubspec.yaml` and
 `helper/crates/helper/Cargo.toml`. The corresponding `pubspec.lock` and
 `helper/Cargo.lock` files pin the versions used when building the app.
 The Rust helper also uses crates from the `yubikey-manager` Git submodule.
+Helper builds use `--locked`; when updating Rust dependencies, run
+`cargo update --manifest-path helper/Cargo.toml` and commit the updated lockfile.
+Desktop helper build-cache keys include the lockfile through `helper/**`.
 
 Rust dependency checks use `cargo-deny` with the policy in
 `helper/deny.toml`. Install it with `cargo install cargo-deny --locked`

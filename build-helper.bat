@@ -10,14 +10,14 @@ if /I "%~1"=="--debug" (
 
 echo Building authenticator-helper for Windows (%BUILD_MODE%)...
 cd helper
-cargo build %CARGO_FLAGS% || goto :error
+cargo build --locked %CARGO_FLAGS% || goto :error
 
 rmdir /s /q ..\build\windows\helper 2>nul
 mkdir ..\build\windows\helper
 copy target\%BUILD_MODE%\authenticator-helper.exe ..\build\windows\helper\ || goto :error
 
 echo Generating license files...
-cargo about generate about.hbs --config about.toml -o ..\assets\licenses\helper.txt || goto :error
+cargo about generate --locked about.hbs --config about.toml -o ..\assets\licenses\helper.txt || goto :error
 
 cd ..
 
