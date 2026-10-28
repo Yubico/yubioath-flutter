@@ -24,9 +24,10 @@ List<KeyType> getSupportedKeyTypes(
 }) => [
   if (!isFips && !version.isAtLeast(6, 0)) KeyType.rsa1024,
   KeyType.rsa2048,
+  if (version.isAtLeast(5, 7)) ...[KeyType.rsa3072, KeyType.rsa4096],
+  KeyType.eccp256,
+  if (version.isAtLeast(4, 0)) KeyType.eccp384,
   if (version.isAtLeast(5, 7)) ...[
-    KeyType.rsa3072,
-    KeyType.rsa4096,
     KeyType.ed25519,
     if (!isFips &&
         (generateType == null || generateType == GenerateType.publicKey))
@@ -42,8 +43,6 @@ List<KeyType> getSupportedKeyTypes(
       KeyType.mlKem1024,
     ],
   ],
-  KeyType.eccp256,
-  if (version.isAtLeast(4, 0)) ...[KeyType.eccp384],
 ];
 
 List<ManagementKeyType> getSupportedManagementKeyTypes(
