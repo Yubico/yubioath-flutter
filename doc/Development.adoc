@@ -18,6 +18,15 @@ This project uses dependencies specified in `pubspec.yaml` and
 `helper/Cargo.lock` files pin the versions used when building the app.
 The Rust helper also uses crates from the `yubikey-manager` Git submodule.
 
+Rust dependency checks use `cargo-deny` with the policy in
+`helper/deny.toml`. Install it with `cargo install cargo-deny --locked`
+and run `pre-commit run cargo-deny-helper --all-files` from the repository root.
+The hook checks Linux, macOS, and Windows on x64 and ARM64 separately to avoid
+including dependencies from incompatible platform branches. It runs when helper
+manifests, the lockfile, the policy, its check scripts, or the SDK submodule
+revision change. The policy follows the SDK's baseline, additionally allows ISC
+for `rqrr`, and leaves duplicate dependency versions as warnings.
+
 ==== Versioning (important for package maintainers!)
 We recommend bundling this application with all its dependencies, using the
 versions specified in the lock files and the submodule revision pinned by this

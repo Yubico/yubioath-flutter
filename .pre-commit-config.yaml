@@ -66,3 +66,10 @@ repos:
       files: ^helper/(.*\.rs|(.*/)?Cargo\.(toml|lock))$
       pass_filenames: false
       require_serial: true
+    - id: cargo-deny-helper
+      name: cargo deny (helper)
+      language: script
+      entry: .github/scripts/cargo_deny.py
+      files: ^(helper/((.*/)?Cargo\.(toml|lock)|deny\.toml)|\.github/scripts/(test_)?cargo_deny\.py|yubikey-manager)$
+      pass_filenames: false
+      require_serial: true
