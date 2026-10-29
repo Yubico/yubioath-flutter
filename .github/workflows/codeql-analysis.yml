@@ -5,10 +5,14 @@ on:
     paths:
       - "android/**"
       - "helper/**"
+      - ".github/workflows/codeql-analysis.yml"
+      - ".github/actions/free-disk-space/**"
   pull_request:
     paths:
       - "android/**"
       - "helper/**"
+      - ".github/workflows/codeql-analysis.yml"
+      - ".github/actions/free-disk-space/**"
   schedule:
     - cron: '0 11 * * 3'
 
