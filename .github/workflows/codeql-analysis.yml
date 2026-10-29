@@ -27,6 +27,29 @@ jobs:
         language: [ 'python', 'kotlin' ]
 
     steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          path: 'app'
+
+      # Before CodeQL and Flutter download their bundles: a full Android build
+      # and its CodeQL database otherwise run the runner out of disk.
+      - if: matrix.language == 'kotlin'
+        uses: ./app/.github/actions/free-disk-space
+
+      # CodeQL's queries assume most of the runner's RAM. The image's own swap file
+      # is active, so more swap goes in a second file on the disk freed above, which
+      # lets the evaluator spill instead of ending the job.
+      - if: matrix.language == 'kotlin'
+        name: Add swap
+        run: |
+          swapon --show
+          sudo fallocate -l 8G /swapfile-codeql
+          sudo chmod 600 /swapfile-codeql
+          sudo mkswap /swapfile-codeql
+          sudo swapon /swapfile-codeql
+          swapon --show
+          free -m
+
       - name: Initialize CodeQL
         uses: github/codeql-action/init@54f647b7e1bb85c95cddabcd46b0c578ec92bc1a # v4.36.3
         with:
@@ -38,10 +61,6 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '21'
-
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-        with:
-          path: 'app'
 
       - name: Read variables from repo
         run: cat .github/workflows/env >> $GITHUB_ENV
@@ -79,6 +98,18 @@ jobs:
           YUBIOATH_KEY_PASSWORD: ${{ secrets.YUBIOATH_KEY_PASSWORD }}
           YUBIOATH_STORE_PASSWORD: ${{ secrets.YUBIOATH_STORE_PASSWORD }}
         working-directory: ./app
+
+      # The build's Gradle and Kotlin daemons outlive it and keep their heap, while
+      # CodeQL assumes it can use most of the runner's RAM. Stop them before the
+      # queries start.
+      - if: matrix.language == 'kotlin'
+        name: Stop build daemons
+        run: |
+          free -m
+          pkill -f GradleDaemon || true
+          pkill -f KotlinCompileDaemon || true
+          sleep 5
+          free -m
 
       - if: matrix.language == 'python'
         name: autobuild
