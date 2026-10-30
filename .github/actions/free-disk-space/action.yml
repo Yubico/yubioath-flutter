@@ -1,0 +1,38 @@
+name: Free disk space
+description: >
+  Remove what the hosted Ubuntu runner image ships but our Android and Flutter
+  jobs never use, so a build plus a CodeQL database fits on the disk.
+
+runs:
+  using: composite
+  steps:
+    # The Android SDK stays: Gradle and `flutter build` need ANDROID_HOME. Only
+    # the parts this repo does not build against go. compileSdk is 37 and the
+    # app uses the NDK that Flutter pins (28.2.13676358), so the other
+    # preinstalled NDKs are unused. CMake stays because the jni plugin builds
+    # native code with it. Never remove JDK 21, /opt/hostedtoolcache/CodeQL or
+    # /opt/hostedtoolcache/flutter.
+    - name: Free runner disk space
+      shell: bash
+      run: |
+        SDK="${ANDROID_HOME:?ANDROID_HOME is not set}"
+        df -h /
+
+        sudo rm -rf \
+          /usr/share/dotnet \
+          /opt/ghc /usr/local/.ghcup \
+          /usr/share/swift \
+          /usr/local/julia* \
+          /usr/local/share/chromium /usr/local/share/boost \
+          /opt/google /opt/microsoft \
+          /home/linuxbrew /usr/share/miniconda \
+          /opt/hostedtoolcache/go /opt/hostedtoolcache/PyPy /opt/hostedtoolcache/Ruby &
+
+        sudo rm -rf \
+          "$SDK"/ndk/27.3.13750724 "$SDK"/ndk/29.0.14206865 "$SDK"/ndk/30.0.16248370 \
+          "$SDK"/platforms/android-3[4-6]* "$SDK"/platforms/android-37.[12]* &
+
+        docker image prune --all --force > /dev/null &
+
+        wait
+        df -h /
