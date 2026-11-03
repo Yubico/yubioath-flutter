@@ -69,9 +69,14 @@ to `AppException.fromWire` and to the tests on both sides
 |`InvalidImageException`
 
 |`pin-validation`
-|A wrong PIN was entered.
+|A wrong FIDO PIN was entered.
 |`retries`: attempts left; `auth_blocked`: true if the YubiKey must be
 reinserted before the next attempt
+|`InvalidPinException`
+
+|`invalid-pin`
+|A wrong PIV PIN or PUK was entered.
+|`attempts_remaining`: attempts left
 |`InvalidPinException`
 
 |`pin-complexity`
@@ -122,10 +127,10 @@ logging.
 
 The desktop helper also uses statuses the Dart side handles before converting
 the error, such as `state-reset` and the recovery from `auth-required` in
-`RpcNodeSession`, and PIV statuses not yet in this table.
+`RpcNodeSession`.
 
 === Adoption
-OATH and FIDO use this contract on every platform. The other applications
+OATH, FIDO and PIV use this contract on every platform. The other applications
 still catch `RpcError` and `PlatformException` directly, and opt in as they
 are moved:
 

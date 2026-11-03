@@ -50,6 +50,10 @@ sealed class AppException implements Exception {
         retries: body['retries'] as int?,
         authBlocked: body['auth_blocked'] as bool? ?? false,
       ),
+      'invalid-pin' => InvalidPinException(
+        text,
+        retries: body['attempts_remaining'] as int?,
+      ),
       'pin-complexity' => PinComplexityException(text),
       'user-action-timeout' => UserActionTimeoutException(text),
       'not-allowed' => NotAllowedException(text),

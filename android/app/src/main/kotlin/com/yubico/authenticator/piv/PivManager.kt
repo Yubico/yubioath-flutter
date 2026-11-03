@@ -17,6 +17,7 @@
 package com.yubico.authenticator.piv
 
 import com.yubico.authenticator.AppContextManager
+import com.yubico.authenticator.CommonChannelErrorMapper
 import com.yubico.authenticator.CredentialCache
 import com.yubico.authenticator.OperationContext
 import com.yubico.authenticator.device.DeviceManager
@@ -113,7 +114,7 @@ class PivManager(
         logger.debug("PivManager initialized")
         pinRetries = null
 
-        pivChannel.setHandler(coroutineScope) { method, args ->
+        pivChannel.setHandler(coroutineScope, CommonChannelErrorMapper) { method, args ->
             when (method) {
 
                 "reset" -> reset()

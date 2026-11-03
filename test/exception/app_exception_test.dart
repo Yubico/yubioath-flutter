@@ -15,6 +15,7 @@ void main() {
       'invalid-image': InvalidImageException,
       'device-error': DeviceException,
       'pin-validation': InvalidPinException,
+      'invalid-pin': InvalidPinException,
       'pin-complexity': PinComplexityException,
       'user-action-timeout': UserActionTimeoutException,
       'not-allowed': NotAllowedException,
@@ -56,6 +57,14 @@ void main() {
       });
       expect((e as InvalidPinException).retries, 5);
       expect(e.authBlocked, isTrue);
+    });
+
+    test('keeps the PIV attempts remaining', () {
+      final e = AppException.fromWire('invalid-pin', 'Wrong PIN', {
+        'attempts_remaining': 2,
+      });
+      expect((e as InvalidPinException).retries, 2);
+      expect(e.authBlocked, isFalse);
     });
 
     test('auth is not blocked unless reported', () {
