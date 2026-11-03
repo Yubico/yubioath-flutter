@@ -25,9 +25,8 @@ turns an error into a typed `AppException`. The desktop layer calls it through
 `PlatformException.toAppException()`.
 
 === Statuses
-Reuse an existing status when the meaning matches. To add one, add it here,
-to `AppException.fromWire` and to the tests on both sides
-(`test/exception/app_exception_test.dart` and the Kotlin mapper tests).
+Reuse an existing status when the meaning matches. To add one, see
+<<adding-an-error>>.
 
 [cols="2,3,2,2",options="header"]
 |===
@@ -132,3 +131,106 @@ the error, such as `state-reset` and the recovery from `auth-required` in
 === Enforcement
 The `no_platform_error_types` rule in the `lint` package reports any use of
 `RpcError` or `PlatformException` outside `lib/desktop` and `lib/android`.
+
+[[adding-an-error]]
+=== Adding an error
+When a feature needs the UI to react to a failure no existing status
+describes, add a status to the contract. The example below adds
+`storage-full`, for a YubiKey with no room left for a new item, which reports
+how many items it can hold.
+
+. *Choose the status.* Check the table first. A feature an older YubiKey
+lacks is `not-supported`, a rejected command without a specific meaning is
+`device-error`, and a new status is only needed when the UI must react
+differently. Use a kebab-case name and keep `body` to plain values (numbers,
+strings, booleans).
+
+. *Add the Dart type and decode it.* `AppException` is sealed, so the class
+goes in `lib/exception/app_exception.dart`, next to the others:
++
+[source,dart]
+----
+/// The YubiKey has no room left for the item.
+final class StorageFullException extends AppException {
+  /// How many items the YubiKey can hold, when known.
+  final int? capacity;
+
+  const StorageFullException(super.message, {this.capacity});
+}
+----
++
+and add a case to `AppException.fromWire`:
++
+[source,dart]
+----
+'storage-full' => StorageFullException(
+  text,
+  capacity: body['capacity'] as int?,
+),
+----
++
+Add the status to the table in `test/exception/app_exception_test.dart`, and
+a test for each `body` field.
+
+. *Send it from the desktop helper.* In `helper/src`, return the status from
+the node that detects the failure, with a Rust test:
++
+[source,rust]
+----
+return Err(RpcError::with_body(
+    "storage-full",
+    "No room left on the YubiKey",
+    json!({ "capacity": capacity }),
+));
+----
+
+. *Send it from Android.* Add the status to the `ChannelError` companion
+object, then report it in one of three ways:
++
+--
+* The app code detects the failure itself: throw it directly.
++
+[source,kotlin]
+----
+throw ChannelError(
+    ChannelError.STORAGE_FULL,
+    "No room left on the YubiKey",
+    mapOf("capacity" to capacity)
+)
+----
+* A yubikit-android exception means the same in every application, such as
+a CTAP error code: map it in `CommonChannelErrorMapper` (`ChannelError.kt`).
+* A status word or error code means this only in one application: map it in
+that application's mapper, the way `OathChannelErrorMapper` maps SW 0x6985
+to `password-required`, and fall back to `CommonChannelErrorMapper`.
+--
++
+Cover the mapping in the mapper's Kotlin test.
+
+. *Send it from iOS* in the same `{status, message, body}` shape.
+
+. *Handle it in the UI.* Catch the new type where the feature calls the
+state notifier, and show a localized string added to `lib/l10n/app_en.arb`.
+Keep a fallback for every other error:
++
+[source,dart]
+----
+try {
+  await ref.read(itemsProvider(devicePath).notifier).addItem(item);
+} on CancellationException {
+  // The user cancelled; nothing to show.
+} on StorageFullException catch (e) {
+  showMessage(context, l10n.l_storage_full(e.capacity ?? 0));
+} catch (e) {
+  showMessage(context, l10n.l_add_item_failed(exceptionMessage(e)));
+}
+----
++
+Never check for `RpcError`, `PlatformException` or status strings outside
+`lib/desktop` and `lib/android`.
+
+The steps can land in any order. Until the Dart side knows a status, it
+decodes to `UnknownException` and the UI's fallback shows the backend's
+`message`. Until a backend sends it, the UI's new branch is simply not
+reached.
+
