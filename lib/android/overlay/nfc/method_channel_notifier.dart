@@ -40,6 +40,9 @@ class MethodChannelNotifier extends Notifier<void> {
       await ref.read(nfcOverlay.notifier).waitForHide();
       return result;
     } on PlatformException catch (e) {
+      // Let the NFC overlay finish its failure animation before the caller
+      // reacts, the same way a successful call waits for it.
+      await ref.read(nfcOverlay.notifier).waitForHide();
       throw e.toAppException();
     }
   }

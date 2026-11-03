@@ -34,7 +34,6 @@ import '../../generated/l10n/app_localizations.dart';
 import '../../oath/models.dart';
 import '../../oath/state.dart';
 import '../overlay/nfc/method_channel_notifier.dart';
-import '../overlay/nfc/nfc_overlay.dart';
 
 final _log = Logger('android.oath.state');
 
@@ -147,17 +146,6 @@ class AndroidOathStateNotifier extends OathStateNotifier {
   }
 }
 
-/// Hides the NFC overlay at once for the add-account errors that the view
-/// explains with a message of its own.
-void _hideOverlayOnAddAccountError(Ref ref, AppException e) {
-  if (e is AuthRequiredException ||
-      e is PasswordRequiredException ||
-      e is NotSupportedException ||
-      e is AlreadyExistsException) {
-    ref.read(nfcOverlay.notifier).hide();
-  }
-}
-
 final addCredentialToAnyProvider = Provider(
   (ref) => (Uri credentialUri, {bool requireTouch = false}) async {
     final oath = ref.watch(_oathMethodsProvider.notifier);
@@ -171,7 +159,6 @@ final addCredentialToAnyProvider = Provider(
       return OathCredential.fromJson(result['credential']);
     } on AppException catch (e) {
       _log.error('Received exception: $e');
-      _hideOverlayOnAddAccountError(ref, e);
       rethrow;
     }
   },
@@ -193,7 +180,6 @@ final addCredentialsToAnyProvider = Provider(
       return result['succeeded'] == credentialUris.length;
     } on AppException catch (e) {
       _log.error('Received exception: $e');
-      _hideOverlayOnAddAccountError(ref, e);
       rethrow;
     }
   },
@@ -279,17 +265,12 @@ class AndroidCredentialListNotifier extends OathCredentialListNotifier {
     Uri credentialUri, {
     bool requireTouch = false,
   }) async {
-    try {
-      String resultString = await oath.invoke('addAccount', {
-        'uri': credentialUri.toString(),
-        'requireTouch': requireTouch,
-      });
-      var result = jsonDecode(resultString);
-      return OathCredential.fromJson(result['credential']);
-    } on AppException catch (e) {
-      _hideOverlayOnAddAccountError(_ref, e);
-      rethrow;
-    }
+    String resultString = await oath.invoke('addAccount', {
+      'uri': credentialUri.toString(),
+      'requireTouch': requireTouch,
+    });
+    var result = jsonDecode(resultString);
+    return OathCredential.fromJson(result['credential']);
   }
 
   @override
