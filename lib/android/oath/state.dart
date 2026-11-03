@@ -33,7 +33,6 @@ import '../../exception/no_data_exception.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../oath/models.dart';
 import '../../oath/state.dart';
-import '../method_channel_errors.dart';
 import '../overlay/nfc/method_channel_notifier.dart';
 import '../overlay/nfc/nfc_overlay.dart';
 
@@ -336,19 +335,8 @@ final _oathMethodsProvider = NotifierProvider<OathMethodChannelNotifier, void>(
 
 class OathMethodChannelNotifier extends MethodChannelNotifier {
   OathMethodChannelNotifier()
-    : super(const MethodChannel('android.oath.methods'));
-
-  /// The native OATH channel reports errors in the shared error format, so
-  /// they are decoded here once and callers only see [AppException].
-  @override
-  Future<dynamic> invoke(
-    String name, [
-    Map<String, dynamic> args = const {},
-  ]) async {
-    try {
-      return await super.invoke(name, args);
-    } on PlatformException catch (e) {
-      throw e.toAppException();
-    }
-  }
+    : super(
+        const MethodChannel('android.oath.methods'),
+        throwAppExceptions: true,
+      );
 }

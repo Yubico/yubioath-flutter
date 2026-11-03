@@ -74,21 +74,15 @@ class AppFailurePage extends ConsumerWidget {
         message = l10n.p_try_reinsert_yk;
     }
 
-    if (reason is RpcError) {
-      switch (reason.status) {
-        case 'reinsert-required':
-          graphic = Icon(Symbols.contactless, size: 96);
-          header = l10n.l_reinsert_yk_nfc_required;
-          message = l10n.p_reinsert_yk_nfc_required;
-          break;
-        case 'fido-blocked-error':
-          if (Platform.isWindows) {
-            header = l10n.l_admin_privileges_required;
-            message = l10n.p_elevated_permissions_required;
-            actions = [const ElevateFidoButtons()];
-          }
-          break;
-      }
+    switch (reason) {
+      case ReinsertRequiredException():
+        graphic = Icon(Symbols.contactless, size: 96);
+        header = l10n.l_reinsert_yk_nfc_required;
+        message = l10n.p_reinsert_yk_nfc_required;
+      case FidoBlockedException() when Platform.isWindows:
+        header = l10n.l_admin_privileges_required;
+        message = l10n.p_elevated_permissions_required;
+        actions = [const ElevateFidoButtons()];
     }
 
     return MessagePage(

@@ -17,6 +17,7 @@
 package com.yubico.authenticator
 
 import android.nfc.TagLostException
+import com.yubico.yubikit.core.fido.CtapException
 import com.yubico.yubikit.core.smartcard.ApduException
 import java.util.concurrent.CancellationException
 
@@ -39,6 +40,7 @@ class ChannelError(
         const val NOT_SUPPORTED = "not-supported"
         const val ALREADY_EXISTS = "already-exists"
         const val CONNECTION_ERROR = "connection-error"
+        const val NOT_ALLOWED = "not-allowed"
         const val DEVICE_ERROR = "device-error"
         const val EXCEPTION = "exception"
     }
@@ -73,6 +75,8 @@ object CommonChannelErrorMapper : ChannelErrorMapper {
             mapOf("connection" to "nfc")
         )
 
+        is CtapException -> mapCtapException(error)
+
         is ApduException -> ChannelError(
             ChannelError.DEVICE_ERROR,
             "SW: 0x%04x".format(error.sw.toInt() and 0xffff),
@@ -80,5 +84,21 @@ object CommonChannelErrorMapper : ChannelErrorMapper {
         )
 
         else -> ChannelError(ChannelError.EXCEPTION, error.toString())
+    }
+}
+
+private fun mapCtapException(error: CtapException): ChannelError {
+    val code = error.ctapError.toInt() and 0xff
+    return when (error.ctapError) {
+        CtapException.ERR_NOT_ALLOWED -> ChannelError(
+            ChannelError.NOT_ALLOWED,
+            error.message ?: "Operation not allowed"
+        )
+
+        else -> ChannelError(
+            ChannelError.DEVICE_ERROR,
+            error.message ?: "CTAP error: 0x%02x".format(code),
+            mapOf("ctap" to code)
+        )
     }
 }

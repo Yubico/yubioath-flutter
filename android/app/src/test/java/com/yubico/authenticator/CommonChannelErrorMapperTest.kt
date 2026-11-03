@@ -17,6 +17,7 @@
 package com.yubico.authenticator
 
 import android.nfc.TagLostException
+import com.yubico.yubikit.core.fido.CtapException
 import com.yubico.yubikit.core.smartcard.ApduException
 import com.yubico.yubikit.core.smartcard.SW
 import java.util.concurrent.CancellationException
@@ -56,6 +57,21 @@ class CommonChannelErrorMapperTest {
         val error = CommonChannelErrorMapper.map(ApduException(byteArrayOf(), SW.FILE_NOT_FOUND))
         assertEquals("device-error", error.status)
         assertEquals(mapOf("sw" to 0x6A82), error.body)
+    }
+
+    @Test
+    fun `ctap not allowed means not allowed`() {
+        val error = CommonChannelErrorMapper.map(CtapException(CtapException.ERR_NOT_ALLOWED))
+        assertEquals("not-allowed", error.status)
+    }
+
+    @Test
+    fun `other ctap errors are device errors carrying the ctap code`() {
+        for (code in listOf(CtapException.ERR_PIN_INVALID, CtapException.ERR_KEEPALIVE_CANCEL)) {
+            val error = CommonChannelErrorMapper.map(CtapException(code))
+            assertEquals("device-error", error.status)
+            assertEquals(mapOf("ctap" to (code.toInt() and 0xff)), error.body)
+        }
     }
 
     @Test

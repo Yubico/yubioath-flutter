@@ -14,6 +14,13 @@ void main() {
       'connection-error': ConnectionException,
       'invalid-image': InvalidImageException,
       'device-error': DeviceException,
+      'pin-validation': InvalidPinException,
+      'pin-complexity': PinComplexityException,
+      'user-action-timeout': UserActionTimeoutException,
+      'not-allowed': NotAllowedException,
+      'key-mismatch': KeyMismatchException,
+      'reinsert-required': ReinsertRequiredException,
+      'fido-blocked-error': FidoBlockedException,
     };
 
     for (final MapEntry(key: status, value: type) in expected.entries) {
@@ -35,6 +42,27 @@ void main() {
     test('keeps the status word', () {
       final e = AppException.fromWire('device-error', 'failed', {'sw': 0x6a82});
       expect((e as DeviceException).sw, 0x6a82);
+    });
+
+    test('keeps the CTAP error', () {
+      final e = AppException.fromWire('device-error', 'failed', {'ctap': 0x31});
+      expect((e as DeviceException).ctapError, 0x31);
+    });
+
+    test('keeps PIN retries and whether auth is blocked', () {
+      final e = AppException.fromWire('pin-validation', 'wrong PIN', {
+        'retries': 5,
+        'auth_blocked': true,
+      });
+      expect((e as InvalidPinException).retries, 5);
+      expect(e.authBlocked, isTrue);
+    });
+
+    test('auth is not blocked unless reported', () {
+      final e = AppException.fromWire('pin-validation', 'wrong PIN', {
+        'retries': 7,
+      });
+      expect((e as InvalidPinException).authBlocked, isFalse);
     });
 
     test('unknown statuses keep the status for diagnostics', () {

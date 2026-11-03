@@ -68,9 +68,47 @@ to `AppException.fromWire` and to the tests on both sides
 |
 |`InvalidImageException`
 
+|`pin-validation`
+|A wrong PIN was entered.
+|`retries`: attempts left; `auth_blocked`: true if the YubiKey must be
+reinserted before the next attempt
+|`InvalidPinException`
+
+|`pin-complexity`
+|A new PIN does not meet the complexity requirements.
+|
+|`PinComplexityException`
+
+|`user-action-timeout`
+|The user did not touch the YubiKey, or present a fingerprint, in time.
+|
+|`UserActionTimeoutException`
+
+|`not-allowed`
+|The YubiKey does not allow the operation right now, such as a FIDO reset
+started too long after the YubiKey was powered on.
+|
+|`NotAllowedException`
+
+|`key-mismatch`
+|A different YubiKey was inserted than the one the operation started with.
+|
+|`KeyMismatchException`
+
+|`reinsert-required`
+|The YubiKey must be removed and inserted again before retrying.
+|
+|`ReinsertRequiredException`
+
+|`fido-blocked-error`
+|The operating system blocks FIDO access, as Windows does without
+administrator privileges.
+|
+|`FidoBlockedException`
+
 |`device-error`
 |The YubiKey rejected a command.
-|`sw`: ISO 7816 status word, if known
+|`sw`: ISO 7816 status word, or `ctap`: CTAP error code, if known
 |`DeviceException`
 
 |`exception`
@@ -84,13 +122,13 @@ logging.
 
 The desktop helper also uses statuses the Dart side handles before converting
 the error, such as `state-reset` and the recovery from `auth-required` in
-`RpcNodeSession`, and FIDO and PIV statuses not yet in this table.
+`RpcNodeSession`, and PIV statuses not yet in this table.
 
 === Adoption
-OATH is the first application to use this contract on every platform. The
-other applications still catch `RpcError` and `PlatformException` directly,
-and opt in as they are moved:
+OATH and FIDO use this contract on every platform. The other applications
+still catch `RpcError` and `PlatformException` directly, and opt in as they
+are moved:
 
 * desktop: pass `throwAppExceptions: true` to `RpcNodeSession`;
 * Android: pass a `ChannelErrorMapper` to `MethodChannel.setHandler`, and
-  decode errors with `toAppException()` in the app's `MethodChannelNotifier`.
+  `throwAppExceptions: true` to the app's `MethodChannelNotifier`.

@@ -45,7 +45,22 @@ sealed class AppException implements Exception {
         connection: body['connection'] as String?,
       ),
       'invalid-image' => InvalidImageException(text),
-      'device-error' => DeviceException(text, sw: body['sw'] as int?),
+      'pin-validation' => InvalidPinException(
+        text,
+        retries: body['retries'] as int?,
+        authBlocked: body['auth_blocked'] as bool? ?? false,
+      ),
+      'pin-complexity' => PinComplexityException(text),
+      'user-action-timeout' => UserActionTimeoutException(text),
+      'not-allowed' => NotAllowedException(text),
+      'key-mismatch' => KeyMismatchException(text),
+      'reinsert-required' => ReinsertRequiredException(text),
+      'fido-blocked-error' => FidoBlockedException(text),
+      'device-error' => DeviceException(
+        text,
+        sw: body['sw'] as int?,
+        ctapError: body['ctap'] as int?,
+      ),
       _ => UnknownException(status, text),
     };
   }
@@ -93,12 +108,63 @@ final class InvalidImageException extends AppException {
   const InvalidImageException(super.message);
 }
 
+/// A wrong PIN was entered.
+final class InvalidPinException extends AppException {
+  /// Attempts left before the PIN is blocked, when known.
+  final int? retries;
+
+  /// Too many wrong attempts in a row; the YubiKey must be reinserted before
+  /// trying again.
+  final bool authBlocked;
+
+  const InvalidPinException(
+    super.message, {
+    this.retries,
+    this.authBlocked = false,
+  });
+}
+
+/// A new PIN does not meet the YubiKey's complexity requirements.
+final class PinComplexityException extends AppException {
+  const PinComplexityException(super.message);
+}
+
+/// The user did not touch the YubiKey, or present a fingerprint, in time.
+final class UserActionTimeoutException extends AppException {
+  const UserActionTimeoutException(super.message);
+}
+
+/// The YubiKey does not allow the operation right now, such as a FIDO reset
+/// that was not started soon enough after the YubiKey was powered on.
+final class NotAllowedException extends AppException {
+  const NotAllowedException(super.message);
+}
+
+/// A different YubiKey was inserted than the one the operation started with.
+final class KeyMismatchException extends AppException {
+  const KeyMismatchException(super.message);
+}
+
+/// The YubiKey must be removed and inserted again before retrying.
+final class ReinsertRequiredException extends AppException {
+  const ReinsertRequiredException(super.message);
+}
+
+/// The operating system blocks access to FIDO, as Windows does without
+/// administrator privileges.
+final class FidoBlockedException extends AppException {
+  const FidoBlockedException(super.message);
+}
+
 /// The YubiKey rejected a command.
 final class DeviceException extends AppException {
   /// ISO 7816 status word, when the backend reports one.
   final int? sw;
 
-  const DeviceException(super.message, {this.sw});
+  /// CTAP error code, when the backend reports one.
+  final int? ctapError;
+
+  const DeviceException(super.message, {this.sw, this.ctapError});
 }
 
 /// A status this version of the app does not recognize.

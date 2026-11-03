@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2025 Yubico.
+ * Copyright (C) 2022-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import '../../app/logging.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
-import '../../desktop/models.dart';
 import '../../exception/cancellation_exception.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
@@ -389,17 +388,10 @@ class _FidoPinDialogState extends ConsumerState<FidoPinDialog> {
     } catch (e) {
       _log.error('Failed to set PIN', e);
       if (!mounted) return;
-      final String errorMessage;
-      // TODO: Make this cleaner than importing desktop specific RpcError.
-      if (e is RpcError) {
-        errorMessage = e.message;
-      } else {
-        errorMessage = e.toString();
-      }
       await ref.read(withContextProvider)((context) async {
         showMessage(
           context,
-          l10n.l_set_pin_failed(errorMessage),
+          l10n.l_set_pin_failed(exceptionMessage(e)),
           duration: const Duration(seconds: 4),
         );
       });

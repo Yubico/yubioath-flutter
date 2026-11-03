@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2025 Yubico.
+ * Copyright (C) 2024-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,9 +28,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../../app/logging.dart';
 import '../../core/models.dart';
 import '../../core/state.dart';
-import '../../desktop/models.dart';
-import '../../exception/cancellation_exception.dart';
-import '../../exception/ctap_exception.dart';
+import '../../exception/app_exception.dart';
 import '../../fido/models.dart';
 import '../../fido/state.dart';
 import '../../generated/l10n/app_localizations.dart';
@@ -331,33 +329,20 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
 
                                       if (!context.mounted) return;
                                       Navigator.of(context).pop();
-                                      final String errorMessage;
-                                      // TODO: Make this cleaner than importing desktop specific RpcError.
-                                      if (e is RpcError) {
-                                        if (e.status == 'connection-error') {
-                                          errorMessage =
-                                              l10n.l_failed_connecting_to_fido;
-                                        } else if (e.status == 'key-mismatch') {
-                                          errorMessage =
-                                              l10n.l_wrong_inserted_yk_error;
-                                        } else if (e.status ==
-                                            'user-action-timeout') {
-                                          errorMessage =
-                                              l10n.l_user_action_timeout_error;
-                                        } else {
-                                          errorMessage = e.message;
-                                        }
-                                      } else if (e is CtapException &&
-                                          e.error == 0x30) {
-                                        // NOT_ALLOWED
-                                        errorMessage = l10n
-                                            .l_reset_not_allowed_over(
-                                              widget.data.node.transport
-                                                  .getDisplayName(l10n),
-                                            );
-                                      } else {
-                                        errorMessage = e.toString();
-                                      }
+                                      final errorMessage = switch (e) {
+                                        ConnectionException() =>
+                                          l10n.l_failed_connecting_to_fido,
+                                        KeyMismatchException() =>
+                                          l10n.l_wrong_inserted_yk_error,
+                                        UserActionTimeoutException() =>
+                                          l10n.l_user_action_timeout_error,
+                                        NotAllowedException() =>
+                                          l10n.l_reset_not_allowed_over(
+                                            widget.data.node.transport
+                                                .getDisplayName(l10n),
+                                          ),
+                                        _ => exceptionMessage(e),
+                                      };
                                       showMessage(
                                         context,
                                         l10n.l_reset_failed(errorMessage),
