@@ -87,8 +87,9 @@ the error, such as `state-reset` and the recovery from `auth-required` in
 `RpcNodeSession`, and FIDO and PIV statuses not yet in this table.
 
 === Adoption
-Applications still catch `RpcError` and `PlatformException` directly, and
-opt in one at a time as they are moved:
+OATH is the first application to use this contract on every platform. The
+other applications still catch `RpcError` and `PlatformException` directly,
+and opt in as they are moved:
 
 * desktop: pass `throwAppExceptions: true` to `RpcNodeSession`;
 * Android: pass a `ChannelErrorMapper` to `MethodChannel.setHandler`, and
