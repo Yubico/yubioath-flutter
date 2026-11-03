@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2025 Yubico.
+ * Copyright (C) 2022-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import 'package:material_symbols_icons/symbols.dart';
 
 import '../../app/message.dart';
 import '../../app/models.dart';
-import '../../desktop/models.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/app_input_decoration.dart';
 import '../../widgets/app_text_field.dart';
@@ -77,16 +76,9 @@ class _RenameAccountDialogState extends ConsumerState<RenameFingerprintDialog> {
       Navigator.of(context).pop(renamed);
       showMessage(context, l10n.s_fingerprint_renamed);
     } catch (e) {
-      final String errorMessage;
-      // TODO: Make this cleaner than importing desktop specific RpcError.
-      if (e is RpcError) {
-        errorMessage = e.message;
-      } else {
-        errorMessage = e.toString();
-      }
       showMessage(
         context,
-        l10n.l_rename_fp_failed(errorMessage),
+        l10n.l_rename_fp_failed(exceptionMessage(e)),
         duration: const Duration(seconds: 4),
       );
     }

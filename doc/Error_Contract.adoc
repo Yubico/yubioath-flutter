@@ -1,0 +1,236 @@
+== Backend error contract
+The Flutter code runs on top of a different backend on each platform: the Rust
+helper on desktop and native code on Android (and iOS). Every backend reports
+a failure in the same shape, so that code under `lib/` outside the platform
+directories never handles platform-specific errors.
+
+=== Format
+An error has three parts:
+
+`status`:: a short kebab-case name from the table below.
+`message`:: text for logs and as a last-resort message. The UI picks a
+localized string based on the status instead.
+`body`:: a map with optional extra fields, listed per status.
+
+How each backend sends it:
+
+Desktop helper:: an RPC response with `"kind": "error"` and the fields
+`status`, `message` and `body`.
+Android:: `MethodChannel.Result.error(status, message, body)`, built by a
+`ChannelErrorMapper` (see `ChannelError.kt`).
+
+On the Dart side, `AppException.fromWire` in `lib/exception/app_exception.dart`
+turns an error into a typed `AppException`. The desktop layer calls it through
+`RpcError.toAppException()`, the Android layer through
+`PlatformException.toAppException()`.
+
+=== Statuses
+Reuse an existing status when the meaning matches. To add one, see
+<<adding-an-error>>.
+
+[cols="2,3,2,2",options="header"]
+|===
+|Status |Meaning |Body |Dart type
+
+|`cancelled`
+|The user cancelled the operation.
+|
+|`CancellationException`
+
+|`auth-required`
+|The application is locked; unlock it first.
+|
+|`AuthRequiredException`
+
+|`password-required`
+|The operation needs a password to be set first.
+|
+|`PasswordRequiredException`
+
+|`not-supported`
+|The YubiKey lacks, or has disabled, the needed functionality.
+|
+|`NotSupportedException`
+
+|`already-exists`
+|The item being created already exists on the YubiKey.
+|
+|`AlreadyExistsException`
+
+|`connection-error`
+|Opening or keeping a connection to the YubiKey failed.
+|`connection`: `ccid`, `fido`, `otp` or `nfc`
+|`ConnectionException`
+
+|`invalid-image`
+|An image passed for QR scanning could not be decoded.
+|
+|`InvalidImageException`
+
+|`pin-validation`
+|A wrong FIDO PIN was entered.
+|`retries`: attempts left; `auth_blocked`: true if the YubiKey must be
+reinserted before the next attempt
+|`InvalidPinException`
+
+|`invalid-pin`
+|A wrong PIV PIN or PUK was entered.
+|`attempts_remaining`: attempts left
+|`InvalidPinException`
+
+|`pin-complexity`
+|A new PIN does not meet the complexity requirements.
+|
+|`PinComplexityException`
+
+|`user-action-timeout`
+|The user did not touch the YubiKey, or present a fingerprint, in time.
+|
+|`UserActionTimeoutException`
+
+|`not-allowed`
+|The YubiKey does not allow the operation right now, such as a FIDO reset
+started too long after the YubiKey was powered on.
+|
+|`NotAllowedException`
+
+|`key-mismatch`
+|A different YubiKey was inserted than the one the operation started with.
+|
+|`KeyMismatchException`
+
+|`reinsert-required`
+|The YubiKey must be removed and inserted again before retrying.
+|
+|`ReinsertRequiredException`
+
+|`fido-blocked-error`
+|The operating system blocks FIDO access, as Windows does without
+administrator privileges.
+|
+|`FidoBlockedException`
+
+|`device-error`
+|The YubiKey rejected a command.
+|`sw`: ISO 7816 status word, or `ctap`: CTAP error code, if known
+|`DeviceException`
+
+|`exception`
+|Any other failure.
+|
+|`UnknownException`
+|===
+
+Any status not listed becomes `UnknownException`, which keeps the status for
+logging.
+
+The desktop helper also uses statuses the Dart side handles before converting
+the error, such as `state-reset` and the recovery from `auth-required` in
+`RpcNodeSession`.
+
+=== Enforcement
+The `no_platform_error_types` rule in the `lint` package reports any use of
+`RpcError` or `PlatformException` outside `lib/desktop` and `lib/android`.
+
+[[adding-an-error]]
+=== Adding an error
+When a feature needs the UI to react to a failure no existing status
+describes, add a status to the contract. The example below adds
+`storage-full`, for a YubiKey with no room left for a new item, which reports
+how many items it can hold.
+
+. *Choose the status.* Check the table first. A feature an older YubiKey
+lacks is `not-supported`, a rejected command without a specific meaning is
+`device-error`, and a new status is only needed when the UI must react
+differently. Use a kebab-case name and keep `body` to plain values (numbers,
+strings, booleans).
+
+. *Add the Dart type and decode it.* `AppException` is sealed, so the class
+goes in `lib/exception/app_exception.dart`, next to the others:
++
+[source,dart]
+----
+/// The YubiKey has no room left for the item.
+final class StorageFullException extends AppException {
+  /// How many items the YubiKey can hold, when known.
+  final int? capacity;
+
+  const StorageFullException(super.message, {this.capacity});
+}
+----
++
+and add a case to `AppException.fromWire`:
++
+[source,dart]
+----
+'storage-full' => StorageFullException(
+  text,
+  capacity: body['capacity'] as int?,
+),
+----
++
+Add the status to the table in `test/exception/app_exception_test.dart`, and
+a test for each `body` field.
+
+. *Send it from the desktop helper.* In `helper/src`, return the status from
+the node that detects the failure, with a Rust test:
++
+[source,rust]
+----
+return Err(RpcError::with_body(
+    "storage-full",
+    "No room left on the YubiKey",
+    json!({ "capacity": capacity }),
+));
+----
+
+. *Send it from Android.* Add the status to the `ChannelError` companion
+object, then report it in one of three ways:
++
+--
+* The app code detects the failure itself: throw it directly.
++
+[source,kotlin]
+----
+throw ChannelError(
+    ChannelError.STORAGE_FULL,
+    "No room left on the YubiKey",
+    mapOf("capacity" to capacity)
+)
+----
+* A yubikit-android exception means the same in every application, such as
+a CTAP error code: map it in `CommonChannelErrorMapper` (`ChannelError.kt`).
+* A status word or error code means this only in one application: map it in
+that application's mapper, the way `OathChannelErrorMapper` maps SW 0x6985
+to `password-required`, and fall back to `CommonChannelErrorMapper`.
+--
++
+Cover the mapping in the mapper's Kotlin test.
+
+. *Send it from iOS* in the same `{status, message, body}` shape.
+
+. *Handle it in the UI.* Catch the new type where the feature calls the
+state notifier, and show a localized string added to `lib/l10n/app_en.arb`.
+Keep a fallback for every other error:
++
+[source,dart]
+----
+try {
+  await ref.read(itemsProvider(devicePath).notifier).addItem(item);
+} on CancellationException {
+  // The user cancelled; nothing to show.
+} on StorageFullException catch (e) {
+  showMessage(context, l10n.l_storage_full(e.capacity ?? 0));
+} catch (e) {
+  showMessage(context, l10n.l_add_item_failed(exceptionMessage(e)));
+}
+----
++
+Never check for `RpcError`, `PlatformException` or status strings outside
+`lib/desktop` and `lib/android`.
+
+The steps can land in any order. Until the Dart side knows a status, it
+decodes to `UnknownException` and the UI's fallback shows the backend's
+`message`. Until a backend sends it, the UI's new branch is simply not
+reached.
+

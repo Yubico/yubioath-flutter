@@ -28,6 +28,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
+import org.slf4j.LoggerFactory
+
+private val channelLogger = LoggerFactory.getLogger("ChannelHelper")
 
 interface JsonSerializable {
     fun toJson(): String
@@ -122,8 +125,16 @@ typealias MethodHandler = suspend (method: String, args: Map<String, Any?>) -> S
 
 /**
  * Coroutine-based handing of MethodChannel methods called from Flutter.
+ *
+ * Failures are sent as [ChannelError] in the shared error format: the status as
+ * the error code and the body as the details. Applications with their own error
+ * meanings pass an [errorMapper] that falls back to [CommonChannelErrorMapper].
  */
-fun MethodChannel.setHandler(scope: CoroutineScope, handler: MethodHandler) {
+fun MethodChannel.setHandler(
+    scope: CoroutineScope,
+    errorMapper: ChannelErrorMapper = CommonChannelErrorMapper,
+    handler: MethodHandler
+) {
     setMethodCallHandler { call, result ->
         // N.B. Arguments from Flutter are passed as a Map of basic types. We may want to
         // consider JSON encoding if we need to pass more complex structures.
@@ -136,14 +147,14 @@ fun MethodChannel.setHandler(scope: CoroutineScope, handler: MethodHandler) {
             } catch (_: NotImplementedError) {
                 result.notImplemented()
             } catch (error: Throwable) {
-                result.error(
-                    error.javaClass.simpleName,
-                    error.toString(),
-                    "Cause: " + error.cause + ", Stacktrace: " +
-                        android.util.Log.getStackTraceString(
-                            error
-                        )
+                val channelError = errorMapper.map(error)
+                channelLogger.debug(
+                    "Method {} failed with {}",
+                    call.method,
+                    channelError.status,
+                    error
                 )
+                result.error(channelError.status, channelError.message, channelError.body)
             }
         }
     }

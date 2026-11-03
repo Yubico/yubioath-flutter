@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Yubico.
+ * Copyright (C) 2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-class CtapException implements Exception {
-  final int error;
-  final String message;
-  final String? details;
+import 'package:flutter/services.dart';
 
-  CtapException(this.error, this.message, this.details);
+import '../exception/app_exception.dart';
 
-  @override
-  String toString() {
-    return 'CtapException[$message; error: $error]';
+/// Decodes an error sent by a native channel that uses the shared error
+/// format: `code` is the status, `details` is the body map.
+extension PlatformExceptionToAppException on PlatformException {
+  AppException toAppException() {
+    final body = switch (details) {
+      final Map map => map.cast<String, dynamic>(),
+      _ => const <String, dynamic>{},
+    };
+    return AppException.fromWire(code, message, body);
   }
 }

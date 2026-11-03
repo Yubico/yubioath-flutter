@@ -8,6 +8,7 @@ void main() {
   defineReflectiveSuite(() {
     defineReflectiveTests(UseRecommendedWidgetTest);
     defineReflectiveTests(CallInitAfterCreationTest);
+    defineReflectiveTests(NoPlatformErrorTypesTest);
   });
 }
 
@@ -76,6 +77,61 @@ class AppTextField {
 }
 void f() {
   AppTextField().init();
+}
+''');
+  }
+}
+
+@reflectiveTest
+class NoPlatformErrorTypesTest extends AnalysisRuleTest {
+  @override
+  void setUp() {
+    rule = NoPlatformErrorTypes();
+    super.setUp();
+  }
+
+  static const _source = '''
+class RpcError {}
+class PlatformException {}
+void f(Object e) {
+  if (e is RpcError) {}
+  try {} on PlatformException catch (_) {}
+}
+''';
+
+  void test_sharedCode() async {
+    await assertDiagnostics(_source, [
+      lint(_source.indexOf('RpcError) {}'), 'RpcError'.length),
+      lint(
+        _source.indexOf('PlatformException catch'),
+        'PlatformException'.length,
+      ),
+    ]);
+  }
+
+  void test_desktopLayer() async {
+    final path = '$testPackageLibPath/desktop/rpc.dart';
+    newFile(path, _source);
+    await assertNoDiagnosticsInFile(path);
+  }
+
+  void test_androidLayer() async {
+    final path = '$testPackageLibPath/android/state.dart';
+    newFile(path, _source);
+    await assertNoDiagnosticsInFile(path);
+  }
+
+  void test_tests() async {
+    final path = '$testPackageRootPath/test/rpc_test.dart';
+    newFile(path, _source);
+    await assertNoDiagnosticsInFile(path);
+  }
+
+  void test_otherTypes() async {
+    await assertNoDiagnostics('''
+class AppException {}
+void f(Object e) {
+  if (e is AppException) {}
 }
 ''');
   }

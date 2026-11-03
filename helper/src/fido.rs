@@ -563,10 +563,7 @@ impl Ctap2Node {
                 },
                 &|| cancel.load(Ordering::Relaxed),
             )
-            .map_err(|e| match e {
-                DeviceError::Cancelled => RpcError::new("cancelled", "Operation cancelled"),
-                _ => RpcError::new("device-error", format!("{e}")),
-            })?;
+            .map_err(map_reinsert_error)?;
 
         let is_cancelled = || cancel.load(Ordering::Relaxed);
         let mut keepalive = ResetKeepalive::default();
@@ -588,17 +585,7 @@ impl Ctap2Node {
                 signal("reset", json!({"state": "touch"}));
                 let result = ctap2
                     .reset(Some(&mut on_keepalive), Some(&is_cancelled))
-                    .map_err(|e| {
-                        if is_cancelled()
-                            || matches!(&e, Ctap2Error::StatusError(CtapStatus::KeepaliveCancel))
-                        {
-                            return RpcError::new("cancelled", "Operation cancelled");
-                        }
-                        if matches!(&e, Ctap2Error::StatusError(CtapStatus::UserActionTimeout)) {
-                            return RpcError::timeout();
-                        }
-                        RpcError::new("device-error", format!("{e}"))
-                    });
+                    .map_err(|e| map_reset_error(e, is_cancelled()));
 
                 *conn = Some(ctap2.into_session().into_connection());
                 result?;
@@ -615,17 +602,7 @@ impl Ctap2Node {
                 signal("reset", json!({"state": "touch"}));
                 let result = ctap2
                     .reset(Some(&mut on_keepalive), Some(&is_cancelled))
-                    .map_err(|e| {
-                        if is_cancelled()
-                            || matches!(&e, Ctap2Error::StatusError(CtapStatus::KeepaliveCancel))
-                        {
-                            return RpcError::new("cancelled", "Operation cancelled");
-                        }
-                        if matches!(&e, Ctap2Error::StatusError(CtapStatus::UserActionTimeout)) {
-                            return RpcError::timeout();
-                        }
-                        RpcError::new("device-error", format!("{e}"))
-                    });
+                    .map_err(|e| map_reset_error(e, is_cancelled()));
 
                 *conn = Some(ctap2.into_session().into_connection());
                 result?;
@@ -1765,6 +1742,36 @@ impl RpcNode for FingerprintNode {
     }
 }
 
+// --- Reset error helpers ---
+
+/// Maps a failed reinsert before a reset.
+fn map_reinsert_error(e: DeviceError) -> RpcError {
+    match e {
+        DeviceError::Cancelled => RpcError::new("cancelled", "Operation cancelled"),
+        DeviceError::WrongDevice => RpcError::new("key-mismatch", format!("{e}")),
+        _ => RpcError::new("device-error", format!("{e}")),
+    }
+}
+
+/// Maps a failed CTAP reset command.
+fn map_reset_error<E: std::error::Error + Send + Sync + 'static>(
+    e: Ctap2Error<E>,
+    cancelled: bool,
+) -> RpcError {
+    match e {
+        _ if cancelled => RpcError::new("cancelled", "Operation cancelled"),
+        Ctap2Error::StatusError(CtapStatus::KeepaliveCancel) => {
+            RpcError::new("cancelled", "Operation cancelled")
+        }
+        Ctap2Error::StatusError(CtapStatus::UserActionTimeout) => RpcError::timeout(),
+        // The YubiKey only allows a reset shortly after being powered on.
+        Ctap2Error::StatusError(CtapStatus::NotAllowed) => {
+            RpcError::new("not-allowed", format!("{e}"))
+        }
+        _ => RpcError::new("device-error", format!("{e}")),
+    }
+}
+
 // --- Bio enrollment helper ---
 
 fn map_ctap_enroll_error<E: std::error::Error + Send + Sync + 'static>(
@@ -2449,5 +2456,47 @@ mod reset_keepalive_tests {
         assert!(!keepalive.update(0x01));
         assert!(!keepalive.update(0x02));
         assert!(!keepalive.update(0x01));
+    }
+}
+
+#[cfg(test)]
+mod reset_error_tests {
+    use super::*;
+
+    type Error = Ctap2Error<std::io::Error>;
+
+    #[test]
+    fn reinsert_of_a_different_yubikey_is_a_key_mismatch() {
+        assert_eq!(
+            map_reinsert_error(DeviceError::WrongDevice).status,
+            "key-mismatch"
+        );
+        assert_eq!(
+            map_reinsert_error(DeviceError::Cancelled).status,
+            "cancelled"
+        );
+        assert_eq!(
+            map_reinsert_error(DeviceError::NoDeviceFound).status,
+            "device-error"
+        );
+    }
+
+    #[test]
+    fn reset_statuses_map_to_specific_errors() {
+        for (status, expected) in [
+            (CtapStatus::KeepaliveCancel, "cancelled"),
+            (CtapStatus::UserActionTimeout, "user-action-timeout"),
+            (CtapStatus::NotAllowed, "not-allowed"),
+            (CtapStatus::PinInvalid, "device-error"),
+        ] {
+            let error: Error = Ctap2Error::StatusError(status);
+            assert_eq!(map_reset_error(error, false).status, expected, "{status:?}");
+        }
+    }
+
+    #[test]
+    fn cancellation_wins_over_the_reported_status() {
+        let error: Error = Ctap2Error::StatusError(CtapStatus::NotAllowed);
+        assert_eq!(map_reset_error(error, true).status, "cancelled");
     }
 }

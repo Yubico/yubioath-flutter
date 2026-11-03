@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Yubico.
+ * Copyright (C) 2025-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,8 @@ import 'package:logging/logging.dart';
 
 import '../../app/logging.dart';
 import '../../core/models.dart';
-import '../../exception/cancellation_exception.dart';
+import '../../exception/app_exception.dart';
 import '../../exception/no_data_exception.dart';
-import '../../exception/platform_exception_decoder.dart';
 import '../../piv/models.dart';
 import '../../piv/state.dart';
 import '../app_methods.dart';
@@ -98,8 +97,6 @@ class AndroidPivStateNotifier extends PivStateNotifier {
         ),
         _ => throw 'Invalid response',
       };
-    } on PlatformException catch (_) {
-      rethrow;
     } finally {
       ref.invalidateSelf();
     }
@@ -122,8 +119,6 @@ class AndroidPivStateNotifier extends PivStateNotifier {
         ),
         _ => throw 'Invalid response',
       };
-    } on PlatformException catch (_) {
-      rethrow;
     } finally {
       ref.invalidateSelf();
     }
@@ -145,8 +140,6 @@ class AndroidPivStateNotifier extends PivStateNotifier {
         ),
         _ => throw 'Invalid response',
       };
-    } on PlatformException catch (_) {
-      rethrow;
     } finally {
       ref.invalidateSelf();
     }
@@ -182,8 +175,6 @@ class AndroidPivStateNotifier extends PivStateNotifier {
         ),
         _ => throw 'Invalid response',
       };
-    } on PlatformException catch (_) {
-      rethrow;
     } finally {
       ref.invalidateSelf();
     }
@@ -234,16 +225,12 @@ class AndroidPivSlotsNotifier extends PivSlotsNotifier {
 
   @override
   Future<void> delete(SlotId slot, bool deleteCert, bool deleteKey) async {
-    try {
-      await piv.invoke('delete', {
-        'slot': slot.hexId,
-        'deleteCert': deleteCert,
-        'deleteKey': deleteKey,
-      });
-      ref.invalidateSelf();
-    } on PlatformException catch (pe) {
-      throw pe.decode();
-    }
+    await piv.invoke('delete', {
+      'slot': slot.hexId,
+      'deleteCert': deleteCert,
+      'deleteKey': deleteKey,
+    });
+    ref.invalidateSelf();
   }
 
   @override
@@ -253,17 +240,13 @@ class AndroidPivSlotsNotifier extends PivSlotsNotifier {
     bool overwriteKey,
     bool includeCertificate,
   ) async {
-    try {
-      await piv.invoke('moveKey', {
-        'slot': source.hexId,
-        'destination': destination.hexId,
-        'overwriteKey': overwriteKey,
-        'includeCertificate': includeCertificate,
-      });
-      ref.invalidateSelf();
-    } on PlatformException catch (pe) {
-      throw pe.decode();
-    }
+    await piv.invoke('moveKey', {
+      'slot': source.hexId,
+      'destination': destination.hexId,
+      'overwriteKey': overwriteKey,
+      'includeCertificate': includeCertificate,
+    });
+    ref.invalidateSelf();
   }
 
   @override
@@ -322,15 +305,12 @@ class AndroidPivSlotsNotifier extends PivSlotsNotifier {
         'generate_type': type.name,
         ...result,
       });
-    } on PlatformException catch (pe) {
-      var decodedException = pe.decode();
-      if (decodedException is CancellationException) {
-        _log.debug('User cancelled generate key PIV operation');
-      } else {
-        _log.error('Generate key PIV operation failed.', pe);
-      }
-
-      throw decodedException;
+    } on CancellationException {
+      _log.debug('User cancelled generate key PIV operation');
+      rethrow;
+    } on AppException catch (e) {
+      _log.error('Generate key PIV operation failed.', e);
+      rethrow;
     }
   }
 
@@ -387,19 +367,15 @@ class AndroidPivSlotsNotifier extends PivSlotsNotifier {
 
   @override
   Future<(SlotMetadata?, String?)> read(SlotId slot) async {
-    try {
-      await preserveConnectedDeviceWhenPaused();
-      final result = jsonDecode(
-        await piv.invoke('getSlot', {'slot': slot.hexId}),
-      );
-      final metadata = result['metadata'];
-      return (
-        metadata != null ? SlotMetadata.fromJson(metadata) : null,
-        result['certificate'] as String?,
-      );
-    } on PlatformException catch (pe) {
-      throw pe.decode();
-    }
+    await preserveConnectedDeviceWhenPaused();
+    final result = jsonDecode(
+      await piv.invoke('getSlot', {'slot': slot.hexId}),
+    );
+    final metadata = result['metadata'];
+    return (
+      metadata != null ? SlotMetadata.fromJson(metadata) : null,
+      result['certificate'] as String?,
+    );
   }
 }
 

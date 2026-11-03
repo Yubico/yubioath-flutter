@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2025 Yubico.
+ * Copyright (C) 2022-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,12 +30,12 @@ import '../../app/logging.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../app/views/user_interaction.dart';
+import '../../exception/app_exception.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
 import '../../oath/models.dart';
 import '../../oath/state.dart';
 import '../credential_cache.dart';
-import '../models.dart';
 import '../rpc.dart';
 import '../state.dart';
 
@@ -428,7 +428,7 @@ class DesktopCredentialListNotifier extends OathCredentialListNotifier {
   void _refreshScheduled() async {
     try {
       await refresh();
-    } on RpcError catch (e) {
+    } on AppException catch (e) {
       _log.warning('OATH credential refresh failed', e);
       if (mounted && _active) {
         _timer = Timer(const Duration(seconds: 1), _refreshScheduled);

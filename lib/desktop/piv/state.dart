@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023-2025 Yubico.
+ * Copyright (C) 2023-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,11 +30,11 @@ import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../app/views/user_interaction.dart';
 import '../../core/models.dart';
+import '../../exception/app_exception.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../piv/models.dart';
 import '../../piv/state.dart';
 import '../credential_cache.dart';
-import '../models.dart';
 import '../rpc.dart';
 import '../state.dart';
 
@@ -227,13 +227,10 @@ class DesktopPivStateNotifier extends PivStateNotifier {
       ref.read(_pinProvider(_devicePath).notifier).value = pin;
 
       return const PinVerificationStatus.success();
-    } on RpcError catch (e) {
-      if (e.status == 'invalid-pin') {
-        return PinVerificationStatus.failure(
-          PivPinFailureReason.invalidPin(e.body['attempts_remaining']),
-        );
-      }
-      rethrow;
+    } on InvalidPinException catch (e) {
+      return PinVerificationStatus.failure(
+        PivPinFailureReason.invalidPin(e.retries!),
+      );
     } finally {
       controller?.close();
       ref.invalidateSelf();
@@ -249,18 +246,12 @@ class DesktopPivStateNotifier extends PivStateNotifier {
       );
       ref.read(_pinProvider(_devicePath).notifier).value = null;
       return const PinVerificationStatus.success();
-    } on RpcError catch (e) {
-      if (e.status == 'invalid-pin') {
-        return PinVerificationStatus.failure(
-          PivPinFailureReason.invalidPin(e.body['attempts_remaining']),
-        );
-      }
-      if (e.status == 'pin-complexity') {
-        return PinVerificationStatus.failure(
-          const PivPinFailureReason.weakPin(),
-        );
-      }
-      rethrow;
+    } on InvalidPinException catch (e) {
+      return PinVerificationStatus.failure(
+        PivPinFailureReason.invalidPin(e.retries!),
+      );
+    } on PinComplexityException {
+      return PinVerificationStatus.failure(const PivPinFailureReason.weakPin());
     } finally {
       ref.invalidateSelf();
     }
@@ -274,18 +265,12 @@ class DesktopPivStateNotifier extends PivStateNotifier {
         params: {'puk': puk, 'new_puk': newPuk},
       );
       return const PinVerificationStatus.success();
-    } on RpcError catch (e) {
-      if (e.status == 'invalid-pin') {
-        return PinVerificationStatus.failure(
-          PivPinFailureReason.invalidPin(e.body['attempts_remaining']),
-        );
-      }
-      if (e.status == 'pin-complexity') {
-        return PinVerificationStatus.failure(
-          const PivPinFailureReason.weakPin(),
-        );
-      }
-      rethrow;
+    } on InvalidPinException catch (e) {
+      return PinVerificationStatus.failure(
+        PivPinFailureReason.invalidPin(e.retries!),
+      );
+    } on PinComplexityException {
+      return PinVerificationStatus.failure(const PivPinFailureReason.weakPin());
     } finally {
       ref.invalidateSelf();
     }
@@ -318,18 +303,12 @@ class DesktopPivStateNotifier extends PivStateNotifier {
         params: {'puk': puk, 'new_pin': newPin},
       );
       return const PinVerificationStatus.success();
-    } on RpcError catch (e) {
-      if (e.status == 'invalid-pin') {
-        return PinVerificationStatus.failure(
-          PivPinFailureReason.invalidPin(e.body['attempts_remaining']),
-        );
-      }
-      if (e.status == 'pin-complexity') {
-        return PinVerificationStatus.failure(
-          const PivPinFailureReason.weakPin(),
-        );
-      }
-      rethrow;
+    } on InvalidPinException catch (e) {
+      return PinVerificationStatus.failure(
+        PivPinFailureReason.invalidPin(e.retries!),
+      );
+    } on PinComplexityException {
+      return PinVerificationStatus.failure(const PivPinFailureReason.weakPin());
     } finally {
       ref.invalidateSelf();
     }

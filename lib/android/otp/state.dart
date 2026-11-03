@@ -23,9 +23,9 @@ import 'package:logging/logging.dart';
 
 import '../../app/logging.dart';
 import '../../exception/no_data_exception.dart';
-import '../../exception/platform_exception_decoder.dart';
 import '../../otp/models.dart';
 import '../../otp/state.dart';
+import '../method_channel_errors.dart';
 import '../overlay/nfc/method_channel_notifier.dart' show MethodChannelNotifier;
 
 final _log = Logger('android.otp.state');
@@ -67,11 +67,7 @@ class AndroidOtpStateNotifier extends OtpStateNotifier {
 
   @override
   Future<void> swapSlots() async {
-    try {
-      await otp.invoke('swapSlots');
-    } on PlatformException catch (pe) {
-      throw pe.decode();
-    }
+    await otp.invoke('swapSlots');
   }
 
   @override
@@ -80,27 +76,16 @@ class AndroidOtpStateNotifier extends OtpStateNotifier {
     required SlotConfiguration configuration,
     String? accessCode,
   }) async {
-    try {
-      await otp.invoke('configureSlot', {
-        'slot': slot.id,
-        'configuration': configuration.toJson(),
-        'accessCode': accessCode,
-      });
-    } on PlatformException catch (pe) {
-      throw pe.decode();
-    }
+    await otp.invoke('configureSlot', {
+      'slot': slot.id,
+      'configuration': configuration.toJson(),
+      'accessCode': accessCode,
+    });
   }
 
   @override
   Future<void> deleteSlot(SlotId slot, {String? accessCode}) async {
-    try {
-      await otp.invoke('deleteSlot', {
-        'slot': slot.id,
-        'accessCode': accessCode,
-      });
-    } on PlatformException catch (pe) {
-      throw pe.decode();
-    }
+    await otp.invoke('deleteSlot', {'slot': slot.id, 'accessCode': accessCode});
   }
 
   @override
@@ -163,7 +148,7 @@ class AndroidOtpStateNotifier extends OtpStateNotifier {
       return jsonDecode(await _methodsChannel.invokeMethod(method, args));
     } on PlatformException catch (pe) {
       _log.error('Failed to invoke $method', pe);
-      throw pe.decode();
+      throw pe.toAppException();
     }
   }
 }

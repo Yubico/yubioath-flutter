@@ -19,6 +19,7 @@ package com.yubico.authenticator.fido
 import android.content.Context
 import androidx.lifecycle.LifecycleOwner
 import com.yubico.authenticator.AppContextManager
+import com.yubico.authenticator.ChannelError
 import com.yubico.authenticator.MainActivity
 import com.yubico.authenticator.MainViewModel
 import com.yubico.authenticator.NULL
@@ -702,36 +703,18 @@ class FidoManager(
                 } catch (captureError: FingerprintBioEnrollment.CaptureError) {
                     fidoViewModel.updateRegisterFpState(createCaptureErrorEvent(captureError.code))
                 } catch (ctapException: CtapException) {
+                    // Cancellation and timeout are reported by the channel error mapper.
                     when (ctapException.ctapError) {
-                        CtapException.ERR_KEEPALIVE_CANCEL -> {
+                        CtapException.ERR_KEEPALIVE_CANCEL,
+                        CtapException.ERR_USER_ACTION_TIMEOUT ->
                             fingerprintEnrollmentContext.cancel()
-                            return@useSession JSONObject(
-                                mapOf(
-                                    "success" to false,
-                                    "status" to "user-cancelled"
-                                )
-                            ).toString()
-                        }
-
-                        CtapException.ERR_USER_ACTION_TIMEOUT -> {
-                            fingerprintEnrollmentContext.cancel()
-                            return@useSession JSONObject(
-                                mapOf(
-                                    "success" to false,
-                                    "status" to "user-action-timeout"
-                                )
-                            ).toString()
-                        }
-
-                        else -> throw ctapException
                     }
-                } catch (_: IOException) {
-                    return@useSession JSONObject(
-                        mapOf(
-                            "success" to false,
-                            "status" to "connection-error"
-                        )
-                    ).toString()
+                    throw ctapException
+                } catch (e: IOException) {
+                    throw ChannelError(
+                        ChannelError.CONNECTION_ERROR,
+                        "Connection lost during fingerprint enrollment: $e"
+                    )
                 }
             }
 

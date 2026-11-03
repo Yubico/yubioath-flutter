@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:yubico_authenticator/app/models.dart';
 import 'package:yubico_authenticator/desktop/models.dart';
 import 'package:yubico_authenticator/desktop/rpc.dart';
+import 'package:yubico_authenticator/exception/app_exception.dart';
 
 class _RetryRpc extends RpcSession {
   final targets = <List<String>>[];
@@ -21,6 +22,20 @@ class _RetryRpc extends RpcSession {
     }
     return {};
   }
+}
+
+class _FailingRpc extends RpcSession {
+  final RpcError error;
+
+  _FailingRpc(this.error) : super('unused');
+
+  @override
+  Future<Map<String, dynamic>> command(
+    String action,
+    List<String>? target, {
+    Map? params,
+    Signaler? signal,
+  }) async => throw error;
 }
 
 class _PrefixedNodeSession extends RpcNodeSession {
@@ -55,5 +70,46 @@ void main() {
       ['devices', '38997600', 'fido', 'ctap2', 'credentials'],
       ['devices', '38997600', 'fido', 'ctap2', 'credentials'],
     ]);
+  });
+
+  group('errors', () {
+    final path = DevicePath(['devices', '38997600']);
+    final error = RpcResponse.error('connection-error', 'Error connecting', {
+      'connection': 'ccid',
+    }) as RpcError;
+
+    test('are thrown as the matching AppException', () async {
+      final session = RpcNodeSession(_FailingRpc(error), path, []);
+      await expectLater(
+        session.command('get'),
+        throwsA(
+          isA<ConnectionException>().having(
+            (e) => e.connection,
+            'connection',
+            'ccid',
+          ),
+        ),
+      );
+    });
+
+    test('error handlers still see the RpcError', () async {
+      final authRequired = RpcResponse.error(
+        'auth-required',
+        'Authentication required',
+        {},
+      ) as RpcError;
+      final session = RpcNodeSession(_FailingRpc(authRequired), path, []);
+      RpcError? seen;
+      session.setErrorHandler('auth-required', (e) async {
+        seen = e;
+        throw e;
+      });
+
+      await expectLater(
+        session.command('get'),
+        throwsA(isA<AuthRequiredException>()),
+      );
+      expect(seen, same(authRequired));
+    });
   });
 }

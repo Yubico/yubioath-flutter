@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import 'package:flutter_riverpod/legacy.dart';
 
 import '../app/models.dart';
 import '../core/state.dart';
-import '../desktop/models.dart';
+import '../exception/app_exception.dart';
 import '../widgets/flex_box.dart';
 import 'models.dart';
 
@@ -45,7 +45,7 @@ final fidoStateProvider = AsyncNotifierProvider.autoDispose
     .family<FidoStateNotifier, FidoState, DevicePath>(
       (_) => throw UnimplementedError(),
       retry: (retryCount, error) {
-        if (error is RpcError && error.status == 'fido-blocked-error') {
+        if (error is FidoBlockedException) {
           return null;
         }
         final cappedRetryCount = retryCount < 4 ? retryCount : 4;
@@ -82,7 +82,7 @@ final credentialProvider = AsyncNotifierProvider.autoDispose
       (_) => throw UnimplementedError(),
       retry: (retryCount, error) {
         // Retrying won't help until the YubiKey is placed on the reader again.
-        if (error is RpcError && error.status == 'reinsert-required') {
+        if (error is ReinsertRequiredException) {
           return null;
         }
         final cappedRetryCount = retryCount < 4 ? retryCount : 4;

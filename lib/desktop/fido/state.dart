@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,10 +25,10 @@ import '../../app/logging.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../core/models.dart';
+import '../../exception/app_exception.dart';
 import '../../fido/models.dart';
 import '../../fido/state.dart';
 import '../credential_cache.dart';
-import '../models.dart';
 import '../rpc.dart';
 import '../state.dart';
 
@@ -55,7 +55,8 @@ class _FidoRpcNodeSession extends RpcNodeSession {
     final path = await subpath();
     try {
       await super.command('close', params: {'child': path.first});
-    } on RpcError catch (e) {
+    } on UnknownException catch (e) {
+      // The helper has already closed the node.
       if (e.status != 'invalid-command' ||
           e.message != 'No such node: ${devicePath.segments.last}') {
         rethrow;
@@ -77,11 +78,10 @@ class _FidoRpcNodeSession extends RpcNodeSession {
         _subpath = path;
         _log.debug('Using transport $iface for CTAP');
         return _subpath;
-      } on RpcError catch (e) {
+      } on FidoBlockedException {
+        rethrow;
+      } on AppException {
         _log.debug('Failed connecting to CTAP via $iface');
-        if (e.status == 'fido-blocked-error') {
-          rethrow;
-        }
       }
     }
     throw 'Failed connecting to CTAP via all interfaces';
@@ -213,7 +213,7 @@ class DesktopFidoStateNotifier extends FidoStateNotifier {
         }
         if (!cancelled && !controller.isClosed && controller.hasListener) {
           controller.addError(e, stack);
-        } else if (e is! RpcError || e.status != 'cancelled') {
+        } else if (e is! CancellationException) {
           _log.error('FIDO reset failed after cancellation', e);
         }
       } finally {
@@ -238,21 +238,14 @@ class DesktopFidoStateNotifier extends FidoStateNotifier {
       final result = await _unlock(newPin, refresh: false);
       ref.invalidateSelf();
       return result;
-    } on RpcError catch (e) {
-      if (e.status == 'pin-validation') {
-        _pinController.value = null;
-        ref.invalidateSelf();
-        return PinResult.failed(
-          FidoPinFailureReason.invalidPin(
-            e.body['retries'],
-            e.body['auth_blocked'],
-          ),
-        );
-      }
-      if (e.status == 'pin-complexity') {
-        return PinResult.failed(const FidoPinFailureReason.weakPin());
-      }
-      rethrow;
+    } on InvalidPinException catch (e) {
+      _pinController.value = null;
+      ref.invalidateSelf();
+      return PinResult.failed(
+        FidoPinFailureReason.invalidPin(e.retries!, e.authBlocked),
+      );
+    } on PinComplexityException {
+      return PinResult.failed(const FidoPinFailureReason.weakPin());
     }
   }
 
@@ -274,18 +267,12 @@ class DesktopFidoStateNotifier extends FidoStateNotifier {
       if (refresh) ref.invalidateSelf();
 
       return PinResult.success();
-    } on RpcError catch (e) {
-      if (e.status == 'pin-validation') {
-        _pinController.value = null;
-        ref.invalidateSelf();
-        return PinResult.failed(
-          FidoPinFailureReason.invalidPin(
-            e.body['retries'],
-            e.body['auth_blocked'],
-          ),
-        );
-      }
-      rethrow;
+    } on InvalidPinException catch (e) {
+      _pinController.value = null;
+      ref.invalidateSelf();
+      return PinResult.failed(
+        FidoPinFailureReason.invalidPin(e.retries!, e.authBlocked),
+      );
     }
   }
 

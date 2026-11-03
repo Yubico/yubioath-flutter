@@ -13,6 +13,7 @@ import 'package:yubico_authenticator/desktop/fido/state.dart';
 import 'package:yubico_authenticator/desktop/models.dart';
 import 'package:yubico_authenticator/desktop/rpc.dart';
 import 'package:yubico_authenticator/desktop/state.dart';
+import 'package:yubico_authenticator/exception/app_exception.dart';
 import 'package:yubico_authenticator/fido/models.dart';
 import 'package:yubico_authenticator/fido/state.dart';
 import 'package:yubico_authenticator/generated/l10n/app_localizations.dart';
@@ -281,7 +282,13 @@ void main() {
     );
     rpc.response.completeError(error);
     await done.future;
-    expect(errors, [same(error)]);
+    expect(errors, [
+      isA<UserActionTimeoutException>().having(
+        (e) => e.message,
+        'message',
+        'Reset timed out',
+      ),
+    ]);
     expect(rpc.closes, 1);
   });
 

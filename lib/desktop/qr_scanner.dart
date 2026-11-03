@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../app/state.dart';
+import 'models.dart';
 import 'rpc.dart';
 import 'state.dart';
 
@@ -26,8 +27,12 @@ class RpcQrScanner implements QrScanner {
 
   @override
   Future<String?> scanQr([String? imageData]) async {
-    final result = await _rpc.command('qr', [], params: {'image': imageData});
-    return result['result'];
+    try {
+      final result = await _rpc.command('qr', [], params: {'image': imageData});
+      return result['result'];
+    } on RpcError catch (e) {
+      throw e.toAppException();
+    }
   }
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import 'package:logging/logging.dart';
 
 import '../app/logging.dart';
 import '../app/models.dart';
+import '../exception/app_exception.dart';
 import 'models.dart';
 
 final _log = Logger('helper');
@@ -227,6 +228,10 @@ class RpcSession {
 
 typedef ErrorHandler = Future<void> Function(RpcError e);
 
+extension RpcErrorToAppException on RpcError {
+  AppException toAppException() => AppException.fromWire(status, message, body);
+}
+
 class _MultiSignaler extends Signaler {
   final Signaler delegate;
   @override
@@ -266,7 +271,20 @@ class RpcNodeSession {
     List<String> target = const [],
     Map<dynamic, dynamic>? params,
     Signaler? signal,
-  }) => _command(action, target: target, params: params, signal: signal);
+  }) async {
+    try {
+      return await _command(
+        action,
+        target: target,
+        params: params,
+        signal: signal,
+      );
+    } on RpcError catch (e) {
+      // Error handlers still receive the raw RpcError; callers only ever see
+      // AppException.
+      throw e.toAppException();
+    }
+  }
 
   Future<Map<String, dynamic>> _command(
     String action, {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2025 Yubico.
+ * Copyright (C) 2022-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,16 +28,12 @@ import '../../app/logging.dart';
 import '../../app/state.dart';
 import '../../app/views/user_interaction.dart';
 import '../../core/models.dart';
-import '../../exception/apdu_exception.dart';
-import '../../exception/cancellation_exception.dart';
+import '../../exception/app_exception.dart';
 import '../../exception/no_data_exception.dart';
-import '../../exception/platform_exception_decoder.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../oath/models.dart';
 import '../../oath/state.dart';
-import '../../widgets/toast.dart';
 import '../overlay/nfc/method_channel_notifier.dart';
-import '../overlay/nfc/nfc_overlay.dart';
 
 final _log = Logger('android.oath.state');
 
@@ -78,13 +74,9 @@ class AndroidOathStateNotifier extends OathStateNotifier {
   Future<void> reset() async {
     try {
       await oath.invoke('reset');
-    } catch (e) {
-      if (e is PlatformException) {
-        final decoded = e.decode();
-        if (decoded is CancellationException) {
-          throw decoded;
-        }
-      }
+    } on CancellationException {
+      rethrow;
+    } on AppException catch (e) {
       _log.debug('Calling reset failed with exception: $e');
     }
   }
@@ -104,13 +96,11 @@ class AndroidOathStateNotifier extends OathStateNotifier {
       final remembered = unlockResponse['remembered'] == true;
 
       return (unlocked, remembered);
-    } on PlatformException catch (pe) {
-      final decoded = pe.decode();
-      if (decoded is CancellationException) {
-        _log.debug('Unlock OATH cancelled');
-        throw decoded;
-      }
-      _log.debug('Calling unlock failed with exception: $pe');
+    } on CancellationException {
+      _log.debug('Unlock OATH cancelled');
+      rethrow;
+    } on AppException catch (e) {
+      _log.debug('Calling unlock failed with exception: $e');
       return (false, false);
     }
   }
@@ -123,13 +113,11 @@ class AndroidOathStateNotifier extends OathStateNotifier {
         'password': password,
       });
       return true;
-    } on PlatformException catch (pe) {
-      final decoded = pe.decode();
-      if (decoded is CancellationException) {
-        _log.debug('Set password cancelled');
-        throw decoded;
-      }
-      _log.debug('Calling set password failed with exception: $pe');
+    } on CancellationException {
+      _log.debug('Set password cancelled');
+      rethrow;
+    } on AppException catch (e) {
+      _log.debug('Calling set password failed with exception: $e');
       return false;
     }
   }
@@ -139,13 +127,11 @@ class AndroidOathStateNotifier extends OathStateNotifier {
     try {
       await oath.invoke('unsetPassword', {'current': current});
       return true;
-    } on PlatformException catch (pe) {
-      final decoded = pe.decode();
-      if (decoded is CancellationException) {
-        _log.debug('Unset password cancelled');
-        throw decoded;
-      }
-      _log.debug('Calling unset password failed with exception: $pe');
+    } on CancellationException {
+      _log.debug('Unset password cancelled');
+      rethrow;
+    } on AppException catch (e) {
+      _log.debug('Calling unset password failed with exception: $e');
       return false;
     }
   }
@@ -154,52 +140,10 @@ class AndroidOathStateNotifier extends OathStateNotifier {
   Future<void> forgetPassword() async {
     try {
       await oath.invoke('forgetPassword');
-    } on PlatformException catch (e) {
+    } on AppException catch (e) {
       _log.debug('Calling forgetPassword failed with exception: $e');
     }
   }
-}
-
-Exception handlePlatformException(
-  Ref ref,
-  PlatformException platformException,
-) {
-  final decoded = platformException.decode();
-  final l10n = ref.read(l10nProvider);
-  final withContext = ref.read(withContextProvider);
-
-  toast(String message, {bool popStack = false}) =>
-      withContext((context) async {
-        ref.read(nfcOverlay.notifier).hide();
-        if (popStack) {
-          Navigator.of(context).popUntil((route) {
-            return route.isFirst;
-          });
-        }
-        showToast(context, message, duration: const Duration(seconds: 4));
-      });
-
-  switch (decoded) {
-    case ApduException apduException:
-      if (apduException.sw == 0x6985) {
-        // pop stack to show the OATH view with "Set password"
-        toast(l10n.l_add_account_password_required, popStack: true);
-        return CancellationException();
-      }
-      if (apduException.sw == 0x6982) {
-        toast(l10n.l_add_account_unlock_required);
-        return CancellationException();
-      }
-    case PlatformException pe:
-      if (pe.code == 'FunctionalityMissingException') {
-        toast(l10n.l_add_account_func_missing, popStack: true);
-        return CancellationException();
-      } else if (pe.code == 'IllegalArgumentException') {
-        toast(l10n.l_account_already_exists);
-        return CancellationException();
-      }
-  }
-  return decoded;
 }
 
 final addCredentialToAnyProvider = Provider(
@@ -213,9 +157,9 @@ final addCredentialToAnyProvider = Provider(
         }),
       );
       return OathCredential.fromJson(result['credential']);
-    } on PlatformException catch (pe) {
-      _log.error('Received exception: $pe');
-      throw handlePlatformException(ref, pe);
+    } on AppException catch (e) {
+      _log.error('Received exception: $e');
+      rethrow;
     }
   },
 );
@@ -234,9 +178,9 @@ final addCredentialsToAnyProvider = Provider(
         }),
       );
       return result['succeeded'] == credentialUris.length;
-    } on PlatformException catch (pe) {
-      _log.error('Received exception: $pe');
-      throw handlePlatformException(ref, pe);
+    } on AppException catch (e) {
+      _log.error('Received exception: $e');
+      rethrow;
     }
   },
 );
@@ -309,8 +253,6 @@ class AndroidCredentialListNotifier extends OathCredentialListNotifier {
       });
       _log.debug('Calculate', resultJson);
       return OathCode.fromJson(jsonDecode(resultJson));
-    } on PlatformException catch (pe) {
-      throw pe.decode();
     } finally {
       _touchTimer?.cancel();
       _touchTimer = null;
@@ -323,16 +265,12 @@ class AndroidCredentialListNotifier extends OathCredentialListNotifier {
     Uri credentialUri, {
     bool requireTouch = false,
   }) async {
-    try {
-      String resultString = await oath.invoke('addAccount', {
-        'uri': credentialUri.toString(),
-        'requireTouch': requireTouch,
-      });
-      var result = jsonDecode(resultString);
-      return OathCredential.fromJson(result['credential']);
-    } on PlatformException catch (pe) {
-      throw handlePlatformException(_ref, pe);
-    }
+    String resultString = await oath.invoke('addAccount', {
+      'uri': credentialUri.toString(),
+      'requireTouch': requireTouch,
+    });
+    var result = jsonDecode(resultString);
+    return OathCredential.fromJson(result['credential']);
   }
 
   @override
@@ -352,9 +290,9 @@ class AndroidCredentialListNotifier extends OathCredentialListNotifier {
       var responseJson = jsonDecode(response);
 
       return OathCredential.fromJson(responseJson);
-    } on PlatformException catch (pe) {
-      _log.debug('Failed to execute renameOathCredential: ${pe.message}');
-      throw pe.decode();
+    } on AppException catch (e) {
+      _log.debug('Failed to execute renameOathCredential: $e');
+      rethrow;
     }
   }
 
@@ -362,15 +300,12 @@ class AndroidCredentialListNotifier extends OathCredentialListNotifier {
   Future<void> deleteAccount(OathCredential credential) async {
     try {
       await oath.invoke('deleteAccount', {'credentialId': credential.id});
-    } on PlatformException catch (e) {
-      var decoded = e.decode();
-      if (decoded is CancellationException) {
-        _log.debug('Account delete was cancelled.');
-      } else {
-        _log.debug('Received exception: $e');
-      }
-
-      throw decoded;
+    } on CancellationException {
+      _log.debug('Account delete was cancelled.');
+      rethrow;
+    } on AppException catch (e) {
+      _log.debug('Received exception: $e');
+      rethrow;
     }
   }
 }

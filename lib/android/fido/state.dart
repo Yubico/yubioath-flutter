@@ -25,10 +25,8 @@ import 'package:logging/logging.dart';
 import '../../app/logging.dart';
 import '../../app/message.dart';
 import '../../app/state.dart';
-import '../../desktop/models.dart';
-import '../../exception/cancellation_exception.dart';
+import '../../exception/app_exception.dart';
 import '../../exception/no_data_exception.dart';
-import '../../exception/platform_exception_decoder.dart';
 import '../../fido/models.dart';
 import '../../fido/state.dart';
 import '../overlay/nfc/method_channel_notifier.dart';
@@ -94,12 +92,8 @@ class AndroidFidoStateNotifier extends FidoStateNotifier {
         await fido.invoke('reset');
         await controller.sink.close();
         ref.invalidateSelf();
-      } on PlatformException catch (pe) {
-        final decoded = pe.decode();
-        if (decoded is! CancellationException) {
-          _log.debug('PlatformException during reset: \'$pe\'');
-        }
-        controller.sink.addError(decoded);
+      } on CancellationException catch (e) {
+        controller.sink.addError(e);
       } catch (e) {
         _log.debug('Error during reset: \'$e\'');
         controller.sink.addError(e);
@@ -132,12 +126,9 @@ class AndroidFidoStateNotifier extends FidoStateNotifier {
           response['authBlocked'],
         ),
       );
-    } on PlatformException catch (pe) {
-      var decodedException = pe.decode();
-      if (decodedException is CancellationException) {
-        _log.debug('User cancelled set/change FIDO PIN operation');
-      }
-      throw decodedException;
+    } on CancellationException {
+      _log.debug('User cancelled set/change FIDO PIN operation');
+      rethrow;
     }
   }
 
@@ -160,22 +151,19 @@ class AndroidFidoStateNotifier extends FidoStateNotifier {
           response['authBlocked'],
         ),
       );
-    } on PlatformException catch (pe) {
-      var decodedException = pe.decode();
-      if (decodedException is! CancellationException) {
-        // non pin failure
-        // simulate cancellation but show an error
-        await ref.read(withContextProvider)(
-          (context) async => showMessage(
-            context,
-            ref.watch(l10nProvider).p_operation_failed_try_again,
-          ),
-        );
-        throw CancellationException();
-      }
-
+    } on CancellationException {
       _log.debug('User cancelled unlock FIDO operation');
-      throw decodedException;
+      rethrow;
+    } on AppException {
+      // non pin failure
+      // simulate cancellation but show an error
+      await ref.read(withContextProvider)(
+        (context) async => showMessage(
+          context,
+          ref.watch(l10nProvider).p_operation_failed_try_again,
+        ),
+      );
+      throw const CancellationException();
     }
   }
 
@@ -189,16 +177,11 @@ class AndroidFidoStateNotifier extends FidoStateNotifier {
       if (response['success'] == true) {
         _log.debug('Enterprise attestation enabled');
       }
-    } on PlatformException catch (pe) {
-      var decodedException = pe.decode();
-      if (decodedException is CancellationException) {
-        _log.debug('User cancelled unlock FIDO operation');
-        throw decodedException;
-      }
-
-      _log.debug(
-        'Platform exception during enable enterprise attestation: $pe',
-      );
+    } on CancellationException {
+      _log.debug('User cancelled enable enterprise attestation operation');
+      rethrow;
+    } on AppException catch (e) {
+      _log.debug('Failed to enable enterprise attestation: $e');
       rethrow;
     }
   }
@@ -284,21 +267,11 @@ class AndroidFidoFingerprintsNotifier extends FidoFingerprintsNotifier {
 
         final resultJson = jsonDecode(registerFpResult);
 
-        if (resultJson['success'] == true) {
-          controller.sink.add(
-            FingerprintEvent.complete(Fingerprint.fromJson(resultJson)),
-          );
-        } else {
-          // TODO abstract platform errors
-          final errorStatus = resultJson['status'];
-          if (errorStatus != 'user-cancelled') {
-            throw RpcError(errorStatus, 'Platform error: $errorStatus', {});
-          }
-        }
-      } on PlatformException catch (pe) {
-        _log.debug('Received platform exception: \'$pe\'');
-        final decoded = pe.decode();
-        controller.sink.addError(decoded);
+        controller.sink.add(
+          FingerprintEvent.complete(Fingerprint.fromJson(resultJson)),
+        );
+      } on CancellationException {
+        _log.debug('Fingerprint registration cancelled');
       } catch (e) {
         _log.debug('Received error: \'$e\'');
         controller.sink.addError(e);
@@ -330,15 +303,12 @@ class AndroidFidoFingerprintsNotifier extends FidoFingerprintsNotifier {
         _log.debug('FIDO rename fingerprint failed');
         return fingerprint;
       }
-    } on PlatformException catch (pe) {
-      var decodedException = pe.decode();
-      if (decodedException is CancellationException) {
-        _log.debug('User cancelled rename fingerprint FIDO operation');
-      } else {
-        _log.error('Rename fingerprint FIDO operation failed.', pe);
-      }
-
-      throw decodedException;
+    } on CancellationException {
+      _log.debug('User cancelled rename fingerprint FIDO operation');
+      rethrow;
+    } on AppException catch (e) {
+      _log.error('Rename fingerprint FIDO operation failed.', e);
+      rethrow;
     }
   }
 
@@ -356,15 +326,12 @@ class AndroidFidoFingerprintsNotifier extends FidoFingerprintsNotifier {
       } else {
         _log.debug('FIDO delete fingerprint failed');
       }
-    } on PlatformException catch (pe) {
-      var decodedException = pe.decode();
-      if (decodedException is CancellationException) {
-        _log.debug('User cancelled delete fingerprint FIDO operation');
-      } else {
-        _log.error('Delete fingerprint FIDO operation failed.', pe);
-      }
-
-      throw decodedException;
+    } on CancellationException {
+      _log.debug('User cancelled delete fingerprint FIDO operation');
+      rethrow;
+    } on AppException catch (e) {
+      _log.error('Delete fingerprint FIDO operation failed.', e);
+      rethrow;
     }
   }
 }
@@ -408,12 +375,9 @@ class AndroidFidoCredentialsNotifier extends FidoCredentialsNotifier {
         'rpId': credential.rpId,
         'credentialId': credential.credentialId,
       });
-    } on PlatformException catch (pe) {
-      var decodedException = pe.decode();
-      if (decodedException is CancellationException) {
-        _log.debug('User cancelled delete credential FIDO operation');
-      }
-      throw decodedException;
+    } on CancellationException {
+      _log.debug('User cancelled delete credential FIDO operation');
+      rethrow;
     }
   }
 }

@@ -27,7 +27,7 @@ import 'package:window_manager/window_manager.dart';
 import '../app/logging.dart';
 import '../app/models.dart';
 import '../app/state.dart';
-import '../exception/cancellation_exception.dart';
+import '../exception/app_exception.dart';
 import '../generated/l10n/app_localizations.dart';
 import '../oath/models.dart';
 import '../oath/state.dart';

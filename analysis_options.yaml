@@ -52,3 +52,4 @@ plugins:
     diagnostics:
       use_recommended_widget: true
       call_init_after_creation: true
+      no_platform_error_types: true

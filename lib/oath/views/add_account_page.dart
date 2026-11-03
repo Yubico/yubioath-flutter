@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2025 Yubico.
+ * Copyright (C) 2022-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,9 +31,7 @@ import '../../app/state.dart';
 import '../../app/views/user_interaction.dart';
 import '../../core/models.dart';
 import '../../core/state.dart';
-import '../../desktop/models.dart';
-import '../../exception/apdu_exception.dart';
-import '../../exception/cancellation_exception.dart';
+import '../../exception/app_exception.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
 import '../../widgets/app_input_decoration.dart';
@@ -163,20 +161,7 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
       // ignored
     } catch (e) {
       _log.error('Failed to add account', e);
-      final String errorMessage;
-      // TODO: Make this cleaner than importing desktop specific RpcError.
-      if (e is RpcError) {
-        errorMessage = e.message;
-      } else if (e is ApduException) {
-        errorMessage = e.message;
-      } else {
-        errorMessage = e.toString();
-      }
-      showMessage(
-        context,
-        l10n.l_account_add_failed(errorMessage),
-        duration: const Duration(seconds: 4),
-      );
+      await showAddAccountError(ref, e);
     }
   }
 

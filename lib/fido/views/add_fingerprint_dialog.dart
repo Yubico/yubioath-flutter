@@ -26,7 +26,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../../app/logging.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
-import '../../desktop/models.dart';
+import '../../exception/app_exception.dart';
 import '../../fido/models.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/app_input_decoration.dart';
@@ -153,19 +153,11 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
             if (!mounted) return;
             Navigator.of(context).pop();
             final l10n = AppLocalizations.of(context);
-            final String errorMessage;
-            // TODO: Make this cleaner than importing desktop specific RpcError.
-            if (error is RpcError) {
-              if (error.status == 'user-action-timeout') {
-                errorMessage = l10n.l_user_action_timeout_error;
-              } else if (error.status == 'connection-error') {
-                errorMessage = l10n.l_failed_connecting_to_fido;
-              } else {
-                errorMessage = error.message;
-              }
-            } else {
-              errorMessage = error.toString();
-            }
+            final errorMessage = switch (error) {
+              UserActionTimeoutException() => l10n.l_user_action_timeout_error,
+              ConnectionException() => l10n.l_failed_connecting_to_fido,
+              _ => exceptionMessage(error),
+            };
             showMessage(
               context,
               l10n.l_adding_fingerprint_failed(errorMessage),
@@ -203,16 +195,9 @@ class _AddFingerprintDialogState extends ConsumerState<AddFingerprintDialog>
       Navigator.of(context).pop(true);
       showMessage(context, l10n.s_fingerprint_added);
     } catch (e) {
-      final String errorMessage;
-      // TODO: Make this cleaner than importing desktop specific RpcError.
-      if (e is RpcError) {
-        errorMessage = e.message;
-      } else {
-        errorMessage = e.toString();
-      }
       showMessage(
         context,
-        l10n.l_setting_name_failed(errorMessage),
+        l10n.l_setting_name_failed(exceptionMessage(e)),
         duration: const Duration(seconds: 4),
       );
     }

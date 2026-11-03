@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Yubico.
+ * Copyright (C) 2023-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ class _AppLinter extends Plugin {
   void register(PluginRegistry registry) {
     registry.registerLintRule(UseRecommendedWidget());
     registry.registerLintRule(CallInitAfterCreation());
+    registry.registerLintRule(NoPlatformErrorTypes());
   }
 }
 
@@ -108,5 +109,53 @@ class _InitVisitor extends SimpleAstVisitor<void> {
       return;
     }
     rule.reportAtNode(node.constructorName);
+  }
+}
+
+/// Keeps backend-specific error types inside the platform layers.
+///
+/// The desktop helper and the Android native code report errors as `RpcError`
+/// and `PlatformException`. `lib/desktop` and `lib/android` turn them into
+/// `AppException` (see doc/Error_Contract.adoc), so the rest of the app is
+/// platform agnostic.
+class NoPlatformErrorTypes extends AnalysisRule {
+  static const LintCode code = LintCode(
+    'no_platform_error_types',
+    "Don't use '{0}' outside lib/desktop and lib/android.",
+    correctionMessage: 'Handle the matching AppException type instead.',
+  );
+
+  static const _platformErrorTypes = {'RpcError', 'PlatformException'};
+
+  static final _platformLayer = RegExp(r'[/\\]lib[/\\](desktop|android)[/\\]');
+
+  NoPlatformErrorTypes()
+    : super(name: code.lowerCaseName, description: code.problemMessage);
+
+  @override
+  LintCode get diagnosticCode => code;
+
+  @override
+  void registerNodeProcessors(
+    RuleVisitorRegistry registry,
+    RuleContext context,
+  ) {
+    if (!context.isInLibDir) return;
+    if (_platformLayer.hasMatch(context.definingUnit.file.path)) return;
+    registry.addNamedType(this, _PlatformErrorTypeVisitor(this));
+  }
+}
+
+class _PlatformErrorTypeVisitor extends SimpleAstVisitor<void> {
+  final NoPlatformErrorTypes rule;
+
+  _PlatformErrorTypeVisitor(this.rule);
+
+  @override
+  void visitNamedType(NamedType node) {
+    final name = node.name.lexeme;
+    if (NoPlatformErrorTypes._platformErrorTypes.contains(name)) {
+      rule.reportAtNode(node, arguments: [name]);
+    }
   }
 }

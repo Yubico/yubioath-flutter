@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2025 Yubico.
+ * Copyright (C) 2022-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,7 @@ import '../../app/message.dart';
 import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../core/state.dart';
-import '../../desktop/models.dart';
-import '../../exception/cancellation_exception.dart';
+import '../../exception/app_exception.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/utf8_utils.dart';
 import '../keys.dart';
@@ -148,22 +147,33 @@ Future<String?> handleQrFile(
     }
     return qrData;
   } catch (e) {
-    final String errorMessage;
-    if (e is RpcError) {
-      if (e.status == 'invalid-image') {
-        errorMessage = l10n.l_qr_invalid_image_file;
-      } else {
-        errorMessage = e.message;
-      }
-    } else {
-      errorMessage = e.toString();
-    }
+    final errorMessage = e is InvalidImageException
+        ? l10n.l_qr_invalid_image_file
+        : exceptionMessage(e);
     await withContext((context) async {
       showMessage(context, l10n.l_qr_not_read(errorMessage));
     });
     return null;
   }
 }
+
+/// Tells the user why adding an account failed.
+Future<void> showAddAccountError(WidgetRef ref, Object e) =>
+    ref.read(withContextProvider)((context) async {
+      final l10n = AppLocalizations.of(context);
+      final message = switch (e) {
+        AuthRequiredException() => l10n.l_add_account_unlock_required,
+        PasswordRequiredException() => l10n.l_add_account_password_required,
+        NotSupportedException() => l10n.l_add_account_func_missing,
+        AlreadyExistsException() => l10n.l_account_already_exists,
+        _ => l10n.l_account_add_failed(exceptionMessage(e)),
+      };
+      if (e is PasswordRequiredException || e is NotSupportedException) {
+        // Go back to the accounts view, where the user can act on it.
+        Navigator.of(context).popUntil((route) => route.isFirst);
+      }
+      showMessage(context, message, duration: const Duration(seconds: 4));
+    });
 
 Future<void> addOathAccount(
   BuildContext context,

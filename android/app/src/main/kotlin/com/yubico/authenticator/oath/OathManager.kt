@@ -22,6 +22,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import com.yubico.authenticator.AppContextManager
 import com.yubico.authenticator.AppPreferences
+import com.yubico.authenticator.ChannelError
 import com.yubico.authenticator.NULL
 import com.yubico.authenticator.NfcOverlayManager
 import com.yubico.authenticator.OperationContext
@@ -171,7 +172,7 @@ class OathManager(
         logger.debug("OathManager initialized")
 
         // OATH methods callable from Flutter:
-        oathChannel.setHandler(coroutineScope) { method, args ->
+        oathChannel.setHandler(coroutineScope, OathChannelErrorMapper) { method, args ->
             @Suppress("UNCHECKED_CAST")
             when (method) {
                 "reset" -> reset()
@@ -418,7 +419,7 @@ class OathManager(
         return useOathSession { session ->
             // We need to check for duplicates here since we haven't yet read the credentials
             if (session.credentials.any { it.id.contentEquals(credentialData.id) }) {
-                throw IllegalArgumentException()
+                throw ChannelError(ChannelError.ALREADY_EXISTS, "Credential already exists")
             }
 
             val credential = session.putCredential(credentialData, requireTouch)
