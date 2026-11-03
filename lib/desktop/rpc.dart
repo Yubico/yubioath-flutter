@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import 'package:logging/logging.dart';
 
 import '../app/logging.dart';
 import '../app/models.dart';
+import '../exception/app_exception.dart';
 import 'models.dart';
 
 final _log = Logger('helper');
@@ -227,6 +228,10 @@ class RpcSession {
 
 typedef ErrorHandler = Future<void> Function(RpcError e);
 
+extension RpcErrorToAppException on RpcError {
+  AppException toAppException() => AppException.fromWire(status, message, body);
+}
+
 class _MultiSignaler extends Signaler {
   final Signaler delegate;
   @override
@@ -251,7 +256,19 @@ class RpcNodeSession {
   final List<String> subPath;
   final Map<String, ErrorHandler> _errorHandlers = {};
 
-  RpcNodeSession(this._rpc, this.devicePath, this.subPath);
+  /// When true, [command] throws [AppException] instead of [RpcError].
+  ///
+  /// Error handlers still receive the raw [RpcError]. Apps opt in as they are
+  /// moved to platform-agnostic errors; once all have, this becomes the only
+  /// behavior.
+  final bool throwAppExceptions;
+
+  RpcNodeSession(
+    this._rpc,
+    this.devicePath,
+    this.subPath, {
+    this.throwAppExceptions = false,
+  });
 
   void setErrorHandler(String status, ErrorHandler handler) {
     _errorHandlers[status] = handler;
@@ -266,7 +283,19 @@ class RpcNodeSession {
     List<String> target = const [],
     Map<dynamic, dynamic>? params,
     Signaler? signal,
-  }) => _command(action, target: target, params: params, signal: signal);
+  }) async {
+    try {
+      return await _command(
+        action,
+        target: target,
+        params: params,
+        signal: signal,
+      );
+    } on RpcError catch (e) {
+      if (throwAppExceptions) throw e.toAppException();
+      rethrow;
+    }
+  }
 
   Future<Map<String, dynamic>> _command(
     String action, {

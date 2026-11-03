@@ -28,6 +28,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
+import org.slf4j.LoggerFactory
+
+private val channelLogger = LoggerFactory.getLogger("ChannelHelper")
 
 interface JsonSerializable {
     fun toJson(): String
@@ -122,8 +125,17 @@ typealias MethodHandler = suspend (method: String, args: Map<String, Any?>) -> S
 
 /**
  * Coroutine-based handing of MethodChannel methods called from Flutter.
+ *
+ * With an [errorMapper], failures are sent as [ChannelError] in the shared error
+ * format: the status as the error code and the body as the details. Without
+ * one, the exception class name and text are sent; that form is kept until
+ * every channel uses a mapper.
  */
-fun MethodChannel.setHandler(scope: CoroutineScope, handler: MethodHandler) {
+fun MethodChannel.setHandler(
+    scope: CoroutineScope,
+    errorMapper: ChannelErrorMapper? = null,
+    handler: MethodHandler
+) {
     setMethodCallHandler { call, result ->
         // N.B. Arguments from Flutter are passed as a Map of basic types. We may want to
         // consider JSON encoding if we need to pass more complex structures.
@@ -136,6 +148,17 @@ fun MethodChannel.setHandler(scope: CoroutineScope, handler: MethodHandler) {
             } catch (_: NotImplementedError) {
                 result.notImplemented()
             } catch (error: Throwable) {
+                if (errorMapper != null) {
+                    val channelError = errorMapper.map(error)
+                    channelLogger.debug(
+                        "Method {} failed with {}",
+                        call.method,
+                        channelError.status,
+                        error
+                    )
+                    result.error(channelError.status, channelError.message, channelError.body)
+                    return@launch
+                }
                 result.error(
                     error.javaClass.simpleName,
                     error.toString(),

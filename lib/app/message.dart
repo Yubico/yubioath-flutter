@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import 'package:flutter/material.dart';
 
 import '../desktop/models.dart';
 import '../exception/apdu_exception.dart';
+import '../exception/app_exception.dart';
 import '../exception/tag_lost_exception.dart';
 import '../widgets/toast.dart';
 
@@ -29,15 +30,19 @@ void Function() showExceptionMessage(
   Exception e, {
   Duration duration = const Duration(seconds: 2),
 }) {
-  final message = e is RpcError
-      ? (e as RpcError).message
-      : e is ApduException
-      ? e.message
-      : e is TagLostException
-      ? e.message
-      : e.toString();
-  return showToast(context, message, duration: duration);
+  return showToast(context, exceptionMessage(e), duration: duration);
 }
+
+/// Text describing [e], for use where no more specific localized message
+/// applies.
+String exceptionMessage(Object e) => switch (e) {
+  AppException(:final message) => message,
+  // Apps not yet moved to AppException still surface these types.
+  RpcError(:final message) => message,
+  ApduException(:final message) => message,
+  TagLostException(:final message) => message,
+  _ => e.toString(),
+};
 
 void Function() showMessage(
   BuildContext context,

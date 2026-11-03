@@ -1,0 +1,95 @@
+== Backend error contract
+The Flutter code runs on top of a different backend on each platform: the Rust
+helper on desktop and native code on Android (and iOS). Every backend reports
+a failure in the same shape, so that code under `lib/` outside the platform
+directories never handles platform-specific errors.
+
+=== Format
+An error has three parts:
+
+`status`:: a short kebab-case name from the table below.
+`message`:: text for logs and as a last-resort message. The UI picks a
+localized string based on the status instead.
+`body`:: a map with optional extra fields, listed per status.
+
+How each backend sends it:
+
+Desktop helper:: an RPC response with `"kind": "error"` and the fields
+`status`, `message` and `body`.
+Android:: `MethodChannel.Result.error(status, message, body)`, built by a
+`ChannelErrorMapper` (see `ChannelError.kt`).
+
+On the Dart side, `AppException.fromWire` in `lib/exception/app_exception.dart`
+turns an error into a typed `AppException`. The desktop layer calls it through
+`RpcError.toAppException()`, the Android layer through
+`PlatformException.toAppException()`.
+
+=== Statuses
+Reuse an existing status when the meaning matches. To add one, add it here,
+to `AppException.fromWire` and to the tests on both sides
+(`test/exception/app_exception_test.dart` and the Kotlin mapper tests).
+
+[cols="2,3,2,2",options="header"]
+|===
+|Status |Meaning |Body |Dart type
+
+|`cancelled`
+|The user cancelled the operation.
+|
+|`CancellationException`
+
+|`auth-required`
+|The application is locked; unlock it first.
+|
+|`AuthRequiredException`
+
+|`password-required`
+|The operation needs a password to be set first.
+|
+|`PasswordRequiredException`
+
+|`not-supported`
+|The YubiKey lacks, or has disabled, the needed functionality.
+|
+|`NotSupportedException`
+
+|`already-exists`
+|The item being created already exists on the YubiKey.
+|
+|`AlreadyExistsException`
+
+|`connection-error`
+|Opening or keeping a connection to the YubiKey failed.
+|`connection`: `ccid`, `fido`, `otp` or `nfc`
+|`ConnectionException`
+
+|`invalid-image`
+|An image passed for QR scanning could not be decoded.
+|
+|`InvalidImageException`
+
+|`device-error`
+|The YubiKey rejected a command.
+|`sw`: ISO 7816 status word, if known
+|`DeviceException`
+
+|`exception`
+|Any other failure.
+|
+|`UnknownException`
+|===
+
+Any status not listed becomes `UnknownException`, which keeps the status for
+logging.
+
+The desktop helper also uses statuses the Dart side handles before converting
+the error, such as `state-reset` and the recovery from `auth-required` in
+`RpcNodeSession`, and FIDO and PIV statuses not yet in this table.
+
+=== Adoption
+Applications still catch `RpcError` and `PlatformException` directly, and
+opt in one at a time as they are moved:
+
+* desktop: pass `throwAppExceptions: true` to `RpcNodeSession`;
+* Android: pass a `ChannelErrorMapper` to `MethodChannel.setHandler`, and
+  decode errors with `toAppException()` in the app's `MethodChannelNotifier`.

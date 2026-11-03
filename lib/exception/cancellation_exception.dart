@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,4 +14,6 @@
  * limitations under the License.
  */
 
-class CancellationException implements Exception {}
+// CancellationException is part of the AppException hierarchy. This export
+// keeps existing imports working until every app imports app_exception.dart.
+export 'app_exception.dart' show CancellationException;

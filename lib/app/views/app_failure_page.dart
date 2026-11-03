@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2025 Yubico.
+ * Copyright (C) 2022-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../desktop/models.dart';
+import '../../exception/app_exception.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
 import 'elevate_fido_buttons.dart';
@@ -49,25 +50,32 @@ class AppFailurePage extends ConsumerWidget {
     List<Widget> actions = [];
     String? footnote;
 
+    // Apps not yet moved to AppException still report RpcError.
+    final failedConnection = switch (reason) {
+      ConnectionException(:final connection) => connection ?? '',
+      RpcError(status: 'connection-error', :final body) =>
+        body['connection'] as String? ?? '',
+      _ => null,
+    };
+    switch (failedConnection) {
+      case null:
+        break;
+      case 'ccid':
+        header = l10n.l_ccid_connection_failed;
+        if (Platform.isMacOS) {
+          message = l10n.p_try_reinsert_yk;
+        } else if (Platform.isLinux) {
+          message = l10n.p_pcscd_unavailable;
+        } else {
+          message = l10n.p_ccid_service_unavailable;
+        }
+      default:
+        header = l10n.l_open_connection_failed;
+        message = l10n.p_try_reinsert_yk;
+    }
+
     if (reason is RpcError) {
       switch (reason.status) {
-        case 'connection-error':
-          switch (reason.body['connection']) {
-            case 'ccid':
-              header = l10n.l_ccid_connection_failed;
-              if (Platform.isMacOS) {
-                message = l10n.p_try_reinsert_yk;
-              } else if (Platform.isLinux) {
-                message = l10n.p_pcscd_unavailable;
-              } else {
-                message = l10n.p_ccid_service_unavailable;
-              }
-              break;
-            default:
-              header = l10n.l_open_connection_failed;
-              message = l10n.p_try_reinsert_yk;
-          }
-          break;
         case 'reinsert-required':
           graphic = Icon(Symbols.contactless, size: 96);
           header = l10n.l_reinsert_yk_nfc_required;
