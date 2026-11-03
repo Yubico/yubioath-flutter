@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2025 Yubico.
+ * Copyright (C) 2022-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,10 @@ final _managementMethodsProvider =
 
 class ManagementMethodChannelNotifier extends MethodChannelNotifier {
   ManagementMethodChannelNotifier()
-    : super(const MethodChannel('android.management.methods'));
+    : super(
+        const MethodChannel('android.management.methods'),
+        throwAppExceptions: true,
+      );
 }
 
 class AndroidManagementStateNotifier extends ManagementStateNotifier {

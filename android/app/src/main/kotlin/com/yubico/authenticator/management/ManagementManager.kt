@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Yubico.
+ * Copyright (C) 2025-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package com.yubico.authenticator.management
 
 import com.yubico.authenticator.AppContextManager
+import com.yubico.authenticator.CommonChannelErrorMapper
 import com.yubico.authenticator.NULL
 import com.yubico.authenticator.OperationContext
 import com.yubico.authenticator.device.DeviceManager
@@ -46,7 +47,7 @@ class ManagementManager(messenger: BinaryMessenger, deviceManager: DeviceManager
 
     init {
         logger.debug("ManagementManager initialized")
-        channel.setHandler(coroutineScope) { method, args ->
+        channel.setHandler(coroutineScope, CommonChannelErrorMapper) { method, args ->
 
             // remember current device info
             targetDeviceInfo = deviceManager.deviceInfo?.copy()
