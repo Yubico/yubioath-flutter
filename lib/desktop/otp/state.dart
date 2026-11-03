@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Yubico.
+ * Copyright (C) 2023-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,8 +32,12 @@ final _log = Logger('desktop.otp.state');
 
 final _sessionProvider = Provider.autoDispose
     .family<RpcNodeSession, DevicePath>(
-      (ref, devicePath) =>
-          RpcNodeSession(ref.watch(rpcProvider).requireValue, devicePath, []),
+      (ref, devicePath) => RpcNodeSession(
+        ref.watch(rpcProvider).requireValue,
+        devicePath,
+        [],
+        throwAppExceptions: true,
+      ),
     );
 
 class DesktopOtpStateNotifier extends OtpStateNotifier {

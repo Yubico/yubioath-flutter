@@ -130,9 +130,9 @@ the error, such as `state-reset` and the recovery from `auth-required` in
 `RpcNodeSession`.
 
 === Adoption
-OATH, FIDO and PIV use this contract on every platform. The other applications
-still catch `RpcError` and `PlatformException` directly, and opt in as they
-are moved:
+OATH, FIDO, PIV and OTP use this contract on every platform. The other
+applications still catch `RpcError` and `PlatformException` directly, and opt
+in as they are moved:
 
 * desktop: pass `throwAppExceptions: true` to `RpcNodeSession`;
 * Android: pass a `ChannelErrorMapper` to `MethodChannel.setHandler`, and
