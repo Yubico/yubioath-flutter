@@ -645,7 +645,7 @@ impl RpcNode for CredentialsNode {
 
                 let cred_id = data.get_id();
                 if self.creds.contains_key(&cred_id) {
-                    return Err(RpcError::invalid_params("Credential already exists"));
+                    return Err(RpcError::new("already-exists", "Credential already exists"));
                 }
 
                 let credential = session
