@@ -256,19 +256,7 @@ class RpcNodeSession {
   final List<String> subPath;
   final Map<String, ErrorHandler> _errorHandlers = {};
 
-  /// When true, [command] throws [AppException] instead of [RpcError].
-  ///
-  /// Error handlers still receive the raw [RpcError]. Apps opt in as they are
-  /// moved to platform-agnostic errors; once all have, this becomes the only
-  /// behavior.
-  final bool throwAppExceptions;
-
-  RpcNodeSession(
-    this._rpc,
-    this.devicePath,
-    this.subPath, {
-    this.throwAppExceptions = false,
-  });
+  RpcNodeSession(this._rpc, this.devicePath, this.subPath);
 
   void setErrorHandler(String status, ErrorHandler handler) {
     _errorHandlers[status] = handler;
@@ -292,8 +280,9 @@ class RpcNodeSession {
         signal: signal,
       );
     } on RpcError catch (e) {
-      if (throwAppExceptions) throw e.toAppException();
-      rethrow;
+      // Error handlers still receive the raw RpcError; callers only ever see
+      // AppException.
+      throw e.toAppException();
     }
   }
 

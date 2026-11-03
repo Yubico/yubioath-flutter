@@ -71,7 +71,7 @@ final _sessionProvider = Provider.autoDispose
       return RpcNodeSession(ref.watch(rpcProvider).requireValue, devicePath, [
         'ccid',
         'piv',
-      ], throwAppExceptions: true);
+      ]);
     });
 
 class DesktopPivStateNotifier extends PivStateNotifier {

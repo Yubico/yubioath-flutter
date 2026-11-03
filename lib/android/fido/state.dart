@@ -397,8 +397,5 @@ final _fidoMethodsProvider =
 
 class AndroidFidoMethodChannelNotifier extends MethodChannelNotifier {
   AndroidFidoMethodChannelNotifier()
-    : super(
-        const MethodChannel('android.fido.methods'),
-        throwAppExceptions: true,
-      );
+    : super(const MethodChannel('android.fido.methods'));
 }

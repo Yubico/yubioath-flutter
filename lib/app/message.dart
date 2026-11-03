@@ -19,10 +19,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-import '../desktop/models.dart';
-import '../exception/apdu_exception.dart';
 import '../exception/app_exception.dart';
-import '../exception/tag_lost_exception.dart';
 import '../widgets/toast.dart';
 
 void Function() showExceptionMessage(
@@ -37,10 +34,6 @@ void Function() showExceptionMessage(
 /// applies.
 String exceptionMessage(Object e) => switch (e) {
   AppException(:final message) => message,
-  // Apps not yet moved to AppException still surface these types.
-  RpcError(:final message) => message,
-  ApduException(:final message) => message,
-  TagLostException(:final message) => message,
   _ => e.toString(),
 };
 

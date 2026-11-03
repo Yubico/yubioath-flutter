@@ -129,11 +129,6 @@ The desktop helper also uses statuses the Dart side handles before converting
 the error, such as `state-reset` and the recovery from `auth-required` in
 `RpcNodeSession`.
 
-=== Adoption
-OATH, FIDO, PIV, OTP and management use this contract on every platform.
-Other code still catches `RpcError` and `PlatformException` directly, and opts
-in as it is moved:
-
-* desktop: pass `throwAppExceptions: true` to `RpcNodeSession`;
-* Android: pass a `ChannelErrorMapper` to `MethodChannel.setHandler`, and
-  `throwAppExceptions: true` to the app's `MethodChannelNotifier`.
+=== Enforcement
+The `no_platform_error_types` rule in the `lint` package reports any use of
+`RpcError` or `PlatformException` outside `lib/desktop` and `lib/android`.

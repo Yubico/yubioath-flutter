@@ -24,18 +24,13 @@ import 'nfc_overlay.dart';
 class MethodChannelNotifier extends Notifier<void> {
   final MethodChannel _channel;
 
-  /// When true, the native side reports errors in the shared error format and
-  /// [invoke] throws [AppException] instead of [PlatformException].
-  ///
-  /// Apps opt in as they are moved to platform-agnostic errors; once all have,
-  /// this becomes the only behavior.
-  final bool throwAppExceptions;
-
-  MethodChannelNotifier(this._channel, {this.throwAppExceptions = false});
+  MethodChannelNotifier(this._channel);
 
   @override
   void build() {}
 
+  /// Calls [name] on the native side. The native side reports failures in the
+  /// shared error format, so they are thrown as [AppException].
   Future<dynamic> invoke(
     String name, [
     Map<String, dynamic> args = const {},
@@ -45,7 +40,6 @@ class MethodChannelNotifier extends Notifier<void> {
       await ref.read(nfcOverlay.notifier).waitForHide();
       return result;
     } on PlatformException catch (e) {
-      if (!throwAppExceptions) rethrow;
       throw e.toAppException();
     }
   }

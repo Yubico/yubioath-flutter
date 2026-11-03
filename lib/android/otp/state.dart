@@ -158,5 +158,5 @@ final _otpMethodsProvider = NotifierProvider<OtpMethodChannelNotifier, void>(
 );
 
 class OtpMethodChannelNotifier extends MethodChannelNotifier {
-  OtpMethodChannelNotifier() : super(_methodsChannel, throwAppExceptions: true);
+  OtpMethodChannelNotifier() : super(_methodsChannel);
 }

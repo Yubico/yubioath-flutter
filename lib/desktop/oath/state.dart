@@ -58,7 +58,7 @@ final _sessionProvider = Provider.autoDispose
       return RpcNodeSession(ref.watch(rpcProvider).requireValue, devicePath, [
         'ccid',
         'oath',
-      ], throwAppExceptions: true);
+      ]);
     });
 
 // Retain transient keys across device changes until they expire.

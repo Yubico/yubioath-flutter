@@ -21,7 +21,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
-import '../../desktop/models.dart';
 import '../../exception/app_exception.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
@@ -50,11 +49,8 @@ class AppFailurePage extends ConsumerWidget {
     List<Widget> actions = [];
     String? footnote;
 
-    // Apps not yet moved to AppException still report RpcError.
     final failedConnection = switch (reason) {
       ConnectionException(:final connection) => connection ?? '',
-      RpcError(status: 'connection-error', :final body) =>
-        body['connection'] as String? ?? '',
       _ => null,
     };
     switch (failedConnection) {

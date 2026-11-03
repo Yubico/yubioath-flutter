@@ -31,10 +31,7 @@ final _managementMethodsProvider =
 
 class ManagementMethodChannelNotifier extends MethodChannelNotifier {
   ManagementMethodChannelNotifier()
-    : super(
-        const MethodChannel('android.management.methods'),
-        throwAppExceptions: true,
-      );
+    : super(const MethodChannel('android.management.methods'));
 }
 
 class AndroidManagementStateNotifier extends ManagementStateNotifier {

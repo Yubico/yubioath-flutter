@@ -17,7 +17,6 @@
 package com.yubico.authenticator.otp
 
 import com.yubico.authenticator.AppContextManager
-import com.yubico.authenticator.CommonChannelErrorMapper
 import com.yubico.authenticator.NULL
 import com.yubico.authenticator.OperationContext
 import com.yubico.authenticator.device.DeviceManager
@@ -50,7 +49,7 @@ class OtpManager(
     init {
         logger.debug("OtpManager initialized")
 
-        otpChannel.setHandler(coroutineScope, CommonChannelErrorMapper) { method, args ->
+        otpChannel.setHandler(coroutineScope) { method, args ->
             @Suppress("UNCHECKED_CAST")
             when (method) {
                 "swapSlots" -> swapSlots()

@@ -19,7 +19,6 @@ package com.yubico.authenticator.fido
 import android.content.Context
 import androidx.lifecycle.LifecycleOwner
 import com.yubico.authenticator.AppContextManager
-import com.yubico.authenticator.CommonChannelErrorMapper
 import com.yubico.authenticator.MainActivity
 import com.yubico.authenticator.MainViewModel
 import com.yubico.authenticator.NULL
@@ -144,7 +143,7 @@ class FidoManager(
         logger.debug("FidoManager initialized")
         pinRetries = null
 
-        fidoChannel.setHandler(coroutineScope, CommonChannelErrorMapper) { method, args ->
+        fidoChannel.setHandler(coroutineScope) { method, args ->
             when (method) {
                 "reset" -> resetHelper.reset()
 

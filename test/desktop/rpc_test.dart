@@ -72,24 +72,14 @@ void main() {
     ]);
   });
 
-  group('throwAppExceptions', () {
+  group('errors', () {
     final path = DevicePath(['devices', '38997600']);
     final error = RpcResponse.error('connection-error', 'Error connecting', {
       'connection': 'ccid',
     }) as RpcError;
 
-    test('is off by default and rethrows the RpcError', () async {
+    test('are thrown as the matching AppException', () async {
       final session = RpcNodeSession(_FailingRpc(error), path, []);
-      await expectLater(session.command('get'), throwsA(same(error)));
-    });
-
-    test('throws the matching AppException when on', () async {
-      final session = RpcNodeSession(
-        _FailingRpc(error),
-        path,
-        [],
-        throwAppExceptions: true,
-      );
       await expectLater(
         session.command('get'),
         throwsA(
@@ -108,12 +98,7 @@ void main() {
         'Authentication required',
         {},
       ) as RpcError;
-      final session = RpcNodeSession(
-        _FailingRpc(authRequired),
-        path,
-        [],
-        throwAppExceptions: true,
-      );
+      final session = RpcNodeSession(_FailingRpc(authRequired), path, []);
       RpcError? seen;
       session.setErrorHandler('auth-required', (e) async {
         seen = e;

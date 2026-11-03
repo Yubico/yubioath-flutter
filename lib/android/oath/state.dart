@@ -335,8 +335,5 @@ final _oathMethodsProvider = NotifierProvider<OathMethodChannelNotifier, void>(
 
 class OathMethodChannelNotifier extends MethodChannelNotifier {
   OathMethodChannelNotifier()
-    : super(
-        const MethodChannel('android.oath.methods'),
-        throwAppExceptions: true,
-      );
+    : super(const MethodChannel('android.oath.methods'));
 }

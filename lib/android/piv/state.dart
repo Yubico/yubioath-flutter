@@ -385,8 +385,5 @@ final _pivMethodsProvider = NotifierProvider<PivMethodChannelNotifier, void>(
 
 class PivMethodChannelNotifier extends MethodChannelNotifier {
   PivMethodChannelNotifier()
-    : super(
-        const MethodChannel('android.piv.methods'),
-        throwAppExceptions: true,
-      );
+    : super(const MethodChannel('android.piv.methods'));
 }

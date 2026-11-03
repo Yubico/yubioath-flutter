@@ -17,7 +17,6 @@
 package com.yubico.authenticator.management
 
 import com.yubico.authenticator.AppContextManager
-import com.yubico.authenticator.CommonChannelErrorMapper
 import com.yubico.authenticator.NULL
 import com.yubico.authenticator.OperationContext
 import com.yubico.authenticator.device.DeviceManager
@@ -47,7 +46,7 @@ class ManagementManager(messenger: BinaryMessenger, deviceManager: DeviceManager
 
     init {
         logger.debug("ManagementManager initialized")
-        channel.setHandler(coroutineScope, CommonChannelErrorMapper) { method, args ->
+        channel.setHandler(coroutineScope) { method, args ->
 
             // remember current device info
             targetDeviceInfo = deviceManager.deviceInfo?.copy()

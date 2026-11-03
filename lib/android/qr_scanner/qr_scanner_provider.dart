@@ -23,7 +23,7 @@ import 'package:qrscanner_zxing/qrscanner_zxing_method_channel.dart';
 
 import '../../app/message.dart';
 import '../../app/state.dart';
-import '../../exception/cancellation_exception.dart';
+import '../../exception/app_exception.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../oath/views/add_account_page.dart';
 import '../../oath/views/utils.dart';

@@ -47,8 +47,7 @@ final _pinProvider =
 void clearCachedFidoPins(Ref ref) => ref.invalidate(_pinProvider);
 
 class _FidoRpcNodeSession extends RpcNodeSession {
-  _FidoRpcNodeSession(super.rpc, super.devicePath, super.subpath)
-    : super(throwAppExceptions: true);
+  _FidoRpcNodeSession(super.rpc, super.devicePath, super.subpath);
 
   List<String> _subpath = [];
 

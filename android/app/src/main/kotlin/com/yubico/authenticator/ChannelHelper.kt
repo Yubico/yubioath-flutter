@@ -126,14 +126,13 @@ typealias MethodHandler = suspend (method: String, args: Map<String, Any?>) -> S
 /**
  * Coroutine-based handing of MethodChannel methods called from Flutter.
  *
- * With an [errorMapper], failures are sent as [ChannelError] in the shared error
- * format: the status as the error code and the body as the details. Without
- * one, the exception class name and text are sent; that form is kept until
- * every channel uses a mapper.
+ * Failures are sent as [ChannelError] in the shared error format: the status as
+ * the error code and the body as the details. Applications with their own error
+ * meanings pass an [errorMapper] that falls back to [CommonChannelErrorMapper].
  */
 fun MethodChannel.setHandler(
     scope: CoroutineScope,
-    errorMapper: ChannelErrorMapper? = null,
+    errorMapper: ChannelErrorMapper = CommonChannelErrorMapper,
     handler: MethodHandler
 ) {
     setMethodCallHandler { call, result ->
@@ -148,25 +147,14 @@ fun MethodChannel.setHandler(
             } catch (_: NotImplementedError) {
                 result.notImplemented()
             } catch (error: Throwable) {
-                if (errorMapper != null) {
-                    val channelError = errorMapper.map(error)
-                    channelLogger.debug(
-                        "Method {} failed with {}",
-                        call.method,
-                        channelError.status,
-                        error
-                    )
-                    result.error(channelError.status, channelError.message, channelError.body)
-                    return@launch
-                }
-                result.error(
-                    error.javaClass.simpleName,
-                    error.toString(),
-                    "Cause: " + error.cause + ", Stacktrace: " +
-                        android.util.Log.getStackTraceString(
-                            error
-                        )
+                val channelError = errorMapper.map(error)
+                channelLogger.debug(
+                    "Method {} failed with {}",
+                    call.method,
+                    channelError.status,
+                    error
                 )
+                result.error(channelError.status, channelError.message, channelError.body)
             }
         }
     }

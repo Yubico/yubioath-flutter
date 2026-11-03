@@ -32,12 +32,8 @@ final _log = Logger('desktop.management.state');
 
 final _sessionProvider = Provider.autoDispose
     .family<RpcNodeSession, DevicePath>(
-      (ref, devicePath) => RpcNodeSession(
-        ref.watch(rpcProvider).requireValue,
-        devicePath,
-        [],
-        throwAppExceptions: true,
-      ),
+      (ref, devicePath) =>
+          RpcNodeSession(ref.watch(rpcProvider).requireValue, devicePath, []),
     );
 
 class DesktopManagementStateNotifier extends ManagementStateNotifier {

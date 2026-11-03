@@ -31,7 +31,7 @@ import '../../app/state.dart';
 import '../../app/views/user_interaction.dart';
 import '../../core/models.dart';
 import '../../core/state.dart';
-import '../../exception/cancellation_exception.dart';
+import '../../exception/app_exception.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
 import '../../widgets/app_input_decoration.dart';

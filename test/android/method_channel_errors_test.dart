@@ -25,13 +25,4 @@ void main() {
 
     expect(e, isA<AuthRequiredException>());
   });
-
-  test('legacy class-name codes are not mistaken for known statuses', () {
-    final e = PlatformException(
-      code: 'ApduException',
-      message: 'APDU error: 0x6982',
-    ).toAppException();
-
-    expect(e, isA<UnknownException>());
-  });
 }
