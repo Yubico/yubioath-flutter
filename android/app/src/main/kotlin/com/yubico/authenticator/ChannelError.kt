@@ -40,6 +40,7 @@ class ChannelError(
         const val NOT_SUPPORTED = "not-supported"
         const val ALREADY_EXISTS = "already-exists"
         const val CONNECTION_ERROR = "connection-error"
+        const val USER_ACTION_TIMEOUT = "user-action-timeout"
         const val NOT_ALLOWED = "not-allowed"
         const val DEVICE_ERROR = "device-error"
         const val EXCEPTION = "exception"
@@ -90,6 +91,17 @@ object CommonChannelErrorMapper : ChannelErrorMapper {
 private fun mapCtapException(error: CtapException): ChannelError {
     val code = error.ctapError.toInt() and 0xff
     return when (error.ctapError) {
+        CtapException.ERR_KEEPALIVE_CANCEL -> ChannelError(
+            ChannelError.CANCELLED,
+            "Operation cancelled"
+        )
+
+        CtapException.ERR_USER_ACTION_TIMEOUT,
+        CtapException.ERR_ACTION_TIMEOUT -> ChannelError(
+            ChannelError.USER_ACTION_TIMEOUT,
+            "Failed action due to user inactivity"
+        )
+
         CtapException.ERR_NOT_ALLOWED -> ChannelError(
             ChannelError.NOT_ALLOWED,
             error.message ?: "Operation not allowed"

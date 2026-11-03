@@ -66,12 +66,29 @@ class CommonChannelErrorMapperTest {
     }
 
     @Test
-    fun `other ctap errors are device errors carrying the ctap code`() {
-        for (code in listOf(CtapException.ERR_PIN_INVALID, CtapException.ERR_KEEPALIVE_CANCEL)) {
-            val error = CommonChannelErrorMapper.map(CtapException(code))
-            assertEquals("device-error", error.status)
-            assertEquals(mapOf("ctap" to (code.toInt() and 0xff)), error.body)
+    fun `ctap keepalive cancel means cancelled`() {
+        val error = CommonChannelErrorMapper.map(CtapException(CtapException.ERR_KEEPALIVE_CANCEL))
+        assertEquals("cancelled", error.status)
+    }
+
+    @Test
+    fun `ctap timeouts mean user action timeout`() {
+        for (code in listOf(
+            CtapException.ERR_USER_ACTION_TIMEOUT,
+            CtapException.ERR_ACTION_TIMEOUT
+        )) {
+            assertEquals(
+                "user-action-timeout",
+                CommonChannelErrorMapper.map(CtapException(code)).status
+            )
         }
+    }
+
+    @Test
+    fun `other ctap errors are device errors carrying the ctap code`() {
+        val error = CommonChannelErrorMapper.map(CtapException(CtapException.ERR_PIN_INVALID))
+        assertEquals("device-error", error.status)
+        assertEquals(mapOf("ctap" to 0x31), error.body)
     }
 
     @Test

@@ -267,19 +267,11 @@ class AndroidFidoFingerprintsNotifier extends FidoFingerprintsNotifier {
 
         final resultJson = jsonDecode(registerFpResult);
 
-        if (resultJson['success'] == true) {
-          controller.sink.add(
-            FingerprintEvent.complete(Fingerprint.fromJson(resultJson)),
-          );
-        } else {
-          final errorStatus = resultJson['status'];
-          if (errorStatus != 'user-cancelled') {
-            throw AppException.fromWire(
-              errorStatus,
-              'Platform error: $errorStatus',
-            );
-          }
-        }
+        controller.sink.add(
+          FingerprintEvent.complete(Fingerprint.fromJson(resultJson)),
+        );
+      } on CancellationException {
+        _log.debug('Fingerprint registration cancelled');
       } catch (e) {
         _log.debug('Received error: \'$e\'');
         controller.sink.addError(e);
