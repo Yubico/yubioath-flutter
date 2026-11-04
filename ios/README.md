@@ -58,7 +58,7 @@ dependency and does not change the Android scanner.
 |---|---|---|
 | Camera QR scanning | A native scanner is connected to account setup, including supported migration QR codes. | Implemented using Apple APIs instead of the Android ZXing plugin. Physical camera and permission flows still require device verification. |
 | Account setup links | Handles `otpauth://` and `otpauth-migration://` links from other apps. | No equivalent URL registration or link handler is wired up. |
-| FIPS secure channels | Discovers SCP11b parameters and supplies secure channels to relevant Management, OATH, PIV, and OTP sessions. | No equivalent secure-channel discovery/setup. Some operations on FIPS keys may therefore fail even though the view exists. |
+| FIPS secure channels | Discovers SCP11b parameters over NFC and supplies them to Management, OATH, PIV, and OTP sessions when the corresponding FIPS capability is reported. PIV object operations use the secure-channel-aware SDK APIs. | Implemented for NFC; wired USB intentionally follows Android and does not establish SCP11b. Physical FIPS hardware validation is still pending. |
 | Persistent FIDO authorization | Stores supported persistent read-only PIN/UV authentication tokens for later credential management. | Persistent read-only tokens are not stored; the corresponding capability is explicitly disabled. OATH password remembering is separate and is implemented. |
 | FIDO reset over USB | Includes USB reset handling on supported devices. | The implemented reset flow advertises NFC only. |
 | USB FIDO transport | Uses the FIDO connection interface. | The current bridge runs CTAP2 over the shared smart-card connection; it does not provide equivalent USB FIDO-HID access. FIDO-only keys/interfaces need particular compatibility verification. |
@@ -79,7 +79,7 @@ drivers.
 | QR import | Decodes QR codes from image data or a screen capture, subject to OS capture support/permissions. | Camera scanning and image decoding are implemented. The scanner offers photo-library selection, not desktop screen capture. |
 | Device and reader selection | Enumerates USB devices and external PC/SC smart-card readers, with device-specific paths. | The iOS provider exposes one current device; no equivalent multi-key/external-reader selection. |
 | Transport coverage | Uses smart-card, FIDO-HID, and OTP-HID connections as available. FIDO can try its dedicated interface and smart-card transport. | Uses the shared YubiKit Swift smart-card connection path. No equivalent general HID or external PC/SC transport layer. |
-| Secure channels | The helper includes SCP11b connection setup. | No corresponding secure-channel setup in the iOS bridges. |
+| Secure channels | The helper includes SCP11b connection setup. | iOS now discovers and supplies SCP11b parameters for supported NFC application sessions; USB behavior matches Android. |
 | FIDO USB reset and legacy mode changes | Implements these through the desktop back end where supported. | FIDO reset is NFC-only; legacy `setMode` is unsupported. |
 | Desktop integration | Tray/menu-bar behavior, hidden startup, desktop notifications, and saved window position/size. | Not ported. These are desktop-specific conveniences, not missing YubiKey application operations. |
 | Diagnostics and launch options | Helper logging, log files, and command-line launch options. | No Python helper or equivalent command-line interface. Swift diagnostics still need app-level integration. |
@@ -96,20 +96,17 @@ drivers.
 - **Hardware verification:** the new PIV and OTP flows have not yet been verified
   end-to-end on physical hardware. Error recovery, cancellation, older firmware,
   FIPS devices, and wired device combinations need a hardware test matrix.
-- **QR verification:** camera permissions, camera lifecycle, and photo selection
-  still need physical-device verification. Vision image decoding encountered
-  inference limitations in the Simulator; a successful build does not establish
-  end-to-end scanner compatibility.
+
 
 ## Where future parity work belongs
 
 | Area | Work in this app | Work in YubiKit Swift or platform constraints |
 |---|---|---|
 | Account setup links | Register URL schemes, handle cold/warm starts, and route links into shared account import. | No YubiKit changes required. |
-| FIPS/SCP11b | Discover Security Domain parameters and supply them to application sessions. | The pinned SDK already exposes Security Domain and SCP11 APIs; the missing integration is primarily local. |
+| FIPS/SCP11b | Verify discovery and secure sessions on physical FIPS-capable keys, including behavior when SCP11b key material is unavailable. | Implemented using the Security Domain and SCP APIs. |
 | Persistent FIDO authorization | Keychain storage, device matching, forget behavior, and token invalidation. | A supported token persistence/restoration API is needed: the current token data and initializer are not public. |
-| PIV object access | Replace raw Pivman/object commands when SDK APIs become available, including secure-channel-aware handling. | Public object read/write methods or higher-level Pivman helpers would avoid app-side raw commands. |
-| Older-key management keys | Remove the local compatibility workaround after upgrading to a fixed SDK. | The pinned SDK incorrectly gates setting 3DES management keys on AES support. |
+| PIV object access | The app now uses the SDK's public `getObject`/`putObject` APIs for Pivman metadata, CHUID, and CCC so those APDUs use the PIV session's secure messaging. | YubiKit Swift `release/1.5.0` adds the required public APIs. |
+| Older-key management keys | Verify 3DES management-key updates on older firmware and physical FIPS hardware. | The updated SDK fixes the 3DES feature gate and exposes `getPinAttempts()`. |
 | Legacy USB mode changes | Connect the existing Flutter operation and handle reconnection if supported. | No public equivalent is exposed by the current Management session; transport support is also required. |
 | USB HID and USB FIDO reset | Add connection routing/reset UX only after transport feasibility is established. | SDK HID implementations are macOS-only. iOS access depends on permitted OS APIs, not just adding a Flutter bridge. The CTAP reset command itself already exists. |
 | Native logs and import compatibility | Integrate Swift diagnostics and expand certificate/key format fixtures and parsers. | Primarily app work; report concrete SDK defects discovered during hardware testing separately. |
@@ -174,5 +171,5 @@ the shared models. This avoids nested platform-channel map conversion issues.
 Local operations such as file inspection, subject validation, and OTP utilities
 do not require an NFC scan.
 
-YubiKit Swift is pinned to revision
-`e19212f2efbca9af280e57542e669885de5acdc1`.
+YubiKit Swift follows the `release/1.5.0` branch, resolved to commit
+`ef9d5cd2de9465ddcd5b9347fffc87618f9363e6`.

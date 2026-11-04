@@ -107,8 +107,8 @@ final class ManagementManager: NSObject {
         let newLockCode = Self.parseHex(args["newLockCode"])
         let reboot = (args["reboot"] as? Bool) ?? false
 
-        let writeOp: @Sendable (any SmartCardConnection) async throws -> DeviceInfo = { connection in
-            let session = try await Management.Session.makeSession(connection: connection)
+        let writeOp: @Sendable (any SmartCardConnection, SCPKeyParams?) async throws -> DeviceInfo = { connection, scpKeyParams in
+            let session = try await Management.Session.makeSession(connection: connection, scpKeyParams: scpKeyParams)
             let currentInfo = try await session.getDeviceInfo()
             let newConfig = Self.buildDeviceConfig(from: configMap, base: currentInfo.config)
             try await session.updateDeviceConfig(
@@ -124,7 +124,7 @@ final class ManagementManager: NSObject {
         }
 
         do {
-            let (info, isNfc) = try await runManagementOperation(body: writeOp)
+            let (info, isNfc) = try await runManagementOperation(discoverSCP: true, body: writeOp)
             // Always emit so NFC reads (which are not covered by the USB
             // monitor) refresh the home tab. For USB the monitor will also
             // re-emit on reattach; the duplicate is harmless.
@@ -146,14 +146,14 @@ final class ManagementManager: NSObject {
     // MARK: - Device reset
 
     private func deviceReset(result: @escaping FlutterResult) async {
-        let resetOp: @Sendable (any SmartCardConnection) async throws -> DeviceInfo = { connection in
-            let session = try await Management.Session.makeSession(connection: connection)
+        let resetOp: @Sendable (any SmartCardConnection, SCPKeyParams?) async throws -> DeviceInfo = { connection, scpKeyParams in
+            let session = try await Management.Session.makeSession(connection: connection, scpKeyParams: scpKeyParams)
             try await session.resetDevice()
             return try await session.getDeviceInfo()
         }
 
         do {
-            let (info, isNfc) = try await runManagementOperation(body: resetOp)
+            let (info, isNfc) = try await runManagementOperation(discoverSCP: true, body: resetOp)
             let dict = DeviceInfoSerializer.serialize(info, name: deviceName(info), isNfc: isNfc)
             deviceEventsHandler.send(dict)
             await MainActor.run { result(NSNull()) }
@@ -176,25 +176,50 @@ final class ManagementManager: NSObject {
     /// currently held by the monitor.
     private func runManagementOperation<T: Sendable>(
         successMessage: String = "Configuration updated",
-        body: @Sendable @escaping (any SmartCardConnection) async throws -> T
+        discoverSCP: Bool = false,
+        capability: Capability? = nil,
+        body: @Sendable @escaping (any SmartCardConnection, SCPKeyParams?) async throws -> T
     ) async throws -> (T, Bool) {
         if await coordinator.hasWiredDevice {
-            let value = try await coordinator.runWithReleasedUsb(body: body)
+            let value = try await coordinator.runWithReleasedUsb { connection in
+                try await body(connection, nil)
+            }
             return (value, false)
         } else {
             let value = try await ConnectionHelper.withNFCConnection(
                 successMessage: successMessage
             ) { connection in
-                try await body(connection)
+                guard discoverSCP else { return try await body(connection, nil) }
+                let info = try await Self.readDeviceInfo(from: connection)
+                let discoveredParams = try await Self.readSCPKeyParams(from: connection, info: info)
+                guard let capability else { return try await body(connection, discoveredParams) }
+                // Swift maps the first raw FIPS flag to FIDO2; Android's OTP gate uses that raw flag.
+                let capabilityBit = capability == .otp ? Capability.fido2.rawValue : capability.rawValue
+                let params = info.fipsCapabilityFlags & capabilityBit != 0 ? discoveredParams : nil
+                return try await body(connection, params)
             }
             return (value, true)
         }
     }
 
     func runApplicationOperation<T: Sendable>(
+        capability: Capability? = nil,
+        body: @Sendable @escaping (any SmartCardConnection, SCPKeyParams?) async throws -> T
+    ) async throws -> (T, Bool) {
+        try await runManagementOperation(
+            successMessage: "Done",
+            discoverSCP: capability != nil,
+            capability: capability,
+            body: body
+        )
+    }
+
+    func runApplicationOperation<T: Sendable>(
         body: @Sendable @escaping (any SmartCardConnection) async throws -> T
     ) async throws -> (T, Bool) {
-        try await runManagementOperation(successMessage: "Done", body: body)
+        try await runApplicationOperation { connection, _ in
+            try await body(connection)
+        }
     }
 
     func hasWiredDevice() async -> Bool {
@@ -227,6 +252,23 @@ final class ManagementManager: NSObject {
     fileprivate static func readDeviceInfo(from connection: any SmartCardConnection) async throws -> DeviceInfo {
         let session = try await Management.Session.makeSession(connection: connection)
         return try await session.getDeviceInfo()
+    }
+
+    private static func readSCPKeyParams(
+        from connection: any SmartCardConnection,
+        info: DeviceInfo
+    ) async throws -> SCPKeyParams? {
+        guard info.fipsCapabilityFlags != 0 else { return nil }
+        let session = try await SecurityDomainSession.makeSession(connection: connection)
+        let keyInformation = try await session.getKeyInformation()
+        guard let keyRef = keyInformation.keys.first(where: { $0.kid == .scp11b }) else {
+            throw SCPError.responseParseError("No SCP11b key is available for this FIPS-capable YubiKey", source: .here())
+        }
+        let certificates = try await session.getCertificateBundle(for: keyRef)
+        guard let publicKey = certificates.last?.publicKey, case let .ec(ecPublicKey) = publicKey else {
+            throw SCPError.responseParseError("No usable SCP11b certificate is available for this FIPS-capable YubiKey", source: .here())
+        }
+        return try SCP11KeyParams(keyRef: keyRef, pkSdEcka: ecPublicKey)
     }
 
     private func deviceName(_ info: DeviceInfo) -> String {

@@ -76,8 +76,13 @@ final class OtpManager {
         let args = call.arguments as? [String: Any] ?? [:]
         Task {
             do {
-                let (snapshot, _) = try await managementManager.runApplicationOperation { connection in
-                    try await OtpController.execute(call.method, args: args, connection: connection)
+                let (snapshot, _) = try await managementManager.runApplicationOperation(capability: .otp) { connection, scpKeyParams in
+                    try await OtpController.execute(
+                        call.method,
+                        args: args,
+                        connection: connection,
+                        scpKeyParams: scpKeyParams
+                    )
                 }
                 await MainActor.run {
                     self.operationInFlight = false
@@ -213,9 +218,10 @@ private actor OtpController {
     static func execute(
         _ method: String,
         args: [String: Any],
-        connection: any SmartCardConnection
+        connection: any SmartCardConnection,
+        scpKeyParams: SCPKeyParams?
     ) async throws -> String {
-        let session = try await YubiOTP.Session.makeSession(connection: connection)
+        let session = try await YubiOTP.Session.makeSession(connection: connection, scpKeyParams: scpKeyParams)
         let serial = try? await session.getSerialNumber()
         if let expected = args["expectedSerial"] as? Int {
             guard expected >= 0 else { throw OtpError.wrongDevice }

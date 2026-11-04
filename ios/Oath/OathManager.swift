@@ -9,7 +9,6 @@
  */
 
 import Flutter
-import CryptoKit
 import CryptoTokenKit
 import Security
 import YubiKit
@@ -55,8 +54,13 @@ final class OathManager {
         let args = call.arguments as? [String: Any] ?? [:]
         Task {
             do {
-                let (json, _) = try await managementManager.runApplicationOperation { connection in
-                    try await self.controller.execute(call.method, args: args, connection: connection)
+                let (json, _) = try await managementManager.runApplicationOperation(capability: .oath) { connection, scpKeyParams in
+                    try await self.controller.execute(
+                        call.method,
+                        args: args,
+                        connection: connection,
+                        scpKeyParams: scpKeyParams
+                    )
                 }
                 await MainActor.run {
                     self.operationInFlight = false
@@ -97,13 +101,14 @@ private actor OathController {
     func execute(
         _ method: String,
         args: [String: Any],
-        connection: any SmartCardConnection
+        connection: any SmartCardConnection,
+        scpKeyParams: SCPKeyParams?
     ) async throws -> String {
-        var metadata = try await OathMetadata.read(connection)
+        var session = try await OATHSession.makeSession(connection: connection, scpKeyParams: scpKeyParams)
+        var metadata = await OathMetadata.read(session)
         if let expectedId = args["deviceId"] as? String, expectedId != metadata.deviceId {
             throw OathError.message("The scanned YubiKey does not match the selected OATH device")
         }
-        var session = try await OATHSession.makeSession(connection: connection)
         var locked = metadata.hasKey
         var storedKey = try OathKeychain.read(metadata.deviceId)
         if method != "unlock" && method != "setPassword" && method != "unsetPassword" && method != "reset",
@@ -181,8 +186,8 @@ private actor OathController {
             try OathKeychain.delete(metadata.deviceId)
             accessKeys.removeValue(forKey: metadata.deviceId)
             storedKey = nil
-            metadata = try await OathMetadata.read(connection)
-            session = try await OATHSession.makeSession(connection: connection)
+            session = try await OATHSession.makeSession(connection: connection, scpKeyParams: scpKeyParams)
+            metadata = await OathMetadata.read(session)
             locked = metadata.hasKey
         case "addAccount":
             try requireUnlocked(locked)
@@ -373,23 +378,8 @@ private struct OathMetadata {
     let deviceId: String
     var hasKey: Bool
 
-    static func read(_ connection: any SmartCardConnection) async throws -> OathMetadata {
-        // The SDK keeps the OATH salt and lock status private, including on an empty key.
-        // Read SELECT metadata before creating the SDK session, which selects again.
-        let response = try await connection.send(data: Data([
-            0x00, 0xa4, 0x04, 0x00, 0x07, 0xa0, 0x00, 0x00, 0x05, 0x27, 0x21, 0x01,
-        ]))
-        guard response.count >= 2 else { throw OathError.message("Incomplete OATH SELECT response") }
-        guard response.suffix(2) == Data([0x90, 0x00]) else {
-            throw OathError.message("Could not select the OATH application")
-        }
-        guard let records = TKBERTLVRecord.sequenceOfRecords(from: Data(response.dropLast(2))),
-              let salt = records.first(where: { $0.tag == 0x71 })?.value else {
-            throw OathError.message("Missing OATH device salt")
-        }
-        let deviceId = Data(SHA256.hash(data: salt).prefix(16))
-            .base64EncodedString().replacingOccurrences(of: "=", with: "")
-        return OathMetadata(deviceId: deviceId, hasKey: records.contains(where: { $0.tag == 0x74 }))
+    static func read(_ session: OATHSession) async -> OathMetadata {
+        OathMetadata(deviceId: await session.deviceId, hasKey: await session.hasAccessKey)
     }
 }
 

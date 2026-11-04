@@ -68,7 +68,7 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Yubico/yubikit-swift",
       "state" : {
-        "revision" : "e19212f2efbca9af280e57542e669885de5acdc1"
+        "revision" : "4b5444d10bb2d8d6e07261d2f7433b7e1666b227"
       }
     }
   ],

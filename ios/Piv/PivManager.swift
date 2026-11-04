@@ -61,8 +61,13 @@ final class PivManager {
                 if ["clearSession", "examineFile", "validateRfc4514"].contains(call.method) {
                     json = try await controller.local(call.method, args: args)
                 } else {
-                    (json, _) = try await managementManager.runApplicationOperation { connection in
-                        try await self.controller.execute(call.method, args: args, connection: connection)
+                    (json, _) = try await managementManager.runApplicationOperation(capability: .piv) { connection, scpKeyParams in
+                        try await self.controller.execute(
+                            call.method,
+                            args: args,
+                            connection: connection,
+                            scpKeyParams: scpKeyParams
+                        )
                     }
                 }
                 await MainActor.run { self.busy = false; result(json) }
@@ -126,13 +131,18 @@ private actor PivController {
         }
     }
 
-    func execute(_ method: String, args: [String: Any], connection: any SmartCardConnection) async throws -> String {
+    func execute(
+        _ method: String,
+        args: [String: Any],
+        connection: any SmartCardConnection,
+        scpKeyParams: SCPKeyParams?
+    ) async throws -> String {
         let generation = self.generation
         defer {
             if generation != self.generation { pins.removeAll(); keys.removeAll() }
         }
         // Read identity before selecting PIV so an NFC tap cannot modify a different key.
-        let management = try await Management.Session.makeSession(connection: connection)
+        let management = try await Management.Session.makeSession(connection: connection, scpKeyParams: scpKeyParams)
         let info = try await management.getDeviceInfo()
         if let expected = args["serial"] as? Int, info.serialNumber != UInt(expected) {
             throw PivError.message("The scanned YubiKey does not match the selected device")
@@ -142,8 +152,8 @@ private actor PivController {
             throw PivError.message("PIV changes require the selected YubiKey to have a readable serial number")
         }
         let context = String(serial)
-        var session = try await PIVSession.makeSession(connection: connection)
-        var pivman = try await Pivman.read(connection)
+        var session = try await PIVSession.makeSession(connection: connection, scpKeyParams: scpKeyParams)
+        var pivman = try await Pivman.read(session)
         var authenticated = false
         var result: Any = NSNull()
 
@@ -172,7 +182,7 @@ private actor PivController {
                     case .success:
                         pins[context] = pin
                         if pivman.protected {
-                            try await authorize(session, connection: connection, context: context, pivman: pivman)
+                            try await authorize(session, context: context, pivman: pivman)
                             authenticated = true
                         }
                         result = ["status": "success"]
@@ -189,7 +199,7 @@ private actor PivController {
                     // Authenticate the derived key before changing the PIN to avoid losing access.
                     if pivman.salt != nil {
                         pins[context] = old
-                        try await authorize(session, connection: connection, context: context, pivman: pivman)
+                        try await authorize(session, context: context, pivman: pivman)
                     }
                     try await session.changePin(from: old, to: new)
                     pins[context] = new
@@ -197,9 +207,9 @@ private actor PivController {
                         let salt = try random(16)
                         let key = try derive(new, salt: salt)
                         try await verify(session, pin: new)
-                        try await setManagementKey(session, connection: connection, key: key, type: .tripleDES)
+                        try await setManagementKey(session, key: key, type: .tripleDES)
                         pivman.salt = salt
-                        try await pivman.write(connection)
+                        try await pivman.write(session)
                     }
                     result = ["status": "success"]
                 } else if method == "changePuk" {
@@ -229,8 +239,8 @@ private actor PivController {
             try await session.reset()
             pins.removeValue(forKey: context)
             keys.removeValue(forKey: context)
-            session = try await PIVSession.makeSession(connection: connection)
-            pivman = try await Pivman.read(connection)
+            session = try await PIVSession.makeSession(connection: connection, scpKeyParams: scpKeyParams)
+            pivman = try await Pivman.read(session)
         case "getSlot":
             let (metadata, certificate) = try await readSlot(session, slot: slot(args))
             result = [
@@ -256,7 +266,7 @@ private actor PivController {
                 try await verify(session, pin: pin)
                 pins[context] = pin
             }
-            try await authorize(session, connection: connection, context: context, pivman: pivman)
+            try await authorize(session, context: context, pivman: pivman)
             authenticated = true
             switch method {
             case "setManagementKey":
@@ -268,16 +278,16 @@ private actor PivController {
                 guard key.count == expectedLength else { throw PivError.message("Invalid management key length") }
                 let store = args["storeKey"] as? Bool == true
                 if store { try await verify(session, pin: pinForOperation(session, context: context)) }
-                var protectedFields = pivman.stored || store ? try await Pivman.protectedFields(connection) : []
-                try await setManagementKey(session, connection: connection, key: key, type: type)
+                var protectedFields = pivman.stored || store ? try await Pivman.protectedFields(session) : []
+                try await setManagementKey(session, key: key, type: type)
                 keys[context] = key
                 pivman.salt = nil
                 pivman.stored = store
-                try await pivman.write(connection)
+                try await pivman.write(session)
                 if store || !protectedFields.isEmpty {
                     protectedFields.removeAll { $0.tag == 0x89 }
                     if store { protectedFields.append(TKBERTLVRecord(tag: 0x89, value: key)) }
-                    try await Pivman.put(connection, id: Data([0x5f, 0xc1, 0x09]),
+                    try await Pivman.put(session, id: Data([0x5f, 0xc1, 0x09]),
                                          value: PivCrypto.tlv(0x88, protectedFields.reduce(Data()) { $0 + $1.data }))
                 }
             case "generate":
@@ -299,7 +309,7 @@ private actor PivController {
                     document = PivCrypto.pem(generateType == "csr" ? "CERTIFICATE REQUEST" : "CERTIFICATE", data)
                     if generateType == "certificate" {
                         try await session.putCertificate(X509Cert(der: data), in: slot)
-                        try await updateChuid(connection)
+                        try await updateChuid(session)
                     }
                 }
                 result = ["generate_type": generateType, "public_key": PivCrypto.pem("PUBLIC KEY", key.spki), "result": document]
@@ -318,7 +328,7 @@ private actor PivController {
                 }
                 if let certificate {
                     try await session.putCertificate(certificate, in: slot)
-                    try await updateChuid(connection)
+                    try await updateChuid(session)
                 }
                 let (metadata, _) = try await readSlot(session, slot: slot)
                 result = [
@@ -332,7 +342,7 @@ private actor PivController {
                 let key = args["deleteKey"] as? Bool == true
                 guard cert || key else { throw PivError.message("Select a certificate or private key to delete") }
                 if key, !(await session.supports(.moveDelete)) { throw PivError.message("Deleting private keys requires firmware 5.7 or later") }
-                if cert { try await session.deleteCertificate(in: slot); try await updateChuid(connection) }
+                if cert { try await session.deleteCertificate(in: slot); try await updateChuid(session) }
                 if key { try await session.deleteKey(in: slot) }
             case "moveKey":
                 let source = try slot(args)
@@ -352,22 +362,22 @@ private actor PivController {
                 if includeCertificate, let sourceCert {
                     try await session.putCertificate(sourceCert, in: destination)
                     try await session.deleteCertificate(in: source)
-                    try await updateChuid(connection)
+                    try await updateChuid(session)
                 }
             default: throw PivError.message("Unknown PIV operation")
             }
         }
-        return try await snapshot(session, connection: connection, pivman: pivman, authenticated: authenticated, result: result)
+        return try await snapshot(session, pivman: pivman, authenticated: authenticated, result: result)
     }
 
-    private func authorize(_ session: PIVSession, connection: any SmartCardConnection, context: String, pivman: Pivman) async throws {
+    private func authorize(_ session: PIVSession, context: String, pivman: Pivman) async throws {
         if pivman.protected {
             let pin = try await pinForOperation(session, context: context)
             try await verify(session, pin: pin)
             let key: Data
             if let salt = pivman.salt { key = try derive(pin, salt: salt) }
             else {
-                guard let stored = try await Pivman.protectedFields(connection).first(where: { $0.tag == 0x89 }) else {
+                guard let stored = try await Pivman.protectedFields(session).first(where: { $0.tag == 0x89 }) else {
                     throw PivError.message("Protected management key is missing")
                 }
                 key = stored.value
@@ -405,7 +415,7 @@ private actor PivController {
         return (metadata, certificate)
     }
 
-    private func snapshot(_ session: PIVSession, connection: any SmartCardConnection, pivman: Pivman,
+    private func snapshot(_ session: PIVSession, pivman: Pivman,
                           authenticated: Bool, result: Any) async throws -> String {
         let version = await session.version
         let supportsBio: Bool
@@ -428,12 +438,7 @@ private actor PivController {
                 "pin_metadata": serialize(pin), "puk_metadata": serialize(puk),
             ]
         } else {
-            let response = try await connection.send(data: Data([0, 0x20, 0, 0x80]))
-            guard response.count >= 2 else { throw PivError.message("Incomplete PIV PIN status") }
-            let sw = response.suffix(2)
-            if sw.first == 0x63 { attempts = Int(sw.last! & 0x0f) }
-            else if sw == Data([0x69, 0x83]) { attempts = 0 }
-            else { throw PivError.message("Could not read PIV PIN retries") }
+            attempts = try await session.getPinAttempts()
         }
         var serializedSlots: [[String: Any]] = []
         for slot in slots {
@@ -450,8 +455,8 @@ private actor PivController {
                 "version": [version.major, version.minor, version.micro], "authenticated": authenticated,
                 "derived_key": pivman.salt != nil, "stored_key": pivman.stored,
                 "pin_attempts": attempts, "supports_bio": supportsBio,
-                "chuid": try await Pivman.get(connection, id: Data([0x5f, 0xc1, 0x02])).map(PivCrypto.hex) as Any? ?? NSNull(),
-                "ccc": try await Pivman.get(connection, id: Data([0x5f, 0xc1, 0x07])).map(PivCrypto.hex) as Any? ?? NSNull(),
+                "chuid": try await Pivman.get(session, id: Data([0x5f, 0xc1, 0x02])).map(PivCrypto.hex) as Any? ?? NSNull(),
+                "ccc": try await Pivman.get(session, id: Data([0x5f, 0xc1, 0x07])).map(PivCrypto.hex) as Any? ?? NSNull(),
                 "metadata": metadata,
             ],
             "slots": serializedSlots, "result": result,
@@ -518,23 +523,15 @@ private actor PivController {
         try PivCrypto.deriveKey(password: pin, salt: salt, rounds: 10000, length: 24, prf: CCPseudoRandomAlgorithm(kCCPRFHmacAlgSHA1))
     }
 
-    private func setManagementKey(_ session: PIVSession, connection: any SmartCardConnection,
-                                  key: Data, type: PIV.ManagementKeyType) async throws {
-        if type == .tripleDES, !(await session.supports(.aesKey)) {
-            // The SDK currently applies its AES firmware check to 3DES as well.
-            let data = Data([type.rawValue]) + PivCrypto.tlv(0x9b, key)
-            let response = try await connection.send(data: Data([0, 0xff, 0xff, 0xff, UInt8(data.count)]) + data)
-            guard response.suffix(2) == Data([0x90, 0]) else { throw PivError.message("Could not set the PIV management key") }
-        } else {
-            try await session.setManagementKey(key, type: type, requiresTouch: false)
-        }
+    private func setManagementKey(_ session: PIVSession, key: Data, type: PIV.ManagementKeyType) async throws {
+        try await session.setManagementKey(key, type: type, requiresTouch: false)
     }
 
-    private func updateChuid(_ connection: any SmartCardConnection) async throws {
+    private func updateChuid(_ session: PIVSession) async throws {
         let fascn = try PivCrypto.unhex("d4e739da739ced39ce739d836858210842108421c84210c3eb")
         let value = PivCrypto.tlv(0x30, fascn) + PivCrypto.tlv(0x34, try random(16)) +
             PivCrypto.tlv(0x35, Data("20300101".utf8)) + PivCrypto.tlv(0x3e, Data()) + PivCrypto.tlv(0xfe, Data())
-        try await Pivman.put(connection, id: Data([0x5f, 0xc1, 0x02]), value: value)
+        try await Pivman.put(session, id: Data([0x5f, 0xc1, 0x02]), value: value)
     }
 }
 
@@ -558,38 +555,31 @@ private struct Pivman {
     }
     var protected: Bool { stored || salt != nil }
 
-    static func read(_ connection: any SmartCardConnection) async throws -> Pivman {
-        let data = try await get(connection, id: Data([0x5f, 0xff, 0]))
+    static func read(_ session: PIVSession) async throws -> Pivman {
+        let data = try await get(session, id: Data([0x5f, 0xff, 0]))
         return Pivman(fields: try data.flatMap { $0.isEmpty ? [] : try PivCrypto.children($0, tag: 0x80) } ?? [])
     }
 
-    func write(_ connection: any SmartCardConnection) async throws {
-        try await Self.put(connection, id: Data([0x5f, 0xff, 0]),
+    func write(_ session: PIVSession) async throws {
+        try await Self.put(session, id: Data([0x5f, 0xff, 0]),
                            value: PivCrypto.tlv(0x80, fields.reduce(Data()) { $0 + $1.data }))
     }
 
-    static func protectedFields(_ connection: any SmartCardConnection) async throws -> [TKTLVRecord] {
-        guard let data = try await get(connection, id: Data([0x5f, 0xc1, 0x09])), !data.isEmpty else { return [] }
+    static func protectedFields(_ session: PIVSession) async throws -> [TKTLVRecord] {
+        guard let data = try await get(session, id: Data([0x5f, 0xc1, 0x09])), !data.isEmpty else { return [] }
         return try PivCrypto.children(data, tag: 0x88)
     }
 
-    // Pivman objects are not exposed by the Swift SDK. These short APDUs use
-    // the already-selected PIV application and preserve the SDK authentication.
-    static func get(_ connection: any SmartCardConnection, id: Data) async throws -> Data? {
-        let command = PivCrypto.tlv(0x5c, id)
-        let response = try await connection.send(data: Data([0, 0xcb, 0x3f, 0xff, UInt8(command.count)]) + command + Data([0]))
-        guard response.count >= 2 else { throw PivError.message("Incomplete PIV object response") }
-        if response.suffix(2) == Data([0x6a, 0x82]) { return nil }
-        guard response.suffix(2) == Data([0x90, 0]) else { throw PivError.message("Could not read PIV object (\(PivCrypto.hex(response.suffix(2))))") }
-        let records = try PivCrypto.records(Data(response.dropLast(2)))
-        guard records.count == 1, records[0].tag == 0x53 else { throw PivError.message("Invalid PIV object response") }
-        return records[0].value
+    static func get(_ session: PIVSession, id: Data) async throws -> Data? {
+        do {
+            return try await session.getObject(objectId: id)
+        } catch let error where error.responseStatus?.status == .fileNotFound ||
+            error.responseStatus?.status == .referencedDataNotFound {
+            return nil
+        }
     }
 
-    static func put(_ connection: any SmartCardConnection, id: Data, value: Data) async throws {
-        let command = PivCrypto.tlv(0x5c, id) + PivCrypto.tlv(0x53, value)
-        guard command.count <= 255 else { throw PivError.message("PIV management object is too large") }
-        let response = try await connection.send(data: Data([0, 0xdb, 0x3f, 0xff, UInt8(command.count)]) + command)
-        guard response.suffix(2) == Data([0x90, 0]) else { throw PivError.message("Could not write PIV management object") }
+    static func put(_ session: PIVSession, id: Data, value: Data) async throws {
+        try await session.putObject(value, objectId: id)
     }
 }
