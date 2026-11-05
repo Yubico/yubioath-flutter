@@ -11,8 +11,19 @@ class ManagementLifecycleTest(unittest.TestCase):
         root = pathlib.Path(__file__).resolve().parents[2]
         source = (root / "ios/Management/ManagementManager.swift").read_text()
         coordinator = source[source.index("actor UsbCoordinator {") :]
+        events = source[
+            source.index(
+                "@MainActor\nprivate final class DeviceEventsHandler"
+            ) : source.index("// MARK: - UsbCoordinator")
+        ]
         fixtures = r"""
 import Foundation
+typealias FlutterEventSink = (Any?) -> Void
+struct FlutterError: Error { let code: String }
+protocol FlutterStreamHandler {
+    func onListen(withArguments: Any?, eventSink: @escaping FlutterEventSink) -> FlutterError?
+    func onCancel(withArguments: Any?) -> FlutterError?
+}
 
 struct DeviceInfo: Sendable {}
 enum SmartCardConnectionError: Error, Equatable {
@@ -123,6 +134,43 @@ actor Signal {
         tests = r"""
 @main struct Tests {
     @MainActor static func main() async throws {
+        let events = DeviceEventsHandler()
+        var delivered: [Any?] = []
+        events.send(["is_nfc": false, "serial": 1])
+        _ = events.onListen(withArguments: nil) { delivered.append($0) }
+        precondition(delivered.count == 1, "Listener must replay the latest event once")
+        events.send(["is_nfc": true, "serial": 2])
+        events.clearWiredDevice()
+        events.sendWiredError(FlutterError(code: "disconnected"))
+        precondition(delivered.count == 2, "USB detach/error must preserve an NFC key")
+        _ = events.onCancel(withArguments: nil)
+        events.send(["is_nfc": false, "serial": 3])
+        precondition(delivered.count == 2, "Cancelled listener received an event")
+        var replayed: [Any?] = []
+        _ = events.onListen(withArguments: nil) { replayed.append($0) }
+        precondition(replayed.count == 1)
+        precondition((replayed[0] as? [String: Any])?["serial"] as? Int == 3)
+        events.clearWiredDevice()
+        precondition(replayed.count == 2 && replayed[1] is NSNull)
+
+        let refreshed = try await ManagementRefresh<Int>.perform(
+            mutation: {}, refresh: { 42 }
+        )
+        guard case .updated(42) = refreshed else { fatalError("Refresh result missing") }
+        let refreshFailed = try await ManagementRefresh<Int>.perform(
+            mutation: {}, refresh: { throw SmartCardConnectionError.connectionLost }
+        )
+        guard case .failed = refreshFailed else { fatalError("Refresh failure lost") }
+        do {
+            _ = try await ManagementRefresh<Int>.perform(
+                mutation: { throw SmartCardConnectionError.connectionLost },
+                refresh: { fatalError("Failed mutation must not refresh") }
+            )
+            fatalError("Failed mutation reported success")
+        } catch SmartCardConnectionError.connectionLost {}
+        let rebooted = try await ManagementRefresh<Int>.perform(mutation: {}, refresh: nil)
+        guard case .pending = rebooted else { fatalError("Reboot fabricated metadata") }
+
         let coordinator = UsbCoordinator()
         let attached = Signal()
         let monitor = Task {
@@ -291,7 +339,7 @@ actor Signal {
         with tempfile.TemporaryDirectory(prefix="management-lifecycle-") as directory:
             path = pathlib.Path(directory)
             swift = path / "test.swift"
-            swift.write_text(fixtures + coordinator + tests)
+            swift.write_text(fixtures + events + coordinator + tests)
             executable = path / "test"
             subprocess.run(
                 ["swiftc", "-parse-as-library", str(swift), "-o", str(executable)],

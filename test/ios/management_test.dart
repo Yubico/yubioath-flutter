@@ -269,6 +269,54 @@ void main() {
     );
   });
 
+  test(
+    'device events apply in order and malformed events surface errors',
+    () async {
+      messenger.setMockMethodCallHandler(
+        const MethodChannel('ios.devices.deviceInfo'),
+        (call) async => null,
+      );
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+      final subscription = container.listen(iosYubikeyProvider, (_, _) {});
+      addTearDown(subscription.close);
+      await Future<void>.delayed(Duration.zero);
+      final attached = messenger.handlePlatformMessage(
+        'ios.devices.deviceInfo',
+        const StandardMethodCodec().encodeSuccessEnvelope(_deviceInfo),
+        (_) {},
+      );
+      final detached = messenger.handlePlatformMessage(
+        'ios.devices.deviceInfo',
+        const StandardMethodCodec().encodeSuccessEnvelope(null),
+        (_) {},
+      );
+      await Future.wait([attached, detached]);
+      await Future<void>.delayed(Duration.zero);
+      expect(
+        container.read(iosYubikeyProvider),
+        isA<AsyncLoading<YubiKeyData>>(),
+      );
+      await messenger.handlePlatformMessage(
+        'ios.devices.deviceInfo',
+        const StandardMethodCodec().encodeSuccessEnvelope('{invalid json'),
+        (_) {},
+      );
+      await Future<void>.delayed(Duration.zero);
+      expect(
+        container.read(iosYubikeyProvider),
+        isA<AsyncError<YubiKeyData>>(),
+      );
+      await messenger.handlePlatformMessage(
+        'ios.devices.deviceInfo',
+        const StandardMethodCodec().encodeSuccessEnvelope(_deviceInfo),
+        (_) {},
+      );
+      await Future<void>.delayed(Duration.zero);
+      expect(container.read(iosYubikeyProvider).value?.info.serial, 123456);
+    },
+  );
+
   for (final wired in [false, true]) {
     test('iOS rejects loss of USB CCID when wired=$wired', () async {
       final calls = <MethodCall>[];

@@ -94,7 +94,6 @@ class IosManagementStateNotifier extends ManagementStateNotifier {
       'newLockCode': newLockCode,
       'reboot': reboot,
     });
-    ref.read(attachedDevicesProvider.notifier).refresh();
   }
 
   @override

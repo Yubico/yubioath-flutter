@@ -53,7 +53,7 @@ class _IosYubikeyNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
         // ignore: avoid_print
         print('[ios.state] device event stream error: $error');
         _log.warning('device event error', error);
-        state = AsyncValue.error(error, stack);
+        if (mounted) state = AsyncValue.error(error, stack);
       },
     );
   }
@@ -91,20 +91,20 @@ class _IosYubikeyNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
     return value;
   }
 
-  Future<void> _onEvent(Object? event) async {
+  void _onEvent(Object? event) {
     // ignore: avoid_print
     print(
       '[ios.state] _onEvent type=${event.runtimeType} isNull=${event == null}',
     );
-    final json = _decode(event);
-    if (json == null) {
-      // ignore: avoid_print
-      print('[ios.state] YubiKey detached -> AsyncLoading');
-      state = const AsyncValue.loading();
-      return;
-    }
+    try {
+      final json = _decode(event);
+      if (json == null) {
+        // ignore: avoid_print
+        print('[ios.state] YubiKey detached -> AsyncLoading');
+        state = const AsyncValue.loading();
+        return;
+      }
 
-    final next = await AsyncValue.guard(() async {
       final info = DeviceInfo.fromJson(json);
       final name = json['name'] as String? ?? 'YubiKey';
       final isNfc = json['is_nfc'] as bool? ?? false;
@@ -132,18 +132,11 @@ class _IosYubikeyNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
             );
       // ignore: avoid_print
       print('[ios.state] decoded YubiKey name=$name nfc=$isNfc');
-      return YubiKeyData(node, name, info);
-    });
-    // ignore: avoid_print
-    print(
-      '[ios.state] new state isError=${next is AsyncError} mounted=$mounted',
-    );
-    if (next is AsyncError) {
-      // ignore: avoid_print
-      print('[ios.state] decode error: ${(next).error}');
-      _log.warning('failed to decode YubiKey event', next.error);
+      if (mounted) state = AsyncValue.data(YubiKeyData(node, name, info));
+    } catch (error, stack) {
+      _log.warning('failed to decode YubiKey event', error, stack);
+      if (mounted) state = AsyncValue.error(error, stack);
     }
-    if (mounted) state = next;
   }
 }
 

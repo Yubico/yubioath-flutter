@@ -39,6 +39,13 @@ configuration or reset leaves the dialog open without reporting success.
 Wired connection and initial metadata-read failures appear on Home instead of
 being shown as no key connected.
 
+Device events are stored and delivered synchronously on the main actor. Removing
+a wired key does not clear a key displayed from an NFC scan. A successful
+configuration or reset remains successful if the follow-up metadata read fails;
+Home then reports that updated information could not be read. A reboot clears
+the displayed key until reconnection or another NFC scan rather than publishing
+the pre-write configuration.
+
 ## Run on iPhone
 
 1. Install Flutter and Xcode, then run `flutter pub get` from the repository root.

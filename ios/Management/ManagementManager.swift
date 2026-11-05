@@ -147,29 +147,35 @@ final class ManagementManager: NSObject {
         let newLockCode = Self.parseHex(args["newLockCode"])
         let reboot = (args["reboot"] as? Bool) ?? false
 
-        let writeOp: @Sendable (any SmartCardConnection, SCPKeyParams?) async throws -> DeviceInfo = { connection, scpKeyParams in
+        let writeOp: @Sendable (any SmartCardConnection, SCPKeyParams?) async throws -> ManagementRefresh<DeviceInfo> = { connection, scpKeyParams in
             let session = try await Management.Session.makeSession(connection: connection, scpKeyParams: scpKeyParams)
             let currentInfo = try await session.getDeviceInfo()
             let newConfig = Self.buildDeviceConfig(from: configMap, base: currentInfo.config)
-            try await session.updateDeviceConfig(
-                newConfig,
-                reboot: reboot,
-                lockCode: currentLockCode,
-                newLockCode: newLockCode
+            let refresh: (@Sendable () async throws -> DeviceInfo)?
+            if reboot {
+                refresh = nil
+            } else {
+                refresh = { try await session.getDeviceInfo() }
+            }
+            return try await ManagementRefresh<DeviceInfo>.perform(
+                mutation: {
+                    try await session.updateDeviceConfig(
+                        newConfig,
+                        reboot: reboot,
+                        lockCode: currentLockCode,
+                        newLockCode: newLockCode
+                    )
+                },
+                refresh: refresh
             )
-            // After reboot the same session is gone; fetching fresh info would
-            // fail. Return the optimistic value the caller already has.
-            if reboot { return currentInfo }
-            return try await session.getDeviceInfo()
         }
 
         do {
             let target = try ManagementTarget(args["expectedDevice"])
-            let (info, isNfc) = try await runManagementOperation(
+            let (refresh, isNfc) = try await runManagementOperation(
                 target: target, reconnectWired: reboot, discoverSCP: true, body: writeOp
             )
-            let dict = DeviceInfoSerializer.serialize(info, name: deviceName(info), isNfc: isNfc)
-            deviceEventsHandler.send(dict)
+            publishRefresh(refresh, isNfc: isNfc)
             await MainActor.run { result(NSNull()) }
         } catch {
             if !ManagementOperationError.isCancellation(error) {
@@ -189,19 +195,20 @@ final class ManagementManager: NSObject {
     // MARK: - Device reset
 
     private func deviceReset(args: [String: Any], result: @escaping FlutterResult) async {
-        let resetOp: @Sendable (any SmartCardConnection, SCPKeyParams?) async throws -> DeviceInfo = { connection, scpKeyParams in
+        let resetOp: @Sendable (any SmartCardConnection, SCPKeyParams?) async throws -> ManagementRefresh<DeviceInfo> = { connection, scpKeyParams in
             let session = try await Management.Session.makeSession(connection: connection, scpKeyParams: scpKeyParams)
-            try await session.resetDevice()
-            return try await session.getDeviceInfo()
+            return try await ManagementRefresh.perform(
+                mutation: { try await session.resetDevice() },
+                refresh: { try await session.getDeviceInfo() }
+            )
         }
 
         do {
             let target = try ManagementTarget(args["expectedDevice"])
-            let (info, isNfc) = try await runManagementOperation(
+            let (refresh, isNfc) = try await runManagementOperation(
                 target: target, discoverSCP: true, body: resetOp
             )
-            let dict = DeviceInfoSerializer.serialize(info, name: deviceName(info), isNfc: isNfc)
-            deviceEventsHandler.send(dict)
+            publishRefresh(refresh, isNfc: isNfc)
             await MainActor.run { result(NSNull()) }
         } catch {
             if !ManagementOperationError.isCancellation(error) {
@@ -214,6 +221,29 @@ final class ManagementManager: NSObject {
                     message: String(describing: error),
                     details: nil
                 ))
+            }
+        }
+    }
+
+    private func publishRefresh(_ refresh: ManagementRefresh<DeviceInfo>, isNfc: Bool) {
+        switch refresh {
+        case .updated(let info):
+            deviceEventsHandler.send(DeviceInfoSerializer.serialize(
+                info, name: deviceName(info), isNfc: isNfc
+            ))
+        case .failed(let error):
+            NSLog("[ManagementManager] operation succeeded but metadata refresh failed: \(error)")
+            deviceEventsHandler.send(FlutterError(
+                code: "metadata_refresh_failed",
+                message: "The operation succeeded, but updated YubiKey information could not be read: \(error)",
+                details: nil
+            ))
+        case .pending:
+            // Rebooted devices need a reconnect or rescan for fresh metadata.
+            if isNfc {
+                deviceEventsHandler.send(NSNull())
+            } else {
+                deviceEventsHandler.clearWiredDevice()
             }
         }
     }
@@ -289,12 +319,12 @@ final class ManagementManager: NSObject {
                 },
                 onDetach: { [weak self] in
                     await MainActor.run {
-                        self?.deviceEventsHandler.send(NSNull())
+                        self?.deviceEventsHandler.clearWiredDevice()
                     }
                 },
                 onError: { [weak self] error in
                     await MainActor.run {
-                        self?.deviceEventsHandler.send(FlutterError(
+                        self?.deviceEventsHandler.sendWiredError(FlutterError(
                             code: "yubikit_error",
                             message: String(describing: error),
                             details: nil
@@ -502,17 +532,32 @@ private enum ManagementTargetError: Error, CustomStringConvertible {
 /// Bridges `FlutterEventChannel` to a simple `send(_:)` API. Stores the most
 /// recent event so a freshly-attached listener immediately receives the
 /// current device state.
-private final class DeviceEventsHandler: NSObject, FlutterStreamHandler {
+@MainActor
+private final class DeviceEventsHandler: NSObject, @preconcurrency FlutterStreamHandler {
     private var sink: FlutterEventSink?
     private var lastEvent: Any?
+    private var displayedIsNfc = false
 
     func send(_ event: Any) {
+        if let device = event as? [String: Any] {
+            displayedIsNfc = device["is_nfc"] as? Bool ?? false
+        } else if event is NSNull {
+            displayedIsNfc = false
+        }
         lastEvent = event
         let hasSink = sink != nil
         NSLog("[DeviceEventsHandler] send (hasSink=\(hasSink))")
-        DispatchQueue.main.async { [weak self] in
-            self?.sink?(event)
-        }
+        sink?(event)
+    }
+
+    func clearWiredDevice() {
+        guard !displayedIsNfc else { return }
+        send(NSNull())
+    }
+
+    func sendWiredError(_ error: FlutterError) {
+        guard !displayedIsNfc else { return }
+        send(error)
     }
 
     func onListen(withArguments _: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
@@ -607,7 +652,7 @@ actor UsbCoordinator {
                 if generation == connectionGeneration {
                     heldConnection = nil
                     await waitUntilIdle()
-                    if !stopped && !Task.isCancelled {
+                    if generation == connectionGeneration && !stopped && !Task.isCancelled {
                         await onDetach()
                     }
                 }
@@ -705,6 +750,25 @@ enum ManagementOperationError: Error {
         switch error {
         case .cancelled, .cancelledByUser: return true
         default: return false
+        }
+    }
+}
+
+enum ManagementRefresh<T: Sendable>: Sendable {
+    case updated(T)
+    case failed(Error)
+    case pending
+
+    static func perform(
+        mutation: @Sendable () async throws -> Void,
+        refresh: (@Sendable () async throws -> T)?
+    ) async throws -> Self {
+        try await mutation()
+        guard let refresh else { return .pending }
+        do {
+            return .updated(try await refresh())
+        } catch {
+            return .failed(error)
         }
     }
 }
