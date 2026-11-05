@@ -15,6 +15,13 @@ available on supported multi-protocol YubiKey Bio devices. Individual applet
 resets remain disabled. Legacy `setMode` is not supported by YubiKit Swift and
 returns an explicit unsupported error.
 
+Configuration and reset operations stay on the displayed key's transport and
+verify its serial number before changing the device. If neither the displayed
+nor connected key has a readable serial, firmware version, form factor,
+supported capabilities, and FIPS/Security Key flags are compared instead.
+That fallback cannot distinguish two identical keys without serial numbers.
+A disconnected USB target is rejected rather than falling back to NFC.
+
 ## Run on iPhone
 
 1. Install Flutter and Xcode, then run `flutter pub get` from the repository root.

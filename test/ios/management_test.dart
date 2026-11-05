@@ -2,12 +2,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yubico_authenticator/app/features.dart' as features;
 import 'package:yubico_authenticator/app/models.dart';
 import 'package:yubico_authenticator/app/state.dart';
 import 'package:yubico_authenticator/app/views/keys.dart';
+import 'package:yubico_authenticator/core/models.dart';
 import 'package:yubico_authenticator/core/state.dart';
 import 'package:yubico_authenticator/ios/init.dart' as ios;
 import 'package:yubico_authenticator/ios/management/state.dart';
@@ -40,6 +42,10 @@ final _deviceInfo = <String, Object?>{
   'is_nfc': true,
 };
 
+final _displayedData = StateProvider<AsyncValue<YubiKeyData>>(
+  (ref) => const AsyncLoading(),
+);
+
 class _CurrentDevice extends CurrentDeviceNotifier {
   @override
   DeviceNode? build() => null;
@@ -67,18 +73,27 @@ void main() {
     debugDefaultTargetPlatformOverride = null;
   });
 
-  ProviderContainer managementContainer() {
+  ProviderContainer managementContainer({
+    Map<String, Object?>? deviceInfo,
+    bool wired = false,
+  }) {
     final path = DevicePath(const []);
+    final info = DeviceInfo.fromJson(deviceInfo ?? _deviceInfo);
     final data = YubiKeyData(
-      DeviceNode.nfcReader(path, 'YubiKey'),
+      wired
+          ? DeviceNode.usbYubiKey(path, 'YubiKey', UsbPid.yk4OtpFidoCcid, info)
+          : DeviceNode.nfcReader(path, 'YubiKey'),
       'YubiKey',
-      DeviceInfo.fromJson(_deviceInfo),
+      info,
     );
     final container = ProviderContainer(
       overrides: [
         currentDeviceProvider.overrideWith(_CurrentDevice.new),
         attachedDevicesProvider.overrideWith(_AttachedDevices.new),
-        currentDeviceDataProvider.overrideWithValue(AsyncData(data)),
+        _displayedData.overrideWith((ref) => AsyncData(data)),
+        currentDeviceDataProvider.overrideWith(
+          (ref) => ref.watch(_displayedData),
+        ),
         managementStateProvider.overrideWith2(IosManagementStateNotifier.new),
       ],
     );
@@ -115,13 +130,120 @@ void main() {
 
       expect(calls.map((call) => call.method), ['configure', 'deviceReset']);
       expect(calls.first.arguments, {
+        'expectedDevice': {
+          'transport': 'nfc',
+          'serial': 123456,
+          'version': [5, 7, 4],
+          'formFactor': 1,
+          'supportedCapabilities': {'usb': 63, 'nfc': 63},
+          'isFips': false,
+          'isSky': false,
+        },
         'config': config.toJson(),
         'currentLockCode': '001122',
         'newLockCode': '334455',
         'reboot': true,
       });
+      expect(calls.last.arguments, {
+        'expectedDevice': (calls.first.arguments as Map)['expectedDevice'],
+      });
     },
   );
+
+  test('wired operations keep their target transport', () async {
+    final calls = <MethodCall>[];
+    messenger.setMockMethodCallHandler(managementChannel, (call) async {
+      calls.add(call);
+      return null;
+    });
+    final container = managementContainer(wired: true);
+    final path = DevicePath(const []);
+    final subscription = container.listen(
+      managementStateProvider(path),
+      (_, _) {},
+    );
+    addTearDown(subscription.close);
+    await container.read(managementStateProvider(path).future);
+    await container.read(managementStateProvider(path).notifier).deviceReset();
+    expect(
+      (calls.single.arguments as Map)['expectedDevice']['transport'],
+      'usb',
+    );
+  });
+
+  test(
+    'serial-less keys send metadata instead of an invented identity',
+    () async {
+      final calls = <MethodCall>[];
+      messenger.setMockMethodCallHandler(managementChannel, (call) async {
+        calls.add(call);
+        return null;
+      });
+      final container = managementContainer(
+        deviceInfo: {..._deviceInfo, 'serial': null},
+      );
+      final path = DevicePath(const []);
+      final subscription = container.listen(
+        managementStateProvider(path),
+        (_, _) {},
+      );
+      addTearDown(subscription.close);
+      await container.read(managementStateProvider(path).future);
+      await container
+          .read(managementStateProvider(path).notifier)
+          .deviceReset();
+      final expected = (calls.single.arguments as Map)['expectedDevice'] as Map;
+      expect(expected['serial'], isNull);
+      expect(expected['version'], [5, 7, 4]);
+      expect(expected['supportedCapabilities'], {'usb': 63, 'nfc': 63});
+    },
+  );
+
+  test('a changed displayed key cannot retarget an open operation', () async {
+    final calls = <MethodCall>[];
+    messenger.setMockMethodCallHandler(managementChannel, (call) async {
+      calls.add(call);
+      return null;
+    });
+    final container = managementContainer();
+    final path = DevicePath(const []);
+    final subscription = container.listen(
+      managementStateProvider(path),
+      (_, _) {},
+    );
+    addTearDown(subscription.close);
+    await container.read(managementStateProvider(path).future);
+    final notifier = container.read(managementStateProvider(path).notifier);
+    final info = DeviceInfo.fromJson({..._deviceInfo, 'serial': 987654});
+    container.read(_displayedData.notifier).state = AsyncData(
+      YubiKeyData(
+        DeviceNode.nfcReader(DevicePath(['ios', 'nfc', '987654']), 'YubiKey'),
+        'YubiKey',
+        info,
+      ),
+    );
+    await expectLater(
+      notifier.writeConfig(info.config),
+      throwsA(
+        isA<PlatformException>().having(
+          (error) => error.code,
+          'code',
+          'device_changed',
+        ),
+      ),
+    );
+    await expectLater(
+      notifier.deviceReset(),
+      throwsA(
+        isA<PlatformException>().having(
+          (error) => error.code,
+          'code',
+          'device_changed',
+        ),
+      ),
+    );
+    expect(calls, isEmpty);
+  });
 
   test('management surfaces native failures', () async {
     messenger.setMockMethodCallHandler(managementChannel, (call) async {
@@ -215,7 +337,11 @@ void main() {
     await tester.pump(const Duration(seconds: 1));
     expect(find.byType(ManagementScreen), findsOneWidget);
     expect(
-      container.read(managementStateProvider(DevicePath(const []))),
+      container.read(
+        managementStateProvider(
+          container.read(currentDeviceDataProvider).value!.node.path,
+        ),
+      ),
       isA<AsyncData<DeviceInfo>>(),
     );
     await tester.tap(find.byKey(closeButton));

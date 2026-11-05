@@ -10,8 +10,9 @@
 
 import 'dart:async';
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/services.dart';
 
+import '../../app/models.dart';
 import '../../app/state.dart';
 import '../../management/models.dart';
 import '../../management/state.dart';
@@ -19,19 +20,51 @@ import '../state.dart';
 
 class IosManagementStateNotifier extends ManagementStateNotifier {
   IosManagementStateNotifier(super.devicePath);
+  YubiKeyData? _targetDevice;
+
+  YubiKeyData _displayedDevice() {
+    final data = ref.read(currentDeviceDataProvider).value;
+    if (data == null || data.node.path != devicePath) {
+      throw PlatformException(
+        code: 'device_changed',
+        message: 'The displayed YubiKey has changed. Open the operation again.',
+      );
+    }
+    return data;
+  }
+
+  Map<String, Object?> _expectedDevice() {
+    _displayedDevice();
+    final target = _targetDevice;
+    if (target == null) {
+      throw PlatformException(
+        code: 'device_unavailable',
+        message: 'No YubiKey is selected for this operation.',
+      );
+    }
+    return {
+      'transport': target.node.transport.name,
+      'serial': target.info.serial,
+      'version': target.info.version.toJson(),
+      'formFactor': target.info.toJson()['form_factor'],
+      'supportedCapabilities': {
+        for (final entry in target.info.supportedCapabilities.entries)
+          entry.key.name: entry.value,
+      },
+      'isFips': target.info.isFips,
+      'isSky': target.info.isSky,
+    };
+  }
 
   @override
   FutureOr<DeviceInfo> build() {
     // Rebuild whenever the active device changes.
     ref.watch(currentDeviceProvider);
 
-    final info = ref.watch(
-      currentDeviceDataProvider.select((s) => s.value?.info),
-    );
-    if (info != null) {
-      return info;
-    }
-    throw 'Failed getting device info';
+    ref.watch(currentDeviceDataProvider);
+    final data = _displayedDevice();
+    _targetDevice ??= data;
+    return data.info;
   }
 
   @override
@@ -42,6 +75,7 @@ class IosManagementStateNotifier extends ManagementStateNotifier {
     bool reboot = false,
   }) async {
     await managementChannel.invokeMethod('configure', {
+      'expectedDevice': _expectedDevice(),
       'config': config.toJson(),
       'currentLockCode': currentLockCode,
       'newLockCode': newLockCode,
@@ -66,6 +100,8 @@ class IosManagementStateNotifier extends ManagementStateNotifier {
 
   @override
   Future<void> deviceReset() async {
-    await managementChannel.invokeMethod('deviceReset');
+    await managementChannel.invokeMethod('deviceReset', {
+      'expectedDevice': _expectedDevice(),
+    });
   }
 }

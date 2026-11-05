@@ -109,11 +109,23 @@ class _IosYubikeyNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
       final name = json['name'] as String? ?? 'YubiKey';
       final isNfc = json['is_nfc'] as bool? ?? false;
       final usbPid = json['usb_pid'] as int?;
+      final transport = isNfc ? Transport.nfc : Transport.usb;
+      final identity = info.serial != null
+          ? info.serial.toString()
+          : jsonEncode([
+              info.version.toString(),
+              info.formFactor.index,
+              info.supportedCapabilities[Transport.usb],
+              info.supportedCapabilities[Transport.nfc],
+              info.isFips,
+              info.isSky,
+            ]);
+      final path = DevicePath(['ios', transport.name, identity]);
 
       final node = isNfc
-          ? DeviceNode.nfcReader(DevicePath(const []), name)
+          ? DeviceNode.nfcReader(path, name)
           : DeviceNode.usbYubiKey(
-              DevicePath(const []),
+              path,
               name,
               usbPid != null ? UsbPid.fromValue(usbPid) : UsbPid.yk4OtpFidoCcid,
               info,

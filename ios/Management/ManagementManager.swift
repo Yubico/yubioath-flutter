@@ -66,7 +66,10 @@ final class ManagementManager: NSObject {
                 details: nil
             ))
         case "deviceReset":
-            Task { await self.deviceReset(result: result) }
+            guard let args = call.arguments as? [String: Any] else {
+                return result(invalidArgs())
+            }
+            Task { await self.deviceReset(args: args, result: result) }
         default:
             result(FlutterMethodNotImplemented)
         }
@@ -124,7 +127,10 @@ final class ManagementManager: NSObject {
         }
 
         do {
-            let (info, isNfc) = try await runManagementOperation(discoverSCP: true, body: writeOp)
+            let target = try ManagementTarget(args["expectedDevice"])
+            let (info, isNfc) = try await runManagementOperation(
+                target: target, discoverSCP: true, body: writeOp
+            )
             // Always emit so NFC reads (which are not covered by the USB
             // monitor) refresh the home tab. For USB the monitor will also
             // re-emit on reattach; the duplicate is harmless.
@@ -135,7 +141,7 @@ final class ManagementManager: NSObject {
             NSLog("[ManagementManager] configure error: \(error)")
             await MainActor.run {
                 result(FlutterError(
-                    code: "yubikit_error",
+                    code: (error as? ManagementTargetError)?.code ?? "yubikit_error",
                     message: String(describing: error),
                     details: nil
                 ))
@@ -145,7 +151,7 @@ final class ManagementManager: NSObject {
 
     // MARK: - Device reset
 
-    private func deviceReset(result: @escaping FlutterResult) async {
+    private func deviceReset(args: [String: Any], result: @escaping FlutterResult) async {
         let resetOp: @Sendable (any SmartCardConnection, SCPKeyParams?) async throws -> DeviceInfo = { connection, scpKeyParams in
             let session = try await Management.Session.makeSession(connection: connection, scpKeyParams: scpKeyParams)
             try await session.resetDevice()
@@ -153,7 +159,10 @@ final class ManagementManager: NSObject {
         }
 
         do {
-            let (info, isNfc) = try await runManagementOperation(discoverSCP: true, body: resetOp)
+            let target = try ManagementTarget(args["expectedDevice"])
+            let (info, isNfc) = try await runManagementOperation(
+                target: target, discoverSCP: true, body: resetOp
+            )
             let dict = DeviceInfoSerializer.serialize(info, name: deviceName(info), isNfc: isNfc)
             deviceEventsHandler.send(dict)
             await MainActor.run { result(NSNull()) }
@@ -161,7 +170,7 @@ final class ManagementManager: NSObject {
             NSLog("[ManagementManager] deviceReset error: \(error)")
             await MainActor.run {
                 result(FlutterError(
-                    code: "yubikit_error",
+                    code: (error as? ManagementTargetError)?.code ?? "yubikit_error",
                     message: String(describing: error),
                     details: nil
                 ))
@@ -171,26 +180,44 @@ final class ManagementManager: NSObject {
 
     // MARK: - Routing
 
-    /// Routes a management operation to either the wired (USB) coordinator
-    /// or to a one-shot NFC scan, depending on whether a wired YubiKey is
-    /// currently held by the monitor.
+    /// Mutations keep the displayed transport and verify the key before execution.
     private func runManagementOperation<T: Sendable>(
+        target: ManagementTarget? = nil,
         successMessage: String = "Configuration updated",
         discoverSCP: Bool = false,
         capability: Capability? = nil,
         body: @Sendable @escaping (any SmartCardConnection, SCPKeyParams?) async throws -> T
     ) async throws -> (T, Bool) {
-        if await coordinator.hasWiredDevice {
+        let useWired: Bool
+        if let target {
+            useWired = target.transport == .usb
+            if useWired {
+                guard await coordinator.hasWiredDevice else {
+                    throw ManagementTargetError.wiredDeviceUnavailable
+                }
+            }
+        } else {
+            useWired = await coordinator.hasWiredDevice
+        }
+        if useWired {
             let value = try await coordinator.runWithReleasedUsb { connection in
-                try await body(connection, nil)
+                if let target {
+                    let info = try await Self.readDeviceInfo(from: connection)
+                    try target.verify(info)
+                }
+                return try await body(connection, nil)
             }
             return (value, false)
         } else {
             let value = try await ConnectionHelper.withNFCConnection(
                 successMessage: successMessage
             ) { connection in
-                guard discoverSCP else { return try await body(connection, nil) }
+                if target == nil && !discoverSCP {
+                    return try await body(connection, nil)
+                }
                 let info = try await Self.readDeviceInfo(from: connection)
+                try target?.verify(info)
+                guard discoverSCP else { return try await body(connection, nil) }
                 let discoveredParams = try await Self.readSCPKeyParams(from: connection, info: info)
                 guard let capability else { return try await body(connection, discoveredParams) }
                 // Swift maps the first raw FIPS flag to FIDO2; Android's OTP gate uses that raw flag.
@@ -350,6 +377,94 @@ final class ManagementManager: NSObject {
             enabledCapabilities: enabled,
             isNFCRestricted: base.isNFCRestricted
         )
+    }
+}
+
+private struct ManagementTarget: Sendable {
+    let transport: DeviceTransport
+    let serial: UInt?
+    let version: [Int]
+    let formFactor: Int
+    let supportedCapabilities: [DeviceTransport: UInt]
+    let isFips: Bool
+    let isSky: Bool
+
+    init(_ raw: Any?) throws {
+        guard let fields = raw as? [String: Any],
+              let transportName = fields["transport"] as? String,
+              let version = fields["version"] as? [Int], version.count == 3,
+              let formFactor = fields["formFactor"] as? Int,
+              let capabilities = fields["supportedCapabilities"] as? [String: Int],
+              let isFips = fields["isFips"] as? Bool,
+              let isSky = fields["isSky"] as? Bool else {
+            throw ManagementTargetError.invalidTarget
+        }
+        switch transportName {
+        case "usb": transport = .usb
+        case "nfc": transport = .nfc
+        default: throw ManagementTargetError.invalidTarget
+        }
+        if fields["serial"] is NSNull {
+            serial = nil
+        } else if let value = fields["serial"] as? Int, value > 0 {
+            serial = UInt(value)
+        } else {
+            throw ManagementTargetError.invalidTarget
+        }
+        self.version = version
+        self.formFactor = formFactor
+        self.supportedCapabilities = try Dictionary(uniqueKeysWithValues: capabilities.map { name, value in
+            guard let mask = UInt(exactly: value) else {
+                throw ManagementTargetError.invalidTarget
+            }
+            switch name {
+            case "usb": return (DeviceTransport.usb, mask)
+            case "nfc": return (DeviceTransport.nfc, mask)
+            default: throw ManagementTargetError.invalidTarget
+            }
+        })
+        self.isFips = isFips
+        self.isSky = isSky
+    }
+
+    func verify(_ info: DeviceInfo) throws {
+        if let serial {
+            guard info.serialNumber == serial else {
+                throw ManagementTargetError.deviceChanged
+            }
+        } else {
+            // Without serials, metadata matching cannot distinguish identical keys.
+            guard info.serialNumber == 0,
+                  version == [Int(info.version.major), Int(info.version.minor), Int(info.version.micro)],
+                  formFactor == Int(info.formFactor.rawValue),
+                  supportedCapabilities == info.supportedCapabilities,
+                  isFips == info.isFIPS,
+                  isSky == info.isSKY else {
+                throw ManagementTargetError.deviceChanged
+            }
+        }
+    }
+}
+
+private enum ManagementTargetError: Error, CustomStringConvertible {
+    case invalidTarget
+    case deviceChanged
+    case wiredDeviceUnavailable
+
+    var code: String {
+        switch self {
+        case .invalidTarget: "invalid_args"
+        case .deviceChanged: "device_changed"
+        case .wiredDeviceUnavailable: "device_unavailable"
+        }
+    }
+
+    var description: String {
+        switch self {
+        case .invalidTarget: "Expected the selected YubiKey identity and transport."
+        case .deviceChanged: "The connected YubiKey does not match the selected device."
+        case .wiredDeviceUnavailable: "The selected wired YubiKey is no longer connected."
+        }
     }
 }
 
