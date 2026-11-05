@@ -25,6 +25,7 @@ import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
 
 class HomeMessagePage extends ConsumerWidget {
+  final Future<void> Function()? onRefresh;
   final Widget? graphic;
   final String? header;
   final String? message;
@@ -40,6 +41,7 @@ class HomeMessagePage extends ConsumerWidget {
 
   const HomeMessagePage({
     super.key,
+    this.onRefresh,
     this.graphic,
     this.header,
     this.message,
@@ -58,6 +60,7 @@ class HomeMessagePage extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
 
     return MessagePage(
+      onRefresh: onRefresh,
       title: l10n.s_home,
       graphic: graphic,
       header: header,

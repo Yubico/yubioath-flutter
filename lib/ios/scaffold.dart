@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:material_symbols_icons/symbols.dart';
 
 import '../app/message.dart';
 import '../app/models.dart';
@@ -40,17 +39,29 @@ class IOSScaffoldPage extends ConsumerWidget {
     final title = section.getDisplayName(l10n);
 
     if (section == Section.home) {
+      Future<void> scanNfc() async {
+        try {
+          await triggerNfcDeviceInfoScan();
+        } on PlatformException catch (error, stack) {
+          _log.warning('NFC device scan failed', error, stack);
+          if (context.mounted) {
+            showExceptionMessage(context, error);
+          }
+        }
+      }
+
       final node = ref.watch(currentDeviceProvider);
       if (node != null) {
         return ref
             .watch(currentDeviceDataProvider)
             .when(
-              data: (data) => HomeScreen(data),
+              data: (data) => HomeScreen(data, onRefresh: scanNfc),
               loading: () => DeviceErrorScreen(node),
               error: (error, _) => DeviceErrorScreen(node, error: error),
             );
       }
       return HomeMessagePage(
+        onRefresh: scanNfc,
         centered: true,
         delayedContent: false,
         graphic: Image.asset(
@@ -60,22 +71,6 @@ class IOSScaffoldPage extends ConsumerWidget {
           color: Theme.of(context).colorScheme.primary,
         ),
         header: l10n.l_insert_or_tap_yk,
-        actionsBuilder: (context, expanded) => [
-          ElevatedButton.icon(
-            label: Text(l10n.s_nfc_tap_your_yubikey),
-            icon: const Icon(Symbols.contactless),
-            onPressed: () async {
-              try {
-                await triggerNfcDeviceInfoScan();
-              } on PlatformException catch (error, stack) {
-                _log.warning('NFC device scan failed', error, stack);
-                if (context.mounted) {
-                  showExceptionMessage(context, error);
-                }
-              }
-            },
-          ),
-        ],
       );
     }
 

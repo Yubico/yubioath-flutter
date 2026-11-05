@@ -7,7 +7,8 @@ implemented; other applets will be introduced separately.
 The Accounts (OATH), Passkeys (FIDO), Certificates (PIV), Slots (OTP), and
 Settings sections display **Currently not implemented**.
 
-Home detects wired YubiKeys and provides an NFC scan action. It displays device
+Home detects wired YubiKeys and starts an NFC scan when pulled down, including
+when a key is already displayed. It displays device
 information and exposes application configuration through the shared management
 dialog, including SCP11b for FIPS-capable keys over NFC. Global device reset is
 available on supported multi-protocol YubiKey Bio devices. Individual applet

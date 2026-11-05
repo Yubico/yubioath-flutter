@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -143,7 +144,7 @@ void main() {
     );
   });
 
-  testWidgets('NFC discovery opens Home while applets remain placeholders', (
+  testWidgets('pulling Home scans NFC with and without a displayed key', (
     tester,
   ) async {
     await tester.binding.setSurfaceSize(const Size(390, 844));
@@ -154,8 +155,10 @@ void main() {
       const MethodChannel('ios.devices.deviceInfo'),
       (call) async => null,
     );
+    var scanCount = 0;
     messenger.setMockMethodCallHandler(managementChannel, (call) async {
       expect(call.method, 'readDeviceInfoNfc');
+      scanCount++;
       await messenger.handlePlatformMessage(
         'ios.devices.deviceInfo',
         const StandardMethodCodec().encodeSuccessEnvelope(_deviceInfo),
@@ -166,8 +169,18 @@ void main() {
 
     await tester.pumpWidget(await ios.initialize());
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Tap your YubiKey'));
+    expect(find.text('Tap your YubiKey'), findsNothing);
+    await tester.drag(
+      find
+          .descendant(
+            of: find.byType(RefreshIndicator),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+      const Offset(0, 350),
+    );
     await tester.pumpAndSettle();
+    expect(scanCount, 1);
 
     expect(find.text('YubiKey'), findsOneWidget);
     final container = ProviderScope.containerOf(
@@ -181,6 +194,18 @@ void main() {
     expect(container.read(featureProvider)(features.oath), isFalse);
     expect(container.read(featureProvider)(features.fido), isFalse);
     expect(container.read(featureProvider)(features.piv), isFalse);
+
+    await tester.drag(
+      find
+          .descendant(
+            of: find.byType(RefreshIndicator),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+      const Offset(0, 350),
+    );
+    await tester.pumpAndSettle();
+    expect(scanCount, 2);
 
     await tester.tap(find.byKey(actionsIconButtonKey));
     await tester.pumpAndSettle();
@@ -208,6 +233,7 @@ void main() {
           .setCurrentSection(section);
       await tester.pumpAndSettle();
       expect(find.text('Currently not implemented'), findsOneWidget);
+      expect(find.byType(RefreshIndicator), findsNothing);
     }
     expect(tester.takeException(), isNull);
     debugDefaultTargetPlatformOverride = null;
