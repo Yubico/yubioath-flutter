@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../app/app.dart';
 import '../app/models.dart';
 import '../app/state.dart';
 import '../core/state.dart';
@@ -31,6 +32,6 @@ Future<Widget> initialize() async {
       currentDeviceProvider.overrideWith(IOSCurrentDeviceNotifier.new),
       currentSectionProvider.overrideWith((ref) => IOSCurrentSectionNotifier()),
     ],
-    child: const IOSReleaseApp(),
+    child: const YubicoAuthenticatorApp(page: IOSScaffoldPage()),
   );
 }

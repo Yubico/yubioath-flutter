@@ -1,22 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../app/app.dart';
 import '../app/models.dart';
 import '../app/state.dart';
 import '../app/views/app_page.dart';
 import '../generated/l10n/app_localizations.dart';
 
-class IOSReleaseApp extends StatelessWidget {
-  const IOSReleaseApp({super.key});
-
-  @override
-  Widget build(BuildContext context) =>
-      const YubicoAuthenticatorApp(page: IOSReleaseHome());
-}
-
-class IOSReleaseHome extends ConsumerWidget {
-  const IOSReleaseHome({super.key});
+class IOSScaffoldPage extends ConsumerWidget {
+  const IOSScaffoldPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
