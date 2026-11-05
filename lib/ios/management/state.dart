@@ -107,7 +107,6 @@ class IosManagementStateNotifier extends ManagementStateNotifier {
       'challengeResponseTimeout': challengeResponseTimeout,
       'autoEjectTimeout': autoEjectTimeout,
     });
-    ref.read(attachedDevicesProvider.notifier).refresh();
   }
 
   @override

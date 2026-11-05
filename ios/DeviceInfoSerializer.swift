@@ -20,8 +20,7 @@ enum DeviceInfoSerializer {
     static func serialize(
         _ info: DeviceInfo,
         name: String,
-        isNfc: Bool,
-        usbPid: Int? = nil
+        isNfc: Bool
     ) -> [String: Any] {
         var dict: [String: Any] = [
             "config": serializeConfig(info.config),
@@ -40,14 +39,13 @@ enum DeviceInfoSerializer {
             "version_qualifier": serializeVersionQualifier(info.versionQualifier),
         ]
 
-        // `serial` and `usb_pid` are nullable in the Dart model. yubikit-swift
-        // exposes `serialNumber: UInt`; treat 0 as "no serial available".
+        // YubiKit uses zero when no serial is available and exposes no USB PID.
         if info.serialNumber != 0 {
             dict["serial"] = Int(info.serialNumber)
         } else {
             dict["serial"] = NSNull()
         }
-        dict["usb_pid"] = usbPid as Any? ?? NSNull()
+        dict["usb_pid"] = NSNull()
 
         return dict
     }

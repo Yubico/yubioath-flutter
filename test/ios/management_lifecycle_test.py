@@ -18,6 +18,8 @@ class ManagementLifecycleTest(unittest.TestCase):
         ]
         fixtures = r"""
 import Foundation
+import OSLog
+private let managementLog = Logger(subsystem: "test", category: "management")
 typealias FlutterEventSink = (Any?) -> Void
 struct FlutterError: Error { let code: String }
 protocol FlutterStreamHandler {
@@ -106,8 +108,8 @@ extension FakeConnection {
     }
 }
 enum ManagementManager {
-    static func readDeviceInfo(from connection: any SmartCardConnection) async throws -> DeviceInfo {
-        try await Connections.shared.readMetadata()
+    static func readNamedDevice(from connection: any SmartCardConnection) async throws -> NamedDevice {
+        NamedDevice(info: try await Connections.shared.readMetadata(), name: "YubiKey")
     }
 }
 enum ManagementTargetError: Error { case wiredDeviceUnavailable }

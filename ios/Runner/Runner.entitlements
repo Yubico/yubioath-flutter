@@ -6,7 +6,6 @@
 	<array>
 		<string>NDEF</string>
 		<string>TAG</string>
-		<string>PACE</string>
 	</array>
 	<key>com.apple.security.smartcard</key>
 	<true/>

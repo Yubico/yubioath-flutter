@@ -16,7 +16,6 @@
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		FCD3C2142FDAD25F004D981F /* YubiKit in Frameworks */ = {isa = PBXBuildFile; productRef = FCD3C2132FDAD25F004D981F /* YubiKit */; };
-		FCE830552FE0047D00F68DA9 /* ConnectionHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCE830512FE0047D00F68DA9 /* ConnectionHelper.swift */; };
 		FCE830632FE004DA00F68DA9 /* ManagementManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCE830612FE004DA00F68DA9 /* ManagementManager.swift */; };
 		FCE830672FE02D8800F68DA9 /* DeviceInfoSerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCE830662FE02D8800F68DA9 /* DeviceInfoSerializer.swift */; };
 /* End PBXBuildFile section */
@@ -35,7 +34,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		FCE830512FE0047D00F68DA9 /* ConnectionHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Yubikit/ConnectionHelper.swift; sourceTree = "<group>"; };
 		FCE830612FE004DA00F68DA9 /* ManagementManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Management/ManagementManager.swift; sourceTree = "<group>"; };
 		FCE830662FE02D8800F68DA9 /* DeviceInfoSerializer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceInfoSerializer.swift; sourceTree = "<group>"; };
 		1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeneratedPluginRegistrant.h; sourceTree = "<group>"; };
@@ -83,7 +81,6 @@
 		97C146E51CF9000F007C117D = {
 			isa = PBXGroup;
 			children = (
-				FCE830512FE0047D00F68DA9 /* ConnectionHelper.swift */,
 				FCE830612FE004DA00F68DA9 /* ManagementManager.swift */,
 				FCE830662FE02D8800F68DA9 /* DeviceInfoSerializer.swift */,
 				9740EEB11CF90186004384FC /* Flutter */,
@@ -234,7 +231,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FCE830552FE0047D00F68DA9 /* ConnectionHelper.swift in Sources */,
 				FCE830632FE004DA00F68DA9 /* ManagementManager.swift in Sources */,
 				FCE830672FE02D8800F68DA9 /* DeviceInfoSerializer.swift in Sources */,
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,

@@ -45,14 +45,10 @@ class _IosYubikeyNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
   late final StreamSubscription _sub;
 
   _IosYubikeyNotifier() : super(const AsyncValue.loading()) {
-    // ignore: avoid_print
-    print('[ios.state] _IosYubikeyNotifier subscribing to device events');
     _sub = _deviceEventsChannel.receiveBroadcastStream().listen(
       _onEvent,
       onError: (Object error, StackTrace stack) {
-        // ignore: avoid_print
-        print('[ios.state] device event stream error: $error');
-        _log.warning('device event error', error);
+        _log.warning('device event error', error, stack);
         if (mounted) state = AsyncValue.error(error, stack);
       },
     );
@@ -72,7 +68,7 @@ class _IosYubikeyNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
     if (event is Map) {
       return _deepCast(event) as Map<String, dynamic>;
     }
-    return null;
+    throw FormatException('Unexpected iOS device event: ${event.runtimeType}');
   }
 
   /// Recursively re-types `Map<Object?, Object?>` (the shape the iOS platform
@@ -92,15 +88,9 @@ class _IosYubikeyNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
   }
 
   void _onEvent(Object? event) {
-    // ignore: avoid_print
-    print(
-      '[ios.state] _onEvent type=${event.runtimeType} isNull=${event == null}',
-    );
     try {
       final json = _decode(event);
       if (json == null) {
-        // ignore: avoid_print
-        print('[ios.state] YubiKey detached -> AsyncLoading');
         state = const AsyncValue.loading();
         return;
       }
@@ -127,11 +117,9 @@ class _IosYubikeyNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
           : DeviceNode.usbYubiKey(
               path,
               name,
-              usbPid != null ? UsbPid.fromValue(usbPid) : UsbPid.yk4OtpFidoCcid,
+              usbPid != null ? UsbPid.fromValue(usbPid) : null,
               info,
             );
-      // ignore: avoid_print
-      print('[ios.state] decoded YubiKey name=$name nfc=$isNfc');
       if (mounted) state = AsyncValue.data(YubiKeyData(node, name, info));
     } catch (error, stack) {
       _log.warning('failed to decode YubiKey event', error, stack);
@@ -139,12 +127,6 @@ class _IosYubikeyNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
     }
   }
 }
-
-/// Adapts `iosYubikeyProvider` into the shape expected by the app-level
-/// `currentDeviceDataProvider`.
-final iosDeviceDataProvider = Provider<AsyncValue<YubiKeyData>>(
-  (ref) => ref.watch(iosYubikeyProvider),
-);
 
 class IosAttachedDevicesNotifier extends AttachedDevicesNotifier {
   @override
@@ -156,12 +138,7 @@ class IosAttachedDevicesNotifier extends AttachedDevicesNotifier {
 class IosCurrentDeviceNotifier extends CurrentDeviceNotifier {
   @override
   DeviceNode? build() {
-    final node = ref
-        .watch(iosYubikeyProvider)
-        .whenOrNull(data: (data) => data.node);
-    // ignore: avoid_print
-    print('[ios.state] IosCurrentDeviceNotifier.build -> ${node != null}');
-    return node;
+    return ref.watch(iosYubikeyProvider).whenOrNull(data: (data) => data.node);
   }
 
   @override

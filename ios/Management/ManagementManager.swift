@@ -10,13 +10,15 @@
 
 import Flutter
 import YubiKit
+import OSLog
+
+private let managementLog = Logger(subsystem: "com.yubico.authenticator", category: "management")
 
 /// MethodChannel + EventChannel handler for the Management application.
 ///
 /// The coordinator retains wired connections and serializes complete operations.
 @MainActor
 final class ManagementManager: NSObject {
-    static let channelSuffix = "management"
     static let channelName = "com.yubico.authenticator/management"
     static let deviceEventsChannelName = "ios.devices.deviceInfo"
 
@@ -81,7 +83,6 @@ final class ManagementManager: NSObject {
     // MARK: - Method dispatch
 
     private func handle(call: FlutterMethodCall, result: @escaping FlutterResult) {
-        NSLog("[ManagementManager] received call: \(call.method)")
         switch call.method {
         case "readDeviceInfoNfc":
             performOperation(result: result) { await self.readDeviceInfoOverNfc(result: result) }
@@ -112,12 +113,12 @@ final class ManagementManager: NSObject {
 
     private func readDeviceInfoOverNfc(result: @escaping FlutterResult) async {
         do {
-            let info = try await coordinator.withNFCConnection(
+            let device = try await coordinator.withNFCConnection(
                 successMessage: "YubiKey detected"
             ) { connection in
-                try await Self.readDeviceInfo(from: connection)
+                try await Self.readNamedDevice(from: connection)
             }
-            let dict = DeviceInfoSerializer.serialize(info, name: deviceName(info), isNfc: true)
+            let dict = DeviceInfoSerializer.serialize(device.info, name: device.name, isNfc: true)
             // Surface the result on the event channel so any UI driven by
             // `iosYubikeyProvider` updates without the caller having to
             // re-feed the value.
@@ -128,7 +129,7 @@ final class ManagementManager: NSObject {
                 result(NSNull())
                 return
             }
-            NSLog("[ManagementManager] NFC read error: \(error)")
+            managementLog.error("NFC read failed: \(String(describing: error), privacy: .private)")
             await MainActor.run {
                 result(FlutterError(
                     code: "yubikit_error",
@@ -147,17 +148,18 @@ final class ManagementManager: NSObject {
         let newLockCode = Self.parseHex(args["newLockCode"])
         let reboot = (args["reboot"] as? Bool) ?? false
 
-        let writeOp: @Sendable (any SmartCardConnection, SCPKeyParams?) async throws -> ManagementRefresh<DeviceInfo> = { connection, scpKeyParams in
+        let writeOp: @Sendable (any SmartCardConnection, SCPKeyParams?) async throws -> ManagementRefresh<NamedDevice> = { connection, scpKeyParams in
+            let name = try await connection.deviceName
             let session = try await Management.Session.makeSession(connection: connection, scpKeyParams: scpKeyParams)
             let currentInfo = try await session.getDeviceInfo()
             let newConfig = Self.buildDeviceConfig(from: configMap, base: currentInfo.config)
-            let refresh: (@Sendable () async throws -> DeviceInfo)?
+            let refresh: (@Sendable () async throws -> NamedDevice)?
             if reboot {
                 refresh = nil
             } else {
-                refresh = { try await session.getDeviceInfo() }
+                refresh = { NamedDevice(info: try await session.getDeviceInfo(), name: name) }
             }
-            return try await ManagementRefresh<DeviceInfo>.perform(
+            return try await ManagementRefresh<NamedDevice>.perform(
                 mutation: {
                     try await session.updateDeviceConfig(
                         newConfig,
@@ -173,13 +175,13 @@ final class ManagementManager: NSObject {
         do {
             let target = try ManagementTarget(args["expectedDevice"])
             let (refresh, isNfc) = try await runManagementOperation(
-                target: target, reconnectWired: reboot, discoverSCP: true, body: writeOp
+                target: target, reconnectWired: reboot, body: writeOp
             )
             publishRefresh(refresh, isNfc: isNfc)
             await MainActor.run { result(NSNull()) }
         } catch {
             if !ManagementOperationError.isCancellation(error) {
-                NSLog("[ManagementManager] configure error: \(error)")
+                managementLog.error("Configuration failed: \(String(describing: error), privacy: .private)")
             }
             await MainActor.run {
                 result(FlutterError(
@@ -195,24 +197,25 @@ final class ManagementManager: NSObject {
     // MARK: - Device reset
 
     private func deviceReset(args: [String: Any], result: @escaping FlutterResult) async {
-        let resetOp: @Sendable (any SmartCardConnection, SCPKeyParams?) async throws -> ManagementRefresh<DeviceInfo> = { connection, scpKeyParams in
+        let resetOp: @Sendable (any SmartCardConnection, SCPKeyParams?) async throws -> ManagementRefresh<NamedDevice> = { connection, scpKeyParams in
+            let name = try await connection.deviceName
             let session = try await Management.Session.makeSession(connection: connection, scpKeyParams: scpKeyParams)
             return try await ManagementRefresh.perform(
                 mutation: { try await session.resetDevice() },
-                refresh: { try await session.getDeviceInfo() }
+                refresh: { NamedDevice(info: try await session.getDeviceInfo(), name: name) }
             )
         }
 
         do {
             let target = try ManagementTarget(args["expectedDevice"])
             let (refresh, isNfc) = try await runManagementOperation(
-                target: target, discoverSCP: true, body: resetOp
+                target: target, successMessage: "YubiKey reset", body: resetOp
             )
             publishRefresh(refresh, isNfc: isNfc)
             await MainActor.run { result(NSNull()) }
         } catch {
             if !ManagementOperationError.isCancellation(error) {
-                NSLog("[ManagementManager] deviceReset error: \(error)")
+                managementLog.error("Device reset failed: \(String(describing: error), privacy: .private)")
             }
             await MainActor.run {
                 result(FlutterError(
@@ -225,14 +228,14 @@ final class ManagementManager: NSObject {
         }
     }
 
-    private func publishRefresh(_ refresh: ManagementRefresh<DeviceInfo>, isNfc: Bool) {
+    private func publishRefresh(_ refresh: ManagementRefresh<NamedDevice>, isNfc: Bool) {
         switch refresh {
-        case .updated(let info):
+        case .updated(let device):
             deviceEventsHandler.send(DeviceInfoSerializer.serialize(
-                info, name: deviceName(info), isNfc: isNfc
+                device.info, name: device.name, isNfc: isNfc
             ))
         case .failed(let error):
-            NSLog("[ManagementManager] operation succeeded but metadata refresh failed: \(error)")
+            managementLog.warning("Operation succeeded but metadata refresh failed: \(String(describing: error), privacy: .private)")
             deviceEventsHandler.send(FlutterError(
                 code: "metadata_refresh_failed",
                 message: "The operation succeeded, but updated YubiKey information could not be read: \(error)",
@@ -252,30 +255,15 @@ final class ManagementManager: NSObject {
 
     /// Mutations keep the displayed transport and verify the key before execution.
     private func runManagementOperation<T: Sendable>(
-        target: ManagementTarget? = nil,
+        target: ManagementTarget,
         reconnectWired: Bool = false,
         successMessage: String = "Configuration updated",
-        discoverSCP: Bool = false,
-        capability: Capability? = nil,
         body: @Sendable @escaping (any SmartCardConnection, SCPKeyParams?) async throws -> T
     ) async throws -> (T, Bool) {
-        let useWired: Bool
-        if let target {
-            useWired = target.transport == .usb
-            if useWired {
-                guard await coordinator.hasWiredDevice else {
-                    throw ManagementTargetError.wiredDeviceUnavailable
-                }
-            }
-        } else {
-            useWired = await coordinator.hasWiredDevice
-        }
-        if useWired {
+        if target.transport == .usb {
             let value = try await coordinator.withWiredConnection(reconnect: reconnectWired) { connection in
-                if let target {
-                    let info = try await Self.readDeviceInfo(from: connection)
-                    try target.verify(info)
-                }
+                let info = try await Self.readDeviceInfo(from: connection)
+                try target.verify(info)
                 return try await body(connection, nil)
             }
             return (value, false)
@@ -283,18 +271,10 @@ final class ManagementManager: NSObject {
             let value = try await coordinator.withNFCConnection(
                 successMessage: successMessage
             ) { connection in
-                if target == nil && !discoverSCP {
-                    return try await body(connection, nil)
-                }
                 let info = try await Self.readDeviceInfo(from: connection)
-                try target?.verify(info)
-                guard discoverSCP else { return try await body(connection, nil) }
+                try target.verify(info)
                 let discoveredParams = try await Self.readSCPKeyParams(from: connection, info: info)
-                guard let capability else { return try await body(connection, discoveredParams) }
-                // Swift maps the first raw FIPS flag to FIDO2; Android's OTP gate uses that raw flag.
-                let capabilityBit = capability == .otp ? Capability.fido2.rawValue : capability.rawValue
-                let params = info.fipsCapabilityFlags & capabilityBit != 0 ? discoveredParams : nil
-                return try await body(connection, params)
+                return try await body(connection, discoveredParams)
             }
             return (value, true)
         }
@@ -306,12 +286,12 @@ final class ManagementManager: NSObject {
         let coordinator = coordinator
         monitorTask = Task {
             await coordinator.startMonitoring(
-                onAttach: { [weak self] info in
+                onAttach: { [weak self] device in
                     await MainActor.run {
                         guard let self else { return }
                         let dict = DeviceInfoSerializer.serialize(
-                            info,
-                            name: self.deviceName(info),
+                            device.info,
+                            name: device.name,
                             isNfc: false
                         )
                         self.deviceEventsHandler.send(dict)
@@ -342,6 +322,11 @@ final class ManagementManager: NSObject {
         return try await session.getDeviceInfo()
     }
 
+    nonisolated fileprivate static func readNamedDevice(from connection: any SmartCardConnection) async throws -> NamedDevice {
+        let name = try await connection.deviceName
+        return NamedDevice(info: try await readDeviceInfo(from: connection), name: name)
+    }
+
     nonisolated private static func readSCPKeyParams(
         from connection: any SmartCardConnection,
         info: DeviceInfo
@@ -357,12 +342,6 @@ final class ManagementManager: NSObject {
             throw SCPError.responseParseError("No usable SCP11b certificate is available for this FIPS-capable YubiKey", source: .here())
         }
         return try SCP11KeyParams(keyRef: keyRef, pkSdEcka: ecPublicKey)
-    }
-
-    private func deviceName(_ info: DeviceInfo) -> String {
-        if info.isSKY { return "Security Key by Yubico" }
-        let suffix = info.isFIPS ? " FIPS" : ""
-        return "YubiKey\(suffix)"
     }
 
     private func invalidArgs() -> FlutterError {
@@ -545,8 +524,6 @@ private final class DeviceEventsHandler: NSObject, @preconcurrency FlutterStream
             displayedIsNfc = false
         }
         lastEvent = event
-        let hasSink = sink != nil
-        NSLog("[DeviceEventsHandler] send (hasSink=\(hasSink))")
         sink?(event)
     }
 
@@ -561,14 +538,12 @@ private final class DeviceEventsHandler: NSObject, @preconcurrency FlutterStream
     }
 
     func onListen(withArguments _: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
-        NSLog("[DeviceEventsHandler] onListen (hasLastEvent=\(lastEvent != nil))")
         sink = events
         if let lastEvent { events(lastEvent) }
         return nil
     }
 
     func onCancel(withArguments _: Any?) -> FlutterError? {
-        NSLog("[DeviceEventsHandler] onCancel")
         sink = nil
         return nil
     }
@@ -616,7 +591,7 @@ actor UsbCoordinator {
     }
 
     func startMonitoring(
-        onAttach: @Sendable @escaping (DeviceInfo) async -> Void,
+        onAttach: @Sendable @escaping (NamedDevice) async -> Void,
         onDetach: @Sendable @escaping () async -> Void,
         onError: @Sendable @escaping (Error) async -> Void
     ) async {
@@ -639,7 +614,7 @@ actor UsbCoordinator {
                 heldConnection = connection
 
                 do {
-                    let info = try await ManagementManager.readDeviceInfo(from: connection)
+                    let info = try await ManagementManager.readNamedDevice(from: connection)
                     if !stopped { await onAttach(info) }
                 } catch {
                     if !stopped && !Task.isCancelled {
@@ -674,7 +649,7 @@ actor UsbCoordinator {
                     await onError(error)
                     continue
                 }
-                NSLog("[UsbCoordinator] monitor error: \(error)")
+                managementLog.error("Wired monitor failed: \(String(describing: error), privacy: .private)")
                 await onError(error)
             }
         }
@@ -771,4 +746,9 @@ enum ManagementRefresh<T: Sendable>: Sendable {
             return .failed(error)
         }
     }
+}
+
+struct NamedDevice: Sendable {
+    let info: DeviceInfo
+    let name: String
 }

@@ -314,6 +314,35 @@ void main() {
       );
       await Future<void>.delayed(Duration.zero);
       expect(container.read(iosYubikeyProvider).value?.info.serial, 123456);
+      await messenger.handlePlatformMessage(
+        'ios.devices.deviceInfo',
+        const StandardMethodCodec().encodeSuccessEnvelope({
+          ..._deviceInfo,
+          'is_nfc': false,
+          'name': 'YubiKey 5C NFC',
+          'usb_pid': null,
+        }),
+        (_) {},
+      );
+      await Future<void>.delayed(Duration.zero);
+      final wired = container.read(iosYubikeyProvider).value!;
+      expect(wired.node, isA<UsbYubiKeyNode>());
+      expect((wired.node as UsbYubiKeyNode).pid, isNull);
+      expect(wired.name, 'YubiKey 5C NFC');
+      await messenger.handlePlatformMessage(
+        'ios.devices.deviceInfo',
+        const StandardMethodCodec().encodeSuccessEnvelope({
+          ..._deviceInfo,
+          'is_nfc': false,
+          'usb_pid': UsbPid.yk4Ccid.value,
+        }),
+        (_) {},
+      );
+      await Future<void>.delayed(Duration.zero);
+      expect(
+        (container.read(iosYubikeyProvider).value!.node as UsbYubiKeyNode).pid,
+        UsbPid.yk4Ccid,
+      );
     },
   );
 

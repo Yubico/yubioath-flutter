@@ -40,7 +40,7 @@ Future<Widget> initialize() async {
       ),
       attachedDevicesProvider.overrideWith(IosAttachedDevicesNotifier.new),
       currentDeviceDataProvider.overrideWith(
-        (ref) => ref.watch(iosDeviceDataProvider),
+        (ref) => ref.watch(iosYubikeyProvider),
       ),
       currentDeviceProvider.overrideWith(IosCurrentDeviceNotifier.new),
       currentSectionProvider.overrideWith(iosCurrentSectionNotifier),

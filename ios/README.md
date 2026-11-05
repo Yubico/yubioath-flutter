@@ -46,6 +46,10 @@ Home then reports that updated information could not be read. A reboot clears
 the displayed key until reconnection or another NFC scan rather than publishing
 the pre-write configuration.
 
+Product names come from YubiKit's connection API. USB PID remains unavailable
+instead of being inferred from the enabled applications. Native failures use
+level-controlled system logging; Dart failures use the app's named loggers.
+
 ## Run on iPhone
 
 1. Install Flutter and Xcode, then run `flutter pub get` from the repository root.
