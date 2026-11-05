@@ -76,15 +76,18 @@ Widget homeBuildActions(
                       );
                     },
             ),
-          if (getResetCapabilities(hasFeature).any(
-            (c) =>
-                c.value &
-                    (deviceData.info.supportedCapabilities[deviceData
-                            .node
-                            .transport] ??
-                        0) !=
-                0,
-          ))
+          if ((isIOS &&
+                  hasFeature(features.management) &&
+                  requiresGlobalReset(deviceData)) ||
+              getResetCapabilities(hasFeature).any(
+                (c) =>
+                    c.value &
+                        (deviceData.info.supportedCapabilities[deviceData
+                                .node
+                                .transport] ??
+                            0) !=
+                    0,
+              ))
             ActionListItem(
               icon: const Icon(Symbols.delete_forever),
               title: l10n.s_factory_reset,

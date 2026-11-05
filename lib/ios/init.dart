@@ -3,10 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../app/app.dart';
+import '../app/features.dart' as features;
 import '../app/models.dart';
 import '../app/state.dart';
 import '../core/state.dart';
+import '../management/state.dart';
+import 'management/state.dart';
 import 'scaffold.dart';
+import 'state.dart';
 
 Future<Widget> initialize() async {
   final preferences = await SharedPreferences.getInstance();
@@ -25,12 +29,23 @@ Future<Widget> initialize() async {
         Section.slots,
         Section.settings,
       ]),
-      attachedDevicesProvider.overrideWith(IOSAttachedDevicesNotifier.new),
-      currentDeviceDataProvider.overrideWithValue(
-        const AsyncLoading<YubiKeyData>(),
+      featureFlagProvider.overrideWith(
+        (ref) => FeatureFlagsNotifier()
+          ..loadConfig({
+            features.oath.path: false,
+            features.fido.path: false,
+            features.piv.path: false,
+            features.otp.path: false,
+          }),
       ),
-      currentDeviceProvider.overrideWith(IOSCurrentDeviceNotifier.new),
-      currentSectionProvider.overrideWith((ref) => IOSCurrentSectionNotifier()),
+      attachedDevicesProvider.overrideWith(IosAttachedDevicesNotifier.new),
+      currentDeviceDataProvider.overrideWith(
+        (ref) => ref.watch(iosDeviceDataProvider),
+      ),
+      currentDeviceProvider.overrideWith(IosCurrentDeviceNotifier.new),
+      currentSectionProvider.overrideWith(iosCurrentSectionNotifier),
+      clipboardProvider.overrideWith((ref) => ref.watch(iosClipboardProvider)),
+      managementStateProvider.overrideWith2(IosManagementStateNotifier.new),
     ],
     child: const YubicoAuthenticatorApp(page: IOSScaffoldPage()),
   );
