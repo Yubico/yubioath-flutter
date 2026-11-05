@@ -441,6 +441,13 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
                 // don't allow OTP only mode
                 canSave = canSave && (usbEnabled & ~_usbCcid) != _usbOtp;
               }
+              if (isIOS) {
+                canSave =
+                    canSave &&
+                    UsbInterface.forCapabilities(usbEnabled) &
+                            UsbInterface.ccid.value !=
+                        0;
+              }
             } else {
               canSave =
                   _interfaces != 0 &&

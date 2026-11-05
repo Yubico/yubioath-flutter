@@ -11,11 +11,14 @@ import 'package:yubico_authenticator/app/state.dart';
 import 'package:yubico_authenticator/app/views/keys.dart';
 import 'package:yubico_authenticator/core/models.dart';
 import 'package:yubico_authenticator/core/state.dart';
+import 'package:yubico_authenticator/generated/l10n/app_localizations.dart';
 import 'package:yubico_authenticator/ios/init.dart' as ios;
 import 'package:yubico_authenticator/ios/management/state.dart';
 import 'package:yubico_authenticator/ios/state.dart';
 import 'package:yubico_authenticator/management/models.dart';
 import 'package:yubico_authenticator/management/state.dart';
+import 'package:yubico_authenticator/management/views/keys.dart'
+    as management_keys;
 import 'package:yubico_authenticator/management/views/management_screen.dart';
 
 final _deviceInfo = <String, Object?>{
@@ -265,6 +268,123 @@ void main() {
       throwsA(isA<PlatformException>()),
     );
   });
+
+  for (final wired in [false, true]) {
+    test('iOS rejects loss of USB CCID when wired=$wired', () async {
+      final calls = <MethodCall>[];
+      messenger.setMockMethodCallHandler(managementChannel, (call) async {
+        calls.add(call);
+        return null;
+      });
+      final container = managementContainer(wired: wired);
+      final path = DevicePath(const []);
+      final subscription = container.listen(
+        managementStateProvider(path),
+        (_, _) {},
+      );
+      addTearDown(subscription.close);
+      await container.read(managementStateProvider(path).future);
+      final notifier = container.read(managementStateProvider(path).notifier);
+      final config = DeviceInfo.fromJson(_deviceInfo).config;
+      for (final usb in [
+        0,
+        Capability.otp.value,
+        Capability.u2f.value | Capability.fido2.value,
+        Capability.otp.value | Capability.fido2.value | 0x04,
+      ]) {
+        await expectLater(
+          notifier.writeConfig(
+            config.copyWith(
+              enabledCapabilities: {Transport.usb: usb, Transport.nfc: 63},
+            ),
+          ),
+          throwsA(
+            isA<PlatformException>().having(
+              (error) => error.code,
+              'code',
+              'unsupported_configuration',
+            ),
+          ),
+        );
+      }
+      expect(calls, isEmpty);
+
+      for (final capability in [
+        Capability.oath,
+        Capability.piv,
+        Capability.openpgp,
+        Capability.hsmauth,
+      ]) {
+        await notifier.writeConfig(
+          config.copyWith(
+            enabledCapabilities: {
+              Transport.usb: capability.value,
+              Transport.nfc: 0,
+            },
+          ),
+        );
+      }
+      expect(calls, hasLength(4));
+    });
+  }
+
+  for (final platform in [
+    TargetPlatform.iOS,
+    TargetPlatform.android,
+    TargetPlatform.macOS,
+  ]) {
+    testWidgets('$platform management enforces its USB restriction', (
+      tester,
+    ) async {
+      debugDefaultTargetPlatformOverride = platform;
+      final container = managementContainer();
+      final data = container.read(_displayedData).value!;
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: ManagementScreen(data),
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 1));
+      TextButton saveButton() =>
+          tester.widget(find.byKey(management_keys.saveButtonKey));
+      expect(saveButton().onPressed, isNull);
+
+      for (final capability in [
+        Capability.oath,
+        Capability.piv,
+        Capability.openpgp,
+      ]) {
+        await tester.tap(
+          find.byKey(
+            Key('${management_keys.usbCapabilityKeyPrefix}.${capability.name}'),
+          ),
+        );
+        await tester.pump(const Duration(seconds: 1));
+      }
+      // USB now has OTP and U2F, but no smart card application.
+      expect(saveButton().onPressed != null, platform != TargetPlatform.iOS);
+
+      await tester.tap(
+        find.byKey(Key('${management_keys.usbCapabilityKeyPrefix}.u2f')),
+      );
+      await tester.pump(const Duration(seconds: 1));
+      expect(saveButton().onPressed != null, platform == TargetPlatform.macOS);
+
+      await tester.tap(
+        find.byKey(Key('${management_keys.usbCapabilityKeyPrefix}.oath')),
+      );
+      await tester.pump(const Duration(seconds: 1));
+      expect(saveButton().onPressed, isNotNull);
+      expect(tester.takeException(), isNull);
+      debugDefaultTargetPlatformOverride = null;
+    });
+  }
 
   testWidgets('pulling Home scans NFC with and without a displayed key', (
     tester,

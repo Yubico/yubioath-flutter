@@ -14,6 +14,7 @@ import 'package:flutter/services.dart';
 
 import '../../app/models.dart';
 import '../../app/state.dart';
+import '../../core/models.dart';
 import '../../management/models.dart';
 import '../../management/state.dart';
 import '../state.dart';
@@ -74,8 +75,20 @@ class IosManagementStateNotifier extends ManagementStateNotifier {
     String? newLockCode,
     bool reboot = false,
   }) async {
+    final expectedDevice = _expectedDevice();
+    final usbEnabled = config.enabledCapabilities[Transport.usb];
+    if (usbEnabled != null &&
+        UsbInterface.forCapabilities(usbEnabled) & UsbInterface.ccid.value ==
+            0) {
+      throw PlatformException(
+        code: 'unsupported_configuration',
+        message:
+            'Keep at least one USB smart card application enabled '
+            '(OATH, PIV, OpenPGP, or YubiHSM Auth) to preserve iOS USB access.',
+      );
+    }
     await managementChannel.invokeMethod('configure', {
-      'expectedDevice': _expectedDevice(),
+      'expectedDevice': expectedDevice,
       'config': config.toJson(),
       'currentLockCode': currentLockCode,
       'newLockCode': newLockCode,

@@ -28,6 +28,12 @@ a busy error. Configuration changes requiring a reboot close the old wired
 connection and let the monitor reconnect. The manager owns the monitor task and
 can cancel operations and close connections explicitly during shutdown.
 
+iOS USB management currently supports smart card (CCID) connections only.
+Configuration must retain at least one USB smart card application: OATH, PIV,
+OpenPGP, or YubiHSM Auth. This restriction also applies when configuring over NFC,
+so a scanned key is not left inaccessible over USB. Android's existing
+transport restrictions are unchanged.
+
 ## Run on iPhone
 
 1. Install Flutter and Xcode, then run `flutter pub get` from the repository root.
