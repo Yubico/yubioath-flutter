@@ -60,6 +60,22 @@ class IOSScaffoldPage extends ConsumerWidget {
               error: (error, _) => DeviceErrorScreen(node, error: error),
             );
       }
+      final deviceError = ref.watch(currentDeviceDataProvider).asError;
+      if (deviceError != null) {
+        return HomeMessagePage(
+          onRefresh: scanNfc,
+          centered: true,
+          delayedContent: false,
+          graphic: Image.asset(
+            'assets/graphics/no-key.png',
+            filterQuality: .medium,
+            scale: 2,
+            color: Theme.of(context).colorScheme.error,
+          ),
+          header: l10n.l_yk_no_access,
+          message: deviceError.error.toString(),
+        );
+      }
       return HomeMessagePage(
         onRefresh: scanNfc,
         centered: true,

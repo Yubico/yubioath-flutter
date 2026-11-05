@@ -347,6 +347,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
     } on PlatformException catch (error) {
       if (!mounted) return;
       setState(() => _configuring = false);
+      if (isIOS && error.code == 'cancelled') return;
       showExceptionMessage(context, error);
     } catch (_) {
       if (isLocked) {

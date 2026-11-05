@@ -15,16 +15,22 @@ class ManagementLifecycleTest(unittest.TestCase):
 import Foundation
 
 struct DeviceInfo: Sendable {}
+enum SmartCardConnectionError: Error, Equatable {
+    case cancelled, cancelledByUser, connectionLost, setupFailed
+}
 protocol SmartCardConnection: Sendable {
     func close(error: Error?) async
     func waitUntilClosed() async -> Error?
 }
 actor FakeConnection: SmartCardConnection {
     var closes = 0
+    var failedCloses = 0
+    var successMessages = 0
     private var closed = false
     private var waiter: CheckedContinuation<Error?, Never>?
     func close(error: Error?) async {
         closes += 1
+        if error != nil { failedCloses += 1 }
         closed = true
         waiter?.resume(returning: error)
         waiter = nil
@@ -39,14 +45,37 @@ extension FakeConnection {
     static func makeConnection(alertMessage: String) async throws -> FakeConnection {
         await Connections.shared.openNfc()
     }
-    func close(message: String) async { await close(error: nil) }
+    func close(message: String) async {
+        successMessages += 1
+        await close(error: nil)
+    }
 }
 actor Connections {
     static let shared = Connections()
     var wiredOpens = 0
     var nfcOpens = 0
-    func openWired() -> FakeConnection {
+    var failMetadata = false
+    var failDiscovery = false
+    var available = true
+    let discoveryFailed = Signal()
+    let presenceChecked = Signal()
+    func simulateRemovalRace() { failDiscovery = true; available = false }
+    func devices() async -> [Int] {
+        await presenceChecked.send()
+        return available ? [1] : []
+    }
+    func setMetadataFailure() { failMetadata = true }
+    func clearMetadataFailure() { failMetadata = false }
+    func readMetadata() throws -> DeviceInfo {
+        if failMetadata { throw SmartCardConnectionError.connectionLost }
+        return DeviceInfo()
+    }
+    func openWired() async throws -> FakeConnection {
         wiredOpens += 1
+        if failDiscovery {
+            await discoveryFailed.send()
+            throw SmartCardConnectionError.setupFailed
+        }
         return FakeConnection()
     }
     func openNfc() -> FakeConnection {
@@ -56,12 +85,18 @@ actor Connections {
 }
 enum WiredSmartCardConnection {
     static func makeConnection() async throws -> any SmartCardConnection {
-        await Connections.shared.openWired()
+        try await Connections.shared.openWired()
+    }
+}
+typealias USBSmartCardConnection = FakeConnection
+extension FakeConnection {
+    static func availableDevices() async throws -> [Int] {
+        await Connections.shared.devices()
     }
 }
 enum ManagementManager {
     static func readDeviceInfo(from connection: any SmartCardConnection) async throws -> DeviceInfo {
-        DeviceInfo()
+        try await Connections.shared.readMetadata()
     }
 }
 enum ManagementTargetError: Error { case wiredDeviceUnavailable }
@@ -93,7 +128,8 @@ actor Signal {
         let monitor = Task {
             await coordinator.startMonitoring(
                 onAttach: { _ in await attached.send() },
-                onDetach: {}
+                onDetach: {},
+                onError: { _ in fatalError("Unexpected monitor failure") }
             )
         }
         await attached.wait()
@@ -158,6 +194,21 @@ actor Signal {
         let rebootOpens = await Connections.shared.wiredOpens
         precondition(rebootOpens == 2, "Reboot must reconnect the monitor")
 
+        let nfcFailure = Outcome()
+        var failedNfc: FakeConnection?
+        try await coordinator.performOperation {
+            await nfcFailure.capture {
+                try await coordinator.withNFCConnection(successMessage: "Done") { connection in
+                    await MainActor.run { failedNfc = connection }
+                    throw SmartCardConnectionError.connectionLost
+                }
+            }
+        }
+        let failureCloses = await failedNfc!.failedCloses
+        let failureSuccessMessages = await failedNfc!.successMessages
+        precondition(failureCloses == 1 && failureSuccessMessages == 0,
+                     "NFC failure must close as an error, not success")
+
         let nfcStarted = Signal()
         let nfcOutcome = Outcome()
         let nfcTask = Task {
@@ -187,6 +238,52 @@ actor Signal {
             try await coordinator.performOperation { fatalError("Stopped manager executed operation") }
             fatalError("Stopped manager accepted request")
         } catch ManagementOperationError.alreadyInProgress {}
+        precondition(ManagementOperationError.isCancellation(SmartCardConnectionError.cancelled))
+        precondition(ManagementOperationError.isCancellation(SmartCardConnectionError.cancelledByUser))
+        precondition(ManagementOperationError.isCancellation(CancellationError()))
+        precondition(!ManagementOperationError.isCancellation(SmartCardConnectionError.connectionLost))
+
+        await Connections.shared.setMetadataFailure()
+        let failureReported = Signal()
+        let failingCoordinator = UsbCoordinator()
+        let failingMonitor = Task {
+            await failingCoordinator.startMonitoring(
+                onAttach: { _ in fatalError("Failed read published a key") },
+                onDetach: {},
+                onError: { error in
+                    precondition(error as? SmartCardConnectionError == .connectionLost)
+                    await failureReported.send()
+                }
+            )
+        }
+        await failureReported.wait()
+        failingMonitor.cancel()
+        await failingCoordinator.stop()
+        await failingMonitor.value
+        await Connections.shared.clearMetadataFailure()
+        let detachedCoordinator = UsbCoordinator()
+        let removalAttached = Signal()
+        let detachedMonitor = Task {
+            await detachedCoordinator.startMonitoring(
+                onAttach: { _ in await removalAttached.send() },
+                onDetach: {},
+                onError: { _ in fatalError("USB removal reported as access failure") }
+            )
+        }
+        await removalAttached.wait()
+        await Connections.shared.simulateRemovalRace()
+        try await detachedCoordinator.performOperation {
+            await outcome.capture {
+                try await detachedCoordinator.withWiredConnection(reconnect: false) { connection in
+                    await connection.close(error: nil)
+                }
+            }
+        }
+        await Connections.shared.discoveryFailed.wait()
+        await Connections.shared.presenceChecked.wait()
+        detachedMonitor.cancel()
+        await detachedCoordinator.stop()
+        await detachedMonitor.value
         print("Lifecycle scenarios passed: reuse, global exclusion, reboot, cancellation, shutdown")
     }
 }

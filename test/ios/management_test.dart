@@ -386,6 +386,45 @@ void main() {
     });
   }
 
+  testWidgets('cancelled configuration stays open without a success message', (
+    tester,
+  ) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    messenger.setMockMethodCallHandler(managementChannel, (call) async {
+      throw PlatformException(code: 'cancelled', message: 'Scan cancelled');
+    });
+    final container = managementContainer();
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: ManagementScreen(container.read(_displayedData).value!),
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
+    await tester.tap(
+      find.byKey(Key('${management_keys.usbCapabilityKeyPrefix}.otp')),
+    );
+    await tester.pump();
+    await tester.tap(find.byKey(management_keys.saveButtonKey));
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.byType(ManagementScreen), findsOneWidget);
+    expect(find.textContaining('Scan cancelled'), findsNothing);
+    expect(
+      tester
+          .widget<TextButton>(find.byKey(management_keys.saveButtonKey))
+          .onPressed,
+      isNotNull,
+    );
+    expect(tester.takeException(), isNull);
+    debugDefaultTargetPlatformOverride = null;
+  });
+
   testWidgets('pulling Home scans NFC with and without a displayed key', (
     tester,
   ) async {
@@ -398,8 +437,10 @@ void main() {
       (call) async => null,
     );
     var scanCount = 0;
+    var cancelScan = true;
     messenger.setMockMethodCallHandler(managementChannel, (call) async {
       expect(call.method, 'readDeviceInfoNfc');
+      if (cancelScan) return null;
       scanCount++;
       await messenger.handlePlatformMessage(
         'ios.devices.deviceInfo',
@@ -412,6 +453,35 @@ void main() {
     await tester.pumpWidget(await ios.initialize());
     await tester.pumpAndSettle();
     expect(find.text('Tap your YubiKey'), findsNothing);
+    await messenger.handlePlatformMessage(
+      'ios.devices.deviceInfo',
+      const StandardMethodCodec().encodeErrorEnvelope(
+        code: 'yubikit_error',
+        message: 'Unable to read wired YubiKey metadata',
+      ),
+      (_) {},
+    );
+    await tester.pumpAndSettle();
+    expect(
+      find.textContaining('Unable to read wired YubiKey metadata'),
+      findsOneWidget,
+    );
+    await tester.drag(
+      find
+          .descendant(
+            of: find.byType(RefreshIndicator),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+      const Offset(0, 350),
+    );
+    await tester.pumpAndSettle();
+    expect(scanCount, 0);
+    expect(
+      find.textContaining('Unable to read wired YubiKey metadata'),
+      findsOneWidget,
+    );
+    cancelScan = false;
     await tester.drag(
       find
           .descendant(

@@ -41,7 +41,7 @@ enum ConnectionHelper {
 
     /// Opens an NFC smart-card connection (presents the system NFC sheet),
     /// runs `body`, then closes the connection. Closes with `successMessage`
-    /// on success, or with the error description on failure.
+    /// on success, or with an error on failure.
     static func withNFCConnection<T>(
         alertMessage: String = "Hold your YubiKey near the top of the phone",
         successMessage: String = "Done",
@@ -57,7 +57,7 @@ enum ConnectionHelper {
             await connection.close(message: successMessage)
             return value
         } catch {
-            await connection.close(message: "Error: \(error)")
+            await connection.close(error: error)
             throw error
         }
     }

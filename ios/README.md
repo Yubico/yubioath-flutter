@@ -34,6 +34,11 @@ OpenPGP, or YubiHSM Auth. This restriction also applies when configuring over NF
 so a scanned key is not left inaccessible over USB. Android's existing
 transport restrictions are unchanged.
 
+Cancelling an NFC scan dismisses it without an error message. Cancelling a
+configuration or reset leaves the dialog open without reporting success.
+Wired connection and initial metadata-read failures appear on Home instead of
+being shown as no key connected.
+
 ## Run on iPhone
 
 1. Install Flutter and Xcode, then run `flutter pub get` from the repository root.

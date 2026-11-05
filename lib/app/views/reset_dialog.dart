@@ -389,6 +389,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                               } on PlatformException catch (error) {
                                 if (!context.mounted) return;
                                 setState(() => _resetting = false);
+                                if (isIOS && error.code == 'cancelled') return;
                                 showExceptionMessage(context, error);
                                 return;
                               }

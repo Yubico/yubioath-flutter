@@ -124,6 +124,10 @@ final class ManagementManager: NSObject {
             deviceEventsHandler.send(dict)
             await MainActor.run { result(dict) }
         } catch {
+            if ManagementOperationError.isCancellation(error) {
+                result(NSNull())
+                return
+            }
             NSLog("[ManagementManager] NFC read error: \(error)")
             await MainActor.run {
                 result(FlutterError(
@@ -168,10 +172,13 @@ final class ManagementManager: NSObject {
             deviceEventsHandler.send(dict)
             await MainActor.run { result(NSNull()) }
         } catch {
-            NSLog("[ManagementManager] configure error: \(error)")
+            if !ManagementOperationError.isCancellation(error) {
+                NSLog("[ManagementManager] configure error: \(error)")
+            }
             await MainActor.run {
                 result(FlutterError(
-                    code: (error as? ManagementTargetError)?.code ?? "yubikit_error",
+                    code: ManagementOperationError.isCancellation(error)
+                        ? "cancelled" : (error as? ManagementTargetError)?.code ?? "yubikit_error",
                     message: String(describing: error),
                     details: nil
                 ))
@@ -197,10 +204,13 @@ final class ManagementManager: NSObject {
             deviceEventsHandler.send(dict)
             await MainActor.run { result(NSNull()) }
         } catch {
-            NSLog("[ManagementManager] deviceReset error: \(error)")
+            if !ManagementOperationError.isCancellation(error) {
+                NSLog("[ManagementManager] deviceReset error: \(error)")
+            }
             await MainActor.run {
                 result(FlutterError(
-                    code: (error as? ManagementTargetError)?.code ?? "yubikit_error",
+                    code: ManagementOperationError.isCancellation(error)
+                        ? "cancelled" : (error as? ManagementTargetError)?.code ?? "yubikit_error",
                     message: String(describing: error),
                     details: nil
                 ))
@@ -280,6 +290,15 @@ final class ManagementManager: NSObject {
                 onDetach: { [weak self] in
                     await MainActor.run {
                         self?.deviceEventsHandler.send(NSNull())
+                    }
+                },
+                onError: { [weak self] error in
+                    await MainActor.run {
+                        self?.deviceEventsHandler.send(FlutterError(
+                            code: "yubikit_error",
+                            message: String(describing: error),
+                            details: nil
+                        ))
                     }
                 }
             )
@@ -553,13 +572,16 @@ actor UsbCoordinator {
 
     func startMonitoring(
         onAttach: @Sendable @escaping (DeviceInfo) async -> Void,
-        onDetach: @Sendable @escaping () async -> Void
+        onDetach: @Sendable @escaping () async -> Void,
+        onError: @Sendable @escaping (Error) async -> Void
     ) async {
+        var lastConnectionWasUsb = false
         while !stopped && !Task.isCancelled {
             do {
                 await waitUntilIdle()
                 guard !stopped && !Task.isCancelled else { return }
                 let connection = try await WiredSmartCardConnection.makeConnection()
+                lastConnectionWasUsb = connection is USBSmartCardConnection
                 await waitUntilIdle()
                 guard !stopped && !Task.isCancelled else {
                     await connection.close(error: CancellationError())
@@ -575,7 +597,9 @@ actor UsbCoordinator {
                     let info = try await ManagementManager.readDeviceInfo(from: connection)
                     if !stopped { await onAttach(info) }
                 } catch {
-                    NSLog("[UsbCoordinator] failed to read DeviceInfo: \(error)")
+                    if !stopped && !Task.isCancelled {
+                        await onError(error)
+                    }
                 }
                 finishOperation()
 
@@ -589,12 +613,24 @@ actor UsbCoordinator {
                 }
             } catch {
                 if stopped || Task.isCancelled { return }
-                NSLog("[UsbCoordinator] monitor error: \(error)")
                 do {
                     try await Task.sleep(for: .seconds(1))
+                    guard !stopped && !Task.isCancelled else { return }
+                    // Slot discovery can race USB removal. Confirm presence
+                    // before treating a failed USB setup as an access error.
+                    if lastConnectionWasUsb,
+                       let connectionError = error as? SmartCardConnectionError,
+                       case .setupFailed = connectionError,
+                       try await USBSmartCardConnection.availableDevices().isEmpty {
+                        continue
+                    }
                 } catch {
-                    return
+                    if stopped || Task.isCancelled { return }
+                    await onError(error)
+                    continue
                 }
+                NSLog("[UsbCoordinator] monitor error: \(error)")
+                await onError(error)
             }
         }
     }
@@ -662,4 +698,13 @@ actor UsbCoordinator {
 
 enum ManagementOperationError: Error {
     case alreadyInProgress
+
+    static func isCancellation(_ error: Error) -> Bool {
+        if error is CancellationError { return true }
+        guard let error = error as? SmartCardConnectionError else { return false }
+        switch error {
+        case .cancelled, .cancelledByUser: return true
+        default: return false
+        }
+    }
 }
