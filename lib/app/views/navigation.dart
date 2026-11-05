@@ -236,8 +236,9 @@ class MoreItem extends ConsumerWidget {
               child: MenuItemButton(
                 leadingIcon: e.buildIcon(selected: false),
                 onPressed:
-                    data != null &&
-                        e.getAvailability(data) == Availability.enabled
+                    isIOS ||
+                        data != null &&
+                            e.getAvailability(data) == Availability.enabled
                     ? () {
                         ref
                             .read(currentSectionProvider.notifier)
@@ -314,10 +315,11 @@ class NavigationContent extends ConsumerWidget {
                   selected: app == currentSection,
                   onTap:
                       data == null &&
-                              [
-                                Section.home,
-                                Section.settings,
-                              ].contains(currentSection) ||
+                              (isIOS ||
+                                  [
+                                    Section.home,
+                                    Section.settings,
+                                  ].contains(currentSection)) ||
                           data != null &&
                               app.getAvailability(data) == Availability.enabled
                       ? () {
@@ -489,6 +491,8 @@ class NavigationContent extends ConsumerWidget {
                     section.getAvailability(data) != Availability.unsupported,
               )
               .toList()
+        : isIOS
+        ? supportedSections
         : [Section.home];
     final settingsSection = Section.settings;
     final availableAppSections = availableSections
