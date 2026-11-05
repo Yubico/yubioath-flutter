@@ -22,6 +22,12 @@ supported capabilities, and FIPS/Security Key flags are compared instead.
 That fallback cannot distinguish two identical keys without serial numbers.
 A disconnected USB target is rejected rather than falling back to NFC.
 
+The wired monitor retains its connection for normal operations. NFC scans and
+management operations share a single operation gate; overlapping requests return
+a busy error. Configuration changes requiring a reboot close the old wired
+connection and let the monitor reconnect. The manager owns the monitor task and
+can cancel operations and close connections explicitly during shutdown.
+
 ## Run on iPhone
 
 1. Install Flutter and Xcode, then run `flutter pub get` from the repository root.

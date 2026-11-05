@@ -13,8 +13,8 @@ import YubiKit
 
 /// MethodChannel + EventChannel handler for the Management application.
 ///
-/// The wired-connection lifecycle is owned by `UsbCoordinator` so the USB
-/// monitor can release and reacquire the connection around write operations.
+/// The coordinator retains wired connections and serializes complete operations.
+@MainActor
 final class ManagementManager: NSObject {
     static let channelSuffix = "management"
     static let channelName = "com.yubico.authenticator/management"
@@ -24,6 +24,39 @@ final class ManagementManager: NSObject {
     private var deviceEventsChannel: FlutterEventChannel?
     private let deviceEventsHandler = DeviceEventsHandler()
     private let coordinator = UsbCoordinator()
+    private var monitorTask: Task<Void, Never>?
+
+    deinit {
+        monitorTask?.cancel()
+        let coordinator = coordinator
+        Task { await coordinator.stop() }
+    }
+
+    func stop() async {
+        monitorTask?.cancel()
+        await coordinator.stop()
+        await monitorTask?.value
+        monitorTask = nil
+        methodChannel?.setMethodCallHandler(nil)
+        deviceEventsChannel?.setStreamHandler(nil)
+    }
+
+    private func performOperation(
+        result: @escaping FlutterResult,
+        body: @escaping @MainActor @Sendable () async -> Void
+    ) {
+        Task {
+            do {
+                try await coordinator.performOperation(body: body)
+            } catch {
+                result(FlutterError(
+                    code: "busy",
+                    message: "Another YubiKey operation is in progress or the manager has stopped.",
+                    details: nil
+                ))
+            }
+        }
+    }
 
     @discardableResult
     static func register(with messenger: FlutterBinaryMessenger) -> ManagementManager {
@@ -51,12 +84,12 @@ final class ManagementManager: NSObject {
         NSLog("[ManagementManager] received call: \(call.method)")
         switch call.method {
         case "readDeviceInfoNfc":
-            Task { await self.readDeviceInfoOverNfc(result: result) }
+            performOperation(result: result) { await self.readDeviceInfoOverNfc(result: result) }
         case "configure":
             guard let args = call.arguments as? [String: Any] else {
                 return result(invalidArgs())
             }
-            Task { await self.configure(args: args, result: result) }
+            performOperation(result: result) { await self.configure(args: args, result: result) }
         case "setMode":
             // YubiKey 4 / NEO firmware setMode is not exposed in yubikit-swift
             // (no Mode/UsbInterface API). Surface as not-implemented for now.
@@ -69,7 +102,7 @@ final class ManagementManager: NSObject {
             guard let args = call.arguments as? [String: Any] else {
                 return result(invalidArgs())
             }
-            Task { await self.deviceReset(args: args, result: result) }
+            performOperation(result: result) { await self.deviceReset(args: args, result: result) }
         default:
             result(FlutterMethodNotImplemented)
         }
@@ -79,7 +112,7 @@ final class ManagementManager: NSObject {
 
     private func readDeviceInfoOverNfc(result: @escaping FlutterResult) async {
         do {
-            let info = try await ConnectionHelper.withNFCConnection(
+            let info = try await coordinator.withNFCConnection(
                 successMessage: "YubiKey detected"
             ) { connection in
                 try await Self.readDeviceInfo(from: connection)
@@ -129,11 +162,8 @@ final class ManagementManager: NSObject {
         do {
             let target = try ManagementTarget(args["expectedDevice"])
             let (info, isNfc) = try await runManagementOperation(
-                target: target, discoverSCP: true, body: writeOp
+                target: target, reconnectWired: reboot, discoverSCP: true, body: writeOp
             )
-            // Always emit so NFC reads (which are not covered by the USB
-            // monitor) refresh the home tab. For USB the monitor will also
-            // re-emit on reattach; the duplicate is harmless.
             let dict = DeviceInfoSerializer.serialize(info, name: deviceName(info), isNfc: isNfc)
             deviceEventsHandler.send(dict)
             await MainActor.run { result(NSNull()) }
@@ -183,6 +213,7 @@ final class ManagementManager: NSObject {
     /// Mutations keep the displayed transport and verify the key before execution.
     private func runManagementOperation<T: Sendable>(
         target: ManagementTarget? = nil,
+        reconnectWired: Bool = false,
         successMessage: String = "Configuration updated",
         discoverSCP: Bool = false,
         capability: Capability? = nil,
@@ -200,7 +231,7 @@ final class ManagementManager: NSObject {
             useWired = await coordinator.hasWiredDevice
         }
         if useWired {
-            let value = try await coordinator.runWithReleasedUsb { connection in
+            let value = try await coordinator.withWiredConnection(reconnect: reconnectWired) { connection in
                 if let target {
                     let info = try await Self.readDeviceInfo(from: connection)
                     try target.verify(info)
@@ -209,7 +240,7 @@ final class ManagementManager: NSObject {
             }
             return (value, false)
         } else {
-            let value = try await ConnectionHelper.withNFCConnection(
+            let value = try await coordinator.withNFCConnection(
                 successMessage: successMessage
             ) { connection in
                 if target == nil && !discoverSCP {
@@ -229,46 +260,27 @@ final class ManagementManager: NSObject {
         }
     }
 
-    func runApplicationOperation<T: Sendable>(
-        capability: Capability? = nil,
-        body: @Sendable @escaping (any SmartCardConnection, SCPKeyParams?) async throws -> T
-    ) async throws -> (T, Bool) {
-        try await runManagementOperation(
-            successMessage: "Done",
-            discoverSCP: capability != nil,
-            capability: capability,
-            body: body
-        )
-    }
-
-    func runApplicationOperation<T: Sendable>(
-        body: @Sendable @escaping (any SmartCardConnection) async throws -> T
-    ) async throws -> (T, Bool) {
-        try await runApplicationOperation { connection, _ in
-            try await body(connection)
-        }
-    }
-
-    func hasWiredDevice() async -> Bool {
-        await coordinator.hasWiredDevice
-    }
-
     // MARK: - USB monitor
 
     private func startUsbMonitor() {
-        Task { [weak self] in
-            await self?.coordinator.startMonitoring(
+        let coordinator = coordinator
+        monitorTask = Task {
+            await coordinator.startMonitoring(
                 onAttach: { [weak self] info in
-                    guard let self else { return }
-                    let dict = DeviceInfoSerializer.serialize(
-                        info,
-                        name: self.deviceName(info),
-                        isNfc: false
-                    )
-                    self.deviceEventsHandler.send(dict)
+                    await MainActor.run {
+                        guard let self else { return }
+                        let dict = DeviceInfoSerializer.serialize(
+                            info,
+                            name: self.deviceName(info),
+                            isNfc: false
+                        )
+                        self.deviceEventsHandler.send(dict)
+                    }
                 },
                 onDetach: { [weak self] in
-                    self?.deviceEventsHandler.send(NSNull())
+                    await MainActor.run {
+                        self?.deviceEventsHandler.send(NSNull())
+                    }
                 }
             )
         }
@@ -276,12 +288,12 @@ final class ManagementManager: NSObject {
 
     // MARK: - Helpers
 
-    fileprivate static func readDeviceInfo(from connection: any SmartCardConnection) async throws -> DeviceInfo {
+    nonisolated fileprivate static func readDeviceInfo(from connection: any SmartCardConnection) async throws -> DeviceInfo {
         let session = try await Management.Session.makeSession(connection: connection)
         return try await session.getDeviceInfo()
     }
 
-    private static func readSCPKeyParams(
+    nonisolated private static func readSCPKeyParams(
         from connection: any SmartCardConnection,
         info: DeviceInfo
     ) async throws -> SCPKeyParams? {
@@ -314,7 +326,7 @@ final class ManagementManager: NSObject {
 
     /// Decodes a hex string (e.g. "0123456789abcdef") into `Data`. Returns nil
     /// if the input is missing, empty, has odd length, or contains non-hex.
-    fileprivate static func parseHex(_ raw: Any?) -> Data? {
+    nonisolated fileprivate static func parseHex(_ raw: Any?) -> Data? {
         guard let s = raw as? String, !s.isEmpty, s.count.isMultiple(of: 2) else {
             return nil
         }
@@ -333,7 +345,7 @@ final class ManagementManager: NSObject {
     /// `DeviceConfig`. Falls back to fields from `base` when the JSON omits
     /// them (mirrors what the Dart side actually sends today, which is the
     /// full config plus the modified `enabled_capabilities`).
-    fileprivate static func buildDeviceConfig(
+    nonisolated fileprivate static func buildDeviceConfig(
         from json: [String: Any],
         base: DeviceConfig
     ) -> DeviceConfig {
@@ -500,105 +512,151 @@ private final class DeviceEventsHandler: NSObject, FlutterStreamHandler {
 
 // MARK: - UsbCoordinator
 
-/// Owns the wired YubiKey connection lifecycle.
-///
-/// The USB monitor loop continuously holds a wired connection open via
-/// `WiredSmartCardConnection.makeConnection()` + `Connection.waitUntilClosed()`
-/// to detect attach + detach. When a write operation needs the connection,
-/// `runWithReleasedUsb(body:)`:
-///   1. flips the `paused` flag and explicitly closes the held connection,
-///      which makes the monitor's `waitUntilClosed()` return without emitting
-///      a detach event;
-///   2. opens a fresh connection and runs `body` against it;
-///   3. clears the `paused` flag and resumes the monitor, which will reopen
-///      a fresh connection and emit a new attach event with the post-write
-///      `DeviceInfo`.
+/// Retains wired connections until disconnect, reboot, or explicit shutdown.
 actor UsbCoordinator {
     private var heldConnection: (any SmartCardConnection)?
-    private var paused: Bool = false
-    private var resumeContinuation: CheckedContinuation<Void, Never>?
+    private var nfcConnection: NFCSmartCardConnection?
     private var operationInFlight: Bool = false
+    private var operationTask: Task<Void, Never>?
+    private var idleWaiters: [CheckedContinuation<Void, Never>] = []
+    private var stopped = false
+    private var connectionGeneration = 0
 
     var hasWiredDevice: Bool { heldConnection != nil }
 
-    func startMonitoring(
-        onAttach: @Sendable @escaping (DeviceInfo) -> Void,
-        onDetach: @Sendable @escaping () -> Void
-    ) async {
-        while !Task.isCancelled {
-            if paused {
-                await withCheckedContinuation { continuation in
-                    resumeContinuation = continuation
-                }
-            }
+    func performOperation(
+        body: @escaping @MainActor @Sendable () async -> Void
+    ) async throws {
+        guard !stopped && !operationInFlight else {
+            throw ManagementOperationError.alreadyInProgress
+        }
+        operationInFlight = true
+        defer { finishOperation() }
+        let task = Task { await body() }
+        operationTask = task
+        await task.value
+    }
 
+    func stop() async {
+        stopped = true
+        operationTask?.cancel()
+        connectionGeneration += 1
+        let wired = heldConnection
+        let nfc = nfcConnection
+        heldConnection = nil
+        nfcConnection = nil
+        resumeIdleWaiters()
+        await wired?.close(error: CancellationError())
+        await nfc?.close(error: CancellationError())
+        await operationTask?.value
+    }
+
+    func startMonitoring(
+        onAttach: @Sendable @escaping (DeviceInfo) async -> Void,
+        onDetach: @Sendable @escaping () async -> Void
+    ) async {
+        while !stopped && !Task.isCancelled {
             do {
-                NSLog("[UsbCoordinator] waiting for wired YubiKey…")
+                await waitUntilIdle()
+                guard !stopped && !Task.isCancelled else { return }
                 let connection = try await WiredSmartCardConnection.makeConnection()
-                NSLog("[UsbCoordinator] wired connection up")
+                await waitUntilIdle()
+                guard !stopped && !Task.isCancelled else {
+                    await connection.close(error: CancellationError())
+                    return
+                }
+                // Reserve the same gate for the initial metadata read.
+                operationInFlight = true
+                connectionGeneration += 1
+                let generation = connectionGeneration
                 heldConnection = connection
 
                 do {
                     let info = try await ManagementManager.readDeviceInfo(from: connection)
-                    NSLog("[UsbCoordinator] readDeviceInfo OK serial=\(info.serialNumber) version=\(info.version.major).\(info.version.minor).\(info.version.micro)")
-                    onAttach(info)
+                    if !stopped { await onAttach(info) }
                 } catch {
                     NSLog("[UsbCoordinator] failed to read DeviceInfo: \(error)")
                 }
+                finishOperation()
 
                 _ = await connection.waitUntilClosed()
-                heldConnection = nil
-                NSLog("[UsbCoordinator] wired connection closed (paused=\(paused))")
-
-                if !paused {
-                    onDetach()
+                if generation == connectionGeneration {
+                    heldConnection = nil
+                    await waitUntilIdle()
+                    if !stopped && !Task.isCancelled {
+                        await onDetach()
+                    }
                 }
-            } catch is CancellationError {
-                return
             } catch {
+                if stopped || Task.isCancelled { return }
                 NSLog("[UsbCoordinator] monitor error: \(error)")
-                try? await Task.sleep(for: .seconds(1))
+                do {
+                    try await Task.sleep(for: .seconds(1))
+                } catch {
+                    return
+                }
             }
         }
     }
 
-    func runWithReleasedUsb<T: Sendable>(
+    func withWiredConnection<T: Sendable>(
+        reconnect: Bool,
         body: @Sendable @escaping (any SmartCardConnection) async throws -> T
     ) async throws -> T {
-        guard !operationInFlight else {
-            throw ManagementOperationError.alreadyInProgress
+        try Task.checkCancellation()
+        guard !stopped, let connection = heldConnection else {
+            throw ManagementTargetError.wiredDeviceUnavailable
         }
-        operationInFlight = true
-        paused = true
-
-        if let conn = heldConnection {
-            await conn.close(error: nil)
+        let value = try await body(connection)
+        if reconnect {
+            // Reboot invalidates this connection; let the monitor reacquire it.
+            connectionGeneration += 1
             heldConnection = nil
+            await connection.close(error: nil)
         }
+        return value
+    }
 
+    func withNFCConnection<T: Sendable>(
+        successMessage: String,
+        body: @Sendable (NFCSmartCardConnection) async throws -> T
+    ) async throws -> T {
+        try Task.checkCancellation()
+        guard !stopped else { throw CancellationError() }
+        let connection = try await NFCSmartCardConnection.makeConnection(
+            alertMessage: "Hold your YubiKey near the top of the phone"
+        )
+        nfcConnection = connection
         do {
-            let connection = try await WiredSmartCardConnection.makeConnection()
-            do {
-                let value = try await body(connection)
-                await connection.close(error: nil)
-                releaseAfterOperation()
-                return value
-            } catch {
-                await connection.close(error: error)
-                releaseAfterOperation()
-                throw error
-            }
+            try Task.checkCancellation()
+            guard !stopped else { throw CancellationError() }
+            let value = try await body(connection)
+            await connection.close(message: successMessage)
+            nfcConnection = nil
+            return value
         } catch {
-            releaseAfterOperation()
+            await connection.close(error: error)
+            nfcConnection = nil
             throw error
         }
     }
 
-    private func releaseAfterOperation() {
+    private func waitUntilIdle() async {
+        while operationInFlight && !stopped {
+            await withCheckedContinuation { idleWaiters.append($0) }
+        }
+    }
+
+    private func finishOperation() {
+        operationTask = nil
         operationInFlight = false
-        paused = false
-        resumeContinuation?.resume()
-        resumeContinuation = nil
+        resumeIdleWaiters()
+    }
+
+    private func resumeIdleWaiters() {
+        let waiters = idleWaiters
+        idleWaiters.removeAll()
+        for waiter in waiters { waiter.resume() }
     }
 }
 
