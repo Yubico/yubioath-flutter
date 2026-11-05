@@ -64,6 +64,16 @@ List<Capability> getResetCapabilities(FeatureProvider hasFeature) => [
   if (hasFeature(features.piv)) Capability.piv,
 ];
 
+bool requiresGlobalReset(YubiKeyData data) {
+  final enabled =
+      data.info.config.enabledCapabilities[data.node.transport] ?? 0;
+  final isBio = [
+    FormFactor.usbABio,
+    FormFactor.usbCBio,
+  ].contains(data.info.formFactor);
+  return isBio && (enabled & Capability.piv.value) != 0;
+}
+
 class ResetDialog extends ConsumerStatefulWidget {
   final YubiKeyData data;
   final Capability? application;
@@ -92,7 +102,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
     super.initState();
     final nfc = widget.data.node.transport == Transport.nfc;
     _totalSteps = nfc ? 2 : 4;
-    _globalReset = _isGlobalReset();
+    _globalReset = requiresGlobalReset(widget.data);
     _application = !_globalReset ? widget.application : null;
 
     // on Android & USB we have to query the FIDO reset parameters
@@ -141,20 +151,6 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
       InteractionEvent.wait => l10n.s_please_wait,
       null => '',
     };
-  }
-
-  bool _isGlobalReset() {
-    final enabled =
-        widget.data.info.config.enabledCapabilities[widget
-            .data
-            .node
-            .transport] ??
-        0;
-    final isBio = [
-      FormFactor.usbABio,
-      FormFactor.usbCBio,
-    ].contains(widget.data.info.formFactor);
-    return isBio && (enabled & Capability.piv.value) != 0;
   }
 
   void _updateResetParameters(
@@ -382,13 +378,21 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                               setState(() {
                                 _resetting = true;
                               });
-                              await ref
-                                  .read(
-                                    managementStateProvider(
-                                      widget.data.node.path,
-                                    ).notifier,
-                                  )
-                                  .deviceReset();
+                              try {
+                                await ref
+                                    .read(
+                                      managementStateProvider(
+                                        widget.data.node.path,
+                                      ).notifier,
+                                    )
+                                    .deviceReset();
+                              } on PlatformException catch (error) {
+                                if (!context.mounted) return;
+                                setState(() => _resetting = false);
+                                if (isIOS && error.code == 'cancelled') return;
+                                showExceptionMessage(context, error);
+                                return;
+                              }
                               await ref.read(withContextProvider)((
                                 context,
                               ) async {

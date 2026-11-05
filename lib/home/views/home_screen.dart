@@ -38,8 +38,9 @@ import 'manage_label_dialog.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   final YubiKeyData deviceData;
+  final Future<void> Function()? onRefresh;
 
-  const HomeScreen(this.deviceData, {super.key});
+  const HomeScreen(this.deviceData, {super.key, this.onRefresh});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _HomeScreenState();
@@ -71,6 +72,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
 
     return AppPage(
+      onRefresh: widget.onRefresh,
       title: hide ? null : l10n.s_home,
       delayedContent: hide,
       keyActionsBuilder: (context) =>

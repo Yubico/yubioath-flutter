@@ -450,7 +450,7 @@ return nfcReader(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( DevicePath path,  String name,  UsbPid pid,  DeviceInfo? info)?  usbYubiKey,TResult Function( DevicePath path,  String name)?  nfcReader,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( DevicePath path,  String name,  UsbPid? pid,  DeviceInfo? info)?  usbYubiKey,TResult Function( DevicePath path,  String name)?  nfcReader,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case UsbYubiKeyNode() when usbYubiKey != null:
 return usbYubiKey(_that.path,_that.name,_that.pid,_that.info);case NfcReaderNode() when nfcReader != null:
@@ -472,7 +472,7 @@ return nfcReader(_that.path,_that.name);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( DevicePath path,  String name,  UsbPid pid,  DeviceInfo? info)  usbYubiKey,required TResult Function( DevicePath path,  String name)  nfcReader,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( DevicePath path,  String name,  UsbPid? pid,  DeviceInfo? info)  usbYubiKey,required TResult Function( DevicePath path,  String name)  nfcReader,}) {final _that = this;
 switch (_that) {
 case UsbYubiKeyNode():
 return usbYubiKey(_that.path,_that.name,_that.pid,_that.info);case NfcReaderNode():
@@ -490,7 +490,7 @@ return nfcReader(_that.path,_that.name);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( DevicePath path,  String name,  UsbPid pid,  DeviceInfo? info)?  usbYubiKey,TResult? Function( DevicePath path,  String name)?  nfcReader,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( DevicePath path,  String name,  UsbPid? pid,  DeviceInfo? info)?  usbYubiKey,TResult? Function( DevicePath path,  String name)?  nfcReader,}) {final _that = this;
 switch (_that) {
 case UsbYubiKeyNode() when usbYubiKey != null:
 return usbYubiKey(_that.path,_that.name,_that.pid,_that.info);case NfcReaderNode() when nfcReader != null:
@@ -511,7 +511,7 @@ class UsbYubiKeyNode extends DeviceNode {
 
 @override final  DevicePath path;
 @override final  String name;
- final  UsbPid pid;
+ final  UsbPid? pid;
  final  DeviceInfo? info;
 
 /// Create a copy of DeviceNode
@@ -544,7 +544,7 @@ abstract mixin class $UsbYubiKeyNodeCopyWith<$Res> implements $DeviceNodeCopyWit
   factory $UsbYubiKeyNodeCopyWith(UsbYubiKeyNode value, $Res Function(UsbYubiKeyNode) _then) = _$UsbYubiKeyNodeCopyWithImpl;
 @override @useResult
 $Res call({
- DevicePath path, String name, UsbPid pid, DeviceInfo? info
+ DevicePath path, String name, UsbPid? pid, DeviceInfo? info
 });
 
 
@@ -561,12 +561,12 @@ class _$UsbYubiKeyNodeCopyWithImpl<$Res>
 
 /// Create a copy of DeviceNode
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? path = null,Object? name = null,Object? pid = null,Object? info = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? path = null,Object? name = null,Object? pid = freezed,Object? info = freezed,}) {
   return _then(UsbYubiKeyNode(
 null == path ? _self.path : path // ignore: cast_nullable_to_non_nullable
 as DevicePath,null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,null == pid ? _self.pid : pid // ignore: cast_nullable_to_non_nullable
-as UsbPid,freezed == info ? _self.info : info // ignore: cast_nullable_to_non_nullable
+as String,freezed == pid ? _self.pid : pid // ignore: cast_nullable_to_non_nullable
+as UsbPid?,freezed == info ? _self.info : info // ignore: cast_nullable_to_non_nullable
 as DeviceInfo?,
   ));
 }

@@ -220,7 +220,7 @@ class DesktopCurrentDeviceNotifier extends CurrentDeviceNotifier {
       if (parts.firstOrNull == 'pid') {
         node = devices
             .whereType<UsbYubiKeyNode>()
-            .where((e) => e.pid.value.toString() == parts[1])
+            .where((e) => e.pid?.value.toString() == parts[1])
             .firstOrNull;
       }
     }

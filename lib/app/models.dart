@@ -121,7 +121,7 @@ sealed class DeviceNode with _$DeviceNode {
   factory DeviceNode.usbYubiKey(
     DevicePath path,
     String name,
-    UsbPid pid,
+    UsbPid? pid,
     DeviceInfo? info,
   ) = UsbYubiKeyNode;
   factory DeviceNode.nfcReader(DevicePath path, String name) = NfcReaderNode;

@@ -76,6 +76,7 @@ final _detailsViewGlobalKey = GlobalKey();
 final _mainContentGlobalKey = GlobalKey();
 
 class AppPage extends ConsumerStatefulWidget {
+  final Future<void> Function()? onRefresh;
   final String? title;
   final String? alternativeTitle;
   final String? footnote;
@@ -93,6 +94,7 @@ class AppPage extends ConsumerStatefulWidget {
   final Widget? headerSliver;
   const AppPage({
     super.key,
+    this.onRefresh,
     this.title,
     this.alternativeTitle,
     this.footnote,
@@ -471,27 +473,43 @@ class _AppPageState extends ConsumerState<AppPage> {
           Positioned.fill(
             // Header height = title height + vertical padding
             top: widget.title != null ? _getTitleHeight(context) + 24 : 0,
-            child: Align(
-              alignment: Alignment.center,
-              child: ScrollConfiguration(
-                behavior: ScrollConfiguration.of(
-                  context,
-                ).copyWith(scrollbars: false),
-                child: SingleChildScrollView(
-                  padding: isAndroid
-                      ? EdgeInsets.only(
-                          bottom: MediaQuery.of(context).viewInsets.bottom,
-                        )
-                      : null,
-                  physics: isAndroid
-                      ? const ClampingScrollPhysics(
-                          parent: AlwaysScrollableScrollPhysics(),
-                        )
-                      : null,
-                  child: EnsureFocusVisible(child: safeArea),
-                ),
-              ),
-            ),
+            child: widget.onRefresh != null
+                ? LayoutBuilder(
+                    builder: (context, constraints) => SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minHeight: constraints.maxHeight,
+                        ),
+                        child: Center(
+                          child: EnsureFocusVisible(child: safeArea),
+                        ),
+                      ),
+                    ),
+                  )
+                : Align(
+                    alignment: Alignment.center,
+                    child: ScrollConfiguration(
+                      behavior: ScrollConfiguration.of(
+                        context,
+                      ).copyWith(scrollbars: false),
+                      child: SingleChildScrollView(
+                        padding: isAndroid
+                            ? EdgeInsets.only(
+                                bottom: MediaQuery.of(
+                                  context,
+                                ).viewInsets.bottom,
+                              )
+                            : null,
+                        physics: isAndroid
+                            ? const ClampingScrollPhysics(
+                                parent: AlwaysScrollableScrollPhysics(),
+                              )
+                            : null,
+                        child: EnsureFocusVisible(child: safeArea),
+                      ),
+                    ),
+                  ),
           ),
         ],
       );
@@ -516,7 +534,11 @@ class _AppPageState extends ConsumerState<AppPage> {
                     parent: AlwaysScrollableScrollPhysics(),
                   ),
                 )
-              : const _NoImplicitScrollPhysics(),
+              : _NoImplicitScrollPhysics(
+                  parent: widget.onRefresh != null
+                      ? const AlwaysScrollableScrollPhysics()
+                      : null,
+                ),
           controller: _sliverTitleScrollController,
           key: _mainContentGlobalKey,
           slivers: [
@@ -594,6 +616,8 @@ class _AppPageState extends ConsumerState<AppPage> {
           : null,
       physics: isAndroid
           ? const ClampingScrollPhysics(parent: AlwaysScrollableScrollPhysics())
+          : widget.onRefresh != null
+          ? const AlwaysScrollableScrollPhysics()
           : null,
       primary: false,
       child: EnsureFocusVisible(child: safeArea),
@@ -660,6 +684,9 @@ class _AppPageState extends ConsumerState<AppPage> {
     final sideMenuBarVisible =
         hasManage && hasDetailsOrKeyActions && showExpandedSideMenuBar;
     var body = _buildMainContent(context, hasManage);
+    if (widget.onRefresh != null) {
+      body = RefreshIndicator(onRefresh: widget.onRefresh!, child: body);
+    }
 
     final navigationText = fullyExpanded
         ? (showExpandedNavigationBar

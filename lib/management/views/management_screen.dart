@@ -16,6 +16,7 @@
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -343,6 +344,11 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
       if (!mounted) return;
       Navigator.pop(context);
       showMessage(context, l10n.s_config_updated);
+    } on PlatformException catch (error) {
+      if (!mounted) return;
+      setState(() => _configuring = false);
+      if (isIOS && error.code == 'cancelled') return;
+      showExceptionMessage(context, error);
     } catch (_) {
       if (isLocked) {
         _lockCodeController.selection = TextSelection(
@@ -376,9 +382,16 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
     setState(() {
       _configuring = true;
     });
-    await ref
-        .read(managementStateProvider(widget.deviceData.node.path).notifier)
-        .setMode(interfaces: _interfaces);
+    try {
+      await ref
+          .read(managementStateProvider(widget.deviceData.node.path).notifier)
+          .setMode(interfaces: _interfaces);
+    } on PlatformException catch (error) {
+      if (!mounted) return;
+      setState(() => _configuring = false);
+      showExceptionMessage(context, error);
+      return;
+    }
     if (!mounted) return;
     showMessage(context, switch (widget.deviceData.node) {
       NfcReaderNode() => l10n.s_config_updated,
@@ -428,6 +441,13 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
               if (isAndroid) {
                 // don't allow OTP only mode
                 canSave = canSave && (usbEnabled & ~_usbCcid) != _usbOtp;
+              }
+              if (isIOS) {
+                canSave =
+                    canSave &&
+                    UsbInterface.forCapabilities(usbEnabled) &
+                            UsbInterface.ccid.value !=
+                        0;
               }
             } else {
               canSave =
