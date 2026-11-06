@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@color/yubico_green" />
-</layer-list>
+<!--
+  The designer's Light icon (gradient + glyph) on the full 108dp adaptive canvas, with the glyph
+  at 2/3 scale so the visible 72dp shows it in the designer's proportions and it stays inside
+  circular masks. The art has the gradient baked in and cannot be split into layers, so this is
+  the whole coloured icon and the foreground layer is empty.
+-->
+<bitmap xmlns:android="http://schemas.android.com/apk/res/android"
+    android:src="@drawable/ic_launcher_artwork" />
