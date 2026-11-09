@@ -310,7 +310,7 @@ checksum = "1505bd5d3d116872e7271a6d4e16d81d0c8570876c8de68093a09ac269d8aac0"
 
 [[package]]
 name = "authenticator-helper"
-version = "0.1.0"
+version = "7.5.0"
 dependencies = [
  "base32",
  "base64",
@@ -330,6 +330,7 @@ dependencies = [
  "serde_json",
  "sha2 0.11.1",
  "windows-sys 0.61.2",
+ "winresource",
  "x509-cert",
  "xcap",
  "ykman",
@@ -4314,6 +4315,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "23b97319f7b8343df12cc98938e5c3eb436064524c8d2b4e30a1d3a36eecdf81"
 dependencies = [
  "memchr",
+]
+
+[[package]]
+name = "winresource"
+version = "0.1.34"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a2bc6d36480b829272a5bdabf08e6dca8004761c1da7e35efef800540c66221b"
+dependencies = [
+ "toml",
+ "version_check",
 ]
 
 [[package]]

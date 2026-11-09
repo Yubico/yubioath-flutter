@@ -154,6 +154,20 @@ jobs:
             }
           }
 
+      - name: Verify helper file version
+        run: |
+          # MSI upgrades skip files whose version is lower than the installed
+          # one, so the helper must carry the app version.
+          $appVersion = python set-version.py | Select-Object -First 1
+          $expected = [version](($appVersion -split '-')[0] + '.0')
+          $helper = Get-ChildItem deploy -Recurse -Filter authenticator-helper.exe | Select-Object -First 1
+          if (-not $helper) { throw "authenticator-helper.exe not found in the build artifact" }
+          $info = [Diagnostics.FileVersionInfo]::GetVersionInfo($helper.FullName)
+          $actual = [version]"$($info.FileMajorPart).$($info.FileMinorPart).$($info.FileBuildPart).$($info.FilePrivatePart)"
+          if ($actual -ne $expected) {
+            throw "authenticator-helper.exe has file version $actual, expected $expected"
+          }
+
       - name: Upload artifact
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
