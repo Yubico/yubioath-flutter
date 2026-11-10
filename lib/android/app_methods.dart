@@ -51,6 +51,48 @@ Future<void> openNfcSettings() async {
   await appMethodsChannel.invokeMethod('openNfcSettings');
 }
 
+/// Whether this app handles `https://my.yubico.com` links.
+///
+/// From Android 16, every NFC tap action depends on it. Builds signed with
+/// Yubico's release key are verified automatically through Digital Asset
+/// Links; any other build has to be allowed by hand under "Open by default".
+///
+/// Mirrors `DomainVerificationHelper.Status` in Kotlin.
+enum DomainVerificationStatus {
+  /// Not applicable: Android older than 16, or the state could not be read.
+  unsupported,
+
+  /// Verified through Digital Asset Links.
+  verified,
+
+  /// Allowed by the user under "Open by default".
+  selected,
+
+  /// Not handled: NFC tap actions do nothing until the user allows it.
+  none,
+}
+
+Future<DomainVerificationStatus> getDomainVerificationStatus() async {
+  final value = await appMethodsChannel.invokeMethod<String>(
+    'getDomainVerificationStatus',
+  );
+  return switch (value) {
+    'verified' => DomainVerificationStatus.verified,
+    'selected' => DomainVerificationStatus.selected,
+    'none' => DomainVerificationStatus.none,
+    _ => DomainVerificationStatus.unsupported,
+  };
+}
+
+/// Opens the app's "Open by default" settings page. Returns false if no
+/// settings screen could be started.
+Future<bool> openDomainVerificationSettings() async {
+  final result = await appMethodsChannel.invokeMethod<bool>(
+    'openDomainVerificationSettings',
+  );
+  return result ?? false;
+}
+
 Future<int> getAndroidSdkVersion() async {
   return await appMethodsChannel.invokeMethod('getAndroidSdkVersion');
 }

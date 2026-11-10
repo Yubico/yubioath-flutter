@@ -1087,6 +1087,8 @@
     "l_launch_app_on_usb_off": "Diğer uygulamalar USB üzerinden YubiKey'i kullanabilir",
     "s_allow_screenshots": "Ekran görüntülerine izin ver",
     "l_allow_screenshots_desc": "Diğer uygulamaların ekran görüntüsü almasına izin verin",
+    "l_nfc_tap_not_active": null,
+    "l_nfc_tap_not_active_desc": null,
     "@_nfc": {},
 
     "s_nfc_ready_to_scan": "Taramaya hazır",

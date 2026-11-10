@@ -1087,6 +1087,8 @@
     "l_launch_app_on_usb_off": "Andere apps mogen de YubiKey via USB gebruiken",
     "s_allow_screenshots": "Schermopnames toestaan",
     "l_allow_screenshots_desc": "Andere apps toestaan om schermafbeeldingen te maken",
+    "l_nfc_tap_not_active": null,
+    "l_nfc_tap_not_active_desc": null,
     "@_nfc": {},
 
     "s_nfc_ready_to_scan": "Klaar om te scannen",

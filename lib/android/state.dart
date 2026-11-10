@@ -287,6 +287,17 @@ class NfcTapActionNotifier extends StateNotifier<NfcTapAction> {
   }
 }
 
+/// Whether this app handles my.yubico.com links, which NFC tap actions need
+/// from Android 16.
+///
+/// Read again whenever the app gains or loses the foreground, so the state is
+/// current after the user changes it in system settings.
+final androidDomainVerificationStatusProvider =
+    FutureProvider<DomainVerificationStatus>((ref) {
+      ref.watch(windowStateProvider.select((s) => s.active));
+      return getDomainVerificationStatus();
+    });
+
 /// Layouts an NDEF static password can be decoded with.
 ///
 /// Hand-kept in sync with `KeyboardLayouts.ndefLayoutNames()` on the Kotlin side, which a unit

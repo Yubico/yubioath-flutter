@@ -1087,6 +1087,8 @@
     "l_launch_app_on_usb_off": "Other apps can use the YubiKey over USB",
     "s_allow_screenshots": "Allow screenshots",
     "l_allow_screenshots_desc": "Allow other apps to take screenshots",
+    "l_nfc_tap_not_active": "Not active",
+    "l_nfc_tap_not_active_desc": "Add my.yubico.com to activate",
     "@_nfc": {},
 
     "s_nfc_ready_to_scan": "Ready to scan",

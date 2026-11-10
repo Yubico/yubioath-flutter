@@ -26,6 +26,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../../android/app_methods.dart';
 import '../../android/models.dart';
 import '../../android/state.dart';
+import '../../android/views/nfc_link_notice.dart';
 import '../../core/models.dart';
 import '../../core/state.dart';
 import '../../desktop/state.dart';
@@ -932,6 +933,7 @@ class _NfcTapActionView extends ConsumerWidget {
       child: Column(
         children: [
           ListTitle(l10n.l_on_yk_nfc_tap),
+          NfcLinkNotice(isDialog: isDialog),
           ...NfcTapAction.values.map(
             (e) => RadioListTile<NfcTapAction>(
               shape: RoundedRectangleBorder(
