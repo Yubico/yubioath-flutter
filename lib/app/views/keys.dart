@@ -91,6 +91,7 @@ const usbOpenAppSetting = Key('$_prefix.usb_open_app');
 const nfcTapSetting = Key('$_prefix.nfc_tap');
 Key nfcTapOption(NfcTapAction action) =>
     Key('$_prefix.tap_action.${action.name}');
+const nfcLinkNotice = Key('$_prefix.nfc_link_notice');
 const nfcKeyboardLayoutSetting = Key('$_prefix.nfc_keyboard_layout');
 Key keyboardLayoutOption(String name) => Key('$_prefix.keyboard_layout.$name');
 const allowScreenshotsSetting = Key('$_prefix.settings.allow_screenshots');

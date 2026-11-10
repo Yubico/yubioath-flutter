@@ -780,7 +780,7 @@ class MainActivity : FlutterFragmentActivity() {
                     }
 
                     "getDomainVerificationStatus" -> result.success(
-                        DomainVerificationHelper.getStatus(this@MainActivity)
+                        DomainVerificationHelper.getStatus(this@MainActivity).value
                     )
 
                     "openDomainVerificationSettings" -> result.success(

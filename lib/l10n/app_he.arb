@@ -1087,6 +1087,8 @@
     "l_launch_app_on_usb_off": "יישומים אחרים יכולים להשתמש ב־YubiKey דרך USB",
     "s_allow_screenshots": "לאפשר צילום מסך",
     "l_allow_screenshots_desc": "לאפשר ליישומים אחרים לצלם את המסך",
+    "l_nfc_tap_not_active": null,
+    "l_nfc_tap_not_active_desc": null,
     "@_nfc": {},
 
     "s_nfc_ready_to_scan": "מוכן לסריקה",
