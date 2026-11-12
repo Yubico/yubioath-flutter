@@ -583,7 +583,7 @@
     "l_ready_to_use": "Ready to use",
     "l_register_sk_on_websites": "Register as a Security Key on websites",
     "l_no_discoverable_accounts": "No passkeys stored",
-    "p_non_passkeys_note": "Non-passkey credentials may exist, but can not be listed.",
+    "p_non_passkeys_note": "Non-passkey credentials may exist, but cannot be listed.",
     "s_delete_passkey": "Delete passkey",
     "q_delete_passkey": "Delete passkey?",
     "l_delete_passkey_desc": "Remove the passkey from the YubiKey",
