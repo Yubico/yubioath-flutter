@@ -8,7 +8,7 @@ dependencies = [
   "yubikey-manager (>=5.9.1, <6)",
   "fido2 (>=2.2.0, <3)",
   "mss (>=10.2.0, <11)",
-  "pillow (>=12.2.0, <13)",
+  "pillow (>=12.3.0, <13)",
   "zxing-cpp (>=3.0.0, <4)",
   "pyscard (>=2.3.1, <3)",
 ]
