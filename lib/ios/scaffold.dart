@@ -27,8 +27,8 @@ class IOSScaffoldPage extends ConsumerWidget {
       previous,
       next,
     ) {
-      final serial = next.value?.info.serial;
-      if (serial != null && serial == previous?.value?.info.serial) {
+      final path = next.value?.node.path;
+      if (path != null && path == previous?.value?.node.path) {
         return;
       }
       Navigator.of(context).popUntil((route) => route.isFirst);

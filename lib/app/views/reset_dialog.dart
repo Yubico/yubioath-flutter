@@ -378,6 +378,7 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                               setState(() {
                                 _resetting = true;
                               });
+                              final route = ModalRoute.of(context);
                               try {
                                 await ref
                                     .read(
@@ -387,16 +388,19 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                                     )
                                     .deviceReset();
                               } on PlatformException catch (error) {
+                                if (!isIOS) rethrow;
                                 if (!context.mounted) return;
                                 setState(() => _resetting = false);
-                                if (isIOS && error.code == 'cancelled') return;
+                                if (error.code == 'cancelled') return;
                                 showExceptionMessage(context, error);
                                 return;
                               }
                               await ref.read(withContextProvider)((
                                 context,
                               ) async {
-                                Navigator.of(context).pop();
+                                if (route?.isCurrent ?? false) {
+                                  Navigator.of(context).pop();
+                                }
                                 showMessage(context, l10n.s_factory_reset);
                               });
                             }

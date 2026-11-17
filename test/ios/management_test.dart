@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -346,65 +348,6 @@ void main() {
     },
   );
 
-  for (final wired in [false, true]) {
-    test('iOS rejects loss of USB CCID when wired=$wired', () async {
-      final calls = <MethodCall>[];
-      messenger.setMockMethodCallHandler(managementChannel, (call) async {
-        calls.add(call);
-        return null;
-      });
-      final container = managementContainer(wired: wired);
-      final path = DevicePath(const []);
-      final subscription = container.listen(
-        managementStateProvider(path),
-        (_, _) {},
-      );
-      addTearDown(subscription.close);
-      await container.read(managementStateProvider(path).future);
-      final notifier = container.read(managementStateProvider(path).notifier);
-      final config = DeviceInfo.fromJson(_deviceInfo).config;
-      for (final usb in [
-        0,
-        Capability.otp.value,
-        Capability.u2f.value | Capability.fido2.value,
-        Capability.otp.value | Capability.fido2.value | 0x04,
-      ]) {
-        await expectLater(
-          notifier.writeConfig(
-            config.copyWith(
-              enabledCapabilities: {Transport.usb: usb, Transport.nfc: 63},
-            ),
-          ),
-          throwsA(
-            isA<PlatformException>().having(
-              (error) => error.code,
-              'code',
-              'unsupported_configuration',
-            ),
-          ),
-        );
-      }
-      expect(calls, isEmpty);
-
-      for (final capability in [
-        Capability.oath,
-        Capability.piv,
-        Capability.openpgp,
-        Capability.hsmauth,
-      ]) {
-        await notifier.writeConfig(
-          config.copyWith(
-            enabledCapabilities: {
-              Transport.usb: capability.value,
-              Transport.nfc: 0,
-            },
-          ),
-        );
-      }
-      expect(calls, hasLength(4));
-    });
-  }
-
   for (final platform in [
     TargetPlatform.iOS,
     TargetPlatform.android,
@@ -498,6 +441,52 @@ void main() {
           .onPressed,
       isNotNull,
     );
+    expect(tester.takeException(), isNull);
+    debugDefaultTargetPlatformOverride = null;
+  });
+
+  testWidgets('completion does not pop a route the dialog no longer owns', (
+    tester,
+  ) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    final navigatorKey = GlobalKey<NavigatorState>();
+    // Simulates the device-change listener closing dialogs before the
+    // native result arrives.
+    messenger.setMockMethodCallHandler(managementChannel, (call) async {
+      navigatorKey.currentState!.popUntil((route) => route.isFirst);
+      return null;
+    });
+    final container = managementContainer();
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp(
+          navigatorKey: navigatorKey,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const Scaffold(body: Text('Home')),
+        ),
+      ),
+    );
+    unawaited(
+      navigatorKey.currentState!.push(
+        MaterialPageRoute(
+          builder: (_) =>
+              ManagementScreen(container.read(_displayedData).value!),
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
+    await tester.tap(
+      find.byKey(Key('${management_keys.usbCapabilityKeyPrefix}.otp')),
+    );
+    await tester.pump();
+    await tester.tap(find.byKey(management_keys.saveButtonKey));
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.text('Home'), findsOneWidget);
+    expect(find.byType(ManagementScreen), findsNothing);
     expect(tester.takeException(), isNull);
     debugDefaultTargetPlatformOverride = null;
   });

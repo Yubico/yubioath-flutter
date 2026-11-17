@@ -342,15 +342,15 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
             currentLockCode: isLocked ? _lockCodeController.text : null,
           );
       if (!mounted) return;
-      Navigator.pop(context);
+      if (ModalRoute.of(context)?.isCurrent ?? false) Navigator.pop(context);
       showMessage(context, l10n.s_config_updated);
-    } on PlatformException catch (error) {
-      if (!mounted) return;
-      setState(() => _configuring = false);
-      if (isIOS && error.code == 'cancelled') return;
-      showExceptionMessage(context, error);
-    } catch (_) {
-      if (isLocked) {
+    } catch (error) {
+      if (isIOS && error is PlatformException) {
+        if (!mounted) return;
+        setState(() => _configuring = false);
+        if (error.code == 'cancelled') return;
+        showExceptionMessage(context, error);
+      } else if (isLocked) {
         _lockCodeController.selection = TextSelection(
           baseOffset: 0,
           extentOffset: _lockCodeController.text.length,
@@ -387,9 +387,10 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
           .read(managementStateProvider(widget.deviceData.node.path).notifier)
           .setMode(interfaces: _interfaces);
     } on PlatformException catch (error) {
+      if (!isIOS) rethrow;
       if (!mounted) return;
       setState(() => _configuring = false);
-      showExceptionMessage(context, error);
+      if (error.code != 'cancelled') showExceptionMessage(context, error);
       return;
     }
     if (!mounted) return;
@@ -397,7 +398,7 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
       NfcReaderNode() => l10n.s_config_updated,
       UsbYubiKeyNode() => l10n.l_config_updated_reinsert,
     });
-    Navigator.pop(context);
+    if (ModalRoute.of(context)?.isCurrent ?? false) Navigator.pop(context);
   }
 
   void _submitForm() {

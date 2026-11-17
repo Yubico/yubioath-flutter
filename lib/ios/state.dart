@@ -34,8 +34,7 @@ const _deviceEventsChannel = EventChannel('ios.devices.deviceInfo');
 /// Streams `YubiKeyData` derived from `ManagementManager`'s event channel.
 ///
 /// The channel emits either a `Map<String, Object?>` (device attached) or
-/// `null` (device detached). For robustness we also accept a JSON string,
-/// matching the Android shape.
+/// `null` (device detached).
 final iosYubikeyProvider =
     StateNotifierProvider<_IosYubikeyNotifier, AsyncValue<YubiKeyData>>(
       (ref) => _IosYubikeyNotifier(),
@@ -62,9 +61,6 @@ class _IosYubikeyNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
 
   Map<String, dynamic>? _decode(Object? event) {
     if (event == null) return null;
-    if (event is String) {
-      return _deepCast(jsonDecode(event)) as Map<String, dynamic>;
-    }
     if (event is Map) {
       return _deepCast(event) as Map<String, dynamic>;
     }
@@ -198,16 +194,6 @@ class _IosClipboard extends AppClipboard {
 }
 
 /// Triggers an NFC scan via `ManagementManager.readDeviceInfoNfc` on the
-/// Swift side. Returns the resulting raw map (same shape as the event
-/// channel), or throws a `PlatformException`.
-Future<Map<String, dynamic>?> triggerNfcDeviceInfoScan() async {
-  final result = await managementChannel.invokeMethod<dynamic>(
-    'readDeviceInfoNfc',
-  );
-  if (result == null) return null;
-  if (result is Map) return Map<String, dynamic>.from(result);
-  if (result is String) {
-    return Map<String, dynamic>.from(jsonDecode(result) as Map);
-  }
-  return null;
-}
+/// Swift side. The result is delivered through the device event channel.
+Future<void> triggerNfcDeviceInfoScan() =>
+    managementChannel.invokeMethod<void>('readDeviceInfoNfc');
