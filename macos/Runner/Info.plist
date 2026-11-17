@@ -20,6 +20,10 @@
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<!-- Impeller drops or corrupts glyphs on Intel Macs; use Skia until
+	     https://github.com/flutter/flutter/issues/196226 is fixed. -->
+	<key>FLTEnableImpeller</key>
+	<false/>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.utilities</string>
 	<key>LSMinimumSystemVersion</key>
