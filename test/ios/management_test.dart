@@ -562,7 +562,7 @@ void main() {
       123456,
     );
     expect(container.read(featureProvider)(features.management), isTrue);
-    expect(container.read(featureProvider)(features.oath), isFalse);
+    expect(container.read(featureProvider)(features.oath), isTrue);
     expect(container.read(featureProvider)(features.fido), isFalse);
     expect(container.read(featureProvider)(features.piv), isFalse);
 
@@ -604,7 +604,7 @@ void main() {
 
     await tester.tap(find.byKey(actionsIconButtonKey));
     await tester.pumpAndSettle();
-    expect(find.byKey(yubikeyFactoryResetMenuButton), findsNothing);
+    expect(find.byKey(yubikeyFactoryResetMenuButton), findsOneWidget);
     await tester.tap(find.byKey(yubikeyApplicationToggleMenuButton));
     await tester.pump();
     await tester.pump(const Duration(seconds: 1));
@@ -621,7 +621,6 @@ void main() {
     await tester.pumpAndSettle();
 
     for (final section in [
-      Section.accounts,
       Section.passkeys,
       Section.certificates,
       Section.slots,

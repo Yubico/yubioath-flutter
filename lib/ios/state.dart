@@ -235,3 +235,18 @@ class _IosClipboard extends AppClipboard {
 /// Swift side. The result is delivered through the device event channel.
 Future<void> triggerNfcDeviceInfoScan() =>
     managementChannel.invokeMethod<void>('readDeviceInfoNfc');
+
+/// Identity and transport of [target], used by native code to verify that an
+/// operation runs against the selected YubiKey.
+Map<String, Object?> iosExpectedDevice(YubiKeyData target) => {
+  'transport': target.node.transport.name,
+  'serial': target.info.serial,
+  'version': target.info.version.toJson(),
+  'formFactor': target.info.toJson()['form_factor'],
+  'supportedCapabilities': {
+    for (final entry in target.info.supportedCapabilities.entries)
+      entry.key.name: entry.value,
+  },
+  'isFips': target.info.isFips,
+  'isSky': target.info.isSky,
+};

@@ -18,6 +18,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -520,8 +521,39 @@ class _OathAddAccountPageState extends ConsumerState<OathAddAccountPage>
                                               _scanning = true;
                                             });
 
-                                            final qrData = await qrScanner
-                                                .scanQr();
+                                            final String? qrData;
+                                            try {
+                                              qrData = await qrScanner.scanQr();
+                                            } catch (error, stack) {
+                                              if (!isIOS) rethrow;
+                                              if (error
+                                                  is! CancellationException) {
+                                                _log.error(
+                                                  'QR scan failed',
+                                                  error,
+                                                  stack,
+                                                );
+                                                await withContext((
+                                                  context,
+                                                ) async {
+                                                  showMessage(
+                                                    context,
+                                                    l10n.l_qr_not_read(
+                                                      error is PlatformException
+                                                          ? error.message ??
+                                                                error.code
+                                                          : error.toString(),
+                                                    ),
+                                                  );
+                                                });
+                                              }
+                                              if (mounted) {
+                                                setState(() {
+                                                  _scanning = false;
+                                                });
+                                              }
+                                              return;
+                                            }
                                             if (qrData != null) {
                                               handleQrData(qrData, withContext);
                                             } else {

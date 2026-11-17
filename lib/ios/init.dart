@@ -8,7 +8,10 @@ import '../app/models.dart';
 import '../app/state.dart';
 import '../core/state.dart';
 import '../management/state.dart';
+import '../oath/state.dart';
 import 'management/state.dart';
+import 'oath/state.dart';
+import 'qr_scanner.dart';
 import 'scaffold.dart';
 import 'state.dart';
 
@@ -32,7 +35,6 @@ Future<Widget> initialize() async {
       featureFlagProvider.overrideWith(
         (ref) => FeatureFlagsNotifier()
           ..loadConfig({
-            features.oath.path: false,
             features.fido.path: false,
             features.piv.path: false,
             features.otp.path: false,
@@ -46,6 +48,11 @@ Future<Widget> initialize() async {
       currentSectionProvider.overrideWith(iosCurrentSectionNotifier),
       clipboardProvider.overrideWith((ref) => ref.watch(iosClipboardProvider)),
       managementStateProvider.overrideWith2(IosManagementStateNotifier.new),
+      oathStateProvider.overrideWith2(IosOathStateNotifier.new),
+      credentialListProvider.overrideWith(buildIosCredentialList),
+      qrScannerProvider.overrideWith(
+        (ref) => IosQrScanner(ref.watch(withContextProvider)),
+      ),
     ],
     child: const YubicoAuthenticatorApp(page: IOSScaffoldPage()),
   );

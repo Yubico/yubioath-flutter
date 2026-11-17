@@ -239,11 +239,39 @@ final class ManagementManager: NSObject {
 
     // MARK: - Routing
 
+    /// Runs an application operation on the selected YubiKey and transport.
+    ///
+    /// Waits for any in-flight operation instead of failing, and only provides
+    /// SCP parameters over NFC when `capability` is FIPS capable.
+    func runApplicationOperation<T: Sendable>(
+        expectedDevice: Any?,
+        capability: Capability,
+        successMessage: String = "Done",
+        body: @Sendable @escaping (any SmartCardConnection, SCPKeyParams?) async throws -> T
+    ) async throws -> T {
+        let target = try ManagementTarget(expectedDevice)
+        return try await coordinator.performQueuedOperation {
+            try await self.runManagementOperation(
+                target: target,
+                successMessage: successMessage,
+                scpCapability: capability,
+                body: body
+            ).0
+        }
+    }
+
+    /// Flutter error code for cancellation and device-binding failures, if any.
+    nonisolated static func sharedErrorCode(for error: Error) -> String? {
+        if ManagementOperationError.isCancellation(error) { return "cancelled" }
+        return (error as? ManagementTargetError)?.code
+    }
+
     /// Mutations keep the displayed transport and verify the key before execution.
     private func runManagementOperation<T: Sendable>(
         target: ManagementTarget,
         reconnectWired: Bool = false,
         successMessage: String = "Configuration updated",
+        scpCapability: Capability? = nil,
         body: @Sendable @escaping (any SmartCardConnection, SCPKeyParams?) async throws -> T
     ) async throws -> (T, Bool) {
         if target.transport == .usb {
@@ -259,7 +287,9 @@ final class ManagementManager: NSObject {
             ) { connection in
                 let info = try await Self.readDeviceInfo(from: connection)
                 try target.verify(info)
-                let discoveredParams = try await Self.readSCPKeyParams(from: connection, info: info)
+                let discoveredParams = try await Self.readSCPKeyParams(
+                    from: connection, info: info, capability: scpCapability
+                )
                 return try await body(connection, discoveredParams)
             }
             return (value, true)
@@ -296,11 +326,15 @@ final class ManagementManager: NSObject {
         return NamedDevice(info: key.deviceInfo, name: key.deviceName)
     }
 
+    /// Management uses SCP on any FIPS-capable key; applications only when
+    /// their own capability is FIPS capable.
     nonisolated private static func readSCPKeyParams(
         from connection: any SmartCardConnection,
-        info: DeviceInfo
+        info: DeviceInfo,
+        capability: Capability?
     ) async throws -> SCPKeyParams? {
-        guard info.fipsCapabilityFlags != 0 else { return nil }
+        let requiredFlags = capability?.rawValue ?? info.fipsCapabilityFlags
+        guard info.fipsCapabilityFlags & requiredFlags != 0 else { return nil }
         let session = try await SecurityDomainSession.makeSession(connection: connection)
         let keyInformation = try await session.getKeyInformation()
         guard let keyRef = keyInformation.keys.first(where: { $0.kid == .scp11b }) else {
@@ -559,6 +593,25 @@ actor ConnectionCoordinator {
         let task = Task { await body() }
         operationTask = task
         await task.value
+    }
+
+    /// Like `performOperation`, but waits for the current operation to finish.
+    func performQueuedOperation<T: Sendable>(
+        body: @escaping @Sendable () async throws -> T
+    ) async throws -> T {
+        await waitUntilIdle()
+        guard !stopped else { throw CancellationError() }
+        operationInFlight = true
+        defer { finishOperation() }
+        let task = Task { try await body() }
+        operationTask = Task {
+            await withTaskCancellationHandler {
+                _ = await task.result
+            } onCancel: {
+                task.cancel()
+            }
+        }
+        return try await task.value
     }
 
     fileprivate func stop() async {
