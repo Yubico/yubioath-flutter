@@ -243,21 +243,59 @@ final class ManagementManager: NSObject {
     ///
     /// Waits for any in-flight operation instead of failing, and only provides
     /// SCP parameters over NFC when `capability` is FIPS capable.
+    /// With `acceptOtherNfcDevice`, an NFC tap of a different key is not an
+    /// error: the result reports that key, and `value` is nil if `body` failed
+    /// on it. Use this only for reads.
     func runApplicationOperation<T: Sendable>(
         expectedDevice: Any?,
         capability: Capability,
+        acceptOtherNfcDevice: Bool = false,
         successMessage: String = "Done",
         body: @Sendable @escaping (any SmartCardConnection, SCPKeyParams?) async throws -> T
-    ) async throws -> T {
+    ) async throws -> ApplicationOutcome<T> {
         let target = try ManagementTarget(expectedDevice)
-        return try await coordinator.performQueuedOperation {
-            try await self.runManagementOperation(
-                target: target,
-                successMessage: successMessage,
-                scpCapability: capability,
-                body: body
-            ).0
+        guard acceptOtherNfcDevice, target.transport == .nfc else {
+            let value = try await coordinator.performQueuedOperation {
+                try await self.runManagementOperation(
+                    target: target,
+                    successMessage: successMessage,
+                    scpCapability: capability,
+                    body: body
+                ).0
+            }
+            return ApplicationOutcome(value: value, otherDevice: nil)
         }
+        let coordinator = coordinator
+        return try await coordinator.performQueuedOperation {
+            try await coordinator.withNFCConnection(successMessage: successMessage) { connection in
+                let device = try await Self.readNamedDevice(from: connection)
+                do {
+                    try target.verify(device.info)
+                } catch ManagementTargetError.deviceChanged {
+                    do {
+                        let params = try await Self.readSCPKeyParams(
+                            from: connection, info: device.info, capability: capability
+                        )
+                        return ApplicationOutcome(value: try await body(connection, params), otherDevice: device)
+                    } catch {
+                        if ManagementOperationError.isCancellation(error) { throw error }
+                        managementLog.warning("Read failed on another NFC YubiKey: \(String(describing: error), privacy: .private)")
+                        return ApplicationOutcome(value: nil, otherDevice: device)
+                    }
+                }
+                let params = try await Self.readSCPKeyParams(
+                    from: connection, info: device.info, capability: capability
+                )
+                return ApplicationOutcome(value: try await body(connection, params), otherDevice: nil)
+            }
+        }
+    }
+
+    /// Displays a key read over NFC by another application, like a Home scan.
+    /// `extras` are delivered with this event only, e.g. the application state
+    /// that was read in the same tap.
+    func publishNfcDevice(_ device: NamedDevice, extras: [String: Any] = [:]) {
+        deviceEventsHandler.update(device, isNfc: true, scannedNfc: true, extras: extras)
     }
 
     /// Flutter error code for cancellation and device-binding failures, if any.
@@ -518,9 +556,15 @@ private final class DeviceEventsHandler: NSObject, @preconcurrency FlutterStream
     private var wired: [String: Any]?
     private var nfc: [String: Any]?
 
-    func update(_ device: NamedDevice, isNfc: Bool, scannedNfc: Bool = false) {
+    /// `extras` are sent with this event only and are not replayed.
+    func update(
+        _ device: NamedDevice,
+        isNfc: Bool,
+        scannedNfc: Bool = false,
+        extras: [String: Any] = [:]
+    ) {
         let info = DeviceInfoSerializer.serialize(device.info, name: device.name, isNfc: isNfc)
-        set(["device": info], isNfc: isNfc, scannedNfc: scannedNfc)
+        set(["device": info], isNfc: isNfc, scannedNfc: scannedNfc, extras: extras)
     }
 
     func clear(isNfc: Bool) {
@@ -531,13 +575,18 @@ private final class DeviceEventsHandler: NSObject, @preconcurrency FlutterStream
         set(["error": ["code": code, "message": message]], isNfc: isNfc)
     }
 
-    private func set(_ value: [String: Any]?, isNfc: Bool, scannedNfc: Bool = false) {
+    private func set(
+        _ value: [String: Any]?,
+        isNfc: Bool,
+        scannedNfc: Bool = false,
+        extras: [String: Any] = [:]
+    ) {
         if isNfc {
             nfc = value
         } else {
             wired = value
         }
-        sink?(snapshot(scannedNfc: scannedNfc))
+        sink?(snapshot(scannedNfc: scannedNfc).merging(extras) { _, extra in extra })
     }
 
     private func snapshot(scannedNfc: Bool = false) -> [String: Any] {
@@ -788,4 +837,10 @@ enum ManagementRefresh<T: Sendable>: Sendable {
 struct NamedDevice: Sendable {
     let info: DeviceInfo
     let name: String
+}
+
+struct ApplicationOutcome<T: Sendable>: Sendable {
+    let value: T?
+    /// Set when the operation ran on a different NFC key than the displayed one.
+    let otherDevice: NamedDevice?
 }

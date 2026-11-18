@@ -37,8 +37,12 @@ typedef _IosDevices = ({
 
 final _iosDevicesProvider =
     StateNotifierProvider<_IosDevicesNotifier, _IosDevices>(
-      (_) => _IosDevicesNotifier(),
+      (ref) => _IosDevicesNotifier(ref.read(iosNfcHandoffProvider)),
     );
+
+/// Application state read in the same NFC tap that switched the displayed
+/// key, keyed by the new key's path. Only the latest switch is kept.
+final iosNfcHandoffProvider = Provider<Map<DevicePath, String>>((ref) => {});
 
 final iosYubikeyProvider = Provider<AsyncValue<YubiKeyData>>((ref) {
   final devices = ref.watch(_iosDevicesProvider);
@@ -47,8 +51,9 @@ final iosYubikeyProvider = Provider<AsyncValue<YubiKeyData>>((ref) {
 
 class _IosDevicesNotifier extends StateNotifier<_IosDevices> {
   late final StreamSubscription _sub;
+  final Map<DevicePath, String> _handoff;
 
-  _IosDevicesNotifier()
+  _IosDevicesNotifier(this._handoff)
     : super((
         wired: const AsyncLoading(),
         nfc: const AsyncLoading(),
@@ -88,6 +93,13 @@ class _IosDevicesNotifier extends StateNotifier<_IosDevices> {
       final snapshot = _deepCast(event) as Map<String, dynamic>;
       final wired = _decodeSlot(snapshot['wired'], Transport.usb);
       final nfc = _decodeSlot(snapshot['nfc'], Transport.nfc);
+      _handoff.clear();
+      if ((snapshot['oath'], nfc.value) case (
+        final String oath,
+        final YubiKeyData data,
+      )) {
+        _handoff[data.node.path] = oath;
+      }
       var selected = state.selected;
       if (snapshot['scanned_nfc'] == true && nfc.hasValue) {
         selected = Transport.nfc;

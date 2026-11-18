@@ -49,9 +49,13 @@ class _Snapshot {
 
 /// Whether the user has asked to read OATH over NFC for a device.
 ///
-/// NFC reads are only started by the user, never automatically.
+/// NFC reads are only started by the user, never automatically. A key shown
+/// by tapping it on Accounts already has its OATH state.
 final iosOathNfcReadRequestedProvider = StateProvider.autoDispose
-    .family<bool, DevicePath>((ref, _) => false);
+    .family<bool, DevicePath>(
+      (ref, devicePath) =>
+          ref.read(iosNfcHandoffProvider).containsKey(devicePath),
+    );
 
 final _sessionProvider = AsyncNotifierProvider.autoDispose
     .family<_IosOathSession, _Snapshot, DevicePath>(
@@ -118,7 +122,10 @@ class _IosOathSession extends AsyncNotifier<_Snapshot> {
         // Stay loading until the user starts an NFC read.
         return await Completer<_Snapshot>().future;
       }
-      final snapshot = await _call('get');
+      final handoff = ref.read(iosNfcHandoffProvider).remove(devicePath);
+      final snapshot = handoff != null
+          ? _Snapshot.fromJson(jsonDecode(handoff) as Map<String, dynamic>)
+          : await _call('get');
       if (ref.mounted && generation == _generation) {
         _scheduleRefresh(snapshot);
       }
@@ -156,7 +163,10 @@ class _IosOathSession extends AsyncNotifier<_Snapshot> {
       }
       return _Snapshot.fromJson(jsonDecode(response) as Map<String, dynamic>);
     } on PlatformException catch (error) {
-      if (error.code == 'cancelled') throw CancellationException();
+      // A different key was tapped and is now displayed with its own state.
+      if (error.code == 'cancelled' || error.code == 'device_switched') {
+        throw CancellationException();
+      }
       throw error.decode();
     }
   }

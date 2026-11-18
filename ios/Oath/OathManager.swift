@@ -57,9 +57,10 @@ final class OathManager {
         let controller = controller
         Task {
             do {
-                let json = try await managementManager.runApplicationOperation(
+                let outcome = try await managementManager.runApplicationOperation(
                     expectedDevice: args["expectedDevice"],
-                    capability: .oath
+                    capability: .oath,
+                    acceptOtherNfcDevice: method == "get"
                 ) { connection, scpKeyParams in
                     try await controller.execute(
                         method,
@@ -68,7 +69,19 @@ final class OathManager {
                         scpKeyParams: scpKeyParams
                     )
                 }
-                result(json)
+                if let device = outcome.otherDevice {
+                    // Show the tapped key with the accounts read in the same tap.
+                    managementManager.publishNfcDevice(
+                        device,
+                        extras: outcome.value.map { ["oath": $0] } ?? [:]
+                    )
+                    return result(FlutterError(
+                        code: "device_switched",
+                        message: "A different YubiKey was scanned.",
+                        details: nil
+                    ))
+                }
+                result(outcome.value)
             } catch {
                 let flutterError = Self.flutterError(error)
                 if flutterError.code != "cancelled" {
