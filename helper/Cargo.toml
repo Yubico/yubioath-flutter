@@ -13,7 +13,7 @@ serde_json = "1.0.154"
 log = "0.4"
 sha2 = "0.11"
 hex = "0.4"
-chrono = "0.4"
+jiff = "1"
 x509-cert = { version = "0.2.5", features = ["pem", "builder"] }
 der = { version = "0.7", features = ["pem"] }
 pkcs8 = { version = "0.10.2", features = ["encryption", "pem"] }
