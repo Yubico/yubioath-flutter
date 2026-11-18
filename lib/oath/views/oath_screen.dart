@@ -191,6 +191,17 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
     Future<void> onFileDropped(File file) async {
       final qrScanner = ref.read(qrScannerProvider);
       if (qrScanner != null) {
+        var oathState = widget.oathState;
+        if (isDesktop) {
+          // Files can be dropped while the window is inactive, when the
+          // YubiKey may have locked again. Check first, so the user is asked
+          // for the password instead of filling in an account that can't be
+          // saved. A locked state replaces this view with the unlock form.
+          oathState = await ref.refresh(
+            oathStateProvider(widget.devicePath).future,
+          );
+          if (!context.mounted || oathState.locked) return;
+        }
         final withContext = ref.read(withContextProvider);
         final qrData = await handleQrFile(
           file,
@@ -206,7 +217,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
               credentials,
               qrData,
               widget.devicePath,
-              widget.oathState,
+              oathState,
               l10n,
             );
           });
