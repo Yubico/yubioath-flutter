@@ -70,7 +70,7 @@ Future<bool> _authIfNeeded(
   PivState pivState,
 ) async {
   if (pivState.needsAuth) {
-    if (pivState.protectedKey &&
+    if (pivState.storedKey &&
         pivState.metadata?.pinMetadata.defaultValue == true) {
       return await ref
               .read(pivStateProvider(devicePath).notifier)
@@ -79,7 +79,7 @@ Future<bool> _authIfNeeded(
     }
     return await showBlurDialog(
           context: context,
-          builder: (context) => pivState.protectedKey
+          builder: (context) => pivState.storedKey
               ? PinDialog(devicePath, pivState)
               : AuthenticationDialog(devicePath, pivState),
         ) ??
@@ -119,7 +119,7 @@ class PivActions extends ConsumerWidget {
               }
               // Verify PIN, unless already done above
               // TODO: Avoid asking for PIN if not needed?
-              if (!pivState.protectedKey) {
+              if (!pivState.storedKey) {
                 bool verified;
                 if (pivState.metadata?.pinMetadata.defaultValue == true) {
                   verified =
@@ -172,30 +172,16 @@ class PivActions extends ConsumerWidget {
                         ? 'public-key'
                         : generateType.name;
                     String fileName = '$typeName-${intent.slot.slot.hexId}';
-                    // Needed to avoid adding double extensions on MacOS
-                    if (!(Platform.isMacOS &&
-                        generateType == GenerateType.csr)) {
-                      fileName += '.$fileExt';
-                    }
-                    String? filePath = await FilePicker.platform.saveFile(
+                    fileName += '.$fileExt';
+                    await FilePicker.saveFile(
                       dialogTitle: title,
                       fileName: fileName,
-                      allowedExtensions: [fileExt],
-                      type: FileType.custom,
-                      bytes: isAndroid
-                          ? Uint8List.fromList(utf8.encode(data!))
-                          : null,
-                      lockParentWindow: true,
+                      bytes: Uint8List.fromList(utf8.encode(data!)),
+                      windowsOptions: const WindowsOptions(
+                        lockParentWindow: true,
+                      ),
+                      linuxOptions: const LinuxOptions(lockParentWindow: true),
                     );
-                    if (!isAndroid && filePath != null) {
-                      // Windows only: Append extension if missing
-                      if (Platform.isWindows &&
-                          !filePath.toLowerCase().endsWith('.$fileExt')) {
-                        filePath += '.$fileExt';
-                      }
-                      final file = File(filePath);
-                      await file.writeAsString(data!, flush: true);
-                    }
                   }
                 }
 
@@ -218,15 +204,15 @@ class PivActions extends ConsumerWidget {
 
               final picked = await withContext((context) async {
                 final l10n = AppLocalizations.of(context);
-                return await FilePicker.platform.pickFiles(
+                return await FilePicker.pickFile(
                   allowedExtensions: ['pem', 'der', 'pfx', 'p12', 'key', 'crt'],
                   type: FileType.custom,
-                  allowMultiple: false,
-                  lockParentWindow: true,
+                  windowsOptions: const WindowsOptions(lockParentWindow: true),
+                  linuxOptions: const LinuxOptions(lockParentWindow: true),
                   dialogTitle: l10n.l_select_import_file,
                 );
               });
-              if (picked == null || picked.files.isEmpty) {
+              if (picked == null) {
                 return false;
               }
 
@@ -238,7 +224,12 @@ class PivActions extends ConsumerWidget {
                         devicePath,
                         pivState,
                         intent.slot,
-                        File(picked.paths.first!),
+                        File(
+                          picked.path ??
+                              (throw StateError(
+                                'Selected PIV file has no path',
+                              )),
+                        ),
                       ),
                     ) ??
                     false,
@@ -283,31 +274,18 @@ class PivActions extends ConsumerWidget {
               }
 
               final fileExt = generateType.getFileExtension();
-              String? filePath = await withContext((context) async {
-                return await FilePicker.platform.saveFile(
+              final saved = await withContext((context) async {
+                return await FilePicker.saveFile(
                   dialogTitle: title,
                   fileName: '$typeName-${intent.slot.slot.hexId}.$fileExt',
-                  allowedExtensions: [fileExt],
-                  type: FileType.custom,
-                  bytes: isAndroid
-                      ? Uint8List.fromList(utf8.encode(data))
-                      : null,
-                  lockParentWindow: true,
+                  bytes: Uint8List.fromList(utf8.encode(data)),
+                  windowsOptions: const WindowsOptions(lockParentWindow: true),
+                  linuxOptions: const LinuxOptions(lockParentWindow: true),
                 );
               });
 
-              if (filePath == null) {
+              if (saved == null) {
                 return false;
-              }
-
-              if (!isAndroid) {
-                // Windows only: Append extension if missing
-                if (Platform.isWindows &&
-                    !filePath.toLowerCase().endsWith('.$fileExt')) {
-                  filePath += '.$fileExt';
-                }
-                final file = File(filePath);
-                await file.writeAsString(data, flush: true);
               }
 
               await withContext((context) async {
@@ -406,7 +384,7 @@ List<ActionItem> buildSlotActions(
   final pinIsBlocked = pivState.pinAttempts == 0;
   final defaultPin = pivState.metadata?.pinMetadata.defaultValue == true;
   final requiresPinAuth =
-      pivState.needsAuth && pivState.protectedKey && !defaultPin;
+      pivState.needsAuth && pivState.storedKey && !defaultPin;
   return [
     if (!slot.slot.isRetired) ...[
       ActionItem(
@@ -418,7 +396,7 @@ List<ActionItem> buildSlotActions(
         subtitle: l10n.l_generate_desc,
         intent:
             (pinIsBlocked &&
-                (requiresPinAuth || (!pivState.protectedKey && !defaultPin)))
+                (requiresPinAuth || (!pivState.storedKey && !defaultPin)))
             ? null
             : GenerateIntent(slot),
       ),

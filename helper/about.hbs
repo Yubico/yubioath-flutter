@@ -1,0 +1,11 @@
+{{#each licenses}}
+==LICENSE_START==
+{{{name}}}
+--PACKAGES--
+{{#each used_by}}
+{{crate.name}}
+{{/each}}
+--TEXT--
+{{{text}}}
+==LICENSE_END==
+{{/each}}

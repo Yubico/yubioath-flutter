@@ -215,17 +215,20 @@ class _ImportActionChip extends ConsumerWidget {
 
   void _importAction(BuildContext context, WidgetRef ref) async {
     final l10n = AppLocalizations.of(context);
-    final result = await FilePicker.platform.pickFiles(
+    final result = await FilePicker.pickFile(
       allowedExtensions: ['zip'],
       type: FileType.custom,
-      allowMultiple: false,
-      lockParentWindow: true,
+      windowsOptions: const WindowsOptions(lockParentWindow: true),
+      linuxOptions: const LinuxOptions(lockParentWindow: true),
       dialogTitle: l10n.s_choose_icon_pack,
     );
-    if (result != null && result.files.isNotEmpty) {
+    if (result != null) {
       final importStatus = await ref
           .read(iconPackProvider.notifier)
-          .importPack(l10n, result.paths.first!);
+          .importPack(
+            l10n,
+            result.path ?? (throw StateError('Selected icon pack has no path')),
+          );
       await ref.read(withContextProvider)((context) async {
         if (importStatus) {
           showMessage(context, l10n.l_icon_pack_imported);

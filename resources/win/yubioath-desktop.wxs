@@ -1,11 +1,17 @@
 <?xml version="1.0"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
 	xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
-  <?define ProductVersion="7.4.2" ?>
+  <?define ProductVersion="7.5.0" ?>
   <?define ProductName="Yubico Authenticator" ?>
+  <?ifndef PackagePlatform ?>
+    <?define PackagePlatform="x64" ?>
+  <?endif ?>
+  <?ifndef PackageInstallerVersion ?>
+    <?define PackageInstallerVersion="301" ?>
+  <?endif ?>
 
    <Product Id="*" UpgradeCode="fcbafc57-aaaa-47b8-b861-20bda48cd4f6" Name="$(var.ProductName)" Version="$(var.ProductVersion)" Manufacturer="Yubico AB" Language="1033">
-      <Package InstallerVersion="301" Compressed="yes" InstallScope="perMachine" Platform="x64" Description="$(var.ProductName) $(var.ProductVersion)" />
+      <Package InstallerVersion="$(var.PackageInstallerVersion)" Compressed="yes" InstallScope="perMachine" Platform="$(var.PackagePlatform)" Description="$(var.ProductName) $(var.ProductVersion)" />
       <Media Id="1" Cabinet="yubioathdesktop.cab" EmbedCab="yes"/>
 
       <WixVariable Id="WixUIDialogBmp" Value="resources\icons\yubico-msi-background.png" />
@@ -16,6 +22,12 @@
       <Property Id="ARPPRODUCTICON" Value="icon.ico" />
 
       <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
+      <Property Id="YKMANSERVICEARCH">
+        <RegistrySearch Id="ServiceArchitecture" Root="HKLM" Key="Software\Yubico\YubiKey Manager Service" Name="Architecture" Type="raw" Win64="yes" />
+      </Property>
+      <Condition Message="The installed YubiKey Manager Service has a different architecture. Use installers of the same architecture for YubiKey Manager and Yubico Authenticator.">
+        Installed OR NOT YKMANSERVICEARCH OR YKMANSERVICEARCH = "$(var.PackagePlatform)"
+      </Condition>
 
 	  <Property Id="PREVIOUSVERSIONSINSTALLED" Secure="yes" />
 	  <Upgrade Id="fcbafc57-aaaa-47b8-b861-20bda48cd4f6">  
@@ -72,8 +84,13 @@
         </Component>
       </DirectoryRef>
 
+      <DirectoryRef Id="TARGETDIR">
+        <Merge Id="YkmanService" SourceFile="$(var.ServiceModule)" DiskId="1" Language="1033" />
+      </DirectoryRef>
+
       <Feature Id="DefaultFeature" Level="1">
          <ComponentGroupRef Id="ApplicationFiles"/>
+         <MergeRef Id="YkmanService"/>
       </Feature>
 
       <Feature Id="MainApplication" Title="Main Application" Level="1">

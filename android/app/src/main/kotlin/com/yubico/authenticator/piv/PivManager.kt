@@ -17,6 +17,7 @@
 package com.yubico.authenticator.piv
 
 import com.yubico.authenticator.AppContextManager
+import com.yubico.authenticator.CredentialCache
 import com.yubico.authenticator.OperationContext
 import com.yubico.authenticator.device.DeviceManager
 import com.yubico.authenticator.piv.KeyMaterialParser.getLeafCertificates
@@ -79,8 +80,26 @@ class PivManager(
     private val pivViewModel: PivViewModel
 ) : AppContextManager(deviceManager) {
 
-    private val managementKeyStorage: MutableMap<String, ByteArray> = mutableMapOf()
-    private val pinStorage: MutableMap<String, CharArray> = mutableMapOf()
+    private val managementKeyStorage = CredentialCache<String, ByteArray>(
+        copy = { it.clone() },
+        clearValue = { it.fill(0) },
+        onExpired = { pivViewModel.expireAuthentication(it) }
+    )
+    private val pinStorage = CredentialCache<String, CharArray>(
+        copy = { it.clone() },
+        clearValue = { it.fill(0.toChar()) },
+        onExpired = {
+            if (pivmanData?.hasStoredKey == true) {
+                pivViewModel.expireAuthentication(it)
+            }
+        }
+    )
+
+    fun clearCachedCredentials() {
+        pinStorage.clear()
+        managementKeyStorage.clear()
+        pivViewModel.clearState()
+    }
 
     private val connectionHelper = PivConnectionHelper(deviceManager)
 
@@ -332,7 +351,6 @@ class PivManager(
         return PivState(
             piv,
             authenticated = false,
-            derivedKey = pivmanData?.hasDerivedKey ?: false,
             storedKey = pivmanData?.hasStoredKey ?: false,
             pinAttempts = pinAttempts,
             supportsBio = supportsBio,
@@ -370,23 +388,15 @@ class PivManager(
     private fun doAuthenticate(piv: PivSession, serial: String) = try {
         var authenticated = false
 
-        val hasProtectedKey = pivmanData?.hasProtectedKey ?: false
-
-        if (hasProtectedKey) {
+        if (pivmanData?.hasStoredKey == true) {
             // cannot use key from managementKeyStorage
             // has to use PIN to get the key from the session
 
-            val pin = pinStorage[serial] ?: defaultPin
+            val pin = pinStorage[serial]
+                ?: throw ApduException(byteArrayOf(), SW.SECURITY_CONDITION_NOT_SATISFIED)
             piv.verifyPin(pin)
 
-            val key = if (pivmanData?.hasDerivedKey ?: false) {
-                PivmanUtils.deriveManagementKey(pin, pivmanData?.salt!!)
-            } else if (pivmanData?.hasStoredKey ?: false) {
-                val pivmanProtectedData = PivmanUtils.getPivmanProtectedData(piv)
-                pivmanProtectedData.key
-            } else {
-                null
-            }
+            val key = PivmanUtils.getPivmanProtectedData(piv).key
 
             key?.let { key ->
                 try {
@@ -440,9 +450,7 @@ class PivManager(
         pinStorage[serial]?.let { pin ->
             piv.verifyPin(pin)
 
-            val key = if (pivmanData?.hasDerivedKey ?: false) {
-                PivmanUtils.deriveManagementKey(pin, pivmanData?.salt!!)
-            } else if (pivmanData?.hasStoredKey ?: false) {
+            val key = if (pivmanData?.hasStoredKey == true) {
                 val pivmanProtectedData = PivmanUtils.getPivmanProtectedData(piv)
                 pivmanProtectedData.key
             } else {
@@ -476,7 +484,7 @@ class PivManager(
         try {
             val piv = getPivSession(it)
             val serial = pivViewModel.currentSerial()
-            pinStorage[serial] = pin.clone()
+            pinStorage[serial] = pin
             handlePinPukErrors { doVerifyPin(piv, serial) }
         } finally {
             Arrays.fill(pin, 0.toChar())
@@ -490,7 +498,7 @@ class PivManager(
         ) {
             try {
                 val piv = getPivSession(it)
-                handlePinPukErrors { PivmanUtils.pivmanChangePin(piv, pin, newPin) }
+                handlePinPukErrors { piv.changePin(pin, newPin) }
             } finally {
                 Arrays.fill(newPin, 0.toChar())
                 Arrays.fill(pin, 0.toChar())
@@ -936,10 +944,7 @@ class PivManager(
         }
 
     override fun onDisconnected() {
-        // Zero out PINs before clearing storage
-        pinStorage.values.forEach { pin -> Arrays.fill(pin, 0.toChar()) }
-        pinStorage.clear()
-        managementKeyStorage.clear()
+        clearCachedCredentials()
         pivViewModel.setSerial(null)
         pivViewModel.updateSlots(emptyList())
         pivmanData = null

@@ -159,9 +159,9 @@ class _ResponsiveDialogState extends State<ResponsiveDialog> {
       child: Theme(
         data: Theme.of(context).copyWith(
           chipTheme: Theme.of(context).chipTheme.copyWith(
-            backgroundColor: Theme.of(
-              context,
-            ).colorScheme.surfaceContainerHighest,
+            backgroundColor: Theme.of(context)
+                .colorScheme
+                .surfaceContainerHighest,
           ),
         ),
         child: AlertDialog(

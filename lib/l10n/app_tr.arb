@@ -162,10 +162,6 @@
     "@_yubikey_selection": {},
 
     "s_select_to_scan": "Taramak için seçin",
-    "s_hide_reader": "Okuyucuyu gizle",
-    "s_show_hidden_readers": "Gizli okuyucuları göster",
-    "s_toggle_readers": "Okuyucuları aç/kapat",
-    "l_toggle_readers_desc": "Okuyucuları göster veya gizle",
     "s_sn_serial": "S/N: {serial}",
     "@s_sn_serial": {
         "placeholders": {
@@ -210,6 +206,8 @@
     "l_replace_yk_on_reader": "YubiKey'inizi NFC okuyucunun arkasına yerleştirin",
     "l_remove_yk_from_reader": "YubiKey'inizi NFC okuyucudan kaldırın",
     "p_try_reinsert_yk": "YubiKey'inizi çıkarıp ardından yeniden takmayı deneyin.",
+    "l_reinsert_yk_nfc_required": null,
+    "p_reinsert_yk_nfc_required": null,
     "s_touch_required": "Dokunma gerekli",
     "l_touch_button_now": "Şimdi YubiKey'inizdeki düğmeye dokunun",
     "l_long_touch_button_now": "YubiKey'inizdeki düğmeyi 5 saniye basılı tutun",
@@ -858,6 +856,7 @@
     "s_private_id": "Özel Kimlik",
     "s_use_serial": "Seri numarasını kullan",
     "l_select_file": "Dosya seçin",
+    "l_create_export_file": null,
     "l_no_export_file": "Dışa aktarma dosyası yok",
     "s_no_export": "Dışa aktarma yok",
     "s_export": "Dışa aktar",
@@ -871,6 +870,8 @@
         }
     },
     "s_keyboard_layout": null,
+    "s_keyboard_variant": null,
+    "s_keyboard_variant_default": null,
     "l_keyboard_layout": "Klavye {layout}",
     "@l_keyboard_layout": {
         "placeholders": {

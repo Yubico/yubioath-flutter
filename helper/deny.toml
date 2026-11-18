@@ -1,0 +1,39 @@
+# Check each target separately using .github/scripts/cargo_deny.py.
+# Combining targets includes dependencies from incompatible platform branches.
+
+[advisories]
+version = 2
+ignore = [
+    # Retain the SDK's exception for RSA used in local PKCS#12 operations.
+    { id = "RUSTSEC-2023-0071", reason = "no patch available; only used for local PKCS#12 operations" },
+]
+
+[licenses]
+version = 2
+allow = [
+    "MIT",
+    "Apache-2.0",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "Unicode-3.0",
+    "Zlib",
+    "0BSD",
+    "MPL-2.0",
+    "Unlicense",
+    "Apache-2.0 WITH LLVM-exception",
+    "ISC",
+]
+confidence-threshold = 0.8
+
+[licenses.private]
+ignore = true
+
+[bans]
+multiple-versions = "warn"
+wildcards = "allow"
+highlight = "lowest-version"
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]

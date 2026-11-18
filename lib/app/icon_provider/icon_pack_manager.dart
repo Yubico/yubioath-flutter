@@ -71,9 +71,9 @@ class IconPackManager extends StateNotifier<AsyncValue<IconPack?>> {
           (icon) => IconPackIconData(
             filename: icon['filename'],
             category: icon['category'],
-            issuer: List<String>.from(
-              icon['issuer'],
-            ).map((e) => e.toUpperCase()).toList(growable: false),
+            issuer: List<String>.from(icon['issuer'])
+                .map((e) => e.toUpperCase())
+                .toList(growable: false),
           ),
         ),
       );
@@ -132,27 +132,28 @@ class IconPackManager extends StateNotifier<AsyncValue<IconPack?>> {
 
     final unpackDirectory = Directory(join(tempDirectory.path, 'unpack'));
 
-    Archive archive;
     try {
-      archive = ZipDecoder().decodeBytes(bytes, verify: true);
-    } on Exception catch (_) {
-      _log.error('File is not an icon pack: zip decoding failed');
-      _lastError = l10n.l_invalid_icon_pack;
-      state = AsyncValue.error('File is not an icon pack', StackTrace.current);
-      return false;
-    }
-
-    for (final file in archive) {
-      final filename = file.name;
-      if (file.size > 0) {
-        final data = file.content as List<int>;
-        final extractedFile = File(
-          join(unpackDirectory.path, getLocalIconFileName(filename)),
-        );
-        _log.debug('Writing file: ${extractedFile.path} (size: ${file.size})');
-        final createdFile = await extractedFile.create(recursive: true);
-        await createdFile.writeAsBytes(data);
+      final archive = ZipDecoder().decodeBytes(bytes, verify: true);
+      for (final file in archive) {
+        final filename = file.name;
+        if (file.size > 0) {
+          final data = file.content as List<int>;
+          final extractedFile = File(
+            join(unpackDirectory.path, getLocalIconFileName(filename)),
+          );
+          _log.debug(
+            'Writing file: ${extractedFile.path} (size: ${file.size})',
+          );
+          final createdFile = await extractedFile.create(recursive: true);
+          await createdFile.writeAsBytes(data);
+        }
       }
+    } on FormatException catch (error, stackTrace) {
+      _log.error('File is not an icon pack: ZIP extraction failed', error);
+      _lastError = l10n.l_invalid_icon_pack;
+      state = AsyncValue.error('File is not an icon pack', stackTrace);
+      await _deleteDirectory(tempDirectory);
+      return false;
     }
 
     // check that there is pack.json

@@ -21,11 +21,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
-import '../../desktop/state.dart';
 import '../../generated/l10n/app_localizations.dart';
-import '../message.dart';
-import '../state.dart';
-import 'keys.dart' as keys;
 
 class ElevateFidoButtons extends ConsumerWidget {
   const ElevateFidoButtons({super.key});
@@ -37,30 +33,6 @@ class ElevateFidoButtons extends ConsumerWidget {
       spacing: 8,
       runSpacing: 4,
       children: [
-        FilledButton.icon(
-          key: keys.elevateFidoButton,
-          label: Text(l10n.s_request_access),
-          icon: const Icon(Symbols.lock_open),
-          onPressed: () async {
-            final closeMessage = showMessage(
-              context,
-              l10n.l_elevating_permissions,
-              duration: const Duration(seconds: 30),
-            );
-            try {
-              if (await ref.read(rpcProvider).requireValue.elevate()) {
-                ref.invalidate(rpcStateProvider);
-              } else {
-                await ref.read(withContextProvider)(
-                  (context) async =>
-                      showMessage(context, l10n.s_permission_denied),
-                );
-              }
-            } finally {
-              closeMessage();
-            }
-          },
-        ),
         OutlinedButton.icon(
           label: Text(l10n.s_open_windows_settings),
           icon: const Icon(Symbols.open_in_new),

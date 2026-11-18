@@ -119,3 +119,42 @@ abstract class SlotConfiguration with _$SlotConfiguration {
   factory SlotConfiguration.fromJson(Map<String, dynamic> json) =>
       _$SlotConfigurationFromJson(json);
 }
+
+/// A keyboard layout family returned by the helper's `keyboard_layouts` action.
+///
+/// [characters] are the characters allowed by the base layout, while [variants]
+/// maps each variant name (e.g. `dvorak`) to its own allowed character set.
+class KeyboardLayout {
+  final String name;
+  final String description;
+  final List<String> characters;
+  final Map<String, List<String>> variants;
+
+  const KeyboardLayout({
+    required this.name,
+    required this.description,
+    required this.characters,
+    required this.variants,
+  });
+
+  factory KeyboardLayout.fromJson(String name, Map<String, dynamic> json) =>
+      KeyboardLayout(
+        name: name,
+        description: json['description'] as String,
+        characters: (json['characters'] as List).cast<String>(),
+        variants: (json['variants'] as Map<String, dynamic>).map(
+          (key, value) => MapEntry(key, (value as List).cast<String>()),
+        ),
+      );
+
+  /// The allowed characters for the given [variant] (null/empty = base layout).
+  List<String> charactersFor(String? variant) =>
+      (variant == null || variant.isEmpty)
+      ? characters
+      : (variants[variant] ?? characters);
+
+  /// The helper layout selector string for the given [variant], e.g. `de` or
+  /// `de:dvorak`.
+  String selector(String? variant) =>
+      (variant == null || variant.isEmpty) ? name : '$name:$variant';
+}

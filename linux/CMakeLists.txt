@@ -76,6 +76,12 @@ set_target_properties(${BINARY_NAME}
 # them to the application.
 include(flutter/generated_plugins.cmake)
 
+# cnativeapi 0.3 uses the GLib 2.74 name for the zero-valued application flag.
+pkg_check_modules(GLIB REQUIRED glib-2.0)
+if(GLIB_VERSION VERSION_LESS "2.74" AND TARGET cnativeapi)
+  target_compile_definitions(cnativeapi PRIVATE
+    G_APPLICATION_DEFAULT_FLAGS=G_APPLICATION_FLAGS_NONE)
+endif()
 
 # === Installation ===
 # By default, "installing" just makes a relocatable bundle in the build

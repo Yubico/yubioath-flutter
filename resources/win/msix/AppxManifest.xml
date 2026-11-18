@@ -2,15 +2,16 @@
 <Package
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:desktop6="http://schemas.microsoft.com/appx/manifest/desktop/windows10/6"
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
-  IgnorableNamespaces="uap rescap">
+  IgnorableNamespaces="uap desktop6 rescap">
 
-  <!-- Version is set by CI (build-msix job in .github/workflows/windows.yml) -->
+  <!-- Version and architecture are set by CI (build-msix jobs). -->
   <Identity
     Name="YubicoAB.YubicoAuthenticator"
     Publisher="CN=3E612EC1-46FB-46C1-ADB7-25B13FB02B10"
     Version="$VERSION$"
-    ProcessorArchitecture="x64" />
+    ProcessorArchitecture="$ARCH$" />
 
   <Properties>
     <DisplayName>Yubico Authenticator</DisplayName>
@@ -24,11 +25,13 @@
   </Resources>
 
   <Dependencies>
-    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.26100.0" />
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.19041.0" MaxVersionTested="10.0.26100.0" />
   </Dependencies>
 
   <Capabilities>
     <rescap:Capability Name="runFullTrust" />
+    <rescap:Capability Name="packagedServices" />
+    <rescap:Capability Name="localSystemServices" />
   </Capabilities>
 
   <Applications>
@@ -44,6 +47,16 @@
           Square310x310Logo="Assets\AUTHENTICATOR-Square310x310Logo.png"
           Square71x71Logo="Assets\AUTHENTICATOR-Square71x71Logo.png" />
       </uap:VisualElements>
+      <Extensions>
+        <desktop6:Extension Category="windows.service"
+                            Executable="ykman-svc.exe"
+                            EntryPoint="Windows.FullTrustApplication">
+          <desktop6:Service Name="yubico-authenticator-svc"
+                            StartupType="auto"
+                            StartAccount="localSystem"
+                            Arguments="run --authenticator-msix" />
+        </desktop6:Extension>
+      </Extensions>
     </Application>
   </Applications>
 </Package>

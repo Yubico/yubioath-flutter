@@ -32,9 +32,18 @@ class DeviceAvatar extends StatelessWidget {
   final double? radius;
   const DeviceAvatar({super.key, required this.child, this.badge, this.radius});
 
+  factory DeviceAvatar.noDevice({double? radius}) => DeviceAvatar(
+    radius: radius,
+    key: noDeviceAvatar,
+    child: const Padding(
+      padding: EdgeInsets.all(8.0),
+      child: Icon(Symbols.security_key),
+    ),
+  );
+
   factory DeviceAvatar.yubiKeyData(YubiKeyData data, {double? radius}) =>
       DeviceAvatar(
-        badge: isDesktop && data.node is NfcReaderNode
+        badge: isDesktop && data.node.transport == Transport.nfc
             ? const Icon(Symbols.contactless)
             : null,
         radius: radius,
@@ -48,34 +57,26 @@ class DeviceAvatar extends StatelessWidget {
         ),
       );
 
-  factory DeviceAvatar.deviceNode(DeviceNode node, {double? radius}) =>
-      switch (node) {
-        UsbYubiKeyNode() =>
-          node.info != null
-              ? DeviceAvatar.yubiKeyData(
-                  YubiKeyData(node, node.name, node.info!),
-                  radius: radius,
-                )
-              : DeviceAvatar(
-                  radius: radius,
-                  child: const CircleAvatar(
-                    backgroundColor: Colors.transparent,
-                    child: ProductImage(
-                      name: '',
-                      formFactor: FormFactor.unknown,
-                      isNfc: false,
-                    ),
-                  ),
-                ),
-
-        NfcReaderNode() => DeviceAvatar(
-          radius: radius,
-          child: const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Icon(Symbols.contactless),
-          ),
+  factory DeviceAvatar.deviceNode(DeviceNode node, {double? radius}) {
+    final ykNode = node as YubiKeyDeviceNode;
+    if (ykNode.info != null) {
+      return DeviceAvatar.yubiKeyData(
+        YubiKeyData(node, ykNode.name, ykNode.info!),
+        radius: radius,
+      );
+    }
+    return DeviceAvatar(
+      radius: radius,
+      child: const CircleAvatar(
+        backgroundColor: Colors.transparent,
+        child: ProductImage(
+          name: '',
+          formFactor: FormFactor.unknown,
+          isNfc: false,
         ),
-      };
+      ),
+    );
+  }
 
   factory DeviceAvatar.currentDevice(WidgetRef ref, {double? radius}) {
     final deviceNode = ref.watch(currentDeviceProvider);
@@ -87,14 +88,7 @@ class DeviceAvatar extends StatelessWidget {
             orElse: () => DeviceAvatar.deviceNode(deviceNode, radius: radius),
           );
     } else {
-      return DeviceAvatar(
-        radius: radius,
-        key: noDeviceAvatar,
-        child: const Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Icon(Symbols.usb),
-        ),
-      );
+      return DeviceAvatar.noDevice(radius: radius);
     }
   }
 

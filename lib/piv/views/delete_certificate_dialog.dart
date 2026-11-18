@@ -121,9 +121,8 @@ class _DeleteCertificateDialogState
                   : _deleteCertificate
                   ? l10n.p_warning_delete_certificate
                   : l10n.p_warning_delete_key,
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(fontWeight: .w700),
+              style: Theme.of(context).textTheme.bodyMedium
+                  ?.copyWith(fontWeight: .w700),
             ),
             const SizedBox(height: 8.0),
             Text(

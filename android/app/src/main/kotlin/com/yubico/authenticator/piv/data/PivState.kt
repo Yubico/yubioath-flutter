@@ -27,8 +27,6 @@ import kotlinx.serialization.Serializable
 data class PivState(
     val version: Version,
     val authenticated: Boolean,
-    @SerialName("derived_key")
-    val derivedKey: Boolean,
     @SerialName("stored_key")
     val storedKey: Boolean,
     @SerialName("pin_attempts")
@@ -43,7 +41,6 @@ data class PivState(
     constructor(
         piv: YubiKitPivSession,
         authenticated: Boolean,
-        derivedKey: Boolean,
         storedKey: Boolean,
         pinAttempts: Int,
         supportsBio: Boolean,
@@ -57,7 +54,6 @@ data class PivState(
             piv.version.micro
         ),
         authenticated,
-        derivedKey,
         storedKey,
         pinAttempts,
         supportsBio,

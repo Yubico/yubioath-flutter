@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Launch screen before Android 12, laid out like the system splash screen of Android 12+:
+     the launcher icon, at the 160dp visible size, on the surface colour. -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/ic_launcher_background" />
+    <item android:drawable="@color/splash_background" />
     <item
-        android:drawable="@drawable/ic_launcher_foreground"
+        android:drawable="@mipmap/ic_launcher"
         android:gravity="center"
-        android:left="26dp"
-        android:height="190dp"
-        android:width="190dp"/>
+        android:height="160dp"
+        android:width="160dp"/>
 </layer-list>

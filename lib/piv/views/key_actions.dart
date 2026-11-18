@@ -133,7 +133,7 @@ Widget pivBuildActions(
             title: l10n.s_management_key,
             subtitle: usingDefaultMgmtKey
                 ? l10n.l_warning_default_key
-                : (pivState.protectedKey
+                : (pivState.storedKey
                       ? l10n.l_pin_protected_key
                       : l10n.l_change_management_key),
             icon: const Icon(Symbols.key),

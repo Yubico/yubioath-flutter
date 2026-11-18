@@ -162,10 +162,6 @@
     "@_yubikey_selection": {},
 
     "s_select_to_scan": "Виберіть для сканування",
-    "s_hide_reader": "Приховати читача",
-    "s_show_hidden_readers": "Показати прихованих читачів",
-    "s_toggle_readers": "Перемикання читачів",
-    "l_toggle_readers_desc": "Показати або приховати читачів",
     "s_sn_serial": "Серійний номер:{serial}",
     "@s_sn_serial": {
         "placeholders": {
@@ -210,6 +206,8 @@
     "l_replace_yk_on_reader": "Поверніть свій YubiKey на зчитувач",
     "l_remove_yk_from_reader": "Вийміть свій YubiKey зі зчитувача NFC",
     "p_try_reinsert_yk": "Спробуйте вийняти та знову вставити свій YubiKey.",
+    "l_reinsert_yk_nfc_required": null,
+    "p_reinsert_yk_nfc_required": null,
     "s_touch_required": "Потрібен дотик",
     "l_touch_button_now": "Натисніть кнопку на вашому YubiKey зараз",
     "l_long_touch_button_now": "Натисніть і утримуйте кнопку на вашому YubiKey протягом 5 секунд",
@@ -858,6 +856,7 @@
     "s_private_id": "Приватне посвідчення особи",
     "s_use_serial": "Використовуйте серійний номер",
     "l_select_file": "Вибрати файл",
+    "l_create_export_file": null,
     "l_no_export_file": "Немає файлу експорту",
     "s_no_export": "Експорт заборонено",
     "s_export": "Експорт",
@@ -871,6 +870,8 @@
         }
     },
     "s_keyboard_layout": null,
+    "s_keyboard_variant": null,
+    "s_keyboard_variant_default": null,
     "l_keyboard_layout": "Розкладка клавіатури {layout}",
     "@l_keyboard_layout": {
         "placeholders": {

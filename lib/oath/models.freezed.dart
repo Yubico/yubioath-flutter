@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'models.dart';
@@ -9,6 +9,7 @@ part of 'models.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -28,16 +29,21 @@ $OathCredentialCopyWith<OathCredential> get copyWith => _$OathCredentialCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is OathCredential&&(identical(other.deviceId, deviceId) || other.deviceId == deviceId)&&(identical(other.id, id) || other.id == id)&&(identical(other.issuer, issuer) || other.issuer == issuer)&&(identical(other.name, name) || other.name == name)&&(identical(other.oathType, oathType) || other.oathType == oathType)&&(identical(other.period, period) || other.period == period)&&(identical(other.touchRequired, touchRequired) || other.touchRequired == touchRequired));
+  final _this = this as OathCredential;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OathCredential&&(identical(other.deviceId, _this.deviceId) || other.deviceId == _this.deviceId)&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.issuer, _this.issuer) || other.issuer == _this.issuer)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.oathType, _this.oathType) || other.oathType == _this.oathType)&&(identical(other.period, _this.period) || other.period == _this.period)&&(identical(other.touchRequired, _this.touchRequired) || other.touchRequired == _this.touchRequired));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,deviceId,id,issuer,name,oathType,period,touchRequired);
+int get hashCode {
+  final _this = this as OathCredential;
+  return Object.hash(runtimeType,_this.deviceId,_this.id,_this.issuer,_this.name,_this.oathType,_this.period,_this.touchRequired);
+}
 
 @override
 String toString() {
-  return 'OathCredential(deviceId: $deviceId, id: $id, issuer: $issuer, name: $name, oathType: $oathType, period: $period, touchRequired: $touchRequired)';
+  final _this = this as OathCredential;
+  return 'OathCredential(deviceId: ${_this.deviceId}, id: ${_this.id}, issuer: ${_this.issuer}, name: ${_this.name}, oathType: ${_this.oathType}, period: ${_this.period}, touchRequired: ${_this.touchRequired})';
 }
 
 
@@ -66,14 +72,14 @@ class _$OathCredentialCopyWithImpl<$Res>
 /// Create a copy of OathCredential
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? deviceId = null,Object? id = null,Object? issuer = freezed,Object? name = null,Object? oathType = null,Object? period = null,Object? touchRequired = null,}) {
-  return _then(_self.copyWith(
-deviceId: null == deviceId ? _self.deviceId : deviceId // ignore: cast_nullable_to_non_nullable
-as String,id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,issuer: freezed == issuer ? _self.issuer : issuer // ignore: cast_nullable_to_non_nullable
-as String?,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,oathType: null == oathType ? _self.oathType : oathType // ignore: cast_nullable_to_non_nullable
-as OathType,period: null == period ? _self.period : period // ignore: cast_nullable_to_non_nullable
-as int,touchRequired: null == touchRequired ? _self.touchRequired : touchRequired // ignore: cast_nullable_to_non_nullable
+  return _then(OathCredential(
+null == deviceId ? _self.deviceId : deviceId // ignore: cast_nullable_to_non_nullable
+as String,null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,freezed == issuer ? _self.issuer : issuer // ignore: cast_nullable_to_non_nullable
+as String?,null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,null == oathType ? _self.oathType : oathType // ignore: cast_nullable_to_non_nullable
+as OathType,null == period ? _self.period : period // ignore: cast_nullable_to_non_nullable
+as int,null == touchRequired ? _self.touchRequired : touchRequired // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }
@@ -239,16 +245,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OathCredential&&(identical(other.deviceId, deviceId) || other.deviceId == deviceId)&&(identical(other.id, id) || other.id == id)&&(identical(other.issuer, issuer) || other.issuer == issuer)&&(identical(other.name, name) || other.name == name)&&(identical(other.oathType, oathType) || other.oathType == oathType)&&(identical(other.period, period) || other.period == period)&&(identical(other.touchRequired, touchRequired) || other.touchRequired == touchRequired));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _OathCredential&&(identical(other.deviceId, deviceId) || other.deviceId == deviceId)&&(identical(other.id, id) || other.id == id)&&(identical(other.issuer, issuer) || other.issuer == issuer)&&(identical(other.name, name) || other.name == name)&&(identical(other.oathType, oathType) || other.oathType == oathType)&&(identical(other.period, period) || other.period == period)&&(identical(other.touchRequired, touchRequired) || other.touchRequired == touchRequired));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,deviceId,id,issuer,name,oathType,period,touchRequired);
+int get hashCode {
+    return Object.hash(runtimeType,deviceId,id,issuer,name,oathType,period,touchRequired);
+}
 
 @override
 String toString() {
-  return 'OathCredential(deviceId: $deviceId, id: $id, issuer: $issuer, name: $name, oathType: $oathType, period: $period, touchRequired: $touchRequired)';
+    return 'OathCredential(deviceId: $deviceId, id: $id, issuer: $issuer, name: $name, oathType: $oathType, period: $period, touchRequired: $touchRequired)';
 }
 
 
@@ -309,16 +317,21 @@ $OathCodeCopyWith<OathCode> get copyWith => _$OathCodeCopyWithImpl<OathCode>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is OathCode&&(identical(other.value, value) || other.value == value)&&(identical(other.validFrom, validFrom) || other.validFrom == validFrom)&&(identical(other.validTo, validTo) || other.validTo == validTo));
+  final _this = this as OathCode;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OathCode&&(identical(other.value, _this.value) || other.value == _this.value)&&(identical(other.validFrom, _this.validFrom) || other.validFrom == _this.validFrom)&&(identical(other.validTo, _this.validTo) || other.validTo == _this.validTo));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,value,validFrom,validTo);
+int get hashCode {
+  final _this = this as OathCode;
+  return Object.hash(runtimeType,_this.value,_this.validFrom,_this.validTo);
+}
 
 @override
 String toString() {
-  return 'OathCode(value: $value, validFrom: $validFrom, validTo: $validTo)';
+  final _this = this as OathCode;
+  return 'OathCode(value: ${_this.value}, validFrom: ${_this.validFrom}, validTo: ${_this.validTo})';
 }
 
 
@@ -347,10 +360,10 @@ class _$OathCodeCopyWithImpl<$Res>
 /// Create a copy of OathCode
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? value = null,Object? validFrom = null,Object? validTo = null,}) {
-  return _then(_self.copyWith(
-value: null == value ? _self.value : value // ignore: cast_nullable_to_non_nullable
-as String,validFrom: null == validFrom ? _self.validFrom : validFrom // ignore: cast_nullable_to_non_nullable
-as int,validTo: null == validTo ? _self.validTo : validTo // ignore: cast_nullable_to_non_nullable
+  return _then(OathCode(
+null == value ? _self.value : value // ignore: cast_nullable_to_non_nullable
+as String,null == validFrom ? _self.validFrom : validFrom // ignore: cast_nullable_to_non_nullable
+as int,null == validTo ? _self.validTo : validTo // ignore: cast_nullable_to_non_nullable
 as int,
   ));
 }
@@ -512,16 +525,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OathCode&&(identical(other.value, value) || other.value == value)&&(identical(other.validFrom, validFrom) || other.validFrom == validFrom)&&(identical(other.validTo, validTo) || other.validTo == validTo));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _OathCode&&(identical(other.value, value) || other.value == value)&&(identical(other.validFrom, validFrom) || other.validFrom == validFrom)&&(identical(other.validTo, validTo) || other.validTo == validTo));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,value,validFrom,validTo);
+int get hashCode {
+    return Object.hash(runtimeType,value,validFrom,validTo);
+}
 
 @override
 String toString() {
-  return 'OathCode(value: $value, validFrom: $validFrom, validTo: $validTo)';
+    return 'OathCode(value: $value, validFrom: $validFrom, validTo: $validTo)';
 }
 
 
@@ -578,16 +593,21 @@ $OathPairCopyWith<OathPair> get copyWith => _$OathPairCopyWithImpl<OathPair>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is OathPair&&(identical(other.credential, credential) || other.credential == credential)&&(identical(other.code, code) || other.code == code));
+  final _this = this as OathPair;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OathPair&&(identical(other.credential, _this.credential) || other.credential == _this.credential)&&(identical(other.code, _this.code) || other.code == _this.code));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,credential,code);
+int get hashCode {
+  final _this = this as OathPair;
+  return Object.hash(runtimeType,_this.credential,_this.code);
+}
 
 @override
 String toString() {
-  return 'OathPair(credential: $credential, code: $code)';
+  final _this = this as OathPair;
+  return 'OathPair(credential: ${_this.credential}, code: ${_this.code})';
 }
 
 
@@ -616,9 +636,9 @@ class _$OathPairCopyWithImpl<$Res>
 /// Create a copy of OathPair
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? credential = null,Object? code = freezed,}) {
-  return _then(_self.copyWith(
-credential: null == credential ? _self.credential : credential // ignore: cast_nullable_to_non_nullable
-as OathCredential,code: freezed == code ? _self.code : code // ignore: cast_nullable_to_non_nullable
+  return _then(OathPair(
+null == credential ? _self.credential : credential // ignore: cast_nullable_to_non_nullable
+as OathCredential,freezed == code ? _self.code : code // ignore: cast_nullable_to_non_nullable
 as OathCode?,
   ));
 }
@@ -800,16 +820,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OathPair&&(identical(other.credential, credential) || other.credential == credential)&&(identical(other.code, code) || other.code == code));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _OathPair&&(identical(other.credential, credential) || other.credential == credential)&&(identical(other.code, code) || other.code == code));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,credential,code);
+int get hashCode {
+    return Object.hash(runtimeType,credential,code);
+}
 
 @override
 String toString() {
-  return 'OathPair(credential: $credential, code: $code)';
+    return 'OathPair(credential: $credential, code: $code)';
 }
 
 
@@ -886,16 +908,21 @@ $OathStateCopyWith<OathState> get copyWith => _$OathStateCopyWithImpl<OathState>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is OathState&&(identical(other.deviceId, deviceId) || other.deviceId == deviceId)&&(identical(other.version, version) || other.version == version)&&(identical(other.hasKey, hasKey) || other.hasKey == hasKey)&&(identical(other.remembered, remembered) || other.remembered == remembered)&&(identical(other.locked, locked) || other.locked == locked)&&(identical(other.keystore, keystore) || other.keystore == keystore));
+  final _this = this as OathState;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OathState&&(identical(other.deviceId, _this.deviceId) || other.deviceId == _this.deviceId)&&(identical(other.version, _this.version) || other.version == _this.version)&&(identical(other.hasKey, _this.hasKey) || other.hasKey == _this.hasKey)&&(identical(other.remembered, _this.remembered) || other.remembered == _this.remembered)&&(identical(other.locked, _this.locked) || other.locked == _this.locked)&&(identical(other.keystore, _this.keystore) || other.keystore == _this.keystore));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,deviceId,version,hasKey,remembered,locked,keystore);
+int get hashCode {
+  final _this = this as OathState;
+  return Object.hash(runtimeType,_this.deviceId,_this.version,_this.hasKey,_this.remembered,_this.locked,_this.keystore);
+}
 
 @override
 String toString() {
-  return 'OathState(deviceId: $deviceId, version: $version, hasKey: $hasKey, remembered: $remembered, locked: $locked, keystore: $keystore)';
+  final _this = this as OathState;
+  return 'OathState(deviceId: ${_this.deviceId}, version: ${_this.version}, hasKey: ${_this.hasKey}, remembered: ${_this.remembered}, locked: ${_this.locked}, keystore: ${_this.keystore})';
 }
 
 
@@ -924,9 +951,9 @@ class _$OathStateCopyWithImpl<$Res>
 /// Create a copy of OathState
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? deviceId = null,Object? version = null,Object? hasKey = null,Object? remembered = null,Object? locked = null,Object? keystore = null,}) {
-  return _then(_self.copyWith(
-deviceId: null == deviceId ? _self.deviceId : deviceId // ignore: cast_nullable_to_non_nullable
-as String,version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
+  return _then(OathState(
+null == deviceId ? _self.deviceId : deviceId // ignore: cast_nullable_to_non_nullable
+as String,null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
 as Version,hasKey: null == hasKey ? _self.hasKey : hasKey // ignore: cast_nullable_to_non_nullable
 as bool,remembered: null == remembered ? _self.remembered : remembered // ignore: cast_nullable_to_non_nullable
 as bool,locked: null == locked ? _self.locked : locked // ignore: cast_nullable_to_non_nullable
@@ -1104,16 +1131,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OathState&&(identical(other.deviceId, deviceId) || other.deviceId == deviceId)&&(identical(other.version, version) || other.version == version)&&(identical(other.hasKey, hasKey) || other.hasKey == hasKey)&&(identical(other.remembered, remembered) || other.remembered == remembered)&&(identical(other.locked, locked) || other.locked == locked)&&(identical(other.keystore, keystore) || other.keystore == keystore));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _OathState&&(identical(other.deviceId, deviceId) || other.deviceId == deviceId)&&(identical(other.version, version) || other.version == version)&&(identical(other.hasKey, hasKey) || other.hasKey == hasKey)&&(identical(other.remembered, remembered) || other.remembered == remembered)&&(identical(other.locked, locked) || other.locked == locked)&&(identical(other.keystore, keystore) || other.keystore == keystore));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,deviceId,version,hasKey,remembered,locked,keystore);
+int get hashCode {
+    return Object.hash(runtimeType,deviceId,version,hasKey,remembered,locked,keystore);
+}
 
 @override
 String toString() {
-  return 'OathState(deviceId: $deviceId, version: $version, hasKey: $hasKey, remembered: $remembered, locked: $locked, keystore: $keystore)';
+    return 'OathState(deviceId: $deviceId, version: $version, hasKey: $hasKey, remembered: $remembered, locked: $locked, keystore: $keystore)';
 }
 
 
@@ -1182,16 +1211,21 @@ $CredentialDataCopyWith<CredentialData> get copyWith => _$CredentialDataCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CredentialData&&(identical(other.issuer, issuer) || other.issuer == issuer)&&(identical(other.name, name) || other.name == name)&&(identical(other.secret, secret) || other.secret == secret)&&(identical(other.oathType, oathType) || other.oathType == oathType)&&(identical(other.hashAlgorithm, hashAlgorithm) || other.hashAlgorithm == hashAlgorithm)&&(identical(other.digits, digits) || other.digits == digits)&&(identical(other.period, period) || other.period == period)&&(identical(other.counter, counter) || other.counter == counter));
+  final _this = this as CredentialData;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CredentialData&&(identical(other.issuer, _this.issuer) || other.issuer == _this.issuer)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.secret, _this.secret) || other.secret == _this.secret)&&(identical(other.oathType, _this.oathType) || other.oathType == _this.oathType)&&(identical(other.hashAlgorithm, _this.hashAlgorithm) || other.hashAlgorithm == _this.hashAlgorithm)&&(identical(other.digits, _this.digits) || other.digits == _this.digits)&&(identical(other.period, _this.period) || other.period == _this.period)&&(identical(other.counter, _this.counter) || other.counter == _this.counter));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,issuer,name,secret,oathType,hashAlgorithm,digits,period,counter);
+int get hashCode {
+  final _this = this as CredentialData;
+  return Object.hash(runtimeType,_this.issuer,_this.name,_this.secret,_this.oathType,_this.hashAlgorithm,_this.digits,_this.period,_this.counter);
+}
 
 @override
 String toString() {
-  return 'CredentialData(issuer: $issuer, name: $name, secret: $secret, oathType: $oathType, hashAlgorithm: $hashAlgorithm, digits: $digits, period: $period, counter: $counter)';
+  final _this = this as CredentialData;
+  return 'CredentialData(issuer: ${_this.issuer}, name: ${_this.name}, secret: ${_this.secret}, oathType: ${_this.oathType}, hashAlgorithm: ${_this.hashAlgorithm}, digits: ${_this.digits}, period: ${_this.period}, counter: ${_this.counter})';
 }
 
 
@@ -1220,7 +1254,7 @@ class _$CredentialDataCopyWithImpl<$Res>
 /// Create a copy of CredentialData
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? issuer = freezed,Object? name = null,Object? secret = null,Object? oathType = null,Object? hashAlgorithm = null,Object? digits = null,Object? period = null,Object? counter = null,}) {
-  return _then(_self.copyWith(
+  return _then(CredentialData(
 issuer: freezed == issuer ? _self.issuer : issuer // ignore: cast_nullable_to_non_nullable
 as String?,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,secret: null == secret ? _self.secret : secret // ignore: cast_nullable_to_non_nullable
@@ -1395,16 +1429,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CredentialData&&(identical(other.issuer, issuer) || other.issuer == issuer)&&(identical(other.name, name) || other.name == name)&&(identical(other.secret, secret) || other.secret == secret)&&(identical(other.oathType, oathType) || other.oathType == oathType)&&(identical(other.hashAlgorithm, hashAlgorithm) || other.hashAlgorithm == hashAlgorithm)&&(identical(other.digits, digits) || other.digits == digits)&&(identical(other.period, period) || other.period == period)&&(identical(other.counter, counter) || other.counter == counter));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _CredentialData&&(identical(other.issuer, issuer) || other.issuer == issuer)&&(identical(other.name, name) || other.name == name)&&(identical(other.secret, secret) || other.secret == secret)&&(identical(other.oathType, oathType) || other.oathType == oathType)&&(identical(other.hashAlgorithm, hashAlgorithm) || other.hashAlgorithm == hashAlgorithm)&&(identical(other.digits, digits) || other.digits == digits)&&(identical(other.period, period) || other.period == period)&&(identical(other.counter, counter) || other.counter == counter));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,issuer,name,secret,oathType,hashAlgorithm,digits,period,counter);
+int get hashCode {
+    return Object.hash(runtimeType,issuer,name,secret,oathType,hashAlgorithm,digits,period,counter);
+}
 
 @override
 String toString() {
-  return 'CredentialData(issuer: $issuer, name: $name, secret: $secret, oathType: $oathType, hashAlgorithm: $hashAlgorithm, digits: $digits, period: $period, counter: $counter)';
+    return 'CredentialData(issuer: $issuer, name: $name, secret: $secret, oathType: $oathType, hashAlgorithm: $hashAlgorithm, digits: $digits, period: $period, counter: $counter)';
 }
 
 

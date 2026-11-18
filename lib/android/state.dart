@@ -184,7 +184,7 @@ class AndroidCurrentSectionNotifier extends CurrentSectionNotifier {
   AndroidCurrentSectionNotifier(
     this._appContextHandler,
     this._prefs,
-    final List<Section> supportedSections,
+    List<Section> supportedSections,
   ) : super(_fromName(_prefs.getString(_key), supportedSections));
 
   @override

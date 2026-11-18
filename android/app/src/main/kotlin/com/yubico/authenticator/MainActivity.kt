@@ -508,7 +508,6 @@ class MainActivity : FlutterFragmentActivity() {
         super.configureFlutterEngine(flutterEngine)
 
         messenger = flutterEngine.dartExecutor.binaryMessenger
-        flutterLog = FlutterLog(messenger)
         appMethodChannel = AppMethodChannel(messenger)
         nfcOverlayManager = NfcOverlayManager(messenger, this.lifecycleScope)
         deviceManager = DeviceManager(this, viewModel, appMethodChannel, nfcOverlayManager)
@@ -574,6 +573,11 @@ class MainActivity : FlutterFragmentActivity() {
             deviceManager,
             otpViewModel
         )
+        flutterLog = FlutterLog(messenger) {
+            oathContextManager.clearCachedCredentials()
+            fidoContextManager.clearCachedCredentials()
+            pivContextManager.clearCachedCredentials()
+        }
         val managementContextManager = ManagementManager(messenger, deviceManager)
 
         contextManagers = mapOf(

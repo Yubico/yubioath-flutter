@@ -76,6 +76,12 @@ const _$KeyTypeEnumMap = {
   KeyType.eccp384: 20,
   KeyType.ed25519: 224,
   KeyType.x25519: 225,
+  KeyType.mlDsa44: 226,
+  KeyType.mlDsa65: 227,
+  KeyType.mlDsa87: 228,
+  KeyType.mlKem512: 229,
+  KeyType.mlKem768: 230,
+  KeyType.mlKem1024: 231,
 };
 
 const _$PinPolicyEnumMap = {
@@ -110,7 +116,6 @@ Map<String, dynamic> _$PivStateMetadataToJson(_PivStateMetadata instance) =>
 _PivState _$PivStateFromJson(Map<String, dynamic> json) => _PivState(
   version: Version.fromJson(json['version'] as List<dynamic>),
   authenticated: json['authenticated'] as bool,
-  derivedKey: json['derived_key'] as bool,
   storedKey: json['stored_key'] as bool,
   pinAttempts: (json['pin_attempts'] as num).toInt(),
   supportsBio: json['supports_bio'] as bool,
@@ -124,7 +129,6 @@ _PivState _$PivStateFromJson(Map<String, dynamic> json) => _PivState(
 Map<String, dynamic> _$PivStateToJson(_PivState instance) => <String, dynamic>{
   'version': instance.version,
   'authenticated': instance.authenticated,
-  'derived_key': instance.derivedKey,
   'stored_key': instance.storedKey,
   'pin_attempts': instance.pinAttempts,
   'supports_bio': instance.supportsBio,

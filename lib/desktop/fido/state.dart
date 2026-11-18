@@ -16,7 +16,6 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
@@ -28,22 +27,41 @@ import '../../app/state.dart';
 import '../../core/models.dart';
 import '../../fido/models.dart';
 import '../../fido/state.dart';
+import '../credential_cache.dart';
 import '../models.dart';
 import '../rpc.dart';
 import '../state.dart';
 
 final _log = Logger('desktop.fido.state');
 
-final _pinProvider = StateProvider.family<String?, DevicePath>((ref, _) {
-  // Clear PIN if current device is changed
-  ref.watch(currentDeviceProvider);
-  return null;
-});
+final _pinProvider =
+    StateNotifierProvider.family<CachedCredential, String?, DevicePath>((
+      ref,
+      _,
+    ) {
+      // Clear PIN if current device is changed
+      ref.watch(currentDeviceProvider);
+      return CachedCredential();
+    });
+
+void clearCachedFidoPins(Ref ref) => ref.invalidate(_pinProvider);
 
 class _FidoRpcNodeSession extends RpcNodeSession {
   _FidoRpcNodeSession(super.rpc, super.devicePath, super.subpath);
 
   List<String> _subpath = [];
+
+  Future<void> closeTransport() async {
+    final path = await subpath();
+    try {
+      await super.command('close', params: {'child': path.first});
+    } on RpcError catch (e) {
+      if (e.status != 'invalid-command' ||
+          e.message != 'No such node: ${devicePath.segments.last}') {
+        rethrow;
+      }
+    }
+  }
 
   Future<List<String>> subpath() async {
     // Ensure that the subpath is initialized
@@ -86,7 +104,7 @@ class _FidoRpcNodeSession extends RpcNodeSession {
 }
 
 final _sessionProvider = Provider.autoDispose
-    .family<RpcNodeSession, DevicePath>((ref, devicePath) {
+    .family<_FidoRpcNodeSession, DevicePath>((ref, devicePath) {
       // Refresh state when PIN is changed
       ref.watch(_pinProvider(devicePath));
       return _FidoRpcNodeSession(
@@ -97,8 +115,8 @@ final _sessionProvider = Provider.autoDispose
     });
 
 class DesktopFidoStateNotifier extends FidoStateNotifier {
-  late RpcNodeSession _session;
-  late StateController<String?> _pinController;
+  late _FidoRpcNodeSession _session;
+  late CachedCredential _pinController;
 
   DesktopFidoStateNotifier(super.devicePath);
 
@@ -106,9 +124,9 @@ class DesktopFidoStateNotifier extends FidoStateNotifier {
     var result = await _session.command('get');
     FidoState fidoState = FidoState.fromJson(result['data']);
     if (fidoState.hasPin && !fidoState.unlocked) {
-      final pin = ref.read(_pinProvider(devicePath));
+      final pin = ref.read(_pinProvider(devicePath).notifier).value;
       if (pin != null) {
-        await unlock(pin);
+        await _unlock(pin, refresh: false);
         result = await _session.command('get');
         fidoState = FidoState.fromJson(result['data']);
       }
@@ -121,10 +139,6 @@ class DesktopFidoStateNotifier extends FidoStateNotifier {
   @override
   FutureOr<FidoState> build() async {
     _session = ref.watch(_sessionProvider(devicePath));
-    if (Platform.isWindows) {
-      // Make sure to rebuild if isAdmin changes
-      ref.watch(rpcStateProvider.select((state) => state.isAdmin));
-    }
 
     ref.listen<WindowState>(windowStateProvider, (prev, next) async {
       if (prev?.active == false && next.active) {
@@ -141,9 +155,9 @@ class DesktopFidoStateNotifier extends FidoStateNotifier {
       ref.invalidate(_sessionProvider(devicePath));
     });
     _session.setErrorHandler('auth-required', (e) async {
-      final pin = ref.read(_pinProvider(devicePath));
+      final pin = ref.read(_pinProvider(devicePath).notifier).value;
       if (pin != null) {
-        await unlock(pin);
+        await _unlock(pin, refresh: false);
       } else {
         throw e;
       }
@@ -160,29 +174,54 @@ class DesktopFidoStateNotifier extends FidoStateNotifier {
 
   @override
   Stream<InteractionEvent> reset() {
+    final session = _session;
+    final resetRef = ref;
+    final keepAlive = resetRef.keepAlive();
     final controller = StreamController<InteractionEvent>();
     final signaler = Signaler();
-    signaler.signals
+    var running = true;
+    var cancelled = false;
+    final signals = signaler.signals
         .where((s) => s.status == 'reset')
         .map(
           (signal) => InteractionEvent.values.firstWhere(
             (e) => e.name == signal.body['state'],
           ),
         )
-        .listen(controller.sink.add);
+        .listen((event) {
+          if (!cancelled && !controller.isClosed) controller.add(event);
+        });
 
     controller.onCancel = () {
-      if (!controller.isClosed) {
+      if (running) {
+        cancelled = true;
         signaler.cancel();
       }
     };
     controller.onListen = () async {
       try {
-        await _session.command('reset', signal: signaler);
-        await controller.sink.close();
-        ref.invalidateSelf();
-      } catch (e) {
-        controller.sink.addError(e);
+        await session.command('reset', signal: signaler);
+      } catch (e, stack) {
+        try {
+          await session.closeTransport();
+        } catch (cleanupError, cleanupStack) {
+          _log.error(
+            'Failed closing FIDO transport after reset',
+            cleanupError,
+            cleanupStack,
+          );
+        }
+        if (!cancelled && !controller.isClosed && controller.hasListener) {
+          controller.addError(e, stack);
+        } else if (e is! RpcError || e.status != 'cancelled') {
+          _log.error('FIDO reset failed after cancellation', e);
+        }
+      } finally {
+        running = false;
+        await signals.cancel();
+        if (resetRef.mounted) resetRef.invalidate(_sessionProvider(devicePath));
+        if (!controller.isClosed) unawaited(controller.close());
+        keepAlive.close();
       }
     };
 
@@ -196,10 +235,12 @@ class DesktopFidoStateNotifier extends FidoStateNotifier {
         'set_pin',
         params: {'pin': oldPin, 'new_pin': newPin},
       );
-      return unlock(newPin);
+      final result = await _unlock(newPin, refresh: false);
+      ref.invalidateSelf();
+      return result;
     } on RpcError catch (e) {
       if (e.status == 'pin-validation') {
-        ref.invalidate(_pinProvider);
+        _pinController.value = null;
         ref.invalidateSelf();
         return PinResult.failed(
           FidoPinFailureReason.invalidPin(
@@ -216,18 +257,26 @@ class DesktopFidoStateNotifier extends FidoStateNotifier {
   }
 
   @override
-  Future<PinResult> unlock(String pin, {bool remember = false}) async {
+  Future<PinResult> unlock(String pin, {bool remember = false}) =>
+      _unlock(pin, remember: remember, refresh: true);
+
+  Future<PinResult> _unlock(
+    String pin, {
+    bool remember = false,
+    required bool refresh,
+  }) async {
     try {
       await _session.command(
         'unlock',
         params: {'pin': pin, 'remember': remember},
       );
-      _pinController.state = pin;
+      _pinController.value = pin;
+      if (refresh) ref.invalidateSelf();
 
       return PinResult.success();
     } on RpcError catch (e) {
       if (e.status == 'pin-validation') {
-        _pinController.state = null;
+        _pinController.value = null;
         ref.invalidateSelf();
         return PinResult.failed(
           FidoPinFailureReason.invalidPin(
@@ -248,7 +297,7 @@ class DesktopFidoStateNotifier extends FidoStateNotifier {
 }
 
 class DesktopFidoFingerprintsNotifier extends FidoFingerprintsNotifier {
-  late RpcNodeSession _session;
+  late _FidoRpcNodeSession _session;
 
   DesktopFidoFingerprintsNotifier(super.devicePath);
 
@@ -344,7 +393,7 @@ class DesktopFidoFingerprintsNotifier extends FidoFingerprintsNotifier {
 }
 
 class DesktopFidoCredentialsNotifier extends FidoCredentialsNotifier {
-  late RpcNodeSession _session;
+  late _FidoRpcNodeSession _session;
 
   DesktopFidoCredentialsNotifier(super.devicePath);
 
@@ -393,6 +442,8 @@ class DesktopFidoCredentialsNotifier extends FidoCredentialsNotifier {
       'delete',
       target: ['credentials', credential.rpId, credential.credentialId],
     );
+    await _session.command('close', params: {'child': 'credentials'});
     ref.invalidate(fidoStateProvider(_session.devicePath));
+    ref.invalidateSelf();
   }
 }

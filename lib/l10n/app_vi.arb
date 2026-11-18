@@ -162,10 +162,6 @@
     "@_yubikey_selection": {},
 
     "s_select_to_scan": "Chọn để quét",
-    "s_hide_reader": "Ẩn đầu đọc",
-    "s_show_hidden_readers": "Xem đầu đọc đã ẩn",
-    "s_toggle_readers": "Bật/tắt đầu đọc",
-    "l_toggle_readers_desc": "Hiện hoặc ẩn đầu đọc",
     "s_sn_serial": "S/N: {serial}",
     "@s_sn_serial": {
         "placeholders": {
@@ -210,6 +206,8 @@
     "l_replace_yk_on_reader": "Đặt lại YubiKey của bạn lên đầu đọc",
     "l_remove_yk_from_reader": "Rút YubiKey của bạn khỏi đầu đọc NFC",
     "p_try_reinsert_yk": "Hãy thử rút và cắm lại YubiKey của bạn.",
+    "l_reinsert_yk_nfc_required": null,
+    "p_reinsert_yk_nfc_required": null,
     "s_touch_required": "Yêu cầu chạm",
     "l_touch_button_now": "Chạm vào nút trên YubiKey của bạn ngay bây giờ",
     "l_long_touch_button_now": null,
@@ -858,6 +856,7 @@
     "s_private_id": "ID riêng tư",
     "s_use_serial": "Sử dụng số sê-ri",
     "l_select_file": "Chọn tệp",
+    "l_create_export_file": null,
     "l_no_export_file": "Không có tệp xuất khẩu",
     "s_no_export": "Không xuất khẩu",
     "s_export": "Xuất khẩu",
@@ -871,6 +870,8 @@
         }
     },
     "s_keyboard_layout": null,
+    "s_keyboard_variant": null,
+    "s_keyboard_variant_default": null,
     "l_keyboard_layout": null,
     "@l_keyboard_layout": {
         "placeholders": {

@@ -162,10 +162,6 @@
     "@_yubikey_selection": {},
 
     "s_select_to_scan": "เลือกเพื่อสเเกน",
-    "s_hide_reader": "ซ่อนเครื่องอ่าน",
-    "s_show_hidden_readers": "เเสดงเครื่องอ่านที่ซ่อน",
-    "s_toggle_readers": "สลับเครื่องอ่าน",
-    "l_toggle_readers_desc": "เเสดงหรือซ่อนเครื่องอ่าน",
     "s_sn_serial": "หมายเลขประจำตัวอุปกรณ์: {serial}",
     "@s_sn_serial": {
         "placeholders": {
@@ -210,6 +206,8 @@
     "l_replace_yk_on_reader": "วาง ยูบิคีย์ ของคุณกลับไปที่เครื่องอ่าน เอ็นเอฟซี อีกครั้ง",
     "l_remove_yk_from_reader": "นำ ยูบิคีย์ ของคุณออกจากเครื่องอ่าน เอ็นเอฟซี",
     "p_try_reinsert_yk": "ลองถอดและเสียบ ยูบิคีย์ ของคุณใหม่อีกครั้ง",
+    "l_reinsert_yk_nfc_required": null,
+    "p_reinsert_yk_nfc_required": null,
     "s_touch_required": "ต้องสัมผัส ยูบิคีย์",
     "l_touch_button_now": "แตะปุ่มบน ยูบิคีย์ ของคุณตอนนี้",
     "l_long_touch_button_now": "กดปุ่มบน ยูบิคีย์ ของคุณค้างไว้เป็นเวลา 5 วินาที",
@@ -858,6 +856,7 @@
     "s_private_id": "ID ส่วนตัว",
     "s_use_serial": "ใช้ ซีเรียล",
     "l_select_file": "เลือกไฟล์",
+    "l_create_export_file": null,
     "l_no_export_file": "ไม่มีไฟล์ส่งออก",
     "s_no_export": "ไม่มีการส่งออก",
     "s_export": "ส่งออก",
@@ -871,6 +870,8 @@
         }
     },
     "s_keyboard_layout": null,
+    "s_keyboard_variant": null,
+    "s_keyboard_variant_default": null,
     "l_keyboard_layout": "คีย์บอร์ด {layout}",
     "@l_keyboard_layout": {
         "placeholders": {

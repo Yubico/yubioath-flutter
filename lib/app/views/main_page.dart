@@ -57,6 +57,7 @@ class MainPage extends ConsumerWidget {
       prev,
       next,
     ) {
+      if (ref.read(fidoResetInProgressProvider)) return;
       final serial = next.hasValue == true ? next.value?.info.serial : null;
       final prevSerial = prev?.hasValue == true
           ? prev?.value?.info.serial
@@ -93,10 +94,9 @@ class MainPage extends ConsumerWidget {
     });
 
     final deviceNode = ref.watch(currentDeviceProvider);
-    final noKeyImage = Image.asset(
-      'assets/graphics/no-key.png',
-      filterQuality: .medium,
-      scale: 2,
+    final noKeyIcon = Icon(
+      Symbols.security_key,
+      size: 128,
       color: Theme.of(context).colorScheme.primary,
     );
 
@@ -111,7 +111,7 @@ class MainPage extends ConsumerWidget {
         var isNfcEnabled = ref.watch(androidNfcAdapterState);
         return HomeMessagePage(
           centered: true,
-          graphic: noKeyImage,
+          graphic: noKeyIcon,
           header: hasNfcSupport && isNfcEnabled
               ? l10n.l_insert_or_tap_yk
               : l10n.l_insert_yk,
@@ -141,7 +141,7 @@ class MainPage extends ConsumerWidget {
         return HomeMessagePage(
           centered: true,
           delayedContent: false,
-          graphic: noKeyImage,
+          graphic: noKeyIcon,
           header: l10n.l_insert_yk,
         );
       }

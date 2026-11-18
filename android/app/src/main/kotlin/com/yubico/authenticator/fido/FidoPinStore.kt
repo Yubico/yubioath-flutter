@@ -16,15 +16,28 @@
 
 package com.yubico.authenticator.fido
 
-class FidoPinStore {
-    private var pin: CharArray? = null
+import com.yubico.authenticator.CredentialCache
+import com.yubico.yubikit.core.fido.CtapException
 
-    fun hasPin(): Boolean = pin != null
+class FidoPinStore(
+    onExpired: () -> Unit = {},
+    private val cache: CredentialCache<Unit, CharArray> = CredentialCache(
+        copy = { it.clone() },
+        clearValue = { it.fill(0.toChar()) },
+        onExpired = { onExpired() }
+    )
+) {
+    fun hasPin(): Boolean = cache.containsKey(Unit)
 
-    fun getPin(): CharArray = pin!!
+    fun getPinOrNull(): CharArray? = cache[Unit]
+
+    fun getPin(): CharArray = getPinOrNull() ?: throw CtapException(CtapException.ERR_PUAT_REQUIRED)
 
     fun setPin(newPin: CharArray?) {
-        pin?.fill(0.toChar())
-        pin = newPin?.clone()
+        if (newPin == null) {
+            cache.remove(Unit)
+        } else {
+            cache[Unit] = newPin
+        }
     }
 }

@@ -179,9 +179,8 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
     final l10n = AppLocalizations.of(context);
     // ONLY rebuild if the number of credentials changes.
     final numCreds = ref.watch(
-      credentialListProvider(
-        widget.devicePath,
-      ).select((value) => value?.length),
+      credentialListProvider(widget.devicePath)
+          .select((value) => value?.length),
     );
     final hasFeature = ref.watch(featureProvider);
     final hasActions = hasFeature(features.actions);
@@ -324,9 +323,10 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
           EditIntent<OathCredential>:
               CallbackAction<EditIntent<OathCredential>>(
                 onInvoke: (intent) async {
-                  final renamed =
-                      await (Actions.invoke(context, intent)
-                          as Future<dynamic>?);
+                  final renamed = await (Actions.invoke(
+                    context,
+                    intent,
+                  ) as Future<dynamic>?);
                   if (renamed is OathCredential && _selected == intent.target) {
                     setState(() {
                       _selected = renamed;
@@ -339,9 +339,10 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
           DeleteIntent<OathCredential>:
               CallbackAction<DeleteIntent<OathCredential>>(
                 onInvoke: (intent) async {
-                  final deleted =
-                      await (Actions.invoke(context, intent)
-                          as Future<dynamic>?);
+                  final deleted = await (Actions.invoke(
+                    context,
+                    intent,
+                  ) as Future<dynamic>?);
                   if (deleted == true && _selected == intent.target) {
                     setState(() {
                       _selected = null;
@@ -397,9 +398,8 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                                 crossAxisAlignment: .center,
                                 children: [
                                   IconTheme(
-                                    data: IconTheme.of(
-                                      context,
-                                    ).copyWith(size: 24),
+                                    data: IconTheme.of(context)
+                                        .copyWith(size: 24),
                                     child: helper.buildCodeIcon(),
                                   ),
                                   const SizedBox(width: 8.0),
@@ -413,9 +413,10 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                               TooltipIfTruncated(
                                 text: helper.title,
                                 style: TextStyle(
-                                  fontSize: Theme.of(
-                                    context,
-                                  ).textTheme.headlineSmall?.fontSize,
+                                  fontSize: Theme.of(context)
+                                      .textTheme
+                                      .headlineSmall
+                                      ?.fontSize,
                                 ),
                               ),
                               if (subtitle != null)
@@ -424,9 +425,9 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                                   // This is what ListTile uses for subtitle
                                   style: Theme.of(context).textTheme.bodyMedium!
                                       .copyWith(
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.onSurfaceVariant,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurfaceVariant,
                                       ),
                                 ),
                             ],
@@ -565,9 +566,9 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                                       icon: Icon(
                                         e._icon,
                                         color: e == oathLayout
-                                            ? Theme.of(
-                                                context,
-                                              ).colorScheme.primary
+                                            ? Theme.of(context)
+                                                  .colorScheme
+                                                  .primary
                                             : null,
                                       ),
                                     ),
@@ -596,9 +597,9 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                                     ),
                                     icon: Icon(
                                       oathLayout._icon,
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.primary,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary,
                                     ),
                                     itemBuilder: (context) => [
                                       ...availableLayouts.map(
@@ -611,9 +612,9 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                                                 child: Icon(
                                                   e._icon,
                                                   color: e == oathLayout
-                                                      ? Theme.of(
-                                                          context,
-                                                        ).colorScheme.primary
+                                                      ? Theme.of(context)
+                                                            .colorScheme
+                                                            .primary
                                                       : null,
                                                 ),
                                               ),
@@ -644,9 +645,8 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
                         },
                         textInputAction: .next,
                         onSubmitted: (value) {
-                          Focus.of(
-                            context,
-                          ).focusInDirection(TraversalDirection.down);
+                          Focus.of(context)
+                              .focusInDirection(TraversalDirection.down);
                         },
                       ).init(),
                     );

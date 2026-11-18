@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021-2024 Yubico.
+ * Copyright (C) 2021-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,25 @@
  * limitations under the License.
  */
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'core/state.dart';
 
-const defaultPrimaryColor = Colors.lightGreen;
+const defaultPrimaryColor = Color(0xFF286B2A);
+const defaultFontFamily = 'InstrumentSans';
+
+/// Adds the license of the bundled [defaultFontFamily] font to the
+/// [LicenseRegistry], as its license requires it to be distributed with it.
+void addFontLicense() {
+  LicenseRegistry.addLicense(() async* {
+    final ofl = await rootBundle.loadString(
+      'assets/licenses/raw/instrument-sans-ofl.txt',
+    );
+    yield LicenseEntryWithLineBreaks(['Instrument Sans'], ofl);
+  });
+}
 
 class AppTheme {
   static ThemeData getLightTheme(Color primaryColor) =>
@@ -65,7 +79,7 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
-      fontFamily: 'Roboto',
+      fontFamily: defaultFontFamily,
       textButtonTheme: TextButtonThemeData(style: focusButtonStyle),
       elevatedButtonTheme: ElevatedButtonThemeData(style: focusButtonStyle),
       outlinedButtonTheme: OutlinedButtonThemeData(style: focusButtonStyle),
@@ -74,7 +88,7 @@ class AppTheme {
       menuButtonTheme: MenuButtonThemeData(style: focusButtonStyle),
       chipTheme: ChipThemeData(
         labelStyle: TextStyle(
-          fontFamily: 'Roboto',
+          fontFamily: defaultFontFamily,
           color: colorScheme.onSurface,
         ),
         side: WidgetStateBorderSide.resolveWith((states) {

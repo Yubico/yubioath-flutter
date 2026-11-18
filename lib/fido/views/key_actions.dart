@@ -168,9 +168,8 @@ Widget _fidoBuildActions(
                       }
 
                       await withContext((context) {
-                        Navigator.of(
-                          context,
-                        ).popUntil((route) => route.isFirst);
+                        Navigator.of(context)
+                            .popUntil((route) => route.isFirst);
                         return showDialog<bool?>(
                           context: context,
                           builder: (context) =>

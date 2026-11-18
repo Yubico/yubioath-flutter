@@ -73,9 +73,8 @@ class QrScannerNoQrCodeGroup extends StatelessWidget {
           children: [
             OutlinedButton(
               onPressed: () {
-                Navigator.of(
-                  context,
-                ).pop(AndroidQrScanner.kQrScannerRequestManualEntry);
+                Navigator.of(context)
+                    .pop(AndroidQrScanner.kQrScannerRequestManualEntry);
               },
               key: keys.manualEntryButton,
               child: Text(l10n.s_enter_manually),
@@ -83,9 +82,8 @@ class QrScannerNoQrCodeGroup extends StatelessWidget {
             const SizedBox(width: 8),
             OutlinedButton(
               onPressed: () {
-                Navigator.of(
-                  context,
-                ).pop(AndroidQrScanner.kQrScannerRequestReadFromFile);
+                Navigator.of(context)
+                    .pop(AndroidQrScanner.kQrScannerRequestReadFromFile);
               },
               key: keys.readFromImage,
               child: Text(l10n.s_read_from_file),

@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'models.dart';
@@ -9,6 +9,7 @@ part of 'models.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -28,16 +29,21 @@ $FidoStateCopyWith<FidoState> get copyWith => _$FidoStateCopyWithImpl<FidoState>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is FidoState&&const DeepCollectionEquality().equals(other.info, info)&&(identical(other.unlocked, unlocked) || other.unlocked == unlocked)&&(identical(other.unlockedRead, unlockedRead) || other.unlockedRead == unlockedRead)&&(identical(other.pinRetries, pinRetries) || other.pinRetries == pinRetries));
+  final _this = this as FidoState;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FidoState&&const DeepCollectionEquality().equals(other.info, _this.info)&&(identical(other.unlocked, _this.unlocked) || other.unlocked == _this.unlocked)&&(identical(other.unlockedRead, _this.unlockedRead) || other.unlockedRead == _this.unlockedRead)&&(identical(other.pinRetries, _this.pinRetries) || other.pinRetries == _this.pinRetries));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(info),unlocked,unlockedRead,pinRetries);
+int get hashCode {
+  final _this = this as FidoState;
+  return Object.hash(runtimeType,const DeepCollectionEquality().hash(_this.info),_this.unlocked,_this.unlockedRead,_this.pinRetries);
+}
 
 @override
 String toString() {
-  return 'FidoState(info: $info, unlocked: $unlocked, unlockedRead: $unlockedRead, pinRetries: $pinRetries)';
+  final _this = this as FidoState;
+  return 'FidoState(info: ${_this.info}, unlocked: ${_this.unlocked}, unlockedRead: ${_this.unlockedRead}, pinRetries: ${_this.pinRetries})';
 }
 
 
@@ -66,7 +72,7 @@ class _$FidoStateCopyWithImpl<$Res>
 /// Create a copy of FidoState
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? info = null,Object? unlocked = null,Object? unlockedRead = null,Object? pinRetries = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(FidoState(
 info: null == info ? _self.info : info // ignore: cast_nullable_to_non_nullable
 as Map<String, dynamic>,unlocked: null == unlocked ? _self.unlocked : unlocked // ignore: cast_nullable_to_non_nullable
 as bool,unlockedRead: null == unlockedRead ? _self.unlockedRead : unlockedRead // ignore: cast_nullable_to_non_nullable
@@ -212,7 +218,7 @@ return $default(_that.info,_that.unlocked,_that.unlockedRead,_that.pinRetries);c
 @JsonSerializable()
 
 class _FidoState extends FidoState {
-   _FidoState({required final  Map<String, dynamic> info, required this.unlocked, required this.unlockedRead, this.pinRetries}): _info = info,super._();
+   _FidoState({required  Map<String, dynamic> info, required this.unlocked, required this.unlockedRead, this.pinRetries}): _info = info,super._();
   factory _FidoState.fromJson(Map<String, dynamic> json) => _$FidoStateFromJson(json);
 
  final  Map<String, dynamic> _info;
@@ -239,16 +245,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FidoState&&const DeepCollectionEquality().equals(other._info, _info)&&(identical(other.unlocked, unlocked) || other.unlocked == unlocked)&&(identical(other.unlockedRead, unlockedRead) || other.unlockedRead == unlockedRead)&&(identical(other.pinRetries, pinRetries) || other.pinRetries == pinRetries));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _FidoState&&const DeepCollectionEquality().equals(other.info, _info)&&(identical(other.unlocked, unlocked) || other.unlocked == unlocked)&&(identical(other.unlockedRead, unlockedRead) || other.unlockedRead == unlockedRead)&&(identical(other.pinRetries, pinRetries) || other.pinRetries == pinRetries));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_info),unlocked,unlockedRead,pinRetries);
+int get hashCode {
+    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_info),unlocked,unlockedRead,pinRetries);
+}
 
 @override
 String toString() {
-  return 'FidoState(info: $info, unlocked: $unlocked, unlockedRead: $unlockedRead, pinRetries: $pinRetries)';
+    return 'FidoState(info: $info, unlocked: $unlocked, unlockedRead: $unlockedRead, pinRetries: $pinRetries)';
 }
 
 
@@ -298,7 +306,7 @@ mixin _$PinResult {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PinResult);
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is PinResult);
 }
 
 
@@ -307,7 +315,7 @@ int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'PinResult()';
+    return 'PinResult()';
 }
 
 
@@ -463,7 +471,7 @@ class PinResultSuccess implements PinResult {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PinResultSuccess);
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is PinResultSuccess);
 }
 
 
@@ -472,7 +480,7 @@ int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'PinResult.success()';
+    return 'PinResult.success()';
 }
 
 
@@ -500,16 +508,18 @@ $PinResultFailureCopyWith<PinResultFailure> get copyWith => _$PinResultFailureCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PinResultFailure&&(identical(other.reason, reason) || other.reason == reason));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is PinResultFailure&&(identical(other.reason, reason) || other.reason == reason));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,reason);
+int get hashCode {
+    return Object.hash(runtimeType,reason);
+}
 
 @override
 String toString() {
-  return 'PinResult.failed(reason: $reason)';
+    return 'PinResult.failed(reason: $reason)';
 }
 
 
@@ -565,7 +575,7 @@ mixin _$FidoPinFailureReason {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is FidoPinFailureReason);
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is FidoPinFailureReason);
 }
 
 
@@ -574,7 +584,7 @@ int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'FidoPinFailureReason()';
+    return 'FidoPinFailureReason()';
 }
 
 
@@ -736,16 +746,18 @@ $FidoInvalidPinCopyWith<FidoInvalidPin> get copyWith => _$FidoInvalidPinCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is FidoInvalidPin&&(identical(other.retries, retries) || other.retries == retries)&&(identical(other.authBlocked, authBlocked) || other.authBlocked == authBlocked));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is FidoInvalidPin&&(identical(other.retries, retries) || other.retries == retries)&&(identical(other.authBlocked, authBlocked) || other.authBlocked == authBlocked));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,retries,authBlocked);
+int get hashCode {
+    return Object.hash(runtimeType,retries,authBlocked);
+}
 
 @override
 String toString() {
-  return 'FidoPinFailureReason.invalidPin(retries: $retries, authBlocked: $authBlocked)';
+    return 'FidoPinFailureReason.invalidPin(retries: $retries, authBlocked: $authBlocked)';
 }
 
 
@@ -798,7 +810,7 @@ class FidoWeakPin implements FidoPinFailureReason {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is FidoWeakPin);
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is FidoWeakPin);
 }
 
 
@@ -807,7 +819,7 @@ int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'FidoPinFailureReason.weakPin()';
+    return 'FidoPinFailureReason.weakPin()';
 }
 
 
@@ -833,16 +845,21 @@ $FingerprintCopyWith<Fingerprint> get copyWith => _$FingerprintCopyWithImpl<Fing
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Fingerprint&&(identical(other.templateId, templateId) || other.templateId == templateId)&&(identical(other.name, name) || other.name == name));
+  final _this = this as Fingerprint;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Fingerprint&&(identical(other.templateId, _this.templateId) || other.templateId == _this.templateId)&&(identical(other.name, _this.name) || other.name == _this.name));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,templateId,name);
+int get hashCode {
+  final _this = this as Fingerprint;
+  return Object.hash(runtimeType,_this.templateId,_this.name);
+}
 
 @override
 String toString() {
-  return 'Fingerprint(templateId: $templateId, name: $name)';
+  final _this = this as Fingerprint;
+  return 'Fingerprint(templateId: ${_this.templateId}, name: ${_this.name})';
 }
 
 
@@ -871,9 +888,9 @@ class _$FingerprintCopyWithImpl<$Res>
 /// Create a copy of Fingerprint
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? templateId = null,Object? name = freezed,}) {
-  return _then(_self.copyWith(
-templateId: null == templateId ? _self.templateId : templateId // ignore: cast_nullable_to_non_nullable
-as String,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+  return _then(Fingerprint(
+null == templateId ? _self.templateId : templateId // ignore: cast_nullable_to_non_nullable
+as String,freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -1034,16 +1051,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Fingerprint&&(identical(other.templateId, templateId) || other.templateId == templateId)&&(identical(other.name, name) || other.name == name));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Fingerprint&&(identical(other.templateId, templateId) || other.templateId == templateId)&&(identical(other.name, name) || other.name == name));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,templateId,name);
+int get hashCode {
+    return Object.hash(runtimeType,templateId,name);
+}
 
 @override
 String toString() {
-  return 'Fingerprint(templateId: $templateId, name: $name)';
+    return 'Fingerprint(templateId: $templateId, name: $name)';
 }
 
 
@@ -1091,7 +1110,7 @@ mixin _$FingerprintEvent {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is FingerprintEvent);
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is FingerprintEvent);
 }
 
 
@@ -1100,7 +1119,7 @@ int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'FingerprintEvent()';
+    return 'FingerprintEvent()';
 }
 
 
@@ -1267,16 +1286,18 @@ $FingerprintEventCaptureCopyWith<FingerprintEventCapture> get copyWith => _$Fing
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is FingerprintEventCapture&&(identical(other.remaining, remaining) || other.remaining == remaining));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is FingerprintEventCapture&&(identical(other.remaining, remaining) || other.remaining == remaining));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,remaining);
+int get hashCode {
+    return Object.hash(runtimeType,remaining);
+}
 
 @override
 String toString() {
-  return 'FingerprintEvent.capture(remaining: $remaining)';
+    return 'FingerprintEvent.capture(remaining: $remaining)';
 }
 
 
@@ -1333,16 +1354,18 @@ $FingerprintEventCompleteCopyWith<FingerprintEventComplete> get copyWith => _$Fi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is FingerprintEventComplete&&(identical(other.fingerprint, fingerprint) || other.fingerprint == fingerprint));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is FingerprintEventComplete&&(identical(other.fingerprint, fingerprint) || other.fingerprint == fingerprint));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,fingerprint);
+int get hashCode {
+    return Object.hash(runtimeType,fingerprint);
+}
 
 @override
 String toString() {
-  return 'FingerprintEvent.complete(fingerprint: $fingerprint)';
+    return 'FingerprintEvent.complete(fingerprint: $fingerprint)';
 }
 
 
@@ -1408,16 +1431,18 @@ $FingerprintEventErrorCopyWith<FingerprintEventError> get copyWith => _$Fingerpr
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is FingerprintEventError&&(identical(other.code, code) || other.code == code));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is FingerprintEventError&&(identical(other.code, code) || other.code == code));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,code);
+int get hashCode {
+    return Object.hash(runtimeType,code);
+}
 
 @override
 String toString() {
-  return 'FingerprintEvent.error(code: $code)';
+    return 'FingerprintEvent.error(code: $code)';
 }
 
 
@@ -1472,16 +1497,21 @@ $FidoCredentialCopyWith<FidoCredential> get copyWith => _$FidoCredentialCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is FidoCredential&&(identical(other.rpId, rpId) || other.rpId == rpId)&&(identical(other.credentialId, credentialId) || other.credentialId == credentialId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.userName, userName) || other.userName == userName)&&(identical(other.displayName, displayName) || other.displayName == displayName));
+  final _this = this as FidoCredential;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FidoCredential&&(identical(other.rpId, _this.rpId) || other.rpId == _this.rpId)&&(identical(other.credentialId, _this.credentialId) || other.credentialId == _this.credentialId)&&(identical(other.userId, _this.userId) || other.userId == _this.userId)&&(identical(other.userName, _this.userName) || other.userName == _this.userName)&&(identical(other.displayName, _this.displayName) || other.displayName == _this.displayName));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,rpId,credentialId,userId,userName,displayName);
+int get hashCode {
+  final _this = this as FidoCredential;
+  return Object.hash(runtimeType,_this.rpId,_this.credentialId,_this.userId,_this.userName,_this.displayName);
+}
 
 @override
 String toString() {
-  return 'FidoCredential(rpId: $rpId, credentialId: $credentialId, userId: $userId, userName: $userName, displayName: $displayName)';
+  final _this = this as FidoCredential;
+  return 'FidoCredential(rpId: ${_this.rpId}, credentialId: ${_this.credentialId}, userId: ${_this.userId}, userName: ${_this.userName}, displayName: ${_this.displayName})';
 }
 
 
@@ -1510,7 +1540,7 @@ class _$FidoCredentialCopyWithImpl<$Res>
 /// Create a copy of FidoCredential
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? rpId = null,Object? credentialId = null,Object? userId = null,Object? userName = null,Object? displayName = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(FidoCredential(
 rpId: null == rpId ? _self.rpId : rpId // ignore: cast_nullable_to_non_nullable
 as String,credentialId: null == credentialId ? _self.credentialId : credentialId // ignore: cast_nullable_to_non_nullable
 as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
@@ -1679,16 +1709,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FidoCredential&&(identical(other.rpId, rpId) || other.rpId == rpId)&&(identical(other.credentialId, credentialId) || other.credentialId == credentialId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.userName, userName) || other.userName == userName)&&(identical(other.displayName, displayName) || other.displayName == displayName));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _FidoCredential&&(identical(other.rpId, rpId) || other.rpId == rpId)&&(identical(other.credentialId, credentialId) || other.credentialId == credentialId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.userName, userName) || other.userName == userName)&&(identical(other.displayName, displayName) || other.displayName == displayName));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,rpId,credentialId,userId,userName,displayName);
+int get hashCode {
+    return Object.hash(runtimeType,rpId,credentialId,userId,userName,displayName);
+}
 
 @override
 String toString() {
-  return 'FidoCredential(rpId: $rpId, credentialId: $credentialId, userId: $userId, userName: $userName, displayName: $displayName)';
+    return 'FidoCredential(rpId: $rpId, credentialId: $credentialId, userId: $userId, userName: $userName, displayName: $displayName)';
 }
 
 

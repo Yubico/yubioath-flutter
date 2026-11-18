@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Yubico.
+ * Copyright (C) 2022-2026 Yubico.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,12 +28,14 @@ import 'app/state.dart';
 import 'core/state.dart';
 import 'desktop/init.dart' as desktop;
 import 'error_page.dart';
+import 'theme.dart';
 import 'version.dart';
 
 final _log = Logger('main');
 
 void main(List<String> argv) async {
   WidgetsFlutterBinding.ensureInitialized();
+  addFontLicense();
 
   try {
     final Widget initializedApp;

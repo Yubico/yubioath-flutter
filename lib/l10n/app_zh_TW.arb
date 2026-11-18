@@ -162,10 +162,6 @@
     "@_yubikey_selection": {},
 
     "s_select_to_scan": "選取後開始掃描",
-    "s_hide_reader": "隱藏讀卡機",
-    "s_show_hidden_readers": "顯示隱藏的讀卡機",
-    "s_toggle_readers": "切換讀卡機",
-    "l_toggle_readers_desc": "顯示或隱藏讀卡機",
     "s_sn_serial": "序號：{serial}",
     "@s_sn_serial": {
         "placeholders": {
@@ -210,6 +206,8 @@
     "l_replace_yk_on_reader": "將你的 YubiKey 放回讀卡機上",
     "l_remove_yk_from_reader": "將你的 YubiKey 從 NFC 讀卡機上移除",
     "p_try_reinsert_yk": "請嘗試移除並重新插入你的 YubiKey。",
+    "l_reinsert_yk_nfc_required": null,
+    "p_reinsert_yk_nfc_required": null,
     "s_touch_required": "需要觸控",
     "l_touch_button_now": "現在請輕觸你的 YubiKey 按鈕",
     "l_long_touch_button_now": "現在請按住 YubiKey 按鈕 5 秒",
@@ -858,6 +856,7 @@
     "s_private_id": "私人 ID",
     "s_use_serial": "使用序列號",
     "l_select_file": "選擇檔案",
+    "l_create_export_file": null,
     "l_no_export_file": "沒有檔案匯出",
     "s_no_export": "無匯出",
     "s_export": "匯出",
@@ -871,6 +870,8 @@
         }
     },
     "s_keyboard_layout": null,
+    "s_keyboard_variant": null,
+    "s_keyboard_variant_default": null,
     "l_keyboard_layout": "鍵盤 {layout}",
     "@l_keyboard_layout": {
         "placeholders": {

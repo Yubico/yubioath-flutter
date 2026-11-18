@@ -162,10 +162,6 @@
     "@_yubikey_selection": {},
 
     "s_select_to_scan": "Selecteren om te scannen",
-    "s_hide_reader": "Lezer verbergen",
-    "s_show_hidden_readers": "Geef verborgen lezers weer",
-    "s_toggle_readers": "Lezers weergeven/verbergen",
-    "l_toggle_readers_desc": "Toon of verberg lezers",
     "s_sn_serial": "S/N: {serial}",
     "@s_sn_serial": {
         "placeholders": {
@@ -210,6 +206,8 @@
     "l_replace_yk_on_reader": "Plaats uw YubiKey terug op de lezer",
     "l_remove_yk_from_reader": "Verwijder uw YubiKey uit de NFC-lezer",
     "p_try_reinsert_yk": "Probeer uw YubiKey te verwijderen en opnieuw te plaatsen.",
+    "l_reinsert_yk_nfc_required": null,
+    "p_reinsert_yk_nfc_required": null,
     "s_touch_required": "Aanraken verplicht",
     "l_touch_button_now": "Raak nu de knop op uw YubiKey aan",
     "l_long_touch_button_now": "Houd de knop op uw YubiKey nu 5 seconden ingedrukt",
@@ -858,6 +856,7 @@
     "s_private_id": "Privé-ID",
     "s_use_serial": "Serienummer gebruiken",
     "l_select_file": "Bestand selecteren",
+    "l_create_export_file": null,
     "l_no_export_file": "Geen exportbestand",
     "s_no_export": "Geen export",
     "s_export": "Exporteren",
@@ -871,6 +870,8 @@
         }
     },
     "s_keyboard_layout": "Toetsenbordindeling",
+    "s_keyboard_variant": null,
+    "s_keyboard_variant_default": null,
     "l_keyboard_layout": "Toetsenbord {layout}",
     "@l_keyboard_layout": {
         "placeholders": {

@@ -119,11 +119,17 @@ class AndroidOtpStateNotifier extends OtpStateNotifier {
   }
 
   @override
-  Future<Map<String, List<String>>> getKeyboardLayouts() async {
+  Future<Map<String, KeyboardLayout>> getKeyboardLayouts() async {
     final result = await _compute('getKeyboardLayouts');
-    return Map<String, List<String>>.from(
-      result.map(
-        (key, value) => MapEntry(key, (value as List<dynamic>).cast<String>()),
+    return result.map(
+      (key, value) => MapEntry(
+        key,
+        KeyboardLayout(
+          name: key,
+          description: key,
+          characters: (value as List<dynamic>).cast<String>(),
+          variants: const {},
+        ),
       ),
     );
   }

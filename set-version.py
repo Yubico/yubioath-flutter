@@ -110,32 +110,6 @@ def update_pubspec(buf):
     )
 
 
-# Helper version_info
-def update_helper_version(buf):
-    version_tuple = repr(tuple(int(d) for d in short_version.split(".")) + (0,))
-    buf = sub1(
-        r"filevers=\(\d+, \d+, \d+, \d+\)",
-        f"filevers={version_tuple}",
-        buf,
-    )
-    buf = sub1(
-        r"prodvers=\(\d+, \d+, \d+, \d+\)",
-        f"prodvers={version_tuple}",
-        buf,
-    )
-    buf = sub1(
-        rf"'FileVersion', '{version_pattern}'",
-        f"'FileVersion', '{version}'",
-        buf,
-    )
-    buf = sub1(
-        rf"'ProductVersion', '{version_pattern}'",
-        f"'ProductVersion', '{version}'",
-        buf,
-    )
-    return buf
-
-
 # release-win.ps1
 def update_release_win(buf):
     return sub1(
@@ -155,6 +129,5 @@ def update_win_msi(buf):
 
 
 update_file("pubspec.yaml", update_pubspec)
-update_file("helper/version_info.txt", update_helper_version)
 update_file("resources/win/release-win.ps1", update_release_win)
 update_file("resources/win/yubioath-desktop.wxs", update_win_msi)

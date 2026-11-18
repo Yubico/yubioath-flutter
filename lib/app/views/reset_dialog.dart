@@ -21,6 +21,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:logging/logging.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -28,7 +29,6 @@ import '../../app/logging.dart';
 import '../../core/models.dart';
 import '../../core/state.dart';
 import '../../desktop/models.dart';
-import '../../desktop/state.dart';
 import '../../exception/cancellation_exception.dart';
 import '../../exception/ctap_exception.dart';
 import '../../fido/models.dart';
@@ -44,7 +44,6 @@ import '../features.dart' as features;
 import '../message.dart';
 import '../models.dart';
 import '../state.dart';
-import 'elevate_fido_buttons.dart';
 import 'keys.dart';
 
 final _log = Logger('fido.views.reset_dialog');
@@ -63,6 +62,27 @@ List<Capability> getResetCapabilities(FeatureProvider hasFeature) => [
   if (hasFeature(features.fido)) Capability.fido2,
   if (hasFeature(features.piv)) Capability.piv,
 ];
+
+@visibleForTesting
+String fidoResetInstruction(
+  AppLocalizations l10n,
+  InteractionEvent? interaction, {
+  required bool nfc,
+  required bool longTouch,
+}) => switch (interaction) {
+  InteractionEvent.remove =>
+    nfc ? l10n.l_remove_yk_from_reader : l10n.l_unplug_yk,
+  InteractionEvent.insert =>
+    nfc ? l10n.l_replace_yk_on_reader : l10n.l_reinsert_yk,
+  InteractionEvent.touch =>
+    nfc
+        ? l10n.s_please_wait
+        : longTouch
+        ? l10n.l_long_touch_button_now
+        : l10n.l_touch_button_now,
+  InteractionEvent.wait => l10n.s_please_wait,
+  null => '',
+};
 
 class ResetDialog extends ConsumerStatefulWidget {
   final YubiKeyData data;
@@ -85,36 +105,39 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
   InteractionEvent? _interaction;
   int _currentStep = -1;
   bool _resetting = false;
+  bool _fidoResetActive = false;
   late final int _totalSteps;
+  late final StateController<bool> _fidoResetController;
 
   @override
   void initState() {
     super.initState();
+    _fidoResetController = ref.read(fidoResetInProgressProvider.notifier);
     final nfc = widget.data.node.transport == Transport.nfc;
-    _totalSteps = nfc ? 2 : 4;
+    _totalSteps = nfc && isAndroid ? 2 : 4;
     _globalReset = _isGlobalReset();
     _application = !_globalReset ? widget.application : null;
 
     // on Android & USB we have to query the FIDO reset parameters
     if (isAndroid && !nfc) {
       Future.microtask(() {
-        MethodChannel(
-          'android.fido.methods',
-        ).invokeMethod('getFidoResetProperties').then((response) {
-          try {
-            final fidoResetProperties = jsonDecode(response);
-            if (fidoResetProperties['success'] == true) {
-              setState(() {
-                _updateResetParameters(
-                  fidoResetProperties['long_touch_for_reset'],
-                  fidoResetProperties['transports_for_reset'],
-                );
-              });
-            }
-          } catch (e) {
-            _log.error('Failed to get FIDO reset properties');
-          }
-        });
+        MethodChannel('android.fido.methods')
+            .invokeMethod('getFidoResetProperties')
+            .then((response) {
+              try {
+                final fidoResetProperties = jsonDecode(response);
+                if (fidoResetProperties['success'] == true) {
+                  setState(() {
+                    _updateResetParameters(
+                      fidoResetProperties['long_touch_for_reset'],
+                      fidoResetProperties['transports_for_reset'],
+                    );
+                  });
+                }
+              } catch (e) {
+                _log.error('Failed to get FIDO reset properties');
+              }
+            });
       });
     }
   }
@@ -122,7 +145,19 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
   @override
   void dispose() {
     _subscription?.cancel();
+    _finishFidoReset();
     super.dispose();
+  }
+
+  void _finishFidoReset() {
+    if (_fidoResetActive) {
+      _fidoResetActive = false;
+      Future.microtask(() {
+        if (_fidoResetController.mounted) {
+          _fidoResetController.state = false;
+        }
+      });
+    }
   }
 
   String _getMessage() {
@@ -131,16 +166,12 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
     if (_currentStep == _totalSteps) {
       return l10n.l_fido_app_reset;
     }
-    return switch (_interaction) {
-      InteractionEvent.remove =>
-        nfc ? l10n.l_remove_yk_from_reader : l10n.l_unplug_yk,
-      InteractionEvent.insert =>
-        nfc ? l10n.l_replace_yk_on_reader : l10n.l_reinsert_yk,
-      InteractionEvent.touch =>
-        _longTouch ? l10n.l_long_touch_button_now : l10n.l_touch_button_now,
-      InteractionEvent.wait => l10n.s_please_wait,
-      null => '',
-    };
+    return fidoResetInstruction(
+      l10n,
+      _interaction,
+      nfc: nfc,
+      longTouch: _longTouch,
+    );
   }
 
   bool _isGlobalReset() {
@@ -182,22 +213,17 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
     final usbTransport = widget.data.node.transport == Transport.usb;
 
     double progress = _currentStep == -1 ? 0.0 : _currentStep / _totalSteps;
-    final winNonElevated =
-        Platform.isWindows &&
-        !ref.watch(rpcStateProvider.select((state) => state.isAdmin));
-    final needsElevation = winNonElevated && _application == Capability.fido2;
 
     // show the progress widgets on desktop, or on Android when using USB
     final showResetProgress =
         _resetting && (!Platform.isAndroid || usbTransport);
 
     if (widget.data.info.config.enabledCapabilities[widget
-                    .data
-                    .node
-                    .transport]! &
-                Capability.fido2.value !=
-            0 &&
-        !winNonElevated) {
+                .data
+                .node
+                .transport]! &
+            Capability.fido2.value !=
+        0) {
       if (isDesktop) {
         // on desktop we have direct access to the ctap info
         final ctapInfo =
@@ -241,15 +267,17 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                     Capability.fido2 =>
                       !_fidoTransportDisabled
                           ? () async {
+                              _fidoResetActive = true;
+                              _fidoResetController.state = true;
                               _subscription = ref
                                   .read(
-                                    fidoStateProvider(
-                                      widget.data.node.path,
-                                    ).notifier,
+                                    fidoStateProvider(widget.data.node.path)
+                                        .notifier,
                                   )
                                   .reset()
                                   .listen(
                                     (event) {
+                                      if (!mounted) return;
                                       setState(() {
                                         _resetting = true;
                                         _currentStep++;
@@ -257,6 +285,8 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                                       });
                                     },
                                     onDone: () async {
+                                      _finishFidoReset();
+                                      if (!mounted) return;
                                       setState(() {
                                         _currentStep = _totalSteps;
                                       });
@@ -275,6 +305,16 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                                       }
                                     },
                                     onError: (e) {
+                                      _finishFidoReset();
+                                      if (!mounted) {
+                                        if (e is! CancellationException) {
+                                          _log.error(
+                                            'Error performing FIDO reset',
+                                            e,
+                                          );
+                                        }
+                                        return;
+                                      }
                                       if (e is CancellationException) {
                                         setState(() {
                                           _resetting = false;
@@ -365,9 +405,8 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                       // Show dismissed banner upon reset
                       ref
                           .read(
-                            dismissedBannersProvider(
-                              widget.data.info.serial,
-                            ).notifier,
+                            dismissedBannersProvider(widget.data.info.serial)
+                                .notifier,
                           )
                           .showBanner(pivPinDefaultBannerKey);
 
@@ -473,25 +512,19 @@ class _ResetDialogState extends ConsumerState<ResetDialog> {
                               ? l10n.p_warning_global_reset
                               : l10n.p_factory_reset_an_app,
                       },
-                      style: Theme.of(
-                        context,
-                      ).textTheme.bodyMedium?.copyWith(fontWeight: .w700),
+                      style: Theme.of(context).textTheme.bodyMedium
+                          ?.copyWith(fontWeight: .w700),
                     ),
-                    if (needsElevation) ...[
-                      Text(l10n.p_elevated_permissions_required),
-                      const ElevateFidoButtons(),
-                    ] else ...[
-                      Text(switch (_application) {
-                        Capability.oath => l10n.p_warning_disable_credentials,
+                    Text(switch (_application) {
+                      Capability.oath => l10n.p_warning_disable_credentials,
 
-                        Capability.piv => l10n.p_warning_piv_reset_desc,
-                        Capability.fido2 => l10n.p_warning_disable_accounts,
-                        _ =>
-                          _globalReset
-                              ? l10n.p_warning_global_reset_desc
-                              : l10n.p_factory_reset_desc,
-                      }),
-                    ],
+                      Capability.piv => l10n.p_warning_piv_reset_desc,
+                      Capability.fido2 => l10n.p_warning_disable_accounts,
+                      _ =>
+                        _globalReset
+                            ? l10n.p_warning_global_reset_desc
+                            : l10n.p_factory_reset_desc,
+                    }),
                     if (_application == Capability.fido2 &&
                         _fidoTransportDisabled)
                       Row(

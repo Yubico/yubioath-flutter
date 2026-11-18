@@ -21,12 +21,18 @@ import com.yubico.authenticator.piv.TestData.ECCP384
 import com.yubico.authenticator.piv.TestData.ED25519
 import com.yubico.authenticator.piv.TestData.RSA2048
 import com.yubico.authenticator.piv.TestData.X25519
+import com.yubico.yubikit.core.keys.PrivateKeyValues
+import com.yubico.yubikit.piv.KeyType
+import java.io.StringWriter
+import java.security.KeyPairGenerator
+import java.security.PrivateKey
 import java.security.Security
 import java.security.interfaces.RSAPrivateKey
 import java.security.interfaces.XECPrivateKey
 import org.bouncycastle.jcajce.interfaces.EdDSAPrivateKey
 import org.bouncycastle.jce.interfaces.ECPrivateKey
 import org.bouncycastle.jce.provider.BouncyCastleProvider
+import org.bouncycastle.openssl.jcajce.JcaPEMWriter
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -39,6 +45,47 @@ class KeyMaterialParserTest {
     fun `setup BC`() {
         Security.removeProvider("BC")
         Security.insertProviderAt(BouncyCastleProvider(), 1)
+    }
+
+    private fun postQuantumKey(algorithm: String): PrivateKey =
+        KeyPairGenerator.getInstance(algorithm, "BC").generateKeyPair().private
+
+    private fun assertKeyType(expected: KeyType, key: PrivateKey?) {
+        Assert.assertNotNull(key)
+        Assert.assertEquals(
+            expected,
+            KeyType.fromKeyParams(PrivateKeyValues.fromPrivateKey(key!!))
+        )
+    }
+
+    private val postQuantumKeyTypes = mapOf(
+        "ML-DSA-44" to KeyType.MLDSA44,
+        "ML-DSA-65" to KeyType.MLDSA65,
+        "ML-DSA-87" to KeyType.MLDSA87,
+        "ML-KEM-512" to KeyType.MLKEM512,
+        "ML-KEM-768" to KeyType.MLKEM768,
+        "ML-KEM-1024" to KeyType.MLKEM1024
+    )
+
+    @Test
+    fun `post-quantum der`() {
+        postQuantumKeyTypes.forEach { (algorithm, keyType) ->
+            val (certs, key) = KeyMaterialParser.parse(postQuantumKey(algorithm).encoded)
+            Assert.assertTrue(algorithm, certs.isEmpty())
+            assertKeyType(keyType, key)
+        }
+    }
+
+    @Test
+    fun `post-quantum pem`() {
+        postQuantumKeyTypes.forEach { (algorithm, keyType) ->
+            val pem = StringWriter().also {
+                JcaPEMWriter(it).use { writer -> writer.writeObject(postQuantumKey(algorithm)) }
+            }.toString()
+            val (certs, key) = KeyMaterialParser.parse(pem.toByteArray())
+            Assert.assertTrue(algorithm, certs.isEmpty())
+            assertKeyType(keyType, key)
+        }
     }
 
     @Test

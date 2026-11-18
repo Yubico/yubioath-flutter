@@ -118,18 +118,18 @@ class SlotDialog extends ConsumerWidget {
                                     Icon(
                                       Symbols.info,
                                       size: 16,
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.onSurfaceVariant,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurfaceVariant,
                                     ),
                                     const SizedBox(width: 8),
                                     Flexible(
                                       child: Text(
                                         l10n.l_warning_public_key_mismatch,
                                         style: textTheme.bodySmall?.copyWith(
-                                          color: Theme.of(
-                                            context,
-                                          ).colorScheme.onSurfaceVariant,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurfaceVariant,
                                         ),
                                       ),
                                     ),

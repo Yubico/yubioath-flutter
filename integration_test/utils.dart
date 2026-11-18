@@ -25,6 +25,8 @@ import 'package:yubico_authenticator/desktop/window_manager_helper/window_manage
 import 'package:yubico_authenticator/generated/l10n/app_localizations.dart';
 import 'package:yubico_authenticator/management/models.dart';
 
+const _testLogFile = String.fromEnvironment('TEST_LOG_FILE');
+const _diagnosticsDir = String.fromEnvironment('TEST_DIAGNOSTICS_DIR');
 const _expectedSerials = String.fromEnvironment('TEST_SERIALS');
 final expectedSerials = _expectedSerials
     .split(',')
@@ -65,9 +67,15 @@ Future<Widget> getApp() async {
     isRunningTest = true; // Enable test mode
 
     if (isAndroid) {
-      _app = await android.initialize(level: Levels.INFO);
+      _app = await android.initialize(
+        level: _testLogFile.isEmpty ? Levels.INFO : Levels.TRAFFIC,
+      );
     } else if (isDesktop) {
-      _app = await desktop.initialize([]);
+      _app = await desktop.initialize(
+        _testLogFile.isEmpty
+            ? []
+            : ['--log-level', 'TRAFFIC', '--log-file', _testLogFile],
+      );
     } else {
       throw UnimplementedError('Platform not supported');
     }
@@ -77,6 +85,51 @@ Future<Widget> getApp() async {
 
 typedef TestCondition = bool Function(DeviceInfo info);
 typedef AppTest = Future<void> Function(PatrolTester $);
+
+void _recordTestFailure(
+  PatrolTester $,
+  String name,
+  Object error,
+  StackTrace stack,
+) {
+  if (_diagnosticsDir.isEmpty) return;
+  final diagnostic = <String, dynamic>{
+    'utc': DateTime.now().toUtc().toIso8601String(),
+    'test': name,
+    'error': error.toString(),
+    'stack': stack.toString(),
+  };
+  try {
+    if ($(MaterialApp).exists) {
+      final device = $.read(currentDeviceDataProvider);
+      diagnostic['device'] = {
+        'serial': device.value?.info.serial,
+        'pid': device.value?.node.pid?.value,
+        'path': device.value?.node.path.toString(),
+        'loading': device.isLoading,
+        'error': device.error?.toString(),
+      };
+      diagnostic['section'] = $.read(currentSectionProvider).name;
+      diagnostic['visible_text'] = find
+          .byType(Text)
+          .evaluate()
+          .map((element) => (element.widget as Text).data)
+          .whereType<String>()
+          .take(40)
+          .map((text) => text.length > 180 ? text.substring(0, 180) : text)
+          .toList();
+    }
+  } catch (snapshotError) {
+    diagnostic['snapshot_error'] = snapshotError.toString();
+  }
+  try {
+    File(
+      '$_diagnosticsDir${Platform.pathSeparator}test-failures.jsonl',
+    ).writeAsStringSync('${jsonEncode(diagnostic)}\n', mode: FileMode.append);
+  } on FileSystemException catch (writeError) {
+    $.tester.printToConsole('Failed to save test diagnostics: $writeError');
+  }
+}
 
 @isTest
 void testApp(
@@ -92,28 +145,38 @@ void testApp(
   }
   if (isDesktop) {
     patrolWidgetTest(name, (widgetTester) async {
-      final windowManagerHelper = WindowManagerHelper.withPreferences(
-        await SharedPreferences.getInstance(),
-      );
-      await widgetTester.pumpWidget(await getApp());
+      try {
+        final windowManagerHelper = WindowManagerHelper.withPreferences(
+          await SharedPreferences.getInstance(),
+        );
+        await widgetTester.pumpWidget(await getApp());
 
-      // Set window size
-      final size = params.windowSize.size;
-      final rect = Rect.fromLTWH(10, 10, size.width, size.height);
-      if (await windowManagerHelper.getBounds() != rect) {
-        await Future.delayed(const Duration(milliseconds: 200));
-        await windowManagerHelper.setBounds(rect);
+        // Set window size
+        final size = params.windowSize.size;
+        final rect = Rect.fromLTWH(10, 10, size.width, size.height);
+        if (await windowManagerHelper.getBounds() != rect) {
+          await Future.delayed(const Duration(milliseconds: 200));
+          await windowManagerHelper.setBounds(rect);
+        }
+
+        await widgetTester.pumpAndSettle();
+        await test(widgetTester);
+      } catch (error, stack) {
+        _recordTestFailure(widgetTester, name, error, stack);
+        rethrow;
       }
-
-      await widgetTester.pumpAndSettle();
-      await test(widgetTester);
     }, tags: tags);
   } else if (isAndroid) {
     patrolWidgetTest(name, (widgetTester) async {
-      await widgetTester.pumpWidget(await getApp());
-      await test(widgetTester);
-      // Allow some time for the app to settle after the test
-      await Future.delayed(const Duration(milliseconds: 200));
+      try {
+        await widgetTester.pumpWidget(await getApp());
+        await test(widgetTester);
+        // Allow some time for the app to settle after the test
+        await Future.delayed(const Duration(milliseconds: 200));
+      } catch (error, stack) {
+        _recordTestFailure(widgetTester, name, error, stack);
+        rethrow;
+      }
     }, tags: tags);
   } else {
     fail('Unsupported platform');
@@ -236,14 +299,20 @@ extension PatrolTesterUtils on PatrolTester {
     FutureOr<bool> Function() condition, {
     Duration timeout = const Duration(seconds: 30),
     String reason = 'Condition not met within timeout',
+    bool settle = true,
   }) async {
     final start = DateTime.now();
     while (DateTime.now().difference(start) < timeout) {
       if (await condition()) {
-        await pumpAndSettle();
+        if (settle) await pumpAndSettle();
         return;
       }
-      await pumpAndSettle();
+      if (settle) {
+        await pumpAndSettle();
+      } else {
+        await Future.delayed(const Duration(milliseconds: 100));
+        await pump();
+      }
     }
     fail(reason);
   }
@@ -259,13 +328,23 @@ extension PatrolTesterUtils on PatrolTester {
         }
 
         if (reader != null) {
-          // Select the NFC reader
-          await $(DeviceRow).which<DeviceRow>((widget) {
-            return widget.node?.name.toLowerCase().contains(
-                  reader.toLowerCase(),
-                ) ==
-                true;
-          }).tap();
+          YubiKeyDeviceNode? nfcDevice() =>
+              read(attachedDevicesProvider)
+                  .whereType<YubiKeyDeviceNode>()
+                  .where(
+                    (node) =>
+                        node.transport == Transport.nfc &&
+                        expectedSerials.contains(node.info?.serial ?? 0),
+                  )
+                  .firstOrNull;
+          await condition(
+            () => nfcDevice() != null,
+            reason:
+                'No expected YubiKey became available on NFC reader $reader',
+            settle: false,
+          );
+          final node = nfcDevice()!;
+          await $(find.byKey(ValueKey(node.path.key))).tap();
         } else {
           // Make sure USB is selected
           await $(DeviceRow).first.tap();
@@ -273,7 +352,16 @@ extension PatrolTesterUtils on PatrolTester {
       }
 
       // Wait for the current device data to be set
-      await condition(() async => read(currentDeviceDataProvider).hasValue);
+      final timeout = isDesktop && reader == null
+          ? const Duration(seconds: 5)
+          : const Duration(seconds: 30);
+      await condition(
+        () => read(currentDeviceDataProvider).hasValue,
+        timeout: timeout,
+        reason:
+            'No YubiKey became available within ${timeout.inSeconds} seconds',
+        settle: false,
+      );
     }
 
     // We have a YubiKey, wait for the UI to be ready and verify the serial
@@ -286,7 +374,7 @@ extension PatrolTesterUtils on PatrolTester {
     }
     // Make sure no other YubiKeys are connected via USB
     if (read(attachedDevicesProvider)
-        .whereType<UsbYubiKeyNode>()
+        .whereType<YubiKeyDeviceNode>()
         .where((node) => node != device.node)
         .isNotEmpty) {
       await fatalError('Additional YubiKeys connected');

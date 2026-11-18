@@ -1,0 +1,68 @@
+name: Flutter checks
+
+on: [push, pull_request]
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    env:
+      CARGO_PROFILE_DEV_DEBUG: "2"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: true
+
+      - name: Read variables from repo
+        run: cat .github/workflows/env >> $GITHUB_ENV
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+        with:
+          cache-provider: basic
+          cache-read-only: true
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          channel: 'stable'
+          flutter-version: ${{ env.FLUTTER }}
+          cache: true
+          pub-cache: true
+
+      - name: Install Flutter dependencies
+        run: flutter pub get
+
+      - name: Install helper lint dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -qq libpcsclite-dev libudev-dev libdbus-1-dev build-essential cmake pkg-config libssl-dev
+
+      - name: Install Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@ecabd13d1c56bd1345c230e542e9144811ad706f # v2.0.0
+        with:
+          toolchain: stable
+          components: clippy,rustfmt
+          build-warnings: ""
+          rustflags: ""
+          cache: true
+          cache-workspaces: helper
+          cache-save-if: ${{ github.event_name == 'push' }}
+
+      - name: Install cargo-deny
+        uses: taiki-e/install-action@5488ac5a951645ce95062214902ac4b6bc1a1037 # v2.87.32
+        with:
+          tool: cargo-deny
+
+      - name: Run lints and tests
+        run: |
+          pipx run pre-commit run --all-files
+          flutter test
+
+      - name: Check generated files
+        run: git diff --exit-code

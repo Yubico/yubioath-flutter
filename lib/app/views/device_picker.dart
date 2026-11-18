@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:material_symbols_icons/symbols.dart';
 
 import '../../android/state.dart';
+import '../../core/models.dart';
 import '../../core/state.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../management/models.dart';
@@ -28,7 +26,6 @@ import '../../widgets/focus_border.dart';
 import '../models.dart';
 import '../state.dart';
 import 'device_avatar.dart';
-import 'keys.dart';
 
 class DevicePickerContent extends ConsumerWidget {
   final bool extended;
@@ -43,14 +40,11 @@ class DevicePickerContent extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final hidden = ref.watch(hiddenDevicesProvider);
-    final devices = ref
-        .watch(attachedDevicesProvider)
-        .where((e) => !hidden.contains(e.path.key))
-        .toList();
+    final devices = ref.watch(attachedDevicesProvider);
     final currentNode = ref.watch(currentDeviceProvider);
 
-    final showUsb = isDesktop && devices.whereType<UsbYubiKeyNode>().isEmpty;
+    final showNoKey =
+        isDesktop && devices.whereType<YubiKeyDeviceNode>().isEmpty;
     final borderRadius = isDrawer
         ? BorderRadius.only(
             topRight: Radius.circular(24),
@@ -68,12 +62,7 @@ class DevicePickerContent extends ConsumerWidget {
 
       androidNoKeyWidget = DeviceRow(
         borderRadius: borderRadius,
-        leading: const DeviceAvatar(
-          child: Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Icon(Symbols.usb),
-          ),
-        ),
+        leading: DeviceAvatar.noDevice(),
         title: l10n.l_no_yk_present,
         subtitle: subtitle,
         onTap: () {
@@ -85,17 +74,11 @@ class DevicePickerContent extends ConsumerWidget {
     }
 
     List<Widget> children = [
-      if (showUsb)
+      if (showNoKey)
         DeviceRow(
           borderRadius: borderRadius,
-          leading: const DeviceAvatar(
-            child: Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Icon(Symbols.usb),
-            ),
-          ),
-          title: l10n.s_usb,
-          subtitle: l10n.l_no_yk_present,
+          leading: DeviceAvatar.noDevice(),
+          title: l10n.l_no_yk_present,
           onTap: () {
             ref.read(currentDeviceProvider.notifier).setCurrentDevice(null);
           },
@@ -113,24 +96,14 @@ class DevicePickerContent extends ConsumerWidget {
                 extended,
                 borderRadius,
               )
-            : switch (e) {
-                UsbYubiKeyNode() => _buildDeviceRow(
-                  context,
-                  ref,
-                  e,
-                  e.info,
-                  extended,
-                  borderRadius,
-                ),
-                NfcReaderNode() => _buildDeviceRow(
-                  context,
-                  ref,
-                  e,
-                  null,
-                  extended,
-                  borderRadius,
-                ),
-              },
+            : _buildDeviceRow(
+                context,
+                ref,
+                e,
+                (e as YubiKeyDeviceNode).info,
+                extended,
+                borderRadius,
+              ),
       ),
     ];
 
@@ -169,50 +142,20 @@ List<String> _getDeviceStrings(
       [l10n.l_no_yk_present];
 
   // Add the NFC reader name, unless it's already included (as device name, like on Android)
-  if (node is NfcReaderNode && !messages.contains(node.name)) {
+  if (node.transport == Transport.nfc && !messages.contains(node.name)) {
     messages.add(node.name);
   }
 
   return messages;
 }
 
-class _DeviceMenuButton extends ConsumerWidget {
-  final List<PopupMenuItem> menuItems;
-  final double opacity;
-
-  const _DeviceMenuButton({required this.menuItems, required this.opacity});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context);
-    return Theme(
-      data: Theme.of(Navigator.of(context).context), // use app theme
-      child: Opacity(
-        opacity: menuItems.isNotEmpty ? opacity : 0.0,
-        child: PopupMenuButton(
-          key: yubikeyPopupMenuButton,
-          enabled: menuItems.isNotEmpty,
-          icon: const Icon(Symbols.more_horiz),
-          tooltip: l10n.s_options,
-          iconColor: Theme.of(context).listTileTheme.textColor,
-          itemBuilder: (context) {
-            return menuItems;
-          },
-          popUpAnimationStyle: AnimationStyle(duration: Duration.zero),
-        ),
-      ),
-    );
-  }
-}
-
-class DeviceRow extends ConsumerStatefulWidget {
+class DeviceRow extends StatefulWidget {
   final Widget leading;
   final String title;
-  final String subtitle;
+  final String? subtitle;
   final bool extended;
   final bool selected;
   final Color? background;
-  final DeviceNode? node;
   final void Function() onTap;
   final BorderRadiusGeometry? borderRadius;
 
@@ -220,22 +163,20 @@ class DeviceRow extends ConsumerStatefulWidget {
     super.key,
     required this.leading,
     required this.title,
-    required this.subtitle,
+    this.subtitle,
     required this.extended,
     required this.selected,
     this.background,
-    this.node,
     required this.onTap,
     this.borderRadius,
   });
 
   @override
-  ConsumerState<DeviceRow> createState() => _DeviceRowState();
+  State<DeviceRow> createState() => _DeviceRowState();
 }
 
-class _DeviceRowState extends ConsumerState<DeviceRow> {
+class _DeviceRowState extends State<DeviceRow> {
   final FocusNode _focusNode = FocusNode();
-  bool _showContextMenu = false;
 
   @override
   void dispose() {
@@ -245,8 +186,7 @@ class _DeviceRowState extends ConsumerState<DeviceRow> {
 
   @override
   Widget build(BuildContext context) {
-    final menuItems = _getMenuItems(context, ref, widget.node);
-    final tooltip = '${widget.title}\n${widget.subtitle}';
+    final tooltip = [widget.title, ?widget.subtitle].join('\n');
     final themeData = Theme.of(context);
     final seedColor = !widget.selected || widget.background == null
         ? themeData.colorScheme.primary
@@ -273,137 +213,62 @@ class _DeviceRowState extends ConsumerState<DeviceRow> {
         message: '', // no tooltip for drawer
         child: Theme(
           data: localThemeData,
-          child: MouseRegion(
-            onEnter: (PointerEnterEvent event) {
-              setState(() {
-                _showContextMenu = true;
-              });
-            },
-            onExit: (PointerExitEvent event) {
-              setState(() {
-                _showContextMenu = false;
-              });
-            },
-            child: FocusBorder(
+          child: FocusBorder(
+            focusNode: _focusNode,
+            borderRadius: borderRadius,
+            color: widget.selected
+                ? colorScheme.onPrimary
+                : themeData.colorScheme.primary,
+            child: ListTile(
               focusNode: _focusNode,
-              borderRadius: borderRadius,
-              color: widget.selected
-                  ? colorScheme.onPrimary
-                  : themeData.colorScheme.primary,
-              child: ListTile(
-                focusNode: _focusNode,
-                shape: RoundedRectangleBorder(borderRadius: borderRadius),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 0,
-                ),
-                horizontalTitleGap: 8,
-                leading: widget.leading,
-                trailing: menuItems.isNotEmpty
-                    ? _DeviceMenuButton(
-                        menuItems: menuItems,
-                        opacity: widget.selected
-                            ? 1.0
-                            : _showContextMenu
-                            ? 0.3
-                            : 0.0,
-                      )
-                    : null,
-                title: Text(widget.title, overflow: .fade, softWrap: false),
-                subtitle: Text(
-                  widget.subtitle,
+              shape: RoundedRectangleBorder(borderRadius: borderRadius),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 8,
+                vertical: 0,
+              ),
+              horizontalTitleGap: 8,
+              leading: widget.leading,
+              title: Text(widget.title, overflow: .fade, softWrap: false),
+              subtitle: switch (widget.subtitle) {
+                final subtitle? => Text(
+                  subtitle,
                   overflow: .fade,
                   softWrap: false,
                 ),
-                dense: true,
-                onTap: widget.onTap,
-              ),
+                null => null,
+              },
+              minVerticalPadding: widget.subtitle == null ? 14.5 : null,
+              dense: widget.subtitle != null,
+              onTap: widget.onTap,
             ),
           ),
         ),
       );
     } else {
-      void showMenuFn(details) {
-        showMenu(
-          context: context,
-          position: RelativeRect.fromLTRB(
-            details.globalPosition.dx,
-            details.globalPosition.dy,
-            details.globalPosition.dx,
-            0,
-          ),
-          items: menuItems,
-        );
-      }
-
-      return GestureDetector(
-        onSecondaryTapDown: isDesktop && menuItems.isNotEmpty
-            ? showMenuFn
-            : null,
-        onLongPressStart: isAndroid ? showMenuFn : null,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 6.5),
-          child: widget.selected
-              ? Semantics(
-                  label: tooltip,
-                  child: IconButton.filled(
-                    tooltip: isDesktop ? tooltip : null,
-                    icon: widget.leading,
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    onPressed: widget.onTap,
-                  ),
-                )
-              : Semantics(
-                  label: tooltip,
-                  child: IconButton(
-                    tooltip: isDesktop ? tooltip : null,
-                    icon: widget.leading,
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    onPressed: widget.onTap,
-                    color: colorScheme.secondary,
-                  ),
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6.5),
+        child: widget.selected
+            ? Semantics(
+                label: tooltip,
+                child: IconButton.filled(
+                  tooltip: isDesktop ? tooltip : null,
+                  icon: widget.leading,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  onPressed: widget.onTap,
                 ),
-        ),
+              )
+            : Semantics(
+                label: tooltip,
+                child: IconButton(
+                  tooltip: isDesktop ? tooltip : null,
+                  icon: widget.leading,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  onPressed: widget.onTap,
+                  color: colorScheme.secondary,
+                ),
+              ),
       );
     }
-  }
-
-  List<PopupMenuItem> _getMenuItems(
-    BuildContext context,
-    WidgetRef ref,
-    DeviceNode? node,
-  ) {
-    final l10n = AppLocalizations.of(context);
-    final hidden = ref.watch(hiddenDevicesProvider);
-
-    return [
-      if (isDesktop && hidden.isNotEmpty)
-        PopupMenuItem(
-          enabled: hidden.isNotEmpty,
-          onTap: () {
-            ref.read(hiddenDevicesProvider.notifier).showAll();
-          },
-          child: ListTile(
-            title: Text(l10n.s_show_hidden_readers),
-            leading: const Icon(Symbols.visibility),
-            dense: true,
-            contentPadding: EdgeInsets.zero,
-            enabled: hidden.isNotEmpty,
-          ),
-        ),
-      if (isDesktop && node is NfcReaderNode)
-        PopupMenuItem(
-          onTap: () {
-            ref.read(hiddenDevicesProvider.notifier).hideDevice(node.path);
-          },
-          child: ListTile(
-            title: Text(l10n.s_hide_reader),
-            leading: const Icon(Symbols.visibility_off),
-            dense: true,
-            contentPadding: EdgeInsets.zero,
-          ),
-        ),
-    ];
   }
 }
 
@@ -416,13 +281,10 @@ DeviceRow _buildDeviceRow(
   BorderRadiusGeometry? borderRadius,
 ) {
   final l10n = AppLocalizations.of(context);
-  final subtitle = switch (node) {
-    UsbYubiKeyNode(:final info) =>
-      info == null
-          ? l10n.s_yk_inaccessible
-          : _getDeviceInfoString(context, info),
-    NfcReaderNode() => l10n.s_select_to_scan,
-  };
+  final ykNode = node as YubiKeyDeviceNode;
+  final subtitle = ykNode.info == null
+      ? l10n.s_yk_inaccessible
+      : _getDeviceInfoString(context, ykNode.info!);
 
   final keyCustomization = ref.watch(
     keyCustomizationManagerProvider,
@@ -437,7 +299,6 @@ DeviceRow _buildDeviceRow(
     subtitle: subtitle,
     extended: extended,
     selected: false,
-    node: node,
     onTap: () {
       ref.read(currentDeviceProvider.notifier).setCurrentDevice(node);
     },
@@ -481,7 +342,6 @@ DeviceRow _buildCurrentDeviceRow(
     extended: extended,
     background: displayColor,
     selected: true,
-    node: node,
     onTap: () {},
   );
 }
