@@ -12,6 +12,13 @@ https://flutter.dev/desktop
 Development has been done using the "Install from git" method of installing the
 SDK, from the "stable" channel.
 
+=== Additional macOS Requirements
+Building for macOS requires specific Apple developer tools and package managers:
+
+Xcode (Full Application): Required to compile native Swift/Objective-C code. The "Command Line Tools" alone are insufficient for Flutter desktop builds. Install via the Mac App Store.
+
+CocoaPods: A dependency manager used by Flutter to link native macOS hardware libraries.
+
 === Dependencies
 This project uses several dependencies specified in the pubspec.yaml file, as
 well as in the helper/pyproject.toml file. These files specify version ranges
@@ -30,7 +37,7 @@ this range!
 === Building the Yubico Authenticator Helper
 The GUI requires a compiled version of Helper to run, which is built from the
 sources in helper/ in this repository. Requirements for all platforms are
-Python >= 3.8 and Poetry. This needs to be built prior to running
+Python >= 3.10 and UV. This needs to be built prior to running
 `flutter build` or `flutter run`.
 
 ==== Windows
@@ -39,7 +46,7 @@ Make sure the http://www.swig.org/[swig] executable is in your PATH.
 
 ==== macOS
 
-    $ brew install swig
+    $ brew install swig uv cocoapods
 
 ==== Linux (Debian-based distributions)
 
