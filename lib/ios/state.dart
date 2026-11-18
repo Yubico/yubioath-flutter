@@ -15,12 +15,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:logging/logging.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../app/models.dart';
 import '../app/state.dart';
 import '../core/models.dart';
-import '../core/state.dart';
 import '../management/models.dart';
 
 final _log = Logger('ios.state');
@@ -181,35 +179,32 @@ class IosCurrentDeviceNotifier extends CurrentDeviceNotifier {
   }
 }
 
+/// Starts on Home. Other sections are only reachable while a YubiKey is
+/// displayed, so fall back to Home when it disappears or lacks the section.
 class IosCurrentSectionNotifier extends CurrentSectionNotifier {
-  static const String _key = 'APP_STATE_LAST_SECTION';
-
-  final SharedPreferences _prefs;
-
-  IosCurrentSectionNotifier(this._prefs, List<Section> supportedSections)
-    : super(_fromName(_prefs.getString(_key), supportedSections));
+  IosCurrentSectionNotifier() : super(Section.home);
 
   @override
   void setCurrentSection(Section section) {
-    if (section != Section.home) {
-      _prefs.setString(_key, section.name);
-    }
     state = section;
   }
 
-  static Section _fromName(String? name, List<Section> supportedSections) =>
-      supportedSections.firstWhere(
-        (element) => element.name == name,
-        orElse: () => supportedSections.first,
-      );
+  void _onDeviceChanged(YubiKeyData? data) {
+    if (state == Section.home || state == Section.settings) return;
+    if (data == null || state.getAvailability(data) != Availability.enabled) {
+      state = Section.home;
+    }
+  }
 }
 
 /// Provides the `currentSectionProvider` override.
 CurrentSectionNotifier iosCurrentSectionNotifier(Ref ref) {
-  return IosCurrentSectionNotifier(
-    ref.watch(prefProvider),
-    ref.watch(supportedSectionsProvider),
+  final notifier = IosCurrentSectionNotifier();
+  ref.listen<AsyncValue<YubiKeyData>>(
+    currentDeviceDataProvider,
+    (_, next) => notifier._onDeviceChanged(next.value),
   );
+  return notifier;
 }
 
 /// Uses Flutter's standard clipboard. iOS does not have an Android-style

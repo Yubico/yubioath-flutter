@@ -183,9 +183,12 @@ class _IosOathSession extends AsyncNotifier<_Snapshot> {
   ) async {
     final generation = _generation;
     final previous = state.value;
+    // A plain read must accept a new OATH device ID, e.g. after the OATH
+    // application was reset elsewhere, so the state can recover.
     final next = await _call(method, {
       ...arguments,
-      if (previous != null) 'deviceId': previous.oath.deviceId,
+      if (previous != null && method != 'get')
+        'deviceId': previous.oath.deviceId,
     });
     if (previous != null && next.oath.deviceId == previous.oath.deviceId) {
       final codes = {

@@ -636,4 +636,48 @@ void main() {
     expect(tester.takeException(), isNull);
     debugDefaultTargetPlatformOverride = null;
   });
+
+  test('sections other than Home require a displayed key', () {
+    YubiKeyData keyData(int capabilities) {
+      final info = DeviceInfo.fromJson({
+        ..._deviceInfo,
+        'config': {
+          'enabled_capabilities': {'usb': capabilities, 'nfc': capabilities},
+        },
+      });
+      return YubiKeyData(
+        DeviceNode.nfcReader(DevicePath(const ['ios']), 'YubiKey'),
+        'YubiKey',
+        info,
+      );
+    }
+
+    final container = ProviderContainer(
+      overrides: [
+        currentDeviceDataProvider.overrideWith(
+          (ref) => ref.watch(_displayedData),
+        ),
+        currentSectionProvider.overrideWith(iosCurrentSectionNotifier),
+      ],
+    );
+    addTearDown(container.dispose);
+    final sections = container.read(currentSectionProvider.notifier);
+    expect(container.read(currentSectionProvider), Section.home);
+
+    final display = container.read(_displayedData.notifier);
+    display.state = AsyncData(keyData(63));
+    sections.setCurrentSection(Section.accounts);
+    display.state = AsyncData(keyData(63));
+    expect(container.read(currentSectionProvider), Section.accounts);
+
+    display.state = const AsyncLoading();
+    expect(container.read(currentSectionProvider), Section.home);
+
+    display.state = AsyncData(keyData(63));
+    expect(container.read(currentSectionProvider), Section.home);
+
+    sections.setCurrentSection(Section.accounts);
+    display.state = AsyncData(keyData(63 & ~Capability.oath.value));
+    expect(container.read(currentSectionProvider), Section.home);
+  });
 }
