@@ -1275,10 +1275,13 @@ impl SlotNode {
                             })?;
 
                             // Parse validity dates (YYYY-MM-DD format)
-                            let now = chrono::Utc::now();
-                            let default_from = now.format("%Y-%m-%d").to_string();
-                            let default_to = (now + chrono::Duration::days(365))
-                                .format("%Y-%m-%d")
+                            let today = jiff::Timestamp::now()
+                                .to_zoned_datetime(jiff::tz::TimeZone::UTC)
+                                .date();
+                            let default_from = today.strftime("%Y-%m-%d").to_string();
+                            let default_to = today
+                                .saturating_add(jiff::Span::new().days(365))
+                                .strftime("%Y-%m-%d")
                                 .to_string();
                             let valid_from_str = params
                                 .get("valid_from")
@@ -1289,23 +1292,20 @@ impl SlotNode {
                                 .and_then(|v| v.as_str())
                                 .unwrap_or(&default_to);
 
-                            let not_before =
-                                chrono::NaiveDate::parse_from_str(valid_from_str, "%Y-%m-%d")
-                                    .map_err(|e| {
-                                        RpcError::invalid_params(format!(
-                                            "Invalid valid_from date: {e}"
-                                        ))
-                                    })?;
-                            let not_after =
-                                chrono::NaiveDate::parse_from_str(valid_to_str, "%Y-%m-%d")
-                                    .map_err(|e| {
-                                        RpcError::invalid_params(format!(
-                                            "Invalid valid_to date: {e}"
-                                        ))
-                                    })?;
+                            let not_before = jiff::civil::Date::strptime(
+                                "%Y-%m-%d",
+                                valid_from_str,
+                            )
+                            .map_err(|e| {
+                                RpcError::invalid_params(format!("Invalid valid_from date: {e}"))
+                            })?;
+                            let not_after = jiff::civil::Date::strptime("%Y-%m-%d", valid_to_str)
+                                .map_err(|e| {
+                                RpcError::invalid_params(format!("Invalid valid_to date: {e}"))
+                            })?;
 
                             let duration_secs =
-                                (not_after - not_before).num_seconds().max(0) as u64;
+                                not_before.duration_until(not_after).as_secs().max(0) as u64;
 
                             let serial = random_serial_number()?;
                             let validity = Validity::from_now(Duration::from_secs(duration_secs))

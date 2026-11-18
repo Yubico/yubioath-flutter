@@ -39,7 +39,7 @@ fn main() {
                 (level, target)
             };
             let data = json!({
-                "time": chrono::Utc::now().timestamp_millis() as f64 / 1000.0,
+                "time": jiff::Timestamp::now().as_millisecond() as f64 / 1000.0,
                 "name": name,
                 "level": level,
                 "message": record.args().to_string(),

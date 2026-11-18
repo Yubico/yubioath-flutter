@@ -613,7 +613,9 @@ fn handle_utility_action(action: &str, params: &Value) -> Result<RpcResponse, Rp
                 .map_err(|_| RpcError::invalid_params("Invalid modhex public_id"))?;
             let public_id_modhex = modhex_encode(&public_id_bytes);
 
-            let ts = chrono::Local::now().format("%Y-%m-%dT%H:%M:%S").to_string();
+            let ts = jiff::ZonedDateTime::now()
+                .strftime("%Y-%m-%dT%H:%M:%S")
+                .to_string();
             let csv = format!(
                 "{},{},{},{},{},{},",
                 serial,
