@@ -38,8 +38,10 @@ Widget homeBuildActions(
   final l10n = AppLocalizations.of(context);
   final hasFeature = ref.watch(featureProvider);
   final interfacesLocked = deviceData.info.resetBlocked != 0;
+  // TODO: Enable legacy mode on iOS when YubiKit Swift exposes setMode.
   final managementAvailability =
       hasFeature(features.management) &&
+      (!isIOS || deviceData.info.version.major > 4) &&
       switch (deviceData.info.version) {
         Version version =>
           (version.major > 4 || // YK5 and up
