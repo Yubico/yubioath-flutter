@@ -149,7 +149,7 @@ final class ManagementManager: NSObject {
         let reboot = (args["reboot"] as? Bool) ?? false
 
         let writeOp: @Sendable (any SmartCardConnection, SCPKeyParams?) async throws -> ManagementRefresh<NamedDevice> = { connection, scpKeyParams in
-            let name = try await connection.deviceName
+            let name = try await YubiKey(connection: connection).deviceName
             let session = try await Management.Session.makeSession(connection: connection, scpKeyParams: scpKeyParams)
             let currentInfo = try await session.getDeviceInfo()
             let newConfig = Self.buildDeviceConfig(from: configMap, base: currentInfo.config)
@@ -198,7 +198,7 @@ final class ManagementManager: NSObject {
 
     private func deviceReset(args: [String: Any], result: @escaping FlutterResult) async {
         let resetOp: @Sendable (any SmartCardConnection, SCPKeyParams?) async throws -> ManagementRefresh<NamedDevice> = { connection, scpKeyParams in
-            let name = try await connection.deviceName
+            let name = try await YubiKey(connection: connection).deviceName
             let session = try await Management.Session.makeSession(connection: connection, scpKeyParams: scpKeyParams)
             return try await ManagementRefresh.perform(
                 mutation: { try await session.resetDevice() },
@@ -323,8 +323,8 @@ final class ManagementManager: NSObject {
     }
 
     nonisolated fileprivate static func readNamedDevice(from connection: any SmartCardConnection) async throws -> NamedDevice {
-        let name = try await connection.deviceName
-        return NamedDevice(info: try await readDeviceInfo(from: connection), name: name)
+        let key = try await YubiKey(connection: connection)
+        return NamedDevice(info: key.deviceInfo, name: key.deviceName)
     }
 
     nonisolated private static func readSCPKeyParams(
