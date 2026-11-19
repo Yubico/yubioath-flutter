@@ -25,22 +25,15 @@ final class ManagementManager: NSObject {
     private var methodChannel: FlutterMethodChannel?
     private var deviceEventsChannel: FlutterEventChannel?
     private let deviceEventsHandler = DeviceEventsHandler()
-    private let coordinator = UsbCoordinator()
+    private let coordinator = ConnectionCoordinator.shared
     private var monitorTask: Task<Void, Never>?
-
-    deinit {
-        monitorTask?.cancel()
-        let coordinator = coordinator
-        Task { await coordinator.stop() }
-    }
 
     func stop() async {
         monitorTask?.cancel()
         await coordinator.stop()
         await monitorTask?.value
         monitorTask = nil
-        methodChannel?.setMethodCallHandler(nil)
-        deviceEventsChannel?.setStreamHandler(nil)
+        detach()
     }
 
     private func performOperation(
@@ -60,15 +53,8 @@ final class ManagementManager: NSObject {
         }
     }
 
-    @discardableResult
-    static func register(with messenger: FlutterBinaryMessenger) -> ManagementManager {
-        let manager = ManagementManager()
-        manager.attach(messenger: messenger)
-        manager.startUsbMonitor()
-        return manager
-    }
-
-    private func attach(messenger: FlutterBinaryMessenger) {
+    func register(with messenger: FlutterBinaryMessenger) {
+        detach()
         let mc = FlutterMethodChannel(name: Self.channelName, binaryMessenger: messenger)
         mc.setMethodCallHandler { [weak self] call, result in
             self?.handle(call: call, result: result)
@@ -78,6 +64,16 @@ final class ManagementManager: NSObject {
         let ec = FlutterEventChannel(name: Self.deviceEventsChannelName, binaryMessenger: messenger)
         ec.setStreamHandler(deviceEventsHandler)
         deviceEventsChannel = ec
+
+        if monitorTask == nil { startWiredMonitor() }
+    }
+
+    private func detach() {
+        methodChannel?.setMethodCallHandler(nil)
+        deviceEventsChannel?.setStreamHandler(nil)
+        deviceEventsHandler.clearSink()
+        methodChannel = nil
+        deviceEventsChannel = nil
     }
 
     // MARK: - Method dispatch
@@ -280,36 +276,26 @@ final class ManagementManager: NSObject {
         }
     }
 
-    // MARK: - USB monitor
+    // MARK: - Wired monitor
 
-    private func startUsbMonitor() {
-        let coordinator = coordinator
-        monitorTask = Task {
+    private func startWiredMonitor() {
+        monitorTask = Task { [coordinator, deviceEventsHandler] in
             await coordinator.startMonitoring(
-                onAttach: { [weak self] device in
-                    await MainActor.run {
-                        guard let self else { return }
-                        let dict = DeviceInfoSerializer.serialize(
-                            device.info,
-                            name: device.name,
-                            isNfc: false
-                        )
-                        self.deviceEventsHandler.send(dict)
-                    }
+                onAttach: { device in
+                    let dict = DeviceInfoSerializer.serialize(
+                        device.info,
+                        name: device.name,
+                        isNfc: false
+                    )
+                    deviceEventsHandler.send(dict)
                 },
-                onDetach: { [weak self] in
-                    await MainActor.run {
-                        self?.deviceEventsHandler.clearWiredDevice()
-                    }
-                },
-                onError: { [weak self] error in
-                    await MainActor.run {
-                        self?.deviceEventsHandler.sendWiredError(FlutterError(
-                            code: "yubikit_error",
-                            message: String(describing: error),
-                            details: nil
-                        ))
-                    }
+                onDetach: { deviceEventsHandler.clearWiredDevice() },
+                onError: { error in
+                    deviceEventsHandler.sendWiredError(FlutterError(
+                        code: "yubikit_error",
+                        message: String(describing: error),
+                        details: nil
+                    ))
                 }
             )
         }
@@ -544,16 +530,22 @@ private final class DeviceEventsHandler: NSObject, @preconcurrency FlutterStream
     }
 
     func onCancel(withArguments _: Any?) -> FlutterError? {
-        sink = nil
+        clearSink()
         return nil
+    }
+
+    func clearSink() {
+        sink = nil
     }
 }
 
-// MARK: - UsbCoordinator
+// MARK: - ConnectionCoordinator
 
-/// Retains wired connections until disconnect, reboot, or explicit shutdown.
-actor UsbCoordinator {
-    private var heldConnection: (any SmartCardConnection)?
+/// Owns wired and NFC connections and serializes operations on them.
+actor ConnectionCoordinator {
+    static let shared = ConnectionCoordinator()
+
+    private var wiredConnection: (any SmartCardConnection)?
     private var nfcConnection: NFCSmartCardConnection?
     private var operationInFlight: Bool = false
     private var operationTask: Task<Void, Never>?
@@ -561,7 +553,9 @@ actor UsbCoordinator {
     private var stopped = false
     private var connectionGeneration = 0
 
-    var hasWiredDevice: Bool { heldConnection != nil }
+    private init() {}
+
+    var hasWiredDevice: Bool { wiredConnection != nil }
 
     func performOperation(
         body: @escaping @MainActor @Sendable () async -> Void
@@ -576,13 +570,13 @@ actor UsbCoordinator {
         await task.value
     }
 
-    func stop() async {
+    fileprivate func stop() async {
         stopped = true
         operationTask?.cancel()
         connectionGeneration += 1
-        let wired = heldConnection
+        let wired = wiredConnection
         let nfc = nfcConnection
-        heldConnection = nil
+        wiredConnection = nil
         nfcConnection = nil
         resumeIdleWaiters()
         await wired?.close(error: CancellationError())
@@ -590,10 +584,10 @@ actor UsbCoordinator {
         await operationTask?.value
     }
 
-    func startMonitoring(
-        onAttach: @Sendable @escaping (NamedDevice) async -> Void,
-        onDetach: @Sendable @escaping () async -> Void,
-        onError: @Sendable @escaping (Error) async -> Void
+    fileprivate func startMonitoring(
+        onAttach: @escaping @MainActor @Sendable (NamedDevice) -> Void,
+        onDetach: @escaping @MainActor @Sendable () -> Void,
+        onError: @escaping @MainActor @Sendable (Error) -> Void
     ) async {
         var lastConnectionWasUsb = false
         while !stopped && !Task.isCancelled {
@@ -611,7 +605,7 @@ actor UsbCoordinator {
                 operationInFlight = true
                 connectionGeneration += 1
                 let generation = connectionGeneration
-                heldConnection = connection
+                wiredConnection = connection
 
                 do {
                     let info = try await ManagementManager.readNamedDevice(from: connection)
@@ -625,7 +619,7 @@ actor UsbCoordinator {
 
                 _ = await connection.waitUntilClosed()
                 if generation == connectionGeneration {
-                    heldConnection = nil
+                    wiredConnection = nil
                     await waitUntilIdle()
                     if generation == connectionGeneration && !stopped && !Task.isCancelled {
                         await onDetach()
@@ -639,8 +633,7 @@ actor UsbCoordinator {
                     // Slot discovery can race USB removal. Confirm presence
                     // before treating a failed USB setup as an access error.
                     if lastConnectionWasUsb,
-                       let connectionError = error as? SmartCardConnectionError,
-                       case .setupFailed = connectionError,
+                       case .setupFailed = error,
                        try await USBSmartCardConnection.availableDevices().isEmpty {
                         continue
                     }
@@ -660,14 +653,14 @@ actor UsbCoordinator {
         body: @Sendable @escaping (any SmartCardConnection) async throws -> T
     ) async throws -> T {
         try Task.checkCancellation()
-        guard !stopped, let connection = heldConnection else {
+        guard !stopped, let connection = wiredConnection else {
             throw ManagementTargetError.wiredDeviceUnavailable
         }
         let value = try await body(connection)
         if reconnect {
             // Reboot invalidates this connection; let the monitor reacquire it.
             connectionGeneration += 1
-            heldConnection = nil
+            wiredConnection = nil
             await connection.close(error: nil)
         }
         return value
