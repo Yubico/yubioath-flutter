@@ -444,11 +444,19 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
                 canSave = canSave && (usbEnabled & ~_usbCcid) != _usbOtp;
               }
               if (isIOS) {
-                canSave =
-                    canSave &&
-                    UsbInterface.forCapabilities(usbEnabled) &
-                            UsbInterface.ccid.value !=
-                        0;
+                final currentUsb =
+                    info.config.enabledCapabilities[Transport.usb] ?? 0;
+                final ccid = UsbInterface.ccid.value;
+
+                // Would saving this edit remove existing wired access on iOS?
+                final disablesCcid =
+                    (UsbInterface.forCapabilities(currentUsb) & ccid) != 0 &&
+                    (UsbInterface.forCapabilities(usbEnabled) & ccid) == 0;
+                final switchesToOtpOnly =
+                    (currentUsb & ~_usbCcid) != _usbOtp &&
+                    (usbEnabled & ~_usbCcid) == _usbOtp;
+
+                canSave = canSave && !disablesCcid && !switchesToOtpOnly;
               }
             } else {
               canSave =
