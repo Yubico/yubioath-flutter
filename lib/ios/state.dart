@@ -31,25 +31,34 @@ const managementChannel = MethodChannel('com.yubico.authenticator/management');
 /// EventChannel matching `ios/Management/ManagementManager.swift`.
 const _deviceEventsChannel = EventChannel('ios.devices.deviceInfo');
 
-/// Streams `YubiKeyData` derived from `ManagementManager`'s event channel.
-///
-/// The channel emits either a `Map<String, Object?>` (device attached) or
-/// `null` (device detached).
-final iosYubikeyProvider =
-    StateNotifierProvider<_IosYubikeyNotifier, AsyncValue<YubiKeyData>>(
-      (ref) => _IosYubikeyNotifier(),
+typedef _IosDevices = ({
+  AsyncValue<YubiKeyData> wired,
+  AsyncValue<YubiKeyData> nfc,
+  Transport selected,
+});
+
+final _iosDevicesProvider =
+    StateNotifierProvider<_IosDevicesNotifier, _IosDevices>(
+      (_) => _IosDevicesNotifier(),
     );
 
-class _IosYubikeyNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
+final iosYubikeyProvider = Provider<AsyncValue<YubiKeyData>>((ref) {
+  final devices = ref.watch(_iosDevicesProvider);
+  return devices.selected == Transport.usb ? devices.wired : devices.nfc;
+});
+
+class _IosDevicesNotifier extends StateNotifier<_IosDevices> {
   late final StreamSubscription _sub;
 
-  _IosYubikeyNotifier() : super(const AsyncValue.loading()) {
+  _IosDevicesNotifier()
+    : super((
+        wired: const AsyncLoading(),
+        nfc: const AsyncLoading(),
+        selected: Transport.usb,
+      )) {
     _sub = _deviceEventsChannel.receiveBroadcastStream().listen(
       _onEvent,
-      onError: (Object error, StackTrace stack) {
-        _log.warning('device event error', error, stack);
-        if (mounted) state = AsyncValue.error(error, stack);
-      },
+      onError: _onError,
     );
   }
 
@@ -57,14 +66,6 @@ class _IosYubikeyNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
   void dispose() {
     _sub.cancel();
     super.dispose();
-  }
-
-  Map<String, dynamic>? _decode(Object? event) {
-    if (event == null) return null;
-    if (event is Map) {
-      return _deepCast(event) as Map<String, dynamic>;
-    }
-    throw FormatException('Unexpected iOS device event: ${event.runtimeType}');
   }
 
   /// Recursively re-types `Map<Object?, Object?>` (the shape the iOS platform
@@ -84,51 +85,88 @@ class _IosYubikeyNotifier extends StateNotifier<AsyncValue<YubiKeyData>> {
   }
 
   void _onEvent(Object? event) {
+    if (!mounted) return;
     try {
-      final json = _decode(event);
-      if (json == null) {
-        state = const AsyncValue.loading();
-        return;
+      final snapshot = _deepCast(event) as Map<String, dynamic>;
+      final wired = _decodeSlot(snapshot['wired'], Transport.usb);
+      final nfc = _decodeSlot(snapshot['nfc'], Transport.nfc);
+      var selected = state.selected;
+      if (snapshot['scanned_nfc'] == true && nfc.hasValue) {
+        selected = Transport.nfc;
+      } else if (selected == Transport.usb && wired.isLoading && nfc.hasValue) {
+        selected = Transport.nfc;
+      } else if (selected == Transport.nfc && nfc.isLoading) {
+        selected = Transport.usb;
       }
-
-      final info = DeviceInfo.fromJson(json);
-      final name = json['name'] as String? ?? 'YubiKey';
-      final isNfc = json['is_nfc'] as bool? ?? false;
-      final usbPid = json['usb_pid'] as int?;
-      final transport = isNfc ? Transport.nfc : Transport.usb;
-      final identity = info.serial != null
-          ? info.serial.toString()
-          : jsonEncode([
-              info.version.toString(),
-              info.formFactor.index,
-              info.supportedCapabilities[Transport.usb],
-              info.supportedCapabilities[Transport.nfc],
-              info.isFips,
-              info.isSky,
-            ]);
-      final path = DevicePath(['ios', transport.name, identity]);
-
-      final node = isNfc
-          ? DeviceNode.nfcReader(path, name)
-          : DeviceNode.usbYubiKey(
-              path,
-              name,
-              usbPid != null ? UsbPid.fromValue(usbPid) : null,
-              info,
-            );
-      if (mounted) state = AsyncValue.data(YubiKeyData(node, name, info));
+      state = (wired: wired, nfc: nfc, selected: selected);
     } catch (error, stack) {
-      _log.warning('failed to decode YubiKey event', error, stack);
-      if (mounted) state = AsyncValue.error(error, stack);
+      _onError(error, stack);
+    }
+  }
+
+  AsyncValue<YubiKeyData> _decodeSlot(Object? entry, Transport transport) {
+    if (entry == null) return const AsyncLoading();
+    final slot = entry as Map<String, dynamic>;
+    if (slot['error'] case final Map<String, dynamic> error) {
+      return AsyncError(
+        PlatformException(
+          code: error['code'] as String,
+          message: error['message'] as String?,
+        ),
+        StackTrace.current,
+      );
+    }
+
+    final json = slot['device'] as Map<String, dynamic>;
+    final info = DeviceInfo.fromJson(json);
+    final name = json['name'] as String? ?? 'YubiKey';
+    final usbPid = json['usb_pid'] as int?;
+    final identity = info.serial != null
+        ? info.serial.toString()
+        : jsonEncode([
+            info.version.toString(),
+            info.formFactor.index,
+            info.supportedCapabilities[Transport.usb],
+            info.supportedCapabilities[Transport.nfc],
+            info.isFips,
+            info.isSky,
+          ]);
+    final path = DevicePath(['ios', transport.name, identity]);
+    final node = transport == Transport.nfc
+        ? DeviceNode.nfcReader(path, name)
+        : DeviceNode.usbYubiKey(
+            path,
+            name,
+            usbPid != null ? UsbPid.fromValue(usbPid) : null,
+            info,
+          );
+    return AsyncData(YubiKeyData(node, name, info));
+  }
+
+  void _onError(Object error, StackTrace stack) {
+    _log.warning('device event error', error, stack);
+    if (!mounted) return;
+    state = (
+      wired: AsyncError(error, stack),
+      nfc: const AsyncLoading(),
+      selected: Transport.usb,
+    );
+  }
+
+  void select(DeviceNode device) {
+    final data = device.transport == Transport.usb ? state.wired : state.nfc;
+    if (data.value?.node.path == device.path) {
+      state = (wired: state.wired, nfc: state.nfc, selected: device.transport);
     }
   }
 }
 
 class IosAttachedDevicesNotifier extends AttachedDevicesNotifier {
   @override
-  List<DeviceNode> build() => ref
-      .watch(iosYubikeyProvider)
-      .maybeWhen(data: (data) => [data.node], orElse: () => []);
+  List<DeviceNode> build() {
+    final devices = ref.watch(_iosDevicesProvider);
+    return [?devices.wired.value?.node, ?devices.nfc.value?.node];
+  }
 }
 
 class IosCurrentDeviceNotifier extends CurrentDeviceNotifier {
@@ -139,7 +177,7 @@ class IosCurrentDeviceNotifier extends CurrentDeviceNotifier {
 
   @override
   void setCurrentDevice(DeviceNode? device) {
-    state = device;
+    if (device != null) ref.read(_iosDevicesProvider.notifier).select(device);
   }
 }
 

@@ -69,6 +69,25 @@ void main() {
   final messenger =
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
 
+  Future<void> sendDevices({
+    Map<String, Object?>? wired,
+    Map<String, Object?>? nfc,
+    String? wiredError,
+    bool scannedNfc = false,
+  }) => messenger.handlePlatformMessage(
+    'ios.devices.deviceInfo',
+    const StandardMethodCodec().encodeSuccessEnvelope({
+      'wired': wiredError != null
+          ? {
+              'error': {'code': 'yubikit_error', 'message': wiredError},
+            }
+          : (wired == null ? null : {'device': wired}),
+      'nfc': nfc == null ? null : {'device': nfc},
+      'scanned_nfc': scannedNfc,
+    }),
+    (_) {},
+  );
+
   tearDown(() {
     messenger.setMockMethodCallHandler(managementChannel, null);
     messenger.setMockMethodCallHandler(
@@ -283,16 +302,8 @@ void main() {
       final subscription = container.listen(iosYubikeyProvider, (_, _) {});
       addTearDown(subscription.close);
       await Future<void>.delayed(Duration.zero);
-      final attached = messenger.handlePlatformMessage(
-        'ios.devices.deviceInfo',
-        const StandardMethodCodec().encodeSuccessEnvelope(_deviceInfo),
-        (_) {},
-      );
-      final detached = messenger.handlePlatformMessage(
-        'ios.devices.deviceInfo',
-        const StandardMethodCodec().encodeSuccessEnvelope(null),
-        (_) {},
-      );
+      final attached = sendDevices(wired: _deviceInfo);
+      final detached = sendDevices();
       await Future.wait([attached, detached]);
       await Future<void>.delayed(Duration.zero);
       expect(
@@ -309,36 +320,28 @@ void main() {
         container.read(iosYubikeyProvider),
         isA<AsyncError<YubiKeyData>>(),
       );
-      await messenger.handlePlatformMessage(
-        'ios.devices.deviceInfo',
-        const StandardMethodCodec().encodeSuccessEnvelope(_deviceInfo),
-        (_) {},
-      );
+      await sendDevices(nfc: _deviceInfo);
       await Future<void>.delayed(Duration.zero);
       expect(container.read(iosYubikeyProvider).value?.info.serial, 123456);
-      await messenger.handlePlatformMessage(
-        'ios.devices.deviceInfo',
-        const StandardMethodCodec().encodeSuccessEnvelope({
+      await sendDevices(
+        wired: {
           ..._deviceInfo,
           'is_nfc': false,
           'name': 'YubiKey 5C NFC',
           'usb_pid': null,
-        }),
-        (_) {},
+        },
       );
       await Future<void>.delayed(Duration.zero);
       final wired = container.read(iosYubikeyProvider).value!;
       expect(wired.node, isA<UsbYubiKeyNode>());
       expect((wired.node as UsbYubiKeyNode).pid, isNull);
       expect(wired.name, 'YubiKey 5C NFC');
-      await messenger.handlePlatformMessage(
-        'ios.devices.deviceInfo',
-        const StandardMethodCodec().encodeSuccessEnvelope({
+      await sendDevices(
+        wired: {
           ..._deviceInfo,
           'is_nfc': false,
           'usb_pid': UsbPid.yk4Ccid.value,
-        }),
-        (_) {},
+        },
       );
       await Future<void>.delayed(Duration.zero);
       expect(
@@ -504,29 +507,19 @@ void main() {
     );
     var scanCount = 0;
     var cancelScan = true;
+    Map<String, Object?>? wired;
     messenger.setMockMethodCallHandler(managementChannel, (call) async {
       expect(call.method, 'readDeviceInfoNfc');
       if (cancelScan) return null;
       scanCount++;
-      await messenger.handlePlatformMessage(
-        'ios.devices.deviceInfo',
-        const StandardMethodCodec().encodeSuccessEnvelope(_deviceInfo),
-        (_) {},
-      );
-      return _deviceInfo;
+      await sendDevices(wired: wired, nfc: _deviceInfo, scannedNfc: true);
+      return null;
     });
 
     await tester.pumpWidget(await ios.initialize());
     await tester.pumpAndSettle();
     expect(find.text('Tap your YubiKey'), findsNothing);
-    await messenger.handlePlatformMessage(
-      'ios.devices.deviceInfo',
-      const StandardMethodCodec().encodeErrorEnvelope(
-        code: 'yubikit_error',
-        message: 'Unable to read wired YubiKey metadata',
-      ),
-      (_) {},
-    );
+    await sendDevices(wiredError: 'Unable to read wired YubiKey metadata');
     await tester.pumpAndSettle();
     expect(
       find.textContaining('Unable to read wired YubiKey metadata'),
@@ -573,6 +566,25 @@ void main() {
     expect(container.read(featureProvider)(features.fido), isFalse);
     expect(container.read(featureProvider)(features.piv), isFalse);
 
+    wired = {..._deviceInfo, 'serial': 654321, 'name': 'Wired YubiKey'};
+    await sendDevices(wired: wired, nfc: _deviceInfo);
+    await tester.pumpAndSettle();
+    expect(
+      container.read(currentDeviceDataProvider).value?.info.serial,
+      123456,
+    );
+
+    await tester.tap(find.byKey(drawerIconButtonKey));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Wired YubiKey'));
+    await tester.pumpAndSettle();
+    expect(
+      container.read(currentDeviceDataProvider).value?.info.serial,
+      654321,
+    );
+    scaffoldGlobalKey.currentState!.closeDrawer();
+    await tester.pumpAndSettle();
+
     await tester.drag(
       find
           .descendant(
@@ -584,6 +596,11 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(scanCount, 2);
+    expect(
+      container.read(currentDeviceDataProvider).value?.info.serial,
+      123456,
+    );
+    expect(container.read(attachedDevicesProvider), hasLength(2));
 
     await tester.tap(find.byKey(actionsIconButtonKey));
     await tester.pumpAndSettle();

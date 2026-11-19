@@ -114,12 +114,8 @@ final class ManagementManager: NSObject {
             ) { connection in
                 try await Self.readNamedDevice(from: connection)
             }
-            let dict = DeviceInfoSerializer.serialize(device.info, name: device.name, isNfc: true)
-            // Surface the result on the event channel so any UI driven by
-            // `iosYubikeyProvider` updates without the caller having to
-            // re-feed the value.
-            deviceEventsHandler.send(dict)
-            await MainActor.run { result(dict) }
+            deviceEventsHandler.update(device, isNfc: true, scannedNfc: true)
+            result(NSNull())
         } catch {
             if ManagementOperationError.isCancellation(error) {
                 result(NSNull())
@@ -227,23 +223,17 @@ final class ManagementManager: NSObject {
     private func publishRefresh(_ refresh: ManagementRefresh<NamedDevice>, isNfc: Bool) {
         switch refresh {
         case .updated(let device):
-            deviceEventsHandler.send(DeviceInfoSerializer.serialize(
-                device.info, name: device.name, isNfc: isNfc
-            ))
+            deviceEventsHandler.update(device, isNfc: isNfc)
         case .failed(let error):
             managementLog.warning("Operation succeeded but metadata refresh failed: \(String(describing: error), privacy: .private)")
-            deviceEventsHandler.send(FlutterError(
+            deviceEventsHandler.fail(
                 code: "metadata_refresh_failed",
                 message: "The operation succeeded, but updated YubiKey information could not be read: \(error)",
-                details: nil
-            ))
+                isNfc: isNfc
+            )
         case .pending:
             // Rebooted devices need a reconnect or rescan for fresh metadata.
-            if isNfc {
-                deviceEventsHandler.send(NSNull())
-            } else {
-                deviceEventsHandler.clearWiredDevice()
-            }
+            deviceEventsHandler.clear(isNfc: isNfc)
         }
     }
 
@@ -281,21 +271,14 @@ final class ManagementManager: NSObject {
     private func startWiredMonitor() {
         monitorTask = Task { [coordinator, deviceEventsHandler] in
             await coordinator.startMonitoring(
-                onAttach: { device in
-                    let dict = DeviceInfoSerializer.serialize(
-                        device.info,
-                        name: device.name,
-                        isNfc: false
-                    )
-                    deviceEventsHandler.send(dict)
-                },
-                onDetach: { deviceEventsHandler.clearWiredDevice() },
+                onAttach: { device in deviceEventsHandler.update(device, isNfc: false) },
+                onDetach: { deviceEventsHandler.clear(isNfc: false) },
                 onError: { error in
-                    deviceEventsHandler.sendWiredError(FlutterError(
+                    deviceEventsHandler.fail(
                         code: "yubikit_error",
                         message: String(describing: error),
-                        details: nil
-                    ))
+                        isNfc: false
+                    )
                 }
             )
         }
@@ -494,38 +477,46 @@ private enum ManagementTargetError: Error, CustomStringConvertible {
     }
 }
 
-/// Bridges `FlutterEventChannel` to a simple `send(_:)` API. Stores the most
-/// recent event so a freshly-attached listener immediately receives the
-/// current device state.
+/// Keeps a snapshot of each transport so new listeners receive both devices.
 @MainActor
 private final class DeviceEventsHandler: NSObject, @preconcurrency FlutterStreamHandler {
     private var sink: FlutterEventSink?
-    private var lastEvent: Any?
-    private var displayedIsNfc = false
+    private var wired: [String: Any]?
+    private var nfc: [String: Any]?
 
-    func send(_ event: Any) {
-        if let device = event as? [String: Any] {
-            displayedIsNfc = device["is_nfc"] as? Bool ?? false
-        } else if event is NSNull {
-            displayedIsNfc = false
+    func update(_ device: NamedDevice, isNfc: Bool, scannedNfc: Bool = false) {
+        let info = DeviceInfoSerializer.serialize(device.info, name: device.name, isNfc: isNfc)
+        set(["device": info], isNfc: isNfc, scannedNfc: scannedNfc)
+    }
+
+    func clear(isNfc: Bool) {
+        set(nil, isNfc: isNfc)
+    }
+
+    func fail(code: String, message: String, isNfc: Bool) {
+        set(["error": ["code": code, "message": message]], isNfc: isNfc)
+    }
+
+    private func set(_ value: [String: Any]?, isNfc: Bool, scannedNfc: Bool = false) {
+        if isNfc {
+            nfc = value
+        } else {
+            wired = value
         }
-        lastEvent = event
-        sink?(event)
+        sink?(snapshot(scannedNfc: scannedNfc))
     }
 
-    func clearWiredDevice() {
-        guard !displayedIsNfc else { return }
-        send(NSNull())
-    }
-
-    func sendWiredError(_ error: FlutterError) {
-        guard !displayedIsNfc else { return }
-        send(error)
+    private func snapshot(scannedNfc: Bool = false) -> [String: Any] {
+        [
+            "wired": wired as Any? ?? NSNull(),
+            "nfc": nfc as Any? ?? NSNull(),
+            "scanned_nfc": scannedNfc,
+        ]
     }
 
     func onListen(withArguments _: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
         sink = events
-        if let lastEvent { events(lastEvent) }
+        events(snapshot())
         return nil
     }
 

@@ -421,7 +421,7 @@ DeviceRow _buildDeviceRow(
       info == null
           ? l10n.s_yk_inaccessible
           : _getDeviceInfoString(context, info),
-    NfcReaderNode() => l10n.s_select_to_scan,
+    NfcReaderNode() => isIOS ? l10n.s_nfc : l10n.s_select_to_scan,
   };
 
   final keyCustomization = ref.watch(
