@@ -22,6 +22,7 @@ import '../../management/models.dart';
 import 'app_page.dart';
 
 class MessagePage extends StatelessWidget {
+  final Future<void> Function()? onRefresh;
   final String? title;
   final Widget? graphic;
   final String? header;
@@ -39,6 +40,7 @@ class MessagePage extends StatelessWidget {
 
   const MessagePage({
     super.key,
+    this.onRefresh,
     this.title,
     this.graphic,
     this.header,
@@ -56,6 +58,7 @@ class MessagePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => AppPage(
+    onRefresh: onRefresh,
     title: title,
     capabilities: capabilities,
     footnote: footnote,

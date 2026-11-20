@@ -34,9 +34,9 @@ class DeviceErrorScreen extends ConsumerWidget {
   final Object? error;
   const DeviceErrorScreen(this.node, {this.error, super.key});
 
-  Widget _buildUsbPid(BuildContext context, WidgetRef ref, UsbPid pid) {
+  Widget _buildUsbPid(BuildContext context, WidgetRef ref, UsbPid? pid) {
     final l10n = AppLocalizations.of(context);
-    if (pid.usbInterfaces == UsbInterface.fido.value) {
+    if (pid?.usbInterfaces == UsbInterface.fido.value) {
       if (Platform.isWindows &&
           !ref.watch(rpcStateProvider.select((state) => state.isAdmin))) {
         final currentSection = ref.read(currentSectionProvider);

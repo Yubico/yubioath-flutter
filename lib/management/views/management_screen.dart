@@ -16,6 +16,7 @@
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -341,10 +342,15 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
             currentLockCode: isLocked ? _lockCodeController.text : null,
           );
       if (!mounted) return;
-      Navigator.pop(context);
+      if (ModalRoute.of(context)?.isCurrent ?? false) Navigator.pop(context);
       showMessage(context, l10n.s_config_updated);
-    } catch (_) {
-      if (isLocked) {
+    } catch (error) {
+      if (isIOS && error is PlatformException) {
+        if (!mounted) return;
+        setState(() => _configuring = false);
+        if (error.code == 'cancelled') return;
+        showExceptionMessage(context, error);
+      } else if (isLocked) {
         _lockCodeController.selection = TextSelection(
           baseOffset: 0,
           extentOffset: _lockCodeController.text.length,
@@ -376,15 +382,23 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
     setState(() {
       _configuring = true;
     });
-    await ref
-        .read(managementStateProvider(widget.deviceData.node.path).notifier)
-        .setMode(interfaces: _interfaces);
+    try {
+      await ref
+          .read(managementStateProvider(widget.deviceData.node.path).notifier)
+          .setMode(interfaces: _interfaces);
+    } on PlatformException catch (error) {
+      if (!isIOS) rethrow;
+      if (!mounted) return;
+      setState(() => _configuring = false);
+      if (error.code != 'cancelled') showExceptionMessage(context, error);
+      return;
+    }
     if (!mounted) return;
     showMessage(context, switch (widget.deviceData.node) {
       NfcReaderNode() => l10n.s_config_updated,
       UsbYubiKeyNode() => l10n.l_config_updated_reinsert,
     });
-    Navigator.pop(context);
+    if (ModalRoute.of(context)?.isCurrent ?? false) Navigator.pop(context);
   }
 
   void _submitForm() {
@@ -428,6 +442,21 @@ class _ManagementScreenState extends ConsumerState<ManagementScreen> {
               if (isAndroid) {
                 // don't allow OTP only mode
                 canSave = canSave && (usbEnabled & ~_usbCcid) != _usbOtp;
+              }
+              if (isIOS) {
+                final currentUsb =
+                    info.config.enabledCapabilities[Transport.usb] ?? 0;
+                final ccid = UsbInterface.ccid.value;
+
+                // Would saving this edit remove existing wired access on iOS?
+                final disablesCcid =
+                    (UsbInterface.forCapabilities(currentUsb) & ccid) != 0 &&
+                    (UsbInterface.forCapabilities(usbEnabled) & ccid) == 0;
+                final switchesToOtpOnly =
+                    (currentUsb & ~_usbCcid) != _usbOtp &&
+                    (usbEnabled & ~_usbCcid) == _usbOtp;
+
+                canSave = canSave && !disablesCcid && !switchesToOtpOnly;
               }
             } else {
               canSave =
