@@ -239,11 +239,77 @@ final class ManagementManager: NSObject {
 
     // MARK: - Routing
 
+    /// Runs an application operation on the selected YubiKey and transport.
+    ///
+    /// Waits for any in-flight operation instead of failing, and only provides
+    /// SCP parameters over NFC when `capability` is FIPS capable.
+    /// With `acceptOtherNfcDevice`, an NFC tap of a different key is not an
+    /// error: the result reports that key, and `value` is nil if `body` failed
+    /// on it. Use this only for reads.
+    func runApplicationOperation<T: Sendable>(
+        expectedDevice: Any?,
+        capability: Capability,
+        acceptOtherNfcDevice: Bool = false,
+        successMessage: String = "Done",
+        body: @Sendable @escaping (any SmartCardConnection, SCPKeyParams?) async throws -> T
+    ) async throws -> ApplicationOutcome<T> {
+        let target = try ManagementTarget(expectedDevice)
+        guard acceptOtherNfcDevice, target.transport == .nfc else {
+            let value = try await coordinator.performQueuedOperation {
+                try await self.runManagementOperation(
+                    target: target,
+                    successMessage: successMessage,
+                    scpCapability: capability,
+                    body: body
+                ).0
+            }
+            return ApplicationOutcome(value: value, otherDevice: nil)
+        }
+        let coordinator = coordinator
+        return try await coordinator.performQueuedOperation {
+            try await coordinator.withNFCConnection(successMessage: successMessage) { connection in
+                let device = try await Self.readNamedDevice(from: connection)
+                do {
+                    try target.verify(device.info)
+                } catch ManagementTargetError.deviceChanged {
+                    do {
+                        let params = try await Self.readSCPKeyParams(
+                            from: connection, info: device.info, capability: capability
+                        )
+                        return ApplicationOutcome(value: try await body(connection, params), otherDevice: device)
+                    } catch {
+                        if ManagementOperationError.isCancellation(error) { throw error }
+                        managementLog.warning("Read failed on another NFC YubiKey: \(String(describing: error), privacy: .private)")
+                        return ApplicationOutcome(value: nil, otherDevice: device)
+                    }
+                }
+                let params = try await Self.readSCPKeyParams(
+                    from: connection, info: device.info, capability: capability
+                )
+                return ApplicationOutcome(value: try await body(connection, params), otherDevice: nil)
+            }
+        }
+    }
+
+    /// Displays a key read over NFC by another application, like a Home scan.
+    /// `extras` are delivered with this event only, e.g. the application state
+    /// that was read in the same tap.
+    func publishNfcDevice(_ device: NamedDevice, extras: [String: Any] = [:]) {
+        deviceEventsHandler.update(device, isNfc: true, scannedNfc: true, extras: extras)
+    }
+
+    /// Flutter error code for cancellation and device-binding failures, if any.
+    nonisolated static func sharedErrorCode(for error: Error) -> String? {
+        if ManagementOperationError.isCancellation(error) { return "cancelled" }
+        return (error as? ManagementTargetError)?.code
+    }
+
     /// Mutations keep the displayed transport and verify the key before execution.
     private func runManagementOperation<T: Sendable>(
         target: ManagementTarget,
         reconnectWired: Bool = false,
         successMessage: String = "Configuration updated",
+        scpCapability: Capability? = nil,
         body: @Sendable @escaping (any SmartCardConnection, SCPKeyParams?) async throws -> T
     ) async throws -> (T, Bool) {
         if target.transport == .usb {
@@ -259,7 +325,9 @@ final class ManagementManager: NSObject {
             ) { connection in
                 let info = try await Self.readDeviceInfo(from: connection)
                 try target.verify(info)
-                let discoveredParams = try await Self.readSCPKeyParams(from: connection, info: info)
+                let discoveredParams = try await Self.readSCPKeyParams(
+                    from: connection, info: info, capability: scpCapability
+                )
                 return try await body(connection, discoveredParams)
             }
             return (value, true)
@@ -296,11 +364,15 @@ final class ManagementManager: NSObject {
         return NamedDevice(info: key.deviceInfo, name: key.deviceName)
     }
 
+    /// Management uses SCP on any FIPS-capable key; applications only when
+    /// their own capability is FIPS capable.
     nonisolated private static func readSCPKeyParams(
         from connection: any SmartCardConnection,
-        info: DeviceInfo
+        info: DeviceInfo,
+        capability: Capability?
     ) async throws -> SCPKeyParams? {
-        guard info.fipsCapabilityFlags != 0 else { return nil }
+        let requiredFlags = capability?.rawValue ?? info.fipsCapabilityFlags
+        guard info.fipsCapabilityFlags & requiredFlags != 0 else { return nil }
         let session = try await SecurityDomainSession.makeSession(connection: connection)
         let keyInformation = try await session.getKeyInformation()
         guard let keyRef = keyInformation.keys.first(where: { $0.kid == .scp11b }) else {
@@ -484,9 +556,15 @@ private final class DeviceEventsHandler: NSObject, @preconcurrency FlutterStream
     private var wired: [String: Any]?
     private var nfc: [String: Any]?
 
-    func update(_ device: NamedDevice, isNfc: Bool, scannedNfc: Bool = false) {
+    /// `extras` are sent with this event only and are not replayed.
+    func update(
+        _ device: NamedDevice,
+        isNfc: Bool,
+        scannedNfc: Bool = false,
+        extras: [String: Any] = [:]
+    ) {
         let info = DeviceInfoSerializer.serialize(device.info, name: device.name, isNfc: isNfc)
-        set(["device": info], isNfc: isNfc, scannedNfc: scannedNfc)
+        set(["device": info], isNfc: isNfc, scannedNfc: scannedNfc, extras: extras)
     }
 
     func clear(isNfc: Bool) {
@@ -497,13 +575,18 @@ private final class DeviceEventsHandler: NSObject, @preconcurrency FlutterStream
         set(["error": ["code": code, "message": message]], isNfc: isNfc)
     }
 
-    private func set(_ value: [String: Any]?, isNfc: Bool, scannedNfc: Bool = false) {
+    private func set(
+        _ value: [String: Any]?,
+        isNfc: Bool,
+        scannedNfc: Bool = false,
+        extras: [String: Any] = [:]
+    ) {
         if isNfc {
             nfc = value
         } else {
             wired = value
         }
-        sink?(snapshot(scannedNfc: scannedNfc))
+        sink?(snapshot(scannedNfc: scannedNfc).merging(extras) { _, extra in extra })
     }
 
     private func snapshot(scannedNfc: Bool = false) -> [String: Any] {
@@ -538,6 +621,9 @@ actor ConnectionCoordinator {
 
     private var wiredConnection: (any SmartCardConnection)?
     private var nfcConnection: NFCSmartCardConnection?
+    /// Dismissal of the last NFC sheet, which keeps showing its success message
+    /// after the result has been returned.
+    private var nfcClosing: Task<Void, Never>?
     private var operationInFlight: Bool = false
     private var operationTask: Task<Void, Never>?
     private var idleWaiters: [CheckedContinuation<Void, Never>] = []
@@ -561,6 +647,25 @@ actor ConnectionCoordinator {
         await task.value
     }
 
+    /// Like `performOperation`, but waits for the current operation to finish.
+    func performQueuedOperation<T: Sendable>(
+        body: @escaping @Sendable () async throws -> T
+    ) async throws -> T {
+        await waitUntilIdle()
+        guard !stopped else { throw CancellationError() }
+        operationInFlight = true
+        defer { finishOperation() }
+        let task = Task { try await body() }
+        operationTask = Task {
+            await withTaskCancellationHandler {
+                _ = await task.result
+            } onCancel: {
+                task.cancel()
+            }
+        }
+        return try await task.value
+    }
+
     fileprivate func stop() async {
         stopped = true
         operationTask?.cancel()
@@ -572,6 +677,7 @@ actor ConnectionCoordinator {
         resumeIdleWaiters()
         await wired?.close(error: CancellationError())
         await nfc?.close(error: CancellationError())
+        await nfcClosing?.value
         await operationTask?.value
     }
 
@@ -661,6 +767,8 @@ actor ConnectionCoordinator {
         successMessage: String,
         body: @Sendable (NFCSmartCardConnection) async throws -> T
     ) async throws -> T {
+        await nfcClosing?.value
+        nfcClosing = nil
         try Task.checkCancellation()
         guard !stopped else { throw CancellationError() }
         let connection = try await NFCSmartCardConnection.makeConnection(
@@ -671,7 +779,9 @@ actor ConnectionCoordinator {
             try Task.checkCancellation()
             guard !stopped else { throw CancellationError() }
             let value = try await body(connection)
-            await connection.close(message: successMessage)
+            // Return without waiting for iOS to dismiss the sheet, so the UI
+            // updates right away. The next NFC operation waits for it instead.
+            nfcClosing = Task { await connection.close(message: successMessage) }
             nfcConnection = nil
             return value
         } catch {
@@ -735,4 +845,10 @@ enum ManagementRefresh<T: Sendable>: Sendable {
 struct NamedDevice: Sendable {
     let info: DeviceInfo
     let name: String
+}
+
+struct ApplicationOutcome<T: Sendable>: Sendable {
+    let value: T?
+    /// Set when the operation ran on a different NFC key than the displayed one.
+    let otherDevice: NamedDevice?
 }

@@ -69,8 +69,9 @@ extension on OathLayout {
 
 class OathScreen extends ConsumerWidget {
   final DevicePath devicePath;
+  final Future<void> Function()? onRefresh;
 
-  const OathScreen(this.devicePath, {super.key});
+  const OathScreen(this.devicePath, {super.key, this.onRefresh});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -92,8 +93,8 @@ class OathScreen extends ConsumerWidget {
                 )
               : AppFailurePage(cause: error),
           data: (oathState) => oathState.locked
-              ? _LockedView(devicePath, oathState)
-              : _UnlockedView(devicePath, oathState),
+              ? _LockedView(devicePath, oathState, onRefresh)
+              : _UnlockedView(devicePath, oathState, onRefresh),
         );
   }
 }
@@ -101,13 +102,15 @@ class OathScreen extends ConsumerWidget {
 class _LockedView extends ConsumerWidget {
   final DevicePath devicePath;
   final OathState oathState;
+  final Future<void> Function()? onRefresh;
 
-  const _LockedView(this.devicePath, this.oathState);
+  const _LockedView(this.devicePath, this.oathState, this.onRefresh);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final hasActions = ref.watch(featureProvider)(features.actions);
     return AppPage(
+      onRefresh: onRefresh,
       title: AppLocalizations.of(context).s_accounts,
       capabilities: const [Capability.oath],
       keyActionsBuilder: hasActions
@@ -124,8 +127,9 @@ class _LockedView extends ConsumerWidget {
 class _UnlockedView extends ConsumerStatefulWidget {
   final DevicePath devicePath;
   final OathState oathState;
+  final Future<void> Function()? onRefresh;
 
-  const _UnlockedView(this.devicePath, this.oathState);
+  const _UnlockedView(this.devicePath, this.oathState, this.onRefresh);
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _UnlockedViewState();
@@ -217,6 +221,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
 
     if (numCreds == 0) {
       return MessagePage(
+        onRefresh: widget.onRefresh,
         keyActionsBadge: oathShowActionNotifier(deviceInfo),
         actionsBuilder: (context, expanded) {
           final (fipsCapable, fipsApproved) =
@@ -275,6 +280,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
 
     if (numCreds == null) {
       return AppPage(
+        onRefresh: widget.onRefresh,
         title: AppLocalizations.of(context).s_accounts,
         capabilities: const [Capability.oath],
         centered: true,
@@ -352,6 +358,7 @@ class _UnlockedViewState extends ConsumerState<_UnlockedView> {
               ),
       },
       builder: (context) => AppPage(
+        onRefresh: widget.onRefresh,
         title: l10n.s_accounts,
         alternativeTitle: searchText != ''
             ? l10n.l_results_for(searchText)

@@ -15,12 +15,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:logging/logging.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../app/models.dart';
 import '../app/state.dart';
 import '../core/models.dart';
-import '../core/state.dart';
 import '../management/models.dart';
 
 final _log = Logger('ios.state');
@@ -39,8 +37,12 @@ typedef _IosDevices = ({
 
 final _iosDevicesProvider =
     StateNotifierProvider<_IosDevicesNotifier, _IosDevices>(
-      (_) => _IosDevicesNotifier(),
+      (ref) => _IosDevicesNotifier(ref.read(iosNfcHandoffProvider)),
     );
+
+/// Application state read in the same NFC tap that switched the displayed
+/// key, keyed by the new key's path. Only the latest switch is kept.
+final iosNfcHandoffProvider = Provider<Map<DevicePath, String>>((ref) => {});
 
 final iosYubikeyProvider = Provider<AsyncValue<YubiKeyData>>((ref) {
   final devices = ref.watch(_iosDevicesProvider);
@@ -49,8 +51,9 @@ final iosYubikeyProvider = Provider<AsyncValue<YubiKeyData>>((ref) {
 
 class _IosDevicesNotifier extends StateNotifier<_IosDevices> {
   late final StreamSubscription _sub;
+  final Map<DevicePath, String> _handoff;
 
-  _IosDevicesNotifier()
+  _IosDevicesNotifier(this._handoff)
     : super((
         wired: const AsyncLoading(),
         nfc: const AsyncLoading(),
@@ -90,6 +93,13 @@ class _IosDevicesNotifier extends StateNotifier<_IosDevices> {
       final snapshot = _deepCast(event) as Map<String, dynamic>;
       final wired = _decodeSlot(snapshot['wired'], Transport.usb);
       final nfc = _decodeSlot(snapshot['nfc'], Transport.nfc);
+      _handoff.clear();
+      if ((snapshot['oath'], nfc.value) case (
+        final String oath,
+        final YubiKeyData data,
+      )) {
+        _handoff[data.node.path] = oath;
+      }
       var selected = state.selected;
       if (snapshot['scanned_nfc'] == true && nfc.hasValue) {
         selected = Transport.nfc;
@@ -181,35 +191,32 @@ class IosCurrentDeviceNotifier extends CurrentDeviceNotifier {
   }
 }
 
+/// Starts on Home. Other sections are only reachable while a YubiKey is
+/// displayed, so fall back to Home when it disappears or lacks the section.
 class IosCurrentSectionNotifier extends CurrentSectionNotifier {
-  static const String _key = 'APP_STATE_LAST_SECTION';
-
-  final SharedPreferences _prefs;
-
-  IosCurrentSectionNotifier(this._prefs, List<Section> supportedSections)
-    : super(_fromName(_prefs.getString(_key), supportedSections));
+  IosCurrentSectionNotifier() : super(Section.home);
 
   @override
   void setCurrentSection(Section section) {
-    if (section != Section.home) {
-      _prefs.setString(_key, section.name);
-    }
     state = section;
   }
 
-  static Section _fromName(String? name, List<Section> supportedSections) =>
-      supportedSections.firstWhere(
-        (element) => element.name == name,
-        orElse: () => supportedSections.first,
-      );
+  void _onDeviceChanged(YubiKeyData? data) {
+    if (state == Section.home || state == Section.settings) return;
+    if (data == null || state.getAvailability(data) != Availability.enabled) {
+      state = Section.home;
+    }
+  }
 }
 
 /// Provides the `currentSectionProvider` override.
 CurrentSectionNotifier iosCurrentSectionNotifier(Ref ref) {
-  return IosCurrentSectionNotifier(
-    ref.watch(prefProvider),
-    ref.watch(supportedSectionsProvider),
+  final notifier = IosCurrentSectionNotifier();
+  ref.listen<AsyncValue<YubiKeyData>>(
+    currentDeviceDataProvider,
+    (_, next) => notifier._onDeviceChanged(next.value),
   );
+  return notifier;
 }
 
 /// Uses Flutter's standard clipboard. iOS does not have an Android-style
@@ -235,3 +242,18 @@ class _IosClipboard extends AppClipboard {
 /// Swift side. The result is delivered through the device event channel.
 Future<void> triggerNfcDeviceInfoScan() =>
     managementChannel.invokeMethod<void>('readDeviceInfoNfc');
+
+/// Identity and transport of [target], used by native code to verify that an
+/// operation runs against the selected YubiKey.
+Map<String, Object?> iosExpectedDevice(YubiKeyData target) => {
+  'transport': target.node.transport.name,
+  'serial': target.info.serial,
+  'version': target.info.version.toJson(),
+  'formFactor': target.info.toJson()['form_factor'],
+  'supportedCapabilities': {
+    for (final entry in target.info.supportedCapabilities.entries)
+      entry.key.name: entry.value,
+  },
+  'isFips': target.info.isFips,
+  'isSky': target.info.isSky,
+};

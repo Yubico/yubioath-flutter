@@ -562,7 +562,7 @@ void main() {
       123456,
     );
     expect(container.read(featureProvider)(features.management), isTrue);
-    expect(container.read(featureProvider)(features.oath), isFalse);
+    expect(container.read(featureProvider)(features.oath), isTrue);
     expect(container.read(featureProvider)(features.fido), isFalse);
     expect(container.read(featureProvider)(features.piv), isFalse);
 
@@ -604,7 +604,7 @@ void main() {
 
     await tester.tap(find.byKey(actionsIconButtonKey));
     await tester.pumpAndSettle();
-    expect(find.byKey(yubikeyFactoryResetMenuButton), findsNothing);
+    expect(find.byKey(yubikeyFactoryResetMenuButton), findsOneWidget);
     await tester.tap(find.byKey(yubikeyApplicationToggleMenuButton));
     await tester.pump();
     await tester.pump(const Duration(seconds: 1));
@@ -621,7 +621,6 @@ void main() {
     await tester.pumpAndSettle();
 
     for (final section in [
-      Section.accounts,
       Section.passkeys,
       Section.certificates,
       Section.slots,
@@ -636,5 +635,49 @@ void main() {
     }
     expect(tester.takeException(), isNull);
     debugDefaultTargetPlatformOverride = null;
+  });
+
+  test('sections other than Home require a displayed key', () {
+    YubiKeyData keyData(int capabilities) {
+      final info = DeviceInfo.fromJson({
+        ..._deviceInfo,
+        'config': {
+          'enabled_capabilities': {'usb': capabilities, 'nfc': capabilities},
+        },
+      });
+      return YubiKeyData(
+        DeviceNode.nfcReader(DevicePath(const ['ios']), 'YubiKey'),
+        'YubiKey',
+        info,
+      );
+    }
+
+    final container = ProviderContainer(
+      overrides: [
+        currentDeviceDataProvider.overrideWith(
+          (ref) => ref.watch(_displayedData),
+        ),
+        currentSectionProvider.overrideWith(iosCurrentSectionNotifier),
+      ],
+    );
+    addTearDown(container.dispose);
+    final sections = container.read(currentSectionProvider.notifier);
+    expect(container.read(currentSectionProvider), Section.home);
+
+    final display = container.read(_displayedData.notifier);
+    display.state = AsyncData(keyData(63));
+    sections.setCurrentSection(Section.accounts);
+    display.state = AsyncData(keyData(63));
+    expect(container.read(currentSectionProvider), Section.accounts);
+
+    display.state = const AsyncLoading();
+    expect(container.read(currentSectionProvider), Section.home);
+
+    display.state = AsyncData(keyData(63));
+    expect(container.read(currentSectionProvider), Section.home);
+
+    sections.setCurrentSection(Section.accounts);
+    display.state = AsyncData(keyData(63 & ~Capability.oath.value));
+    expect(container.read(currentSectionProvider), Section.home);
   });
 }

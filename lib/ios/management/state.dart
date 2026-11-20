@@ -42,18 +42,7 @@ class IosManagementStateNotifier extends ManagementStateNotifier {
         message: 'No YubiKey is selected for this operation.',
       );
     }
-    return {
-      'transport': target.node.transport.name,
-      'serial': target.info.serial,
-      'version': target.info.version.toJson(),
-      'formFactor': target.info.toJson()['form_factor'],
-      'supportedCapabilities': {
-        for (final entry in target.info.supportedCapabilities.entries)
-          entry.key.name: entry.value,
-      },
-      'isFips': target.info.isFips,
-      'isSky': target.info.isSky,
-    };
+    return iosExpectedDevice(target);
   }
 
   @override

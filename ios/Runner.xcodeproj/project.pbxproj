@@ -18,6 +18,8 @@
 		FCD3C2142FDAD25F004D981F /* YubiKit in Frameworks */ = {isa = PBXBuildFile; productRef = FCD3C2132FDAD25F004D981F /* YubiKit */; };
 		FCE830632FE004DA00F68DA9 /* ManagementManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCE830612FE004DA00F68DA9 /* ManagementManager.swift */; };
 		FCE830672FE02D8800F68DA9 /* DeviceInfoSerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCE830662FE02D8800F68DA9 /* DeviceInfoSerializer.swift */; };
+		FCE830712FE1000000F68DA9 /* OathManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCE830702FE1000000F68DA9 /* OathManager.swift */; };
+		FCE830732FE1000000F68DA9 /* QrScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCE830722FE1000000F68DA9 /* QrScanner.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -36,6 +38,8 @@
 /* Begin PBXFileReference section */
 		FCE830612FE004DA00F68DA9 /* ManagementManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Management/ManagementManager.swift; sourceTree = "<group>"; };
 		FCE830662FE02D8800F68DA9 /* DeviceInfoSerializer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceInfoSerializer.swift; sourceTree = "<group>"; };
+		FCE830702FE1000000F68DA9 /* OathManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Oath/OathManager.swift; sourceTree = "<group>"; };
+		FCE830722FE1000000F68DA9 /* QrScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QrScanner.swift; sourceTree = "<group>"; };
 		1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeneratedPluginRegistrant.h; sourceTree = "<group>"; };
 		1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
 		3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
@@ -83,6 +87,7 @@
 			children = (
 				FCE830612FE004DA00F68DA9 /* ManagementManager.swift */,
 				FCE830662FE02D8800F68DA9 /* DeviceInfoSerializer.swift */,
+				FCE830702FE1000000F68DA9 /* OathManager.swift */,
 				9740EEB11CF90186004384FC /* Flutter */,
 				97C146F01CF9000F007C117D /* Runner */,
 				97C146EF1CF9000F007C117D /* Products */,
@@ -108,6 +113,7 @@
 				1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */,
 				74858FAE1ED2DC5600515810 /* AppDelegate.swift */,
 				7884E8672EC3CC0400C636F2 /* SceneDelegate.swift */,
+				FCE830722FE1000000F68DA9 /* QrScanner.swift */,
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
 			);
 			path = Runner;
@@ -233,6 +239,8 @@
 			files = (
 				FCE830632FE004DA00F68DA9 /* ManagementManager.swift in Sources */,
 				FCE830672FE02D8800F68DA9 /* DeviceInfoSerializer.swift in Sources */,
+				FCE830712FE1000000F68DA9 /* OathManager.swift in Sources */,
+				FCE830732FE1000000F68DA9 /* QrScanner.swift in Sources */,
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
 				7884E8682EC3CC0700C636F2 /* SceneDelegate.swift in Sources */,

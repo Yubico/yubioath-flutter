@@ -17,10 +17,13 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
+import '../../app/logging.dart';
 import '../../app/message.dart';
 import '../../app/models.dart';
+import '../../core/state.dart';
 import '../../exception/cancellation_exception.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../widgets/app_input_decoration.dart';
@@ -29,6 +32,8 @@ import '../../widgets/visibility_toggle_button.dart';
 import '../keys.dart' as keys;
 import '../models.dart';
 import '../state.dart';
+
+final _log = Logger('oath.unlock');
 
 class UnlockForm extends ConsumerStatefulWidget {
   final DevicePath _devicePath;
@@ -91,6 +96,10 @@ class _UnlockFormState extends ConsumerState<UnlockForm> {
       }
     } on CancellationException catch (_) {
       // ignored
+    } on Exception catch (error, stack) {
+      if (!isIOS) rethrow;
+      _log.error('Failed to unlock OATH', error, stack);
+      if (mounted) showExceptionMessage(context, error);
     }
   }
 

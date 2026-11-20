@@ -103,7 +103,20 @@ class OathLayoutNotifier extends StateNotifier<OathLayout> {
 final oathStateProvider = AsyncNotifierProvider.autoDispose
     .family<OathStateNotifier, OathState, DevicePath>(
       (_) => throw UnimplementedError(),
+      retry: (count, error) => error is OathStateReadException
+          ? null
+          : ProviderContainer.defaultRetry(count, error),
     );
+
+/// Thrown by platforms whose OATH state read already failed and must not be
+/// retried automatically.
+class OathStateReadException implements Exception {
+  const OathStateReadException(this.cause);
+  final Object cause;
+
+  @override
+  String toString() => 'Failed to read OATH authenticator state: $cause';
+}
 
 abstract class OathStateNotifier extends ApplicationStateNotifier<OathState> {
   OathStateNotifier(this.devicePath);
