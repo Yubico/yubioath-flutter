@@ -16,14 +16,16 @@ import UniformTypeIdentifiers
 import Vision
 
 final class QrScanner {
-    private let channel: FlutterMethodChannel
+    private var channel: FlutterMethodChannel?
     private var scanning = false
 
-    init(messenger: FlutterBinaryMessenger) {
-        channel = FlutterMethodChannel(name: "com.yubico.authenticator/qr", binaryMessenger: messenger)
+    func register(with messenger: FlutterBinaryMessenger) {
+        channel?.setMethodCallHandler(nil)
+        let channel = FlutterMethodChannel(name: "com.yubico.authenticator/qr", binaryMessenger: messenger)
         channel.setMethodCallHandler { [weak self] call, result in
             self?.handle(call, result: result)
         }
+        self.channel = channel
     }
 
     private func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {

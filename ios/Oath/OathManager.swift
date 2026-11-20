@@ -30,22 +30,17 @@ final class OathManager {
     private let controller = OathController()
     private var channel: FlutterMethodChannel?
 
-    private init(managementManager: ManagementManager) {
+    init(managementManager: ManagementManager) {
         self.managementManager = managementManager
     }
 
-    @discardableResult
-    static func register(
-        with messenger: FlutterBinaryMessenger,
-        managementManager: ManagementManager
-    ) -> OathManager {
-        let manager = OathManager(managementManager: managementManager)
-        let channel = FlutterMethodChannel(name: channelName, binaryMessenger: messenger)
-        channel.setMethodCallHandler { [weak manager] call, result in
-            manager?.handle(call, result: result)
+    func register(with messenger: FlutterBinaryMessenger) {
+        channel?.setMethodCallHandler(nil)
+        let channel = FlutterMethodChannel(name: Self.channelName, binaryMessenger: messenger)
+        channel.setMethodCallHandler { [weak self] call, result in
+            self?.handle(call, result: result)
         }
-        manager.channel = channel
-        return manager
+        self.channel = channel
     }
 
     private func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {

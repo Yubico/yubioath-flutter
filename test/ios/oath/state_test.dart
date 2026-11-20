@@ -335,6 +335,22 @@ void main() {
     },
   );
 
+  test('repeated delete requests share the running delete', () async {
+    start();
+    await container.read(oathStateProvider(path).future);
+    final list = container.read(credentialListProvider(path).notifier);
+    final account = container.read(credentialListProvider(path))!.single;
+    final deleted = Completer<String?>();
+    handler = (_) => deleted.future;
+
+    final first = list.deleteAccount(account.credential);
+    final second = list.deleteAccount(account.credential);
+    deleted.complete(snapshot(pairs: []));
+    await Future.wait([first, second]);
+
+    expect(calls.where((call) => call.method == 'deleteAccount'), hasLength(1));
+  });
+
   test(
     'password operations publish snapshots, including a rejected unlock',
     () async {

@@ -4,8 +4,8 @@ import UIKit
 @main
 @objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
   private let managementManager = ManagementManager()
-  private var oathManager: OathManager?
-  private var qrScanner: QrScanner?
+  private lazy var oathManager = OathManager(managementManager: managementManager)
+  private let qrScanner = QrScanner()
 
   override func applicationWillTerminate(_ application: UIApplication) {
     let manager = managementManager
@@ -18,11 +18,8 @@ import UIKit
     let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "ManagementManager")!
     managementManager.register(with: registrar.messenger())
     let oathRegistrar = engineBridge.pluginRegistry.registrar(forPlugin: "OathManager")!
-    oathManager = OathManager.register(
-      with: oathRegistrar.messenger(),
-      managementManager: managementManager
-    )
+    oathManager.register(with: oathRegistrar.messenger())
     let qrRegistrar = engineBridge.pluginRegistry.registrar(forPlugin: "QrScanner")!
-    qrScanner = QrScanner(messenger: qrRegistrar.messenger())
+    qrScanner.register(with: qrRegistrar.messenger())
   }
 }

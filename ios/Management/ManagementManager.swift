@@ -621,6 +621,9 @@ actor ConnectionCoordinator {
 
     private var wiredConnection: (any SmartCardConnection)?
     private var nfcConnection: NFCSmartCardConnection?
+    /// Dismissal of the last NFC sheet, which keeps showing its success message
+    /// after the result has been returned.
+    private var nfcClosing: Task<Void, Never>?
     private var operationInFlight: Bool = false
     private var operationTask: Task<Void, Never>?
     private var idleWaiters: [CheckedContinuation<Void, Never>] = []
@@ -674,6 +677,7 @@ actor ConnectionCoordinator {
         resumeIdleWaiters()
         await wired?.close(error: CancellationError())
         await nfc?.close(error: CancellationError())
+        await nfcClosing?.value
         await operationTask?.value
     }
 
@@ -763,6 +767,8 @@ actor ConnectionCoordinator {
         successMessage: String,
         body: @Sendable (NFCSmartCardConnection) async throws -> T
     ) async throws -> T {
+        await nfcClosing?.value
+        nfcClosing = nil
         try Task.checkCancellation()
         guard !stopped else { throw CancellationError() }
         let connection = try await NFCSmartCardConnection.makeConnection(
@@ -773,7 +779,9 @@ actor ConnectionCoordinator {
             try Task.checkCancellation()
             guard !stopped else { throw CancellationError() }
             let value = try await body(connection)
-            await connection.close(message: successMessage)
+            // Return without waiting for iOS to dismiss the sheet, so the UI
+            // updates right away. The next NFC operation waits for it instead.
+            nfcClosing = Task { await connection.close(message: successMessage) }
             nfcConnection = nil
             return value
         } catch {

@@ -388,8 +388,15 @@ class IosCredentialListNotifier extends OathCredentialListNotifier {
     return OathCredential.fromJson(next.result as Map<String, dynamic>);
   }
 
+  final _deleting = <String, Future<void>>{};
+
+  /// Repeated requests while a delete is running, e.g. from tapping Delete
+  /// again, share it instead of deleting an account that is already gone.
   @override
-  Future<void> deleteAccount(OathCredential credential) async {
-    await _session.execute('deleteAccount', {'credentialId': credential.id});
-  }
+  Future<void> deleteAccount(OathCredential credential) =>
+      _deleting[credential.id] ??= _session
+          .execute('deleteAccount', {'credentialId': credential.id})
+          .whenComplete(() {
+            _deleting.remove(credential.id);
+          });
 }
