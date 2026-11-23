@@ -24,6 +24,8 @@ class WindowsSigningTests(unittest.TestCase):
             ]
             bundle.mkdir(parents=True)
             (bundle / "unsigned-data.txt").write_text("unchanged")
+            for name in ("msvcp140.dll", "vcruntime140.dll", "vcruntime140_1.dll"):
+                (bundle / name).write_text("unchanged")
         else:
             artifact = root / f"installer{architecture['artifact-suffix']}"
             inputs = [artifact / f"yubioath-desktop{architecture['suffix']}.msi"]
@@ -83,8 +85,9 @@ class WindowsSigningTests(unittest.TestCase):
                             self.assertEqual(
                                 path.read_bytes(), b"signed:" + original[path]
                             )
-                        for path in artifacts.rglob("unsigned-data.txt"):
-                            self.assertEqual(path.read_text(), "unchanged")
+                        for path in artifacts.rglob("*"):
+                            if path.is_file() and path not in inputs:
+                                self.assertEqual(path.read_text(), "unchanged", path)
 
     def test_rejects_missing_artifacts(self):
         for kind in ("binaries", "installers"):

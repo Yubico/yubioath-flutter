@@ -115,6 +115,9 @@ jobs:
           $version = python set-version.py | Select-Object -First 1
           flutter build windows --build-name=$version
 
+      - name: Bundle Visual C++ runtime
+        run: .\.github\scripts\vc_runtime.ps1 -Bundle build\windows\${{ matrix.arch }}\runner\Release -Arch ${{ matrix.arch }}
+
       - name: Check generated files
         run: git diff -I '.*android.*flutter_plugins.*qrscanner_zxing' --exit-code
 
@@ -167,6 +170,9 @@ jobs:
           if ($actual -ne $expected) {
             throw "authenticator-helper.exe has file version $actual, expected $expected"
           }
+
+      - name: Verify Visual C++ runtime dependencies
+        run: .\.github\scripts\vc_runtime.ps1 -Verify deploy
 
       - name: Upload artifact
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

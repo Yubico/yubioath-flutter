@@ -21,16 +21,6 @@ else()
       "Debug" "Profile" "Release")
   endif()
 endif()
-
-# Link the C++ runtime statically so the app doesn't need the Visual C++
-# Redistributable. Plugins reset CMP0091 to OLD via cmake_minimum_required, so
-# rewrite the default flags as well as setting CMAKE_MSVC_RUNTIME_LIBRARY.
-set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-foreach(flag_var CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE
-    CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE)
-  string(REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
-endforeach()
-
 # Define settings for the Profile build mode.
 set(CMAKE_EXE_LINKER_FLAGS_PROFILE "${CMAKE_EXE_LINKER_FLAGS_RELEASE}")
 set(CMAKE_SHARED_LINKER_FLAGS_PROFILE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE}")
