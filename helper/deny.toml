@@ -6,8 +6,6 @@ version = 2
 ignore = [
     # Retain the SDK's exception for RSA used in local PKCS#12 operations.
     { id = "RUSTSEC-2023-0071", reason = "no patch available; only used for local PKCS#12 operations" },
-    # chrono is unmaintained but still used by the helper and ykman; to be migrated to jiff or time.
-    { id = "RUSTSEC-2026-0543", reason = "no safe upgrade available; migration away from chrono pending" },
 ]
 
 [licenses]
