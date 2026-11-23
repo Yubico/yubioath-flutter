@@ -1,5 +1,5 @@
 $ErrorActionPreference = "Stop"
-$version="7.5.0"
+$version="7.5.2-dev.0"
 
 echo "Clean-up of old files"
 rm *.msi

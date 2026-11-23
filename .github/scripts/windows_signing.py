@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import re
 from pathlib import Path
 from shutil import copyfile
 
@@ -14,6 +15,9 @@ ARCHITECTURES = [
     },
 ]
 
+# Visual C++ runtime DLLs bundled with the app are already signed by Microsoft.
+CRT_DLL = re.compile(r"^(vcruntime|msvcp|concrt|vccorlib|vcomp|vcamp)\d+.*\.dll$")
+
 
 def prepare(kind: str, artifacts: Path, staging: Path) -> list[dict[str, str]]:
     files = {}
@@ -24,7 +28,9 @@ def prepare(kind: str, artifacts: Path, staging: Path) -> list[dict[str, str]]:
             candidates = sorted(
                 path
                 for path in artifact.rglob("*")
-                if path.is_file() and path.suffix.lower() in {".exe", ".dll"}
+                if path.is_file()
+                and path.suffix.lower() in {".exe", ".dll"}
+                and not CRT_DLL.match(path.name.lower())
             )
         else:
             artifact = artifacts / f"installer{architecture['artifact-suffix']}"

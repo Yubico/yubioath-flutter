@@ -1,0 +1,8 @@
+# Link the C runtime statically so the helper and ykman-svc don't need the
+# Visual C++ Redistributable. Applies to builds run from this repository,
+# including helper/ and the yubikey-manager submodule built via --manifest-path.
+# The Flutter app and its plugins instead ship the CRT DLLs next to
+# authenticator.exe (see .github/workflows/windows.yml), since the prebuilt
+# flutter_windows.dll links the CRT dynamically.
+[target.'cfg(all(windows, target_env = "msvc"))']
+rustflags = ["-C", "target-feature=+crt-static"]

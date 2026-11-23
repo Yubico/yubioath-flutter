@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
-	xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
-  <?define ProductVersion="7.5.0" ?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <?define ProductVersion="7.5.2" ?>
   <?define ProductName="Yubico Authenticator" ?>
   <?ifndef PackagePlatform ?>
     <?define PackagePlatform="x64" ?>
@@ -80,7 +79,6 @@
                   WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
           <RemoveFolder Id="CleanUpShortCut" Directory="ApplicationProgramsFolder" On="uninstall"/>
           <RegistryValue Root="HKCU" Key="Software\Yubico\Yubico Authenticator" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
-          <util:RemoveFolderEx Id="Remove" On="install" Property="INSTALLDIR" />
         </Component>
       </DirectoryRef>
 

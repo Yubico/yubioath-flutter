@@ -1,6 +1,9 @@
 [package]
 name = "authenticator-helper"
-version = "0.1.0"
+# Kept in sync with the app version by set-version.py. The Windows file version
+# derived from it must not decrease between releases, or MSI upgrades skip
+# installing the helper.
+version = "7.5.2-dev.0"
 edition = "2024"
 publish = false
 license = "Apache-2.0"
@@ -25,6 +28,9 @@ hmac = "0.13"
 env_logger = "0.11"
 image = { version = "0.25", default-features = false, features = ["png", "jpeg", "gif", "bmp", "webp"] }
 rqrr = "0.11.0"
+
+[build-dependencies]
+winresource = "0.1"
 
 [target.'cfg(not(target_os = "linux"))'.dependencies]
 xcap = "0.9"

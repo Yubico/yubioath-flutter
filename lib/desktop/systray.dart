@@ -75,8 +75,36 @@ final systrayProvider = Provider.autoDispose((ref) {
 
   ref.onDispose(systray.dispose);
 
+  // On Windows the tray must be released before the process exits. Otherwise
+  // nativeapi frees it during static destruction, after state it depends on
+  // has already been destroyed, which crashes the app on exit.
+  if (Platform.isWindows) {
+    final closeListener = _ReleaseTrayOnCloseListener(systray);
+    windowManager.addListener(closeListener);
+    unawaited(windowManager.setPreventClose(true));
+    ref.onDispose(() {
+      windowManager.removeListener(closeListener);
+      unawaited(windowManager.setPreventClose(false));
+    });
+  }
+
   return systray;
 });
+
+class _ReleaseTrayOnCloseListener extends WindowListener {
+  final _Systray _systray;
+
+  _ReleaseTrayOnCloseListener(this._systray);
+
+  @override
+  void onWindowClose() async {
+    windowManager.removeListener(this);
+    _systray.dispose();
+    // Continue with the regular close, which shuts down the runner cleanly.
+    await windowManager.setPreventClose(false);
+    await windowManager.close();
+  }
+}
 
 Future<OathCode?> _calculateCode(
   DevicePath devicePath,
@@ -183,6 +211,7 @@ class _Systray {
   }
 
   void dispose() {
+    if (_disposed) return;
     _disposed = true;
     _trayIcon?.setContextMenu(null);
     _menu?.dispose();

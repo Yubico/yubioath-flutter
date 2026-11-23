@@ -131,3 +131,24 @@ def update_win_msi(buf):
 update_file("pubspec.yaml", update_pubspec)
 update_file("resources/win/release-win.ps1", update_release_win)
 update_file("resources/win/yubioath-desktop.wxs", update_win_msi)
+
+
+# Helper crate version, used for the Windows file version of the helper
+def update_helper_cargo_toml(buf):
+    return sub1(
+        rf'(name = "authenticator-helper"\n(?:#.*\n)*)version = "{version_pattern}"',
+        rf'\g<1>version = "{version}"',
+        buf,
+    )
+
+
+def update_helper_cargo_lock(buf):
+    return sub1(
+        rf'(name = "authenticator-helper"\n)version = "{version_pattern}"',
+        rf'\g<1>version = "{version}"',
+        buf,
+    )
+
+
+update_file("helper/Cargo.toml", update_helper_cargo_toml)
+update_file("helper/Cargo.lock", update_helper_cargo_lock)
