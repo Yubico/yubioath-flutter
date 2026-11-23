@@ -3,7 +3,7 @@ name = "authenticator-helper"
 # Kept in sync with the app version by set-version.py. The Windows file version
 # derived from it must not decrease between releases, or MSI upgrades skip
 # installing the helper.
-version = "7.5.0"
+version = "7.5.1"
 edition = "2024"
 publish = false
 license = "Apache-2.0"
