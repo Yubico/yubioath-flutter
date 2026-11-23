@@ -1,0 +1,5 @@
+# Link the C runtime statically so the helper and ykman-svc don't need the
+# Visual C++ Redistributable. Applies to builds run from this repository,
+# including helper/ and the yubikey-manager submodule built via --manifest-path.
+[target.'cfg(all(windows, target_env = "msvc"))']
+rustflags = ["-C", "target-feature=+crt-static"]

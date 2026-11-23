@@ -27,7 +27,7 @@ jobs:
         shell: bash
         run: |
           cat .github/workflows/env >> $GITHUB_ENV
-          echo CACHE_KEY=${{ runner.os }}-${{ runner.arch }}-rust-$(git -C yubikey-manager rev-parse HEAD)-svc1-${{ hashFiles('build-helper.bat', 'helper/**')}} >> $GITHUB_ENV
+          echo CACHE_KEY=${{ runner.os }}-${{ runner.arch }}-rust-$(git -C yubikey-manager rev-parse HEAD)-svc1-${{ hashFiles('build-helper.bat', '.cargo/config.toml', 'helper/**')}} >> $GITHUB_ENV
 
       - name: Check app versions
         run: |
