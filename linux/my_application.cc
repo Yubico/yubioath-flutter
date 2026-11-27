@@ -58,11 +58,14 @@ static void my_application_activate(GApplication* application) {
   gtk_widget_show(GTK_WIDGET(view));
   gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(view));
 
-  // Registering plugins requires the window to be shown. We hide it immediately after, and it is never visible.
-  gtk_widget_show(GTK_WIDGET(window));
+  // Registering plugins only requires the view to be realized, which is what
+  // the Flutter Linux template does. Showing and hiding the window here, before
+  // the main loop runs, leaves it stuck in an unmapped frame on some window
+  // managers (gala on elementary OS): the later show() from Dart reports
+  // success, but the window never appears.
+  gtk_widget_realize(GTK_WIDGET(view));
   fl_register_plugins(FL_PLUGIN_REGISTRY(view));
-  gtk_widget_hide(GTK_WIDGET(window));
-  
+
   gtk_widget_grab_focus(GTK_WIDGET(view));
 }
 
