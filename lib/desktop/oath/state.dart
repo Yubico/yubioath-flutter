@@ -82,9 +82,10 @@ class DesktopOathStateNotifier extends OathStateNotifier {
         ref.invalidate(_sessionProvider(devicePath));
       })
       ..setErrorHandler('auth-required', (e) async {
-        final key = ref
-            .read(_oathLockKeyProvider(_session.devicePath).notifier)
-            .value;
+        final keyNotifier = ref.read(
+          _oathLockKeyProvider(_session.devicePath).notifier,
+        );
+        final key = keyNotifier.value;
         if (key != null) {
           final result = await _session.command(
             'validate',
@@ -93,11 +94,14 @@ class DesktopOathStateNotifier extends OathStateNotifier {
           if (result['valid']) {
             ref.invalidateSelf();
             return;
-          } else {
-            ref.read(_oathLockKeyProvider(_session.devicePath).notifier).value =
-                null;
           }
+          keyNotifier.value = null;
         }
+        // The YubiKey is locked again and no cached key can unlock it, for
+        // example after the cached key expired while the connection was
+        // released. Reload the state so the user is asked for the password
+        // instead of every command failing with auth-required.
+        ref.invalidateSelf();
         throw e;
       });
     ref.onDispose(() {
@@ -105,9 +109,45 @@ class DesktopOathStateNotifier extends OathStateNotifier {
         ..unsetErrorHandler('state-reset')
         ..unsetErrorHandler('auth-required');
     });
+    // The connection is released while the window is inactive, which can
+    // lock the YubiKey again. Re-read the state on return so a lock shows
+    // right away instead of on the next failing command.
+    ref.listen<WindowState>(windowStateProvider, (prev, next) async {
+      if (prev?.active == false && next.active) {
+        try {
+          final newState = await _readState();
+          if (ref.mounted && state.value != newState) {
+            state = AsyncValue.data(newState);
+          }
+        } on RpcError catch (e) {
+          _log.warning('Failed to refresh OATH state', e);
+        }
+      }
+    });
+    return _readState();
+  }
+
+  /// Reads the OATH state, unlocking with the cached key when there is one.
+  Future<OathState> _readState() async {
     final result = await _session.command('get');
-    _log.debug('application status', jsonEncode(result));
-    return OathState.fromJson(result['data']);
+    var oathState = OathState.fromJson(result['data']);
+    if (oathState.locked && ref.mounted) {
+      final keyNotifier = ref.read(_oathLockKeyProvider(devicePath).notifier);
+      final key = keyNotifier.value;
+      if (key != null) {
+        final validate = await _session.command(
+          'validate',
+          params: {'key': key},
+        );
+        if (validate['valid']) {
+          oathState = oathState.copyWith(locked: false);
+        } else {
+          keyNotifier.value = null;
+        }
+      }
+    }
+    _log.debug('application status', jsonEncode(oathState));
+    return oathState;
   }
 
   @override
